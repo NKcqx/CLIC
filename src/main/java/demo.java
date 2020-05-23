@@ -3,6 +3,7 @@ import api.PlanBuilder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 public class demo {
@@ -12,10 +13,12 @@ public class demo {
             return "";
         };
 
+
         PlanBuilder planBuilder = new PlanBuilder();
         planBuilder
                 .map(mapUDF, "MapOperator")
                 .sort("SortOperator")
+                .filter(Objects::nonNull, "FilterOperator")
                 .collect();
         try {
 

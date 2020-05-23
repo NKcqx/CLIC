@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class PlanBuilder {
@@ -48,6 +49,12 @@ public class PlanBuilder {
         return this;
     }
 
+    public PlanBuilder filter(Predicate predicate, String name){
+        this.pipeline.add(new FilterOperator(predicate, name));
+
+        return this;
+    }
+
     public PlanBuilder collect(){
         this.pipeline.add(new CollectOperator("CollectOperator"));
 
@@ -69,10 +76,10 @@ public class PlanBuilder {
         Thread.sleep(1000);
         this.logging(String.format("Optimize Plan took: %d ms", System.currentTimeMillis() - startTime));
         this.printPlan();
+
         // Mapping
         startTime = System.currentTimeMillis();
         this.logging("   ");
-
         this.logging("Start Mapping Plan to Execution Plan...");
         try {
             traversePlan(this.pipeline);
@@ -140,8 +147,30 @@ public class PlanBuilder {
     }
 
     private LinkedList<Operator> optimizePipeline(){
-        this.logging("Re-Organizing Pipeline & Operator fusion ...");
+        this.switchOperator(1, 2);
         return this.pipeline;
+    }
+
+    /**
+     * 交换pipeline中任意两opt的位置，用于算子重组
+     * @param idx1 第一个opt的idx
+     * @param idx2 第二个opt的idx
+     */
+    private void switchOperator(int idx1, int idx2){
+        this.logging(String.format("->    Switching Opt %s @%d with %s @%d",
+                this.pipeline.get(idx1).getID(), idx1,
+                this.pipeline.get(idx2).getID(), idx2
+        ));
+        assert idx1 < this.pipeline.size() : "idx1是无效的索引";
+        assert idx2 < this.pipeline.size() : "idx2是无效的索引";
+        Operator opt1 = this.pipeline.get(idx1);
+        Operator opt2 = this.pipeline.get(idx2);
+
+        this.pipeline.add(idx1, opt2);
+        this.pipeline.remove(idx1 + 1); // 删除原来的opt1
+
+        this.pipeline.add(idx2, opt1);
+        this.pipeline.remove(idx2 + 1);
     }
 
     private void logging(String s){
@@ -154,6 +183,7 @@ public class PlanBuilder {
             this.logging("->    " + opt.getID());
         }
     }
+
 
 
 }
