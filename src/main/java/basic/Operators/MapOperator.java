@@ -4,7 +4,7 @@ package basic.Operators;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class MapOperator extends Operator{
+public  class MapOperator extends Operator{
     public final String ID = "MapOperator";
     protected Supplier func;
 

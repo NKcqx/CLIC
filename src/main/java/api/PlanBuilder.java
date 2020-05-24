@@ -2,6 +2,8 @@ package api;
 
 import basic.Operators.*;
 import basic.Platform;
+import basic.Visitors.ExecutionGenerationVisitor;
+import basic.Visitors.PrintVisitor;
 import platforms.Java.JavaPlatform;
 import platforms.Spark.SparkPlatform;
 
@@ -67,7 +69,7 @@ public class PlanBuilder {
      * 3. Run
      */
     public void execute() throws InterruptedException {
-        this.logging("===========【Stage 1】Get User Defined Plan ===========");
+        /*this.logging("===========【Stage 1】Get User Defined Plan ===========");
         this.printPlan();
         this.logging("   ");
         // Optimize
@@ -98,7 +100,8 @@ public class PlanBuilder {
             eopt.evaluate("input", "output");
         }
 
-        this.logging("\ndone.");
+        this.logging("\ndone.");*/
+        this.traversePlan();
 
     }
 
@@ -149,6 +152,17 @@ public class PlanBuilder {
 
     }
 
+    private void traversePlan(){
+        ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor("java,spark");
+        for (Operator opt : this.pipeline){
+            executionGenerationVisitor.visit(opt);
+        }
+        this.executionPlan = executionGenerationVisitor.getExecutionPlan();
+        for (ExecutableOperator opt : this.executionPlan){
+            this.logging(opt.toString());
+        }
+    }
+
     private LinkedList<Operator> optimizePipeline(){
         this.switchOperator(1, 2);
         return this.pipeline;
@@ -176,17 +190,20 @@ public class PlanBuilder {
         this.pipeline.remove(idx2 + 1);
     }
 
+
     private void logging(String s){
         System.out.println(s);
     }
 
     private void printPlan(){
         this.logging("Current Plan:");
-        for (Operator opt : this.pipeline){
+        /*for (Operator opt : this.pipeline){
             this.logging("->    " + opt.getID());
+        }*/
+        PrintVisitor printVisitor = new PrintVisitor();
+        for (Operator opt : this.pipeline){
+            printVisitor.visit(opt);
         }
     }
-
-
 
 }

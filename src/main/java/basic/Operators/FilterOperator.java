@@ -2,7 +2,7 @@ package basic.Operators;
 
 import java.util.function.Predicate;
 
-public class FilterOperator extends Operator {
+public  class FilterOperator extends Operator {
     public final String ID = "FilterOperator";
 
     private Predicate predicate;

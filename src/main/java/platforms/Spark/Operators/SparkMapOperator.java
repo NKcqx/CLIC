@@ -2,11 +2,13 @@ package platforms.Spark.Operators;
 
 import basic.Operators.ExecutableOperator;
 import basic.Operators.MapOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class SparkMapOperator extends MapOperator implements ExecutableOperator {
+public class SparkMapOperator extends MapOperator implements ExecutableOperator, Visitable {
     public SparkMapOperator(Supplier udf, String optName) {
         super(udf, optName);
     }
@@ -19,6 +21,11 @@ public class SparkMapOperator extends MapOperator implements ExecutableOperator 
     public void evaluate(String input, String output) {
         this.func.get();
         System.out.println(">>  "  + this.toString());
+    }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

@@ -1,10 +1,11 @@
 package platforms.Spark.Operators;
 
 import basic.Operators.ExecutableOperator;
-import basic.Operators.MapOperator;
 import basic.Operators.SortOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
-public class SparkSortOperator extends SortOperator implements ExecutableOperator {
+public class SparkSortOperator extends SortOperator implements ExecutableOperator, Visitable {
     public SparkSortOperator( String optName) {
         super( optName);
     }
@@ -13,6 +14,11 @@ public class SparkSortOperator extends SortOperator implements ExecutableOperato
     @Override
     public void evaluate(String input, String output) {
         System.out.println(">>  "  + this.toString() + String.format( ".evaluate(%s, %s)", input, output));
+    }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override

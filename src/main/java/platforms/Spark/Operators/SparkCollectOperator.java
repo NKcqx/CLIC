@@ -2,8 +2,10 @@ package platforms.Spark.Operators;
 
 import basic.Operators.CollectOperator;
 import basic.Operators.ExecutableOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
-public class SparkCollectOperator extends CollectOperator implements ExecutableOperator {
+public class SparkCollectOperator extends CollectOperator implements ExecutableOperator, Visitable {
 
     public SparkCollectOperator(String optName) {
         super(optName);
@@ -16,6 +18,11 @@ public class SparkCollectOperator extends CollectOperator implements ExecutableO
     @Override
     public void evaluate(String input, String output) {
         System.out.println(">>  "  + this.toString() + String.format( ".evaluate(%s, %s)", input, output));
+    }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 
     @Override
