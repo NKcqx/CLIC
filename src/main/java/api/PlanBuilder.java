@@ -67,9 +67,12 @@ public class PlanBuilder {
      * 3. Run
      */
     public void execute() throws InterruptedException {
+        this.logging("===========【Stage 1】Get User Defined Plan ===========");
+        this.printPlan();
+        this.logging("   ");
         // Optimize
         long startTime = System.currentTimeMillis();
-        this.logging("Start Optimize Plan...");
+        this.logging("===========【Stage 2】Optimizing Plan ===========");
         // 算子融合调度
         this.logging("Start operator fusion and re-organize...");
         this.optimizePipeline();
@@ -80,7 +83,7 @@ public class PlanBuilder {
         // Mapping
         startTime = System.currentTimeMillis();
         this.logging("   ");
-        this.logging("Start Mapping Plan to Execution Plan...");
+        this.logging("=========== 【Stage 3】 Mapping Plan to Execution Plan ===========");
         try {
             traversePlan(this.pipeline);
             this.logging(String.format("Mapping Plan took: %d ms", System.currentTimeMillis() - startTime));
@@ -89,7 +92,7 @@ public class PlanBuilder {
         }
         this.logging("   ");
 
-        this.logging("Execute Current execution plan : ");
+        this.logging("=========== 【Stage 4】Executing Current execution plan ===========");
         // Execute
         for(ExecutableOperator eopt : this.executionPlan){
             eopt.evaluate("input", "output");
