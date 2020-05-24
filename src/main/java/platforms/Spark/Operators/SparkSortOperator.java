@@ -1,10 +1,11 @@
 package platforms.Spark.Operators;
 
 import basic.Operators.ExecutableOperator;
-import basic.Operators.MapOperator;
 import basic.Operators.SortOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
-public class SparkSortOperator extends SortOperator implements ExecutableOperator {
+public class SparkSortOperator extends SortOperator implements ExecutableOperator, Visitable {
     public SparkSortOperator( String optName) {
         super( optName);
     }
@@ -24,4 +25,10 @@ public class SparkSortOperator extends SortOperator implements ExecutableOperato
     public Double getCost() {
         return 13.762; // 临时自定义，理应动态的分析数据量
     }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator)this);
+    }
+
 }

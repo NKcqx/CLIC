@@ -2,8 +2,10 @@ package platforms.Java.Operators;
 
 import basic.Operators.CollectOperator;
 import basic.Operators.ExecutableOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
-public class JavaCollectOperator extends CollectOperator implements ExecutableOperator {
+public class JavaCollectOperator extends CollectOperator implements ExecutableOperator, Visitable {
     public JavaCollectOperator() {
         super("DefaultJavaCollectOperator");
     }
@@ -39,5 +41,10 @@ public class JavaCollectOperator extends CollectOperator implements ExecutableOp
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "["+this.hashCode()+"]";
+    }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator) this);
     }
 }

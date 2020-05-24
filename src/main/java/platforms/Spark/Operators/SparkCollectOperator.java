@@ -2,8 +2,10 @@ package platforms.Spark.Operators;
 
 import basic.Operators.CollectOperator;
 import basic.Operators.ExecutableOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
-public class SparkCollectOperator extends CollectOperator implements ExecutableOperator {
+public class SparkCollectOperator extends CollectOperator implements ExecutableOperator, Visitable {
 
     public SparkCollectOperator(String optName) {
         super(optName);
@@ -27,4 +29,10 @@ public class SparkCollectOperator extends CollectOperator implements ExecutableO
     public String toString() {
         return this.getClass().getSimpleName()+"["+this.hashCode()+"]";
     }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator)this);
+    }
+
 }

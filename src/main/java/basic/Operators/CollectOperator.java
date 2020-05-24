@@ -1,5 +1,7 @@
 package basic.Operators;
 
+import basic.Visitors.Visitor;
+
 public class CollectOperator extends Operator{
     public final String ID = "CollectOperator";
 
@@ -13,5 +15,10 @@ public class CollectOperator extends Operator{
     @Override
     Integer estimateCost(){
         return 10;
+    }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 }

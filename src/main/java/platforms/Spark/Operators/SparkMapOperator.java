@@ -2,11 +2,13 @@ package platforms.Spark.Operators;
 
 import basic.Operators.ExecutableOperator;
 import basic.Operators.MapOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-public class SparkMapOperator extends MapOperator implements ExecutableOperator {
+public class SparkMapOperator extends MapOperator implements ExecutableOperator, Visitable {
     public SparkMapOperator(Supplier udf, String optName) {
         super(udf, optName);
     }
@@ -30,4 +32,10 @@ public class SparkMapOperator extends MapOperator implements ExecutableOperator 
     public Double getCost() {
         return 27.9391; // 临时自定义，理应动态的分析数据量
     }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator)this);
+    }
+
 }

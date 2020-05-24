@@ -2,11 +2,13 @@ package platforms.Spark.Operators;
 
 import basic.Operators.ExecutableOperator;
 import basic.Operators.FilterOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-public class SparkFilterOperator extends FilterOperator implements ExecutableOperator {
+public class SparkFilterOperator extends FilterOperator implements ExecutableOperator, Visitable {
     public SparkFilterOperator(Predicate udf, String optName) {
         super(udf, optName);
     }
@@ -20,6 +22,7 @@ public class SparkFilterOperator extends FilterOperator implements ExecutableOpe
         System.out.println(">>  "  + this.toString());
     }
 
+
     @Override
     public String toString() {
         return this.getClass().getSimpleName() +"["+this.hashCode()+"]";
@@ -29,4 +32,10 @@ public class SparkFilterOperator extends FilterOperator implements ExecutableOpe
     public Double getCost() {
         return 29.0091; // 临时自定义，理应动态的分析数据量
     }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator)this);
+    }
+
 }

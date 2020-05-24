@@ -3,7 +3,7 @@ package basic.Operators;
 /***
  * 给Execution Operator用的，basic的Operator是抽象的 无法Execute，因此不能实现这个接口
  */
-public interface ExecutableOperator {
+public interface ExecutableOperator extends Visitable {
     Double cardinality = 0.;
 
     /**

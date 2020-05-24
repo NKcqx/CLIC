@@ -2,10 +2,12 @@ package platforms.Java.Operators;
 
 import basic.Operators.FilterOperator;
 import basic.Operators.ExecutableOperator;
+import basic.Operators.Visitable;
+import basic.Visitors.Visitor;
 
 import java.util.function.Predicate;
 
-public class JavaFilterOperator extends FilterOperator implements ExecutableOperator {
+public class JavaFilterOperator extends FilterOperator implements ExecutableOperator, Visitable {
     public JavaFilterOperator(Predicate predicate, String optName) {
         super(predicate, optName);
     }
@@ -27,5 +29,10 @@ public class JavaFilterOperator extends FilterOperator implements ExecutableOper
     @Override
     public String toString() {
         return this.getClass().getSimpleName() + "["+this.hashCode()+"]";
+    }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator) this);
     }
 }
