@@ -6,7 +6,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public abstract class Operator {
+public abstract class Operator implements Visitable {
     protected final String ID = "Operator";
     protected String optName;
     // protected Collection<Operator> successors;

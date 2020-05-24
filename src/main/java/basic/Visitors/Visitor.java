@@ -5,4 +5,5 @@ import basic.Operators.Operator;
 
 public interface Visitor {
     void visit(Operator opt);
+    void visit(ExecutableOperator opt);
 }

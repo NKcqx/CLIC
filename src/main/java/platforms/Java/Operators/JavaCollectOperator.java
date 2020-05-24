@@ -45,6 +45,6 @@ public class JavaCollectOperator extends CollectOperator implements ExecutableOp
 
     @Override
     public void acceptVisitor(Visitor visitor) {
-        visitor.visit(this);
+        visitor.visit((ExecutableOperator) this);
     }
 }

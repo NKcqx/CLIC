@@ -22,10 +22,6 @@ public class SparkFilterOperator extends FilterOperator implements ExecutableOpe
         System.out.println(">>  "  + this.toString());
     }
 
-    @Override
-    public void acceptVisitor(Visitor visitor) {
-        visitor.visit(this);
-    }
 
     @Override
     public String toString() {
@@ -36,4 +32,10 @@ public class SparkFilterOperator extends FilterOperator implements ExecutableOpe
     public Double getCost() {
         return 29.0091; // 临时自定义，理应动态的分析数据量
     }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator)this);
+    }
+
 }

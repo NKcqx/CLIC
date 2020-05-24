@@ -21,11 +21,6 @@ public class SparkCollectOperator extends CollectOperator implements ExecutableO
     }
 
     @Override
-    public void acceptVisitor(Visitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
     public Double getCost() {
         return 7.1138; // 临时自定义，理应动态的分析数据量
     }
@@ -34,4 +29,10 @@ public class SparkCollectOperator extends CollectOperator implements ExecutableO
     public String toString() {
         return this.getClass().getSimpleName()+"["+this.hashCode()+"]";
     }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator)this);
+    }
+
 }

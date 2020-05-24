@@ -17,11 +17,6 @@ public class SparkSortOperator extends SortOperator implements ExecutableOperato
     }
 
     @Override
-    public void acceptVisitor(Visitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
     public String toString() {
         return this.getClass().getSimpleName()+"["+this.hashCode()+"]";
     }
@@ -30,4 +25,10 @@ public class SparkSortOperator extends SortOperator implements ExecutableOperato
     public Double getCost() {
         return 13.762; // 临时自定义，理应动态的分析数据量
     }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator)this);
+    }
+
 }

@@ -24,11 +24,6 @@ public class JavaMapOperator extends MapOperator implements ExecutableOperator, 
     }
 
     @Override
-    public void acceptVisitor(Visitor visitor) {
-        visitor.visit(this);
-    }
-
-    @Override
     public String toString() {
         return this.getClass().getSimpleName() + "["+this.hashCode()+"]";
     }
@@ -37,4 +32,10 @@ public class JavaMapOperator extends MapOperator implements ExecutableOperator, 
     public Double getCost() {
         return 32.9963; // 临时自定义，理应动态的分析数据量
     }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator)this);
+    }
+
 }

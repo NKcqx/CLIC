@@ -1,5 +1,7 @@
 package basic.Operators;
 
+import basic.Visitors.Visitor;
+
 import java.util.function.Predicate;
 
 public  class FilterOperator extends Operator {
@@ -20,5 +22,10 @@ public  class FilterOperator extends Operator {
     @Override
     Integer estimateCost(){
         return 10;
+    }
+
+    @Override
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit(this);
     }
 }

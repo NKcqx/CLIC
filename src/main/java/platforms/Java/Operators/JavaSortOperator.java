@@ -31,6 +31,6 @@ public class JavaSortOperator extends SortOperator implements ExecutableOperator
 
     @Override
     public void acceptVisitor(Visitor visitor) {
-        visitor.visit(this);
+        visitor.visit((ExecutableOperator) this);
     }
 }

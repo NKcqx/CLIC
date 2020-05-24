@@ -15,7 +15,6 @@ import java.util.*;
  * 2. 管理Execution Opt.的输入输出
  *
  */
-
 public class ExecutionGenerationVisitor implements Visitor {
     private List<Platform> supportedPlatforms = new ArrayList<>();
     private LinkedList<ExecutableOperator> executionPlan = new LinkedList<>();
@@ -48,6 +47,10 @@ public class ExecutionGenerationVisitor implements Visitor {
         }
     }
 
+    /**
+     * Walk through Plan, Mapping each Opt to the best(least cost) Executable Opt
+     * @param opt Operator to be visited
+     */
     @Override
     public void visit(Operator opt) {
         List<ExecutableOperator> eopts = new ArrayList<>();
@@ -78,6 +81,11 @@ public class ExecutionGenerationVisitor implements Visitor {
             }
         }
         this.executionPlan.add(minOpt);
+    }
+
+    @Override
+    public void visit(ExecutableOperator opt) {
+        // do nothing
     }
 
     public LinkedList<ExecutableOperator> getExecutionPlan(){

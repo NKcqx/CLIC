@@ -27,12 +27,12 @@ public class JavaFilterOperator extends FilterOperator implements ExecutableOper
     }
 
     @Override
-    public void acceptVisitor(Visitor visitor) {
-        visitor.visit(this);
+    public String toString() {
+        return this.getClass().getSimpleName() + "["+this.hashCode()+"]";
     }
 
     @Override
-    public String toString() {
-        return this.getClass().getSimpleName() + "["+this.hashCode()+"]";
+    public void acceptVisitor(Visitor visitor) {
+        visitor.visit((ExecutableOperator) this);
     }
 }
