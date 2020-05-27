@@ -18,7 +18,6 @@ public class JavaSortOperator extends SortOperator implements ExecutableOperator
         System.out.println(">>  "  + this.toString() + String.format( ".evaluate(%s, %s)", input, output));
     }
 
-
     @Override
     public Double getCost() {
         return 2.58; // 临时自定义，理应动态的分析数据量

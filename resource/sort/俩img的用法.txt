@@ -1,0 +1,5 @@
+
+python3 sort.py ./data_list.txt ./output_data.txt --Dis_reverse=true --Ddelimiter=,
+
+
+java -jar Sorter.jar -Dinput_data_path={file_path} -Doutput_data_path={file_path} -Ddelimiter=, -Dis_reverse=true

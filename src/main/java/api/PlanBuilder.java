@@ -19,7 +19,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 public class PlanBuilder {
-    private LinkedList<Operator> pipeline;
+    private LinkedList<Operator> pipeline; DAG not linear; Dataflow;
 
     private LinkedList<ExecutableOperator> executionPlan;
 
@@ -43,6 +43,7 @@ public class PlanBuilder {
      */
     public PlanBuilder map(Supplier udf, String name){
         this.pipeline.add(new MapOperator(udf, name));
+        // 找所有的 mapXML Operator -> XML ->mapOperator
         return this;
     }
 
@@ -109,7 +110,6 @@ public class PlanBuilder {
     private void traversePlan(){
         ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor("java,spark");
         for (Visitable opt : this.pipeline){
-            // executionGenerationVisitor.visit(opt);
             opt.acceptVisitor(executionGenerationVisitor);
         }
         this.executionPlan = executionGenerationVisitor.getExecutionPlan();

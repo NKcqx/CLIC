@@ -74,13 +74,21 @@ public class ExecutionGenerationVisitor implements Visitor {
 
         Double minCost = Double.POSITIVE_INFINITY;
         ExecutableOperator minOpt = null;
+        this.logging(String.format("Current Operator `%s` is supported by: \n   ", opt.getID()));
         for (ExecutableOperator eopt : eopts){
+            this.logging(String.format("%s[cost=%f], ", eopt.getClass().getSimpleName(), eopt.getCost()));
             if (eopt.getCost() < minCost){
                 minCost = eopt.getCost();
                 minOpt = eopt;
             }
         }
+
+        this.logging(String.format("\n > Pick `%s[%f]` as best Operator\n", minOpt.getClass().getSimpleName(), minOpt.getCost()));
         this.executionPlan.add(minOpt);
+    }
+
+    private void logging(String s){
+        System.out.print(s);
     }
 
     @Override

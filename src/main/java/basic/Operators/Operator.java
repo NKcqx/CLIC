@@ -10,7 +10,6 @@ public abstract class Operator implements Visitable {
     protected final String ID = "Operator";
     protected String optName;
     // protected Collection<Operator> successors;
-
     public Operator(String n){
         this.optName = n;
         // this.successors = new LinkedList<>();

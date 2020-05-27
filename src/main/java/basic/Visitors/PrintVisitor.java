@@ -9,7 +9,6 @@ import basic.Operators.Operator;
 public class PrintVisitor implements Visitor {
     // private static final Logger logger = LoggerFactory.getLogger(PrintVisitor.class);
 
-
     @Override
     public void visit(Operator opt) {
         this.logging(opt.toString());
@@ -23,6 +22,5 @@ public class PrintVisitor implements Visitor {
 
     private void logging(String s){
         System.out.println(s);
-        //logger.info(s);
     }
 }
