@@ -1,5 +1,8 @@
 import api.PlanBuilder;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -14,17 +17,16 @@ public class demo {
         };
 
 
-        PlanBuilder planBuilder = new PlanBuilder();
-        planBuilder
-                .map(mapUDF, "MapOperator")
-                .sort("SortOperator")
-                .filter(Objects::nonNull, "FilterOperator")
-                .collect();
+        PlanBuilder planBuilder = null;
         try {
+            planBuilder = new PlanBuilder();
+            planBuilder.sort();
 
             planBuilder.execute();
-        } catch (InterruptedException e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }

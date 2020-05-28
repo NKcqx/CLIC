@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- api的接口内 如sort函数，需要能用特定OperatorTemplates创建出指定的Operator来，因此需要提供一个mapping -->
+<mappings>
+    <pair>
+        <ability>sort</ability>
+        <template>/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/SortOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>map</ability>
+        <template>/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/MapOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>filter</ability>
+        <template>/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/FilterOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>collect</ability>
+        <template>/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/CollectOperator.xml</template>
+    </pair>
+</mappings>
