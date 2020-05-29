@@ -40,7 +40,7 @@ public class PlanBuilder {
 
     public PlanBuilder() throws ParserConfigurationException, SAXException, IOException {
         // TODO: 改一下默认文件路径的传输方式（用命令行传入）
-        this("/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/OperatorMapping.xml");
+        this("resources/OperatorTemplates/OperatorMapping.xml");
     }
 
     public DataQuanta readDataFrom(String filename) throws Exception {

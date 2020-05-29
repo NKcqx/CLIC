@@ -3,18 +3,18 @@
 <mappings>
     <pair>
         <ability>sort</ability>
-        <template>/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/SortOperator.xml</template>
+        <template>resources/OperatorTemplates/SortOperator.xml</template>
     </pair>
     <pair>
         <ability>map</ability>
-        <template>/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/MapOperator.xml</template>
+        <template>resources/OperatorTemplates/MapOperator.xml</template>
     </pair>
     <pair>
         <ability>filter</ability>
-        <template>/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/FilterOperator.xml</template>
+        <template>resources/OperatorTemplates/FilterOperator.xml</template>
     </pair>
     <pair>
         <ability>collect</ability>
-        <template>/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/IRdemo/resources/OperatorTemplates/CollectOperator.xml</template>
+        <template>resources/OperatorTemplates/CollectOperator.xml</template>
     </pair>
 </mappings>
