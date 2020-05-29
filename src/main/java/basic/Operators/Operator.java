@@ -34,33 +34,53 @@ public class Operator implements Visitable {
     public Operator(String config_file_path) throws IOException, SAXException, ParserConfigurationException {
 
         //暂时使用相对路径
-        this.config_file_path = System.getProperty("user.dir")+config_file_path;;
-//        this.loadConfiguration();
+        this.config_file_path = System.getProperty("user.dir")+config_file_path;
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        this.config = builder.parse(new File(this.config_file_path));
+        this.config.getDocumentElement().normalize();
+        // 1. 先载入Opt的基本信息，如ID、name、kind
+        this.loadBasicInfo();
+        // 2. 再找到opt所有平台实现的配置文件的路径
         this.loadOperatorConfs();
+        // 3. 加载每个平台配置文件的信息
         this.getPlatformOptConf();
     }
 
-//    public void loadConfiguration() throws ParserConfigurationException, IOException, SAXException {
-//        if(this.config_file_path != null){
-//            this.loadConfiguration(this.config_file_path);
-//        }else
-//            throw new FileNotFoundException("未指定配置文件路径");
-//    }
+    /**
+     * 装载基本状态，如ID、Name、各类Entity，装载后的Opt.仍是 `抽象`的
+     */
+    private void loadBasicInfo(){
+        Element root = config.getDocumentElement();
+        this.ID = root.getAttribute("ID");
+        this.name = root.getAttribute("name");
+        switch (root.getAttribute("kind")){
+            case "calculator":
+                this.kind = OperatorKind.CALCULATOR;
+                break;
+            case "supplier":
+                this.kind = OperatorKind.SUPPLIER;
+                break;
+            case "consumer":
+                this.kind = OperatorKind.CONSUMER;
+                break;
+            case "transformer":
+                this.kind = OperatorKind.TRANSFORMER;
+                break;
+            case "shuffler":
+                this.kind = OperatorKind.SHUFFLER;
+                break;
+            default:
+                this.kind = OperatorKind.CALCULATOR;
+        }
+    }
 
     /**
      * 加载在该算子类型下所包含的所有平台的路径
-     * @throws ParserConfigurationException
-     * @throws IOException
-     * @throws SAXException
      */
-    public void loadOperatorConfs() throws ParserConfigurationException, IOException, SAXException {
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document configFile = builder.parse(new File(this.config_file_path));
-        configFile.getDocumentElement().normalize();
-
-        Element root = configFile.getDocumentElement();
+    public void loadOperatorConfs() {
+        // 再依次载入所有的平台实现（XML）
+        Element root = this.config.getDocumentElement();
         Node platforms_root_node = root.getElementsByTagName("platforms").item(0);
         if (platforms_root_node.getNodeType() == Node.ELEMENT_NODE){
             Element platform_root_ele = (Element) platforms_root_node;
@@ -85,95 +105,27 @@ public class Operator implements Visitable {
      * @throws SAXException
      */
     public void getPlatformOptConf() throws ParserConfigurationException, IOException, SAXException {
-        if(this.config == null){
-            if(this.plt_mapping==null){
-                throw new FileNotFoundException("该算子未没有具体平台的实现");
-            }
-            for(String key : plt_mapping.keySet()){
-                //相对路径
-                String path =System.getProperty("user.dir")+ plt_mapping.get(key);
-
-                File configFile = new File(path);
-                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-                DocumentBuilder builder = factory.newDocumentBuilder();
-                this.config = builder.parse(configFile);
-                this.config.getDocumentElement().normalize();
-                this.loadBasicInfo();
-            }
-
-        }else {
-            logging("Already assigned a configuration.");
+        if(this.plt_mapping==null || this.plt_mapping.isEmpty()){
+            throw new FileNotFoundException("该算子没有具体平台的实现");
         }
-    }
+        for(String key : plt_mapping.keySet()){
+            //相对路径
+            String path =System.getProperty("user.dir")+ plt_mapping.get(key);
 
-
-
-//    /**
-//     * 读入XML文件并用 DOM Parser 解析，将结构保存为该Opt.的状态
-//     * @param config_file_path XML文件的路径
-//     * @throws ParserConfigurationException
-//     * @throws IOException
-//     * @throws SAXException
-//     */
-//    public void loadConfiguration(String config_file_path) throws ParserConfigurationException, IOException, SAXException {
-//        if(this.config == null){
-//            // 暂时使用相对路径
-//            config_file_path=System.getProperty("user.dir")+config_file_path;
-//
-//            File configFile = new File(config_file_path);
-//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-//            DocumentBuilder builder = factory.newDocumentBuilder();
-//            this.config = builder.parse(configFile);
-//            this.config.getDocumentElement().normalize();
-//            this.loadBasicInfo();
-//        }else {
-//            logging("Already assigned a configuration.");
-//        }
-//    }
-
-    /**
-     * 装载基本状态，如ID、Name、各类Entity，装载后的Opt.仍是 `抽象`的
-     */
-    private void loadBasicInfo(){
-        Element root = config.getDocumentElement();
-        this.ID = root.getAttribute("ID");
-            this.name = root.getAttribute("name");
-            switch (root.getAttribute("kind")){
-            case "calculator":
-                this.kind = OperatorKind.CALCULATOR;
-                break;
-            case "supplier":
-                this.kind = OperatorKind.SUPPLIER;
-                break;
-            case "consumer":
-                this.kind = OperatorKind.CONSUMER;
-                break;
-            case "transformer":
-                this.kind = OperatorKind.TRANSFORMER;
-                break;
-            case "shuffler":
-                this.kind = OperatorKind.SHUFFLER;
-                break;
-            default:
-                this.kind = OperatorKind.CALCULATOR;
+            File configFile = new File(path);
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document config = builder.parse(configFile);
+            config.getDocumentElement().normalize();
+            this.loadImplements(config);
         }
-
-        this.loadImplements();
-    }
-
-    public String getConfig_file_path() {
-        return config_file_path;
-    }
-
-    public void setConfig_file_path(String config_file_path) {
-        this.config_file_path = config_file_path;
     }
 
     /**
      * 遍历具体平台的Operator的实现，封装到 OperatorEntity 中
      * // @param root XML文件的根DOM对象（毕竟是private 无所谓参数类型，后期改也OK）
      */
-    private void loadImplements(){
+    private void loadImplements(Document config){
         Element root = config.getDocumentElement();
         Node platform_node = root.getElementsByTagName("platform").item(0);
         if(platform_node.getNodeType()==Node.ELEMENT_NODE){
@@ -188,6 +140,15 @@ public class Operator implements Visitable {
             this.entities.put(platform_ele.getAttribute("ID"), platform);
         }
     }
+
+    public String getConfig_file_path() {
+        return config_file_path;
+    }
+
+    public void setConfig_file_path(String config_file_path) {
+        this.config_file_path = config_file_path;
+    }
+
 
     public void selectEntity(String entity_id) throws FileNotFoundException {
         if(this.entities.containsKey(entity_id)){

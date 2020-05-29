@@ -61,11 +61,13 @@ public class PlanBuilder {
      */
     public void execute() throws InterruptedException {
         this.logging("===========【Stage 1】Get User Defined Plan ===========");
+        this.logging("Current plan: ");
         this.printPlan();
         this.logging("   ");
 
         this.logging("===========【Stage 2】Choose best Operator implementation ===========");
         this.optimizePlan();
+        this.logging("Current plan: ");
         this.printPlan();
         this.logging("   ");
 

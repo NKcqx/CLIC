@@ -27,7 +27,7 @@ public class PlanTraversal {
             this.bfs_queue_downstream.addAll(currentOpt.getOutgoing_opt());
             return currentOpt;
         }
-       return null;
+        return null;
     }
 
     public boolean hasNextOpt(){

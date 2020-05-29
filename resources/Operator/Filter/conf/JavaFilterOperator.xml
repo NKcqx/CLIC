@@ -13,7 +13,7 @@
             -Dis_reverse={$is_reverse}
         </command>
 <!--            cost是该operator的cost，此处先简单设定-->
-        <cost>6</cost>
+        <cost>3.1179</cost>
     </platform>
     
 

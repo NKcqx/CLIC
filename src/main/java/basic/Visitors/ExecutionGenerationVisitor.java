@@ -48,7 +48,7 @@ public class ExecutionGenerationVisitor extends Visitor {
         Operator.OperatorEntity bestOperatorEntity = Collections.min(opt.getEntities().values(), new Comparator<Operator.OperatorEntity>() {
             @Override
             public int compare(Operator.OperatorEntity o1, Operator.OperatorEntity o2) {
-                return o2.getCost().compareTo(o1.getCost());
+                return o1.getCost().compareTo(o2.getCost());
             }
         });
         try {
