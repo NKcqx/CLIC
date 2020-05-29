@@ -1,3 +1,4 @@
+import api.DataQuanta;
 import api.PlanBuilder;
 import org.xml.sax.SAXException;
 
@@ -11,16 +12,18 @@ import java.util.function.Supplier;
 
 public class demo {
     public static void main(String[] args){
-        Supplier<String> mapUDF = () -> {
-            System.out.println("*****   Hello World   *****");
-            return "";
-        };
-
 
         PlanBuilder planBuilder = null;
         try {
             planBuilder = new PlanBuilder();
-            planBuilder.sort();
+            DataQuanta nodeA = planBuilder.readDataFrom("data source file")
+                    .sort();
+
+//            DataQuanta nodeB = nodeA.sort();
+//            DataQuanta nodeC = nodeA.map(null, null);
+//
+//            DataQuanta nodeD = nodeB.collect();
+//            nodeD.acceptIncoming(nodeC);
 
             planBuilder.execute();
 

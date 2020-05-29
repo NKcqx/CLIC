@@ -63,6 +63,7 @@ public class OperatorMapping {
      */
     public static Operator createOperator(String ability) throws Exception {
         String template_path = OperatorMapping.getTemplate(ability);
+
         Operator operator = new Operator(template_path);
         // operator.loadConfiguration(template_path); // 这步交给Visitor来做
         return operator;

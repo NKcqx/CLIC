@@ -20,6 +20,9 @@ public class Operator implements Visitable {
     private Map<String, OperatorEntity> entities = new HashMap<>();
     private OperatorEntity selected_entity = null;
     private String execute_command = null;
+    // 记录下一跳Opt.
+    private LinkedList<Operator> outgoing_opt = new LinkedList<>();
+    private LinkedList<Operator> incoming_opt = new LinkedList<>();
     // protected Collection<Operator> successors;
     public enum OperatorKind{
         CALCULATOR, SUPPLIER, CONSUMER, TRANSFORMER, SHUFFLER
@@ -27,8 +30,9 @@ public class Operator implements Visitable {
 
     public Operator(){}
 
-    public Operator(String config_file_path){
+    public Operator(String config_file_path) throws IOException, SAXException, ParserConfigurationException {
         this.config_file_path = config_file_path;
+        this.loadConfiguration();
     }
 
     public void loadConfiguration() throws ParserConfigurationException, IOException, SAXException {
@@ -125,7 +129,7 @@ public class Operator implements Visitable {
         }
     }
 
-    public void select_entity(String entity_id) throws FileNotFoundException {
+    public void selectEntity(String entity_id) throws FileNotFoundException {
         if(this.entities.containsKey(entity_id)){
             this.selected_entity = this.entities.get(entity_id);
         }else
@@ -138,36 +142,76 @@ public class Operator implements Visitable {
             // TODO: 已经选好了 还能变吗？
             ;
         }
-        this.select_entity(entity_id);
+        this.selectEntity(entity_id);
+    }
+
+    // TODO: 这里传入 inputChannel,  outputChannel
+    public void evaluate(){
+        this.logging(String.format("evaluate: \n img= %s\n command= %s",
+                this.selected_entity.getImg_path(),
+                this.selected_entity.getCommand()));
+    }
+
+//    TODO: 下面的execute比较重要，后期再完善,现在先拿evaluate代替
+//    /**
+//     * 执行Opt的img，为了实现泛化，这里不能假设已知运行Img的command需要的各项参数（否则即使只改参数名称都要重写代码）
+//     * 有一个XMLCompleter的Visitor，把选择的最佳img填入XML中，然后再来一个execute img，
+//     * @param inputChannel
+//     * @param outputChannel
+//     */
+//    public void execute(String inputChannel, String outputChannel) throws IOException {
+//        String command = this.selected_entity.getCommand(); // 要执行的命令（此时还未传入参数值）
+//        Element root = config.getDocumentElement(); // XML文件的根节点
+//        // 拿到所有params
+//        Element execute_root_ele = (Element) root.getElementsByTagName("execute").item(0);
+//        Element params_root_ele = (Element) execute_root_ele.getElementsByTagName("params").item(0);
+//        NodeList params = params_root_ele.getElementsByTagName("param");
+//        for (int i=0; i<params.getLength();i++){
+//            Element param = (Element) params.item(i);
+//            String param_id = param.getAttribute("ID");
+//            String param_value = param.getTextContent();
+//
+//        }
+//        // TODO: 以上的部分很可能拿到Visitor中去做，填写完command以后在这直接运行
+//
+//        if (this.execute_command != null && !this.execute_command.equals("")){
+//            Runtime.getRuntime().exec(this.execute_command);
+//        }else {
+//            throw new NoSuchElementException("没有给Operator指定具体执行命令");
+//        }
+//
+//    }
+
+    public LinkedList<Operator> getOutgoing_opt() {
+        return outgoing_opt;
     }
 
     /**
-     * 执行Opt的img，为了实现泛化，这里不能假设已知运行Img的command需要的各项参数（否则即使只改参数名称都要重写代码）
-     * 有一个XMLCompleter的Visitor，把选择的最佳img填入XML中，然后再来一个execute img，
-     * @param inputChannel
-     * @param outputChannel
+     * 即 outgoing_opt的setter，但多做了一步双向注册（下一跳opt也要把this注册为它的上一跳）
+     * @param outgoing 下一跳Opt
+     * @return
      */
-    public void execute(String inputChannel, String outputChannel) throws IOException {
-        String command = this.selected_entity.getCommand(); // 要执行的命令（此时还未传入参数值）
-        Element root = config.getDocumentElement(); // XML文件的根节点
-        // 拿到所有params
-        Element execute_root_ele = (Element) root.getElementsByTagName("execute").item(0);
-        Element params_root_ele = (Element) execute_root_ele.getElementsByTagName("params").item(0);
-        NodeList params = params_root_ele.getElementsByTagName("param");
-        for (int i=0; i<params.getLength();i++){
-            Element param = (Element) params.item(i);
-            String param_id = param.getAttribute("ID");
-            String param_value = param.getTextContent();
+    public int connectTo(Operator outgoing){
+        // 双向绑定
+        this.outgoing_opt.add(outgoing);
+        outgoing.incoming_opt.add(this);
+        return this.outgoing_opt.size();
+    }
 
-        }
-        // TODO: 以上的部分很可能拿到Visitor中去做，填写完command以后在这直接运行
+    public LinkedList<Operator> getIncoming_opt() {
+        return incoming_opt;
+    }
 
-        if (this.execute_command != null && !this.execute_command.equals("")){
-            Runtime.getRuntime().exec(this.execute_command);
-        }else {
-            throw new NoSuchElementException("没有给Operator指定具体执行命令");
-        }
-
+    /**
+     * 同connectTO
+     * @param incoming 上一跳
+     * @return
+     */
+    public int connectFrom(Operator incoming){
+        this.incoming_opt.add(incoming);
+        // incoming.connectTo(this);
+        incoming.outgoing_opt.add(this);
+        return this.incoming_opt.size();
     }
 
     public boolean isLoaded(){
@@ -192,10 +236,6 @@ public class Operator implements Visitable {
 
     private void logging(String s){
         System.out.println(s);
-    }
-
-    Integer estimateCost(){
-        return 0;
     }
 
     @Override
@@ -276,8 +316,6 @@ public class Operator implements Visitable {
         public String toString() {
             return "OperatorEntity{" +
                     "language='" + language + '\'' +
-                    ", img_path='" + img_path + '\'' +
-                    ", command='" + command + '\'' +
                     ", cost=" + cost +
                     '}';
         }

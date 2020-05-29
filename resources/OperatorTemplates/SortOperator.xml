@@ -5,6 +5,7 @@
         <platform ID="java">
             <language>java</language>
             <implementation>./resource/sort/Sorter.jar</implementation>
+            <path>./sort implementation/</path>
             <command>
                 java -jar ./resource/sort/Sorter.jar
                 -Dinput_data_path={$input_file_path}
