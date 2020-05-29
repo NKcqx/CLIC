@@ -39,7 +39,7 @@ public class ExecutionGenerationVisitor extends Visitor {
         // 比较所有Entity，找到cost最小的
         if (!opt.isLoaded()){
             try {
-                opt.loadConfiguration();
+                opt.getPlatformOptConf();
             } catch (Exception e) {
                 e.printStackTrace();
             }

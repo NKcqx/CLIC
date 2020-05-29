@@ -16,8 +16,8 @@ public class demo {
         PlanBuilder planBuilder = null;
         try {
             planBuilder = new PlanBuilder();
-            DataQuanta nodeA = planBuilder.readDataFrom("data source file")
-                    .sort();
+            DataQuanta nodeA = planBuilder.readDataFrom("data source file").filter().collect();
+//                    .sort();
 
 //            DataQuanta nodeB = nodeA.sort();
 //            DataQuanta nodeC = nodeA.map(null, null);

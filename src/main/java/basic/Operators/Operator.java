@@ -20,6 +20,7 @@ public class Operator implements Visitable {
     private Map<String, OperatorEntity> entities = new HashMap<>();
     private OperatorEntity selected_entity = null;
     private String execute_command = null;
+    private  Map<String, String> plt_mapping = new HashMap<>();
     // 记录下一跳Opt.
     private LinkedList<Operator> outgoing_opt = new LinkedList<>();
     private LinkedList<Operator> incoming_opt = new LinkedList<>();
@@ -31,36 +32,104 @@ public class Operator implements Visitable {
     public Operator(){}
 
     public Operator(String config_file_path) throws IOException, SAXException, ParserConfigurationException {
-        this.config_file_path = config_file_path;
-        this.loadConfiguration();
+
+        //暂时使用相对路径
+        this.config_file_path = System.getProperty("user.dir")+config_file_path;;
+//        this.loadConfiguration();
+        this.loadOperatorConfs();
+        this.getPlatformOptConf();
     }
 
-    public void loadConfiguration() throws ParserConfigurationException, IOException, SAXException {
-        if(this.config_file_path != null){
-            this.loadConfiguration(this.config_file_path);
-        }else
-            throw new FileNotFoundException("未指定配置文件路径");
-    }
+//    public void loadConfiguration() throws ParserConfigurationException, IOException, SAXException {
+//        if(this.config_file_path != null){
+//            this.loadConfiguration(this.config_file_path);
+//        }else
+//            throw new FileNotFoundException("未指定配置文件路径");
+//    }
 
     /**
-     * 读入XML文件并用 DOM Parser 解析，将结构保存为该Opt.的状态
-     * @param config_file_path XML文件的路径
+     * 加载在该算子类型下所包含的所有平台的路径
      * @throws ParserConfigurationException
      * @throws IOException
      * @throws SAXException
      */
-    public void loadConfiguration(String config_file_path) throws ParserConfigurationException, IOException, SAXException {
+    public void loadOperatorConfs() throws ParserConfigurationException, IOException, SAXException {
+
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        Document configFile = builder.parse(new File(this.config_file_path));
+        configFile.getDocumentElement().normalize();
+
+        Element root = configFile.getDocumentElement();
+        Node platforms_root_node = root.getElementsByTagName("platforms").item(0);
+        if (platforms_root_node.getNodeType() == Node.ELEMENT_NODE){
+            Element platform_root_ele = (Element) platforms_root_node;
+            NodeList platforms = platform_root_ele.getElementsByTagName("platform");
+            // 逐个遍历所有Platform
+            for (int i=0; i<platforms.getLength();i++){
+                Node platform_node = platforms.item(i);
+                if (platform_node.getNodeType() == Node.ELEMENT_NODE){
+                    Element platform_ele = (Element) platform_node;
+                    String platform=platform_ele.getAttribute("ID");
+                    String path = platform_ele.getElementsByTagName("path").item(0).getTextContent();
+                    //格式<platform，path>
+                    this.plt_mapping.put(platform, path);
+                }
+            }
+        }
+    }
+    /**
+     * 根据不同平台的operator的xml路径，读取相应配置
+     * @throws ParserConfigurationException
+     * @throws IOException
+     * @throws SAXException
+     */
+    public void getPlatformOptConf() throws ParserConfigurationException, IOException, SAXException {
         if(this.config == null){
-            File configFile = new File(config_file_path);
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            this.config = builder.parse(configFile);
-            this.config.getDocumentElement().normalize();
-            this.loadBasicInfo();
+            if(this.plt_mapping==null){
+                throw new FileNotFoundException("该算子未没有具体平台的实现");
+            }
+            for(String key : plt_mapping.keySet()){
+                //相对路径
+                String path =System.getProperty("user.dir")+ plt_mapping.get(key);
+
+                File configFile = new File(path);
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                this.config = builder.parse(configFile);
+                this.config.getDocumentElement().normalize();
+                this.loadBasicInfo();
+            }
+
         }else {
             logging("Already assigned a configuration.");
         }
     }
+
+
+
+//    /**
+//     * 读入XML文件并用 DOM Parser 解析，将结构保存为该Opt.的状态
+//     * @param config_file_path XML文件的路径
+//     * @throws ParserConfigurationException
+//     * @throws IOException
+//     * @throws SAXException
+//     */
+//    public void loadConfiguration(String config_file_path) throws ParserConfigurationException, IOException, SAXException {
+//        if(this.config == null){
+//            // 暂时使用相对路径
+//            config_file_path=System.getProperty("user.dir")+config_file_path;
+//
+//            File configFile = new File(config_file_path);
+//            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+//            DocumentBuilder builder = factory.newDocumentBuilder();
+//            this.config = builder.parse(configFile);
+//            this.config.getDocumentElement().normalize();
+//            this.loadBasicInfo();
+//        }else {
+//            logging("Already assigned a configuration.");
+//        }
+//    }
 
     /**
      * 装载基本状态，如ID、Name、各类Entity，装载后的Opt.仍是 `抽象`的
@@ -68,8 +137,8 @@ public class Operator implements Visitable {
     private void loadBasicInfo(){
         Element root = config.getDocumentElement();
         this.ID = root.getAttribute("ID");
-        this.name = root.getAttribute("name");
-        switch (root.getAttribute("kind")){
+            this.name = root.getAttribute("name");
+            switch (root.getAttribute("kind")){
             case "calculator":
                 this.kind = OperatorKind.CALCULATOR;
                 break;
@@ -101,31 +170,22 @@ public class Operator implements Visitable {
     }
 
     /**
-     * 遍历所有Operator的实现，封装到 OperatorEntity 中
+     * 遍历具体平台的Operator的实现，封装到 OperatorEntity 中
      * // @param root XML文件的根DOM对象（毕竟是private 无所谓参数类型，后期改也OK）
      */
     private void loadImplements(){
         Element root = config.getDocumentElement();
-        Node platforms_root_node = root.getElementsByTagName("platforms").item(0);
-        if (platforms_root_node.getNodeType() == Node.ELEMENT_NODE){
-            Element platform_root_ele = (Element) platforms_root_node;
-            NodeList platforms = platform_root_ele.getElementsByTagName("platform");
-            // 逐个遍历所有Platform
-            for (int i=0; i<platforms.getLength();i++){
-                Node platform_node = platforms.item(i);
-                // 我也不知道为啥 必须得转成Document才能访问这些
-                if (platform_node.getNodeType() == Node.ELEMENT_NODE){
-                    Element platform_ele = (Element) platform_node;
-                    OperatorEntity platform = new OperatorEntity(
-                            platform_ele.getAttribute("ID"),
-                            platform_ele.getElementsByTagName("language").item(0).getTextContent(),
-                            platform_ele.getElementsByTagName("implementation").item(0).getTextContent(),
-                            platform_ele.getElementsByTagName("command").item(0).getTextContent(),
-                            Double.valueOf(platform_ele.getElementsByTagName("cost").item(0).getTextContent())
-                    );
-                    this.entities.put(platform_ele.getAttribute("ID"), platform);
-                }
-            }
+        Node platform_node = root.getElementsByTagName("platform").item(0);
+        if(platform_node.getNodeType()==Node.ELEMENT_NODE){
+            Element platform_ele = (Element) platform_node;
+            OperatorEntity platform = new OperatorEntity(
+                    platform_ele.getAttribute("ID"),
+                    platform_ele.getElementsByTagName("language").item(0).getTextContent(),
+                    platform_ele.getElementsByTagName("implementation").item(0).getTextContent(),
+                    platform_ele.getElementsByTagName("command").item(0).getTextContent(),
+                    Double.valueOf(platform_ele.getElementsByTagName("cost").item(0).getTextContent())
+            );
+            this.entities.put(platform_ele.getAttribute("ID"), platform);
         }
     }
 

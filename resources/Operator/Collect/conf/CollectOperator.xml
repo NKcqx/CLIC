@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="CollectOperator" name="CollectOperator" kind="shuffler">
+
+    <platforms>
+        <platform ID="java">
+            <path>/resources/Operator/Collect/conf/JavaCollectOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>/resources/Operator/Collect/conf/SparkCollectOperator.xml</path>
+        </platform>
+    </platforms>
+
+
+
+</Operator>

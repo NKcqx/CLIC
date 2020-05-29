@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="FilterOperator" name="FilterOperator" kind="shuffler">
+
+    <platforms>
+        <platform ID="java">
+            <path>/resources/Operator/Filter/conf/JavaFilterOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>/resources/Operator/Filter/conf/SparkFilterOperator.xml</path>
+        </platform>
+    </platforms>
+
+
+
+</Operator>

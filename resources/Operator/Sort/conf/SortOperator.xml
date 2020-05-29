@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="SortOperator" name="SortOperator" kind="shuffler">
+
+    <platforms>
+        <platform ID="java">
+            <path>/resources/Operator/Sort/conf/JavaSortOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>/resources/Operator/Sort/conf/SparkSortOperator.xml</path>
+        </platform>
+    </platforms>
+
+
+
+</Operator>

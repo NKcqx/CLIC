@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="MapOperator" name="MapOperator" kind="shuffler">
+
+    <platforms>
+        <platform ID="java">
+            <path>/resources/Operator/Map/conf/JavaMapOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>/resources/Operator/Map/conf/SparkMapOperator.xml</path>
+        </platform>
+    </platforms>
+
+
+
+</Operator>
