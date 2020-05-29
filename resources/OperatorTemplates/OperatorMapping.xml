@@ -17,4 +17,5 @@
         <ability>collect</ability>
         <template>/resources/Operator/Collect/conf/CollectOperator.xml</template>
     </pair>
+
 </mappings>
