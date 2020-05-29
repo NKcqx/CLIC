@@ -2,6 +2,7 @@ package basic;
 
 import basic.Operators.Operator;
 
+import java.util.LinkedList;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
@@ -11,7 +12,7 @@ import java.util.Queue;
 public class PlanTraversal {
     private Operator root;
     private final int traverse_type; // 0: BFS; 1: DFS TODO: 以后再支持DFS吧..
-    private Queue<Operator> bfs_queue_downstream = new PriorityQueue<>();
+    private Queue<Operator> bfs_queue_downstream = new LinkedList<>();
     // private Queue<Operator> bfs_queue_upstream = new PriorityQueue<>();
 
     public PlanTraversal(Operator root, int traverse_type){

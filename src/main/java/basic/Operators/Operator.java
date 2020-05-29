@@ -22,8 +22,8 @@ public class Operator implements Visitable {
     private String execute_command = null;
     private  Map<String, String> plt_mapping = new HashMap<>();
     // 记录下一跳Opt.
-    private LinkedList<Operator> outgoing_opt = new LinkedList<>();
-    private LinkedList<Operator> incoming_opt = new LinkedList<>();
+    private ArrayList<Operator> outgoing_opt = new ArrayList<>();
+    private ArrayList<Operator> incoming_opt = new ArrayList<>();
     // protected Collection<Operator> successors;
     public enum OperatorKind{
         CALCULATOR, SUPPLIER, CONSUMER, TRANSFORMER, SHUFFLER
@@ -203,7 +203,7 @@ public class Operator implements Visitable {
 //
 //    }
 
-    public LinkedList<Operator> getOutgoing_opt() {
+    public ArrayList<Operator> getOutgoing_opt() {
         return outgoing_opt;
     }
 
@@ -219,7 +219,7 @@ public class Operator implements Visitable {
         return this.outgoing_opt.size();
     }
 
-    public LinkedList<Operator> getIncoming_opt() {
+    public ArrayList<Operator> getIncoming_opt() {
         return incoming_opt;
     }
 
