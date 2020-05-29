@@ -16,8 +16,8 @@ public class demo {
         PlanBuilder planBuilder = null;
         try {
             planBuilder = new PlanBuilder();
-            DataQuanta nodeA = planBuilder.readDataFrom("data source file")
-                    .sort();
+//            DataQuanta nodeA = planBuilder.readDataFrom("data source file")
+//                    .sort();
 
 //            DataQuanta nodeB = nodeA.sort();
 //            DataQuanta nodeC = nodeA.map(null, null);
@@ -25,7 +25,13 @@ public class demo {
 //            DataQuanta nodeD = nodeB.collect();
 //            nodeD.acceptIncoming(nodeC);
 
-            planBuilder.execute();
+            planBuilder.readDataFrom("../../../resources/sort/data_list.txt")
+                    //模拟用户行为：排序
+                    .sortTemp()
+                    //模拟用户行为：计算每个元素的平方
+                    .squareTemp()
+                    //相当于collect()
+                    .showResult();
 
         } catch (Exception e) {
             e.printStackTrace();

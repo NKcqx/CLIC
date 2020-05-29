@@ -5,6 +5,8 @@ import basic.Visitors.Visitor;
 
 import java.util.*;
 
+import channel.InputChannel;
+import channel.OutputChannel;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -20,6 +22,11 @@ public class Operator implements Visitable {
     private Map<String, OperatorEntity> entities = new HashMap<>();
     private OperatorEntity selected_entity = null;
     private String execute_command = null;
+
+    // 定义输入数据和输出数据
+    private InputChannel inputChannel = null;
+    private OutputChannel outputChannel = null;
+
     // 记录下一跳Opt.
     private LinkedList<Operator> outgoing_opt = new LinkedList<>();
     private LinkedList<Operator> incoming_opt = new LinkedList<>();
@@ -145,8 +152,34 @@ public class Operator implements Visitable {
         this.selectEntity(entity_id);
     }
 
+    /**
+     * 设置输入数据路径
+     * @param fileName
+     */
+    public void setInputChannel(String fileName) {
+        this.inputChannel = new InputChannel(fileName);
+    }
+
+    /**
+     * 设置输出数据路径
+     * @param fileName
+     */
+    public void setOutputChannel(String fileName) {
+        this.outputChannel = new OutputChannel(fileName);
+    }
+
     // TODO: 这里传入 inputChannel,  outputChannel
     public void evaluate(){
+        String inputPath = this.inputChannel.getFilePath();
+        String outputPath = this.outputChannel.getFilePath();
+        System.out.println("input_data_path: " + inputPath);
+        System.out.println("output_data_path: " + outputPath);
+
+        // inputChannel与outputChannel已传进此函数
+        // 对xml里command格式的修改我不是很熟悉，因此麻烦翔哥了
+        // PlanBuilder中的executePlan函数里的planTraversal暂没有建成一棵树
+        // 因此打印出来的data_path只有一对
+
         this.logging(String.format("evaluate: \n img= %s\n command= %s",
                 this.selected_entity.getImg_path(),
                 this.selected_entity.getCommand()));

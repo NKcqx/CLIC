@@ -5,6 +5,8 @@ import basic.PlanTraversal;
 import basic.Visitors.ExecuteVisitor;
 import basic.Visitors.ExecutionGenerationVisitor;
 import basic.Visitors.PrintVisitor;
+import channel.Channel;
+import channel.InputChannel;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -18,6 +20,14 @@ import java.util.function.Supplier;
 public class PlanBuilder {
     private LinkedList<Operator> pipeline;
     private DataQuanta headDataQuanta = null;
+
+    // 现在最简单粗暴的方法是将图存储在PlanBuilder中
+    private List<DataQuanta> dataQuantaList = new ArrayList<>();
+    private DataQuanta presentDataQuanta = null; // head永远是present的上一个节点
+    //
+    private String fileName = null;
+    private int calculateTime = 0;
+
     // private LinkedList<ExecutableOperator> executionPlan;
 
     private String context;
@@ -43,10 +53,79 @@ public class PlanBuilder {
         this("resources/OperatorTemplates/OperatorMapping.xml");
     }
 
-    public DataQuanta readDataFrom(String filename) throws Exception {
+//    public DataQuanta readDataFrom(String filename) throws Exception {
+//        Operator sourceOpt = OperatorMapping.createOperator("sort");
+//        this.headDataQuanta = new DataQuanta(sourceOpt);
+//        return this.headDataQuanta; // 不需要connectTo
+//    }
+
+    public PlanBuilder readDataFrom(String fileName) throws Exception {
+        this.fileName = fileName;
+        return this;
+    }
+
+    /**
+     * DataQuanta中sort()函数
+     * 与
+     * PlanBuilder中原readDataFrom()函数的结合
+     * @return PlanBuilder类型
+     * @throws Exception
+     */
+    public PlanBuilder sortTemp() throws Exception {
         Operator sourceOpt = OperatorMapping.createOperator("sort");
-        this.headDataQuanta = new DataQuanta(sourceOpt);
-        return this.headDataQuanta; // 不需要connectTo
+
+        sourceOpt.setInputChannel(this.fileName);
+        // 暂时假设经过sort运算后的输出路径 = 输入路径 + calculateTime
+        this.calculateTime += 1;
+        this.fileName = this.fileName + String.valueOf(this.calculateTime);
+        sourceOpt.setOutputChannel(this.fileName);
+
+        if(this.dataQuantaList.size() == 0) {
+            this.headDataQuanta = new DataQuanta(sourceOpt);
+            dataQuantaList.add(headDataQuanta);
+        } else {
+            this.presentDataQuanta = new DataQuanta(sourceOpt);
+            // 记录节点前后关系
+            this.presentDataQuanta.getOperator().connectFrom(this.headDataQuanta.getOperator());
+            this.headDataQuanta.getOperator().connectTo(this.presentDataQuanta.getOperator());
+            dataQuantaList.add(presentDataQuanta);
+            // 当前指向节点变成前节点
+            this.headDataQuanta = this.presentDataQuanta;
+        }
+        return this;
+    }
+
+    /**
+     * 与sortTemp()相似
+     * @return PlanBuilder类型
+     * @throws Exception
+     */
+    public PlanBuilder squareTemp() throws Exception {
+        Operator sourceOpt = OperatorMapping.createOperator("sort");
+
+        sourceOpt.setInputChannel(this.fileName);
+        // 暂时假设经过sort运算后的输出路径 = 输入路径 + calculateTime
+        this.calculateTime += 1;
+        this.fileName = this.fileName + String.valueOf(this.calculateTime);
+        sourceOpt.setOutputChannel(this.fileName);
+
+        if(this.dataQuantaList.size() == 0) {
+            this.headDataQuanta = new DataQuanta(sourceOpt);
+            dataQuantaList.add(headDataQuanta);
+        } else {
+            this.presentDataQuanta = new DataQuanta(sourceOpt);
+            // 记录节点前后关系
+            this.presentDataQuanta.getOperator().connectFrom(this.headDataQuanta.getOperator());
+            this.headDataQuanta.getOperator().connectTo(this.presentDataQuanta.getOperator());
+            dataQuantaList.add(presentDataQuanta);
+            // 当前指向节点变成前节点
+            this.headDataQuanta = this.presentDataQuanta;
+        }
+        return this;
+    }
+
+    public void showResult() throws Exception {
+        this.execute();
     }
 
     public DataQuanta getHeadDataQuanta() {
@@ -98,7 +177,11 @@ public class PlanBuilder {
 
     public void printPlan(){
         // this.logging("Current Plan:");
-        PlanTraversal planTraversal = new PlanTraversal(this.getHeadDataQuanta().getOperator(), 0);
+        //PlanTraversal planTraversal = new PlanTraversal(this.getHeadDataQuanta().getOperator(), 0);
+        PlanTraversal planTraversal = new PlanTraversal();
+        for(int i=0;i<dataQuantaList.size();i++) {
+            planTraversal.addOperator(dataQuantaList.get(i).getOperator());
+        }
         PrintVisitor printVisitor = new PrintVisitor(planTraversal);
         printVisitor.startVisit();
 //        for (Visitable v : plan){

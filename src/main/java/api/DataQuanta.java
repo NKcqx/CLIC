@@ -39,6 +39,7 @@ public class DataQuanta {
         return this.createDataQuanta("collect");
     }
 
+
     //
     public int acceptIncoming(DataQuanta incoming){
         this.operator.connectFrom(incoming.getOperator());

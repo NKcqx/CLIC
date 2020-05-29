@@ -11,6 +11,8 @@ public class ExecuteVisitor extends Visitor {
     @Override
     public void visit(Operator opt) {
         opt.evaluate();
+        if (planTraversal.hasNextOpt())
+            planTraversal.nextOpt().acceptVisitor(this);
     }
 
 }
