@@ -194,15 +194,6 @@ public class Operator implements Visitable {
 
     // TODO: 这里传入 inputChannel,  outputChannel
     public void evaluate(){
-        String inputPath = this.inputChannel.getFilePath();
-        String outputPath = this.outputChannel.getFilePath();
-        System.out.println("input_data_path: " + inputPath);
-        System.out.println("output_data_path: " + outputPath);
-
-        // inputChannel与outputChannel已传进此函数
-        // 对xml里command格式的修改我不是很熟悉，因此麻烦翔哥了
-        // PlanBuilder中的executePlan函数里的planTraversal暂没有建成一棵树
-        // 因此打印出来的data_path只有一对
 
         this.logging(String.format("evaluate: \n img= %s\n command= %s",
                 this.selected_entity.getImg_path(),
