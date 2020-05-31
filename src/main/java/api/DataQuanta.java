@@ -40,10 +40,14 @@ public class DataQuanta {
     }
 
 
-    //
+    /**
+     * 给this的opt添加一个新的输入opt
+     * @param incoming 输入opt
+     * @return input_channel列表的index，代表输入opt在this里放到哪里了
+     */
     public int acceptIncoming(DataQuanta incoming){
-        this.operator.connectFrom(incoming.getOperator());
-        return this.operator.getIncoming_opt().size();
+        this.operator.connectFrom(incoming.getOperator(), incoming.getOperator().getNextOutputIndex());
+        return this.operator.getNextInputIndex();
     }
 
     public Operator getOperator() {
@@ -52,7 +56,7 @@ public class DataQuanta {
 
     private DataQuanta createDataQuanta(String operator_ability) throws Exception {
         Operator opt = OperatorMapping.createOperator(operator_ability);
-        this.operator.connectTo(opt);
+        this.operator.connectTo(opt, opt.getNextInputIndex());
         return new DataQuanta(opt);
     }
 

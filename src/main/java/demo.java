@@ -14,7 +14,7 @@ public class demo {
             DataQuanta nodeC = nodeA.map(s, "map");
             DataQuanta nodeD = nodeB.sort();
             nodeD.acceptIncoming(nodeC);
-
+            nodeD.collect();
             planBuilder.execute();
         } catch (Exception e) {
             e.printStackTrace();

@@ -3,6 +3,9 @@ package basic.Visitors;
 import basic.Operators.Operator;
 import basic.PlanTraversal;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class Visitor {
     protected PlanTraversal planTraversal;
     public Visitor(PlanTraversal planTraversal){

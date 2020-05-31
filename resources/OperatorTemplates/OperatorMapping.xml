@@ -2,6 +2,10 @@
 <!-- api的接口内 如sort函数，需要能用特定OperatorTemplates创建出指定的Operator来，因此需要提供一个mapping -->
 <mappings>
     <pair>
+        <ability>source</ability>
+        <template>/resources/Operator/Source/conf/SourceOperator.xml</template>
+    </pair>
+    <pair>
         <ability>sort</ability>
         <template>/resources/Operator/Sort/conf/SortOperator.xml</template>
     </pair>

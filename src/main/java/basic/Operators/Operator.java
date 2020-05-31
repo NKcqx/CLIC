@@ -5,8 +5,7 @@ import basic.Visitors.Visitor;
 
 import java.util.*;
 
-import channel.InputChannel;
-import channel.OutputChannel;
+import channel.Channel;
 import org.w3c.dom.*;
 import org.xml.sax.SAXException;
 
@@ -15,7 +14,6 @@ import java.io.*;
 
 public class Operator implements Visitable {
     private Document config = null;
-    private String config_file_path = null;
     private String ID;
     private String name;
     private OperatorKind kind;
@@ -25,30 +23,33 @@ public class Operator implements Visitable {
 
     private  Map<String, String> plt_mapping = new HashMap<>();
 
-
-    // 定义输入数据和输出数据
-    private InputChannel inputChannel = null;
-    private OutputChannel outputChannel = null;
-
-
+    private String the_data; // 临时的，代表当前Opt的计算结果，想办法赋予个unique的值
     // 记录下一跳Opt.
-    private ArrayList<Operator> outgoing_opt = new ArrayList<>();
-    private ArrayList<Operator> incoming_opt = new ArrayList<>();
-    // protected Collection<Operator> successors;
+    private List<Channel> output_channels; // 这里Channel的index应该没什么用
+    private List<String> result_list; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
+    private List<Channel> input_channels;
+
     public enum OperatorKind{
         CALCULATOR, SUPPLIER, CONSUMER, TRANSFORMER, SHUFFLER
     }
 
-    public Operator(){}
-
     public Operator(String config_file_path) throws IOException, SAXException, ParserConfigurationException {
-
         //暂时使用相对路径
-        this.config_file_path = System.getProperty("user.dir")+config_file_path;
+        String full_config_file_path = System.getProperty("user.dir")+config_file_path;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        this.config = builder.parse(new File(this.config_file_path));
+        this.config = builder.parse(new File(full_config_file_path));
         this.config.getDocumentElement().normalize();
+
+        // 现在拿到index的方式还比较草率（.size()），所以不敢随便初始化大小
+//        this.result_list = Arrays.asList(new String[10]);
+//        this.output_channel = Arrays.asList(new Channel[10]);
+//        this.input_channel = Arrays.asList(new Channel[10]);
+
+        this.result_list = new ArrayList<>();
+        this.output_channels = new ArrayList<>();
+        this.input_channels = new ArrayList<>();
+
         // 1. 先载入Opt的基本信息，如ID、name、kind
         this.loadBasicInfo();
         // 2. 再找到opt所有平台实现的配置文件的路径
@@ -64,6 +65,8 @@ public class Operator implements Visitable {
         Element root = config.getDocumentElement();
         this.ID = root.getAttribute("ID");
         this.name = root.getAttribute("name");
+        // Temp data, 下一版就删除
+        this.the_data = "Compute Result: `" + this.ID + this.hashCode() + "`";
         switch (root.getAttribute("kind")){
             case "calculator":
                 this.kind = OperatorKind.CALCULATOR;
@@ -151,15 +154,6 @@ public class Operator implements Visitable {
         }
     }
 
-    public String getConfig_file_path() {
-        return config_file_path;
-    }
-
-    public void setConfig_file_path(String config_file_path) {
-        this.config_file_path = config_file_path;
-    }
-
-
     public void selectEntity(String entity_id) throws FileNotFoundException {
         if(this.entities.containsKey(entity_id)){
             this.selected_entity = this.entities.get(entity_id);
@@ -176,28 +170,54 @@ public class Operator implements Visitable {
         this.selectEntity(entity_id);
     }
 
-    /**
-     * 设置输入数据路径
-     * @param fileName
-     */
-    public void setInputChannel(String fileName) {
-        this.inputChannel = new InputChannel(fileName);
+    // TODO: 这里使用 inputChannel,  outputChannel
+    // TODO: 同时！！ 把输出结果（可以暂时是一个能表示每个instance的string）放到outputChannel里
+
+
+    public void evaluate(int input_channel_index){
+
+        // String one_of_data = this.input_channels.get(input_channel_index).getData();
+        // TODO: 这不对，有多个输入时，每次走到这个节点都会拿一次所有数据！！应该是没拿到所有数据的时候就等待！
+//        List<String> datas = new ArrayList<>();
+//        for (Channel input_channel : this.input_channels){
+//            datas.add(input_channel.getData());
+//        }
+        if (this.kind == OperatorKind.SUPPLIER){
+            // Supplier 无需输入数据
+            this.logging("input data: {SUPPLIER doesn't need input data.}");
+        }else{
+            // 拿到输入数据
+            Channel inputChannel = this.input_channels.get(input_channel_index);
+            String data = inputChannel.getData();
+
+            this.logging("input data: {" + data+"}");
+        }
+        // 做计算
+        this.logging("evaluate: {" + this.getID()+"}");
+        // 把结果放到所有的槽里
+        for (int i=0;i<output_channels.size();i++){
+            this.result_list.add(this.the_data);
+        }
+
+        // 然后把所有输出 自己按顺序放到对应的result_list里
+//        this.logging(String.format("evaluate: \n inputs: %s, outputs:%s",
+//                this.inputChannel.getAllDatas().toString(),
+//                this.outputChannel.getAllDatas().toString()));
     }
 
-    /**
-     * 设置输出数据路径
-     * @param fileName
-     */
-    public void setOutputChannel(String fileName) {
-        this.outputChannel = new OutputChannel(fileName);
+    public String getData(int index){
+        // 最前面注释里说过，channel的index和result_list的index是隐性同步的, TODO: 做成pair？
+        return this.result_list.get(index);
     }
 
-    // TODO: 这里传入 inputChannel,  outputChannel
-    public void evaluate(){
+    public List<String> getAllData(){
+        return this.result_list;
+    }
 
-        this.logging(String.format("evaluate: \n img= %s\n command= %s",
-                this.selected_entity.getImg_path(),
-                this.selected_entity.getCommand()));
+    private void resizeResultList(int new_size){
+        List<String> new_array = Arrays.asList(new String[new_size]);
+        new_array.addAll(this.result_list);
+        this.result_list = new_array;
     }
 
 //    TODO: 下面的execute比较重要，后期再完善,现在先拿evaluate代替
@@ -230,40 +250,59 @@ public class Operator implements Visitable {
 //
 //    }
 
-    public ArrayList<Operator> getOutgoing_opt() {
-        return outgoing_opt;
+
+    public List<Channel> getOutput_channel() {
+        return output_channels;
+    }
+
+    public List<Channel> getInput_channel() {
+        return input_channels;
     }
 
     /**
      * 即 outgoing_opt的setter，但多做了一步双向注册（下一跳opt也要把this注册为它的上一跳）
-     * @param outgoing 下一跳Opt
-     * @return
+     * @param outgoing 下一跳opt
+     * @param input_index 下一跳的input_index
+     * @return 本次Channel的index
      */
-    public int connectTo(Operator outgoing){
+    public int connectTo(Operator outgoing, int input_index){
+        // 拿到下一个放数据的槽的index
+        int output_index = this.output_channels.size();
+        // 创建边 TODO: 这一步不知道在哪做合适
+        Channel channel = new Channel(this, output_index, outgoing, input_index);
         // 双向绑定
-        this.outgoing_opt.add(outgoing);
-        outgoing.incoming_opt.add(this);
-        return this.outgoing_opt.size();
-    }
-
-    public ArrayList<Operator> getIncoming_opt() {
-        return incoming_opt;
+        this.output_channels.add(channel);
+        outgoing.input_channels.add(channel);
+        return this.output_channels.size();
     }
 
     /**
      * 同connectTO
-     * @param incoming 上一跳
-     * @return
+     * @param incoming 上一跳opt
+     * @param output_index 上一跳的output_index
+     * @return 本次Channel的index
      */
-    public int connectFrom(Operator incoming){
-        this.incoming_opt.add(incoming);
-        // incoming.connectTo(this);
-        incoming.outgoing_opt.add(this);
-        return this.incoming_opt.size();
+    public int connectFrom(Operator incoming, int output_index){
+        // 拿到下一个放数据的槽的index
+        int input_index = this.input_channels.size();
+        // 创建边 TODO: 这一步不知道在哪做合适
+        Channel channel = new Channel(incoming, output_index, this, input_index);
+        // 双向绑定
+        this.input_channels.add(channel);
+        incoming.output_channels.add(channel);
+        return this.input_channels.size();
     }
 
     public boolean isLoaded(){
         return !(this.config == null); // 用这个判断可能不太好，也许可以试试判断有没有configFIle
+    }
+
+    public int getNextOutputIndex(){
+        return this.output_channels.size();
+    }
+
+    public int getNextInputIndex(){
+        return this.input_channels.size();
     }
 
     public String getName(){return this.name;}

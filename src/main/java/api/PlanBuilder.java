@@ -5,8 +5,6 @@ import basic.PlanTraversal;
 import basic.Visitors.ExecuteVisitor;
 import basic.Visitors.ExecutionGenerationVisitor;
 import basic.Visitors.PrintVisitor;
-import channel.Channel;
-import channel.InputChannel;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -14,8 +12,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class PlanBuilder {
     private LinkedList<Operator> pipeline;
@@ -50,9 +46,7 @@ public class PlanBuilder {
     }
 
     public DataQuanta readDataFrom(String filename) throws Exception {
-        Operator sourceOpt = OperatorMapping.createOperator("sort");
-        sourceOpt.setInputChannel(filename);
-        sourceOpt.setOutputChannel(filename);
+        Operator sourceOpt = OperatorMapping.createOperator("source");
         this.headDataQuanta = new DataQuanta(sourceOpt);
         return this.headDataQuanta; // 不需要connectTo
     }
@@ -69,13 +63,11 @@ public class PlanBuilder {
      */
     public void execute() throws InterruptedException {
         this.logging("===========【Stage 1】Get User Defined Plan ===========");
-        this.logging("Current plan: ");
         this.printPlan();
         this.logging("   ");
 
         this.logging("===========【Stage 2】Choose best Operator implementation ===========");
         this.optimizePlan();
-        this.logging("Current plan: ");
         this.printPlan();
         this.logging("   ");
 

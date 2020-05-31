@@ -23,6 +23,7 @@ import java.util.*;
 public class ExecutionGenerationVisitor extends Visitor {
     //private List<Platform> supportedPlatforms = new ArrayList<>();
     // private LinkedList<ExecutableOperator> executionPlan = new LinkedList<>();
+    private List<Operator> visited = new ArrayList<>();
 
     public ExecutionGenerationVisitor(PlanTraversal planTraversal){
         super(planTraversal);
@@ -36,35 +37,39 @@ public class ExecutionGenerationVisitor extends Visitor {
      */
     @Override
     public void visit(Operator opt) {
-        // 比较所有Entity，找到cost最小的
-        if (!opt.isLoaded()){
+        if (!isVisited(opt)){
+            visited.add(opt);
+            // 比较所有Entity，找到cost最小的
+            if (!opt.isLoaded()){
+                try {
+                    opt.getPlatformOptConf();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            // 拿到所有的entities并遍历找到cost最小的
+            Operator.OperatorEntity bestOperatorEntity = Collections.min(opt.getEntities().values(), new Comparator<Operator.OperatorEntity>() {
+                @Override
+                public int compare(Operator.OperatorEntity o1, Operator.OperatorEntity o2) {
+                    return o1.getCost().compareTo(o2.getCost());
+                }
+            });
             try {
-                opt.getPlatformOptConf();
-            } catch (Exception e) {
+                this.logging(String.format("\n > Pick %s 's `%s[%f]` implement as best Operator\n", opt.getID(), bestOperatorEntity.getID(), bestOperatorEntity.getCost()));
+                // 为opt选择最佳的entity
+                opt.selectEntity(bestOperatorEntity.getID());
+
+            } catch (FileNotFoundException e) {
+                // 即使出了问题也不要来这找...这只是调用对象内部的ID，错也是别人往里传错了
                 e.printStackTrace();
             }
         }
-        // 拿到所有的entities并遍历找到cost最小的
-        Operator.OperatorEntity bestOperatorEntity = Collections.min(opt.getEntities().values(), new Comparator<Operator.OperatorEntity>() {
-            @Override
-            public int compare(Operator.OperatorEntity o1, Operator.OperatorEntity o2) {
-                return o1.getCost().compareTo(o2.getCost());
-            }
-        });
-        try {
-            this.logging(String.format("\n > Pick `%s[%f]` as best Operator\n", bestOperatorEntity.getID(), bestOperatorEntity.getCost()));
-            // 为opt选择最佳的entity
-            opt.selectEntity(bestOperatorEntity.getID());
-
-        } catch (FileNotFoundException e) {
-            // 即使出了问题也不要来这找...这只是调用对象内部的ID，错也是别人往里传错了
-            e.printStackTrace();
-        }
-
         if (planTraversal.hasNextOpt())
             planTraversal.nextOpt().acceptVisitor(this);
-        // TODO: 找到opt的下一跳并递归
-//        this.executionPlan.add(minOpt); // 应该不需要execution plan了吧
+    }
+
+    private boolean isVisited(Operator opt){
+        return this.visited.contains(opt);
     }
 
     private void logging(String s){
