@@ -1,128 +1,134 @@
 package api;
 
 import basic.Operators.*;
-import basic.Platform;
+import basic.PlanTraversal;
 import basic.Visitors.ExecuteVisitor;
 import basic.Visitors.ExecutionGenerationVisitor;
 import basic.Visitors.PrintVisitor;
-import platforms.Java.JavaPlatform;
-import platforms.Spark.SparkPlatform;
+import org.xml.sax.SAXException;
 
-
-import java.lang.reflect.InvocationTargetException;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
 
 public class PlanBuilder {
-    private LinkedList<Operator> pipeline; DAG not linear; Dataflow;
+    private LinkedList<Operator> pipeline;
+    private DataQuanta headDataQuanta = null;
 
-    private LinkedList<ExecutableOperator> executionPlan;
+    // 现在最简单粗暴的方法是将图存储在PlanBuilder中
+    private List<DataQuanta> dataQuantaList = new ArrayList<>();
+    private DataQuanta presentDataQuanta = null; // head永远是present的上一个节点
 
-    private List<Platform> providePlatform;
-
-    public PlanBuilder(){
-        pipeline = new LinkedList<>();
-        executionPlan = new LinkedList<>();
-        providePlatform = new ArrayList<>();
-        // 本应由用户指定需要用的platform，这里做了简化
-        providePlatform.add(new JavaPlatform());
-        providePlatform.add(new SparkPlatform());
-    }
-
+    private String context;
 
     /**
-     * 将API的map接口转为构建Plan时需要的Operator
-     * @param udf 实际应该是Function 而不是String，代表map中要执行的操作
-     * @param name 本次map操作的名字
-     * @return PlanBuilder，这样就可以用pipeline的形式使用API了
+     *
+     * @param context 临时充当 OperatorMapping文件的路径
+     * @throws IOException
+     * @throws SAXException
+     * @throws ParserConfigurationException
      */
-    public PlanBuilder map(Supplier udf, String name){
-        this.pipeline.add(new MapOperator(udf, name));
-        // 找所有的 mapXML Operator -> XML ->mapOperator
-        return this;
+    public PlanBuilder(String context ) throws IOException, SAXException, ParserConfigurationException {
+        pipeline = new LinkedList<>();
+        // executionPlan = new LinkedList<>();
+
+        this.context = context;
+        OperatorMapping.initMapping(context);
+
     }
 
-    public PlanBuilder sort(String name){
-        this.pipeline.add(new SortOperator(name));
-
-        return this;
+    public PlanBuilder() throws ParserConfigurationException, SAXException, IOException {
+        // TODO: 改一下默认文件路径的传输方式（用命令行传入）
+        //this(System.getProperty("user.dir")+"/resources/OperatorTemplates/OperatorMapping.xml");
+        this("resources/OperatorTemplates/OperatorMapping.xml");
     }
 
-    public PlanBuilder filter(Predicate predicate, String name){
-        this.pipeline.add(new FilterOperator(predicate, name));
-
-        return this;
+    public DataQuanta readDataFrom(String filename) throws Exception {
+        Operator sourceOpt = OperatorMapping.createOperator("source");
+        this.headDataQuanta = new DataQuanta(sourceOpt);
+        return this.headDataQuanta; // 不需要connectTo
     }
 
-    public PlanBuilder collect(){
-        this.pipeline.add(new CollectOperator("CollectOperator"));
-
-        return this;
+    public DataQuanta getHeadDataQuanta() {
+        return headDataQuanta;
     }
 
     /**
+     * 把 headOperator 交给各类Visitor
      * 1: Optimize the pipeline structure
      * 2: Mapping operator to Executable, Platform depended Operator
      * 3. Run
      */
     public void execute() throws InterruptedException {
         this.logging("===========【Stage 1】Get User Defined Plan ===========");
-        this.printPlan(this.pipeline);
+        this.printPlan();
         this.logging("   ");
 
-        // Optimize
-        long startTime = System.currentTimeMillis();
-        this.logging("===========【Stage 2】Optimizing Plan ===========");
-        // 算子融合调度
-        this.logging("Start operator fusion and re-organize...");
-        this.optimizePipeline();
-        Thread.sleep(1000);
-        this.logging(String.format("Optimize Plan took: %d ms", System.currentTimeMillis() - startTime));
-        this.printPlan(this.pipeline);
+        this.logging("===========【Stage 2】Choose best Operator implementation ===========");
+        this.optimizePlan();
+        this.printPlan();
         this.logging("   ");
 
-        // Mapping
-        startTime = System.currentTimeMillis();
-        this.logging("=========== 【Stage 3】 Mapping Plan to Execution Plan ===========");
-        this.traversePlan();
-        this.logging(String.format("Mapping Plan took: %d ms", System.currentTimeMillis() - startTime));
-        this.logging("   ");
-
-        this.logging("=========== 【Stage 4】Executing Current execution plan ===========");
+        this.logging("===========【Stage 3】execute plan ==========");
         this.executePlan();
 
-        this.logging("\ndone.");
+//        // Optimize
+//        long startTime = System.currentTimeMillis();
+//        this.logging("===========【Stage 2】Optimizing Plan ===========");
+//        // 算子融合调度
+//        this.logging("Start operator fusion and re-organize...");
+//        this.optimizePipeline();
+//        Thread.sleep(1000);
+//        this.logging(String.format("Optimize Plan took: %d ms", System.currentTimeMillis() - startTime));
+//        this.printPlan(this.pipeline);
+//        this.logging("   ");
+//
+//        // Mapping
+//        startTime = System.currentTimeMillis();
+//        this.logging("=========== 【Stage 3】 Mapping Plan to Execution Plan ===========");
+//        this.traversePlan();
+//        this.logging(String.format("Mapping Plan took: %d ms", System.currentTimeMillis() - startTime));
+//        this.logging("   ");
+//
+//        this.logging("=========== 【Stage 4】Executing Current execution plan ===========");
+//        this.executePlan();
+//
+//        this.logging("\ndone.");
     }
 
-    public void printPlan(LinkedList<? extends Visitable> plan){
+    public void printPlan(){
         this.logging("Current Plan:");
-        PrintVisitor printVisitor = new PrintVisitor();
-        for (Visitable v : plan){
-            v.acceptVisitor(printVisitor);
-        }
+        PlanTraversal planTraversal = new PlanTraversal(this.getHeadDataQuanta().getOperator(), 0);
+        PrintVisitor printVisitor = new PrintVisitor(planTraversal);
+        printVisitor.startVisit();
+//        for (Visitable v : plan){
+//            v.acceptVisitor(printVisitor);
+//        }
     }
 
-    private void traversePlan(){
-        ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor("java,spark");
-        for (Visitable opt : this.pipeline){
-            opt.acceptVisitor(executionGenerationVisitor);
-        }
-        this.executionPlan = executionGenerationVisitor.getExecutionPlan();
-        this.printPlan(this.executionPlan);
+    public void optimizePlan(){
+        PlanTraversal planTraversal = new PlanTraversal(this.getHeadDataQuanta().getOperator(), 0);
+        ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor(planTraversal);
+        executionGenerationVisitor.startVisit();
+        // this.getHeadDataQuanta().getOperator().acceptVisitor(executionGenerationVisitor);
+//        for (Operator operator : this.pipeline){
+//            operator.acceptVisitor(executionGenerationVisitor);
+//        }
     }
+
 
     private void executePlan(){
-        ExecuteVisitor executeVisitor = new ExecuteVisitor();
-        for (ExecutableOperator eopt : this.executionPlan){
-            eopt.acceptVisitor(executeVisitor);
-        }
+        PlanTraversal planTraversal = new PlanTraversal(this.getHeadDataQuanta().getOperator(), 0);
+        ExecuteVisitor executeVisitor = new ExecuteVisitor(planTraversal);
+        executeVisitor.startVisit();
+//        for (Operator opt : this.pipeline){
+//            opt.acceptVisitor(executeVisitor);
+//        }
     }
 
+    // TODO: 这switch就得改了 DAG里不知道1，2是哪个opt
     private LinkedList<Operator> optimizePipeline(){
         this.switchOperator(1, 2);
         return this.pipeline;

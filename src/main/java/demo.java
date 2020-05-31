@@ -1,30 +1,24 @@
+import api.DataQuanta;
 import api.PlanBuilder;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Objects;
 import java.util.function.Supplier;
 
 public class demo {
     public static void main(String[] args){
-        Supplier<String> mapUDF = () -> {
-            System.out.println("*****   Hello World   *****");
-            return "";
-        };
-
-
-        PlanBuilder planBuilder = new PlanBuilder();
-        planBuilder
-                .map(mapUDF, "MapOperator")
-                .sort("SortOperator")
-                .filter(Objects::nonNull, "FilterOperator")
-                .collect();
+        Supplier s = () -> null;
         try {
 
+            PlanBuilder planBuilder = new PlanBuilder();
+            DataQuanta nodeA = planBuilder.readDataFrom("data source file").sort();
+            DataQuanta nodeB = nodeA.filter();
+            DataQuanta nodeC = nodeA.map(s, "map");
+            DataQuanta nodeD = nodeB.sort();
+            nodeD.acceptIncoming(nodeC);
+            nodeD.collect();
             planBuilder.execute();
-        } catch (InterruptedException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }

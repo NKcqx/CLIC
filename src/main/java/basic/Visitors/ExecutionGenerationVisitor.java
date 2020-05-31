@@ -1,51 +1,35 @@
 package basic.Visitors;
 
-import basic.Operators.ExecutableOperator;
 import basic.Operators.Operator;
-import basic.Platform;
-import platforms.Java.JavaPlatform;
-import platforms.Spark.SparkPlatform;
+import basic.PlanTraversal;
+import org.xml.sax.SAXException;
 
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
- * 1. Opt. Mapping
+ * 1. 调出Opt的配置文件，从所有implement中选择最优的
  * 1. 管理Execution Plan的处理方式，如输出的格式、文件类型、文件路径等
  * 2. 管理Execution Opt.的输入输出
  *
  */
-public class ExecutionGenerationVisitor implements Visitor {
-    private List<Platform> supportedPlatforms = new ArrayList<>();
-    private LinkedList<ExecutableOperator> executionPlan = new LinkedList<>();
+public class ExecutionGenerationVisitor extends Visitor {
+    //private List<Platform> supportedPlatforms = new ArrayList<>();
+    // private LinkedList<ExecutableOperator> executionPlan = new LinkedList<>();
+    private List<Operator> visited = new ArrayList<>();
 
-    private static final Map<String, String> platformTable = new HashMap<String, String>() {
-        {
-            put("java", String.valueOf(JavaPlatform.class).substring(6));
-            put("spark", String.valueOf(SparkPlatform.class).substring(6));
-
-        }
-    };
-
-    public ExecutionGenerationVisitor(){
-        this("java,spark");
+    public ExecutionGenerationVisitor(PlanTraversal planTraversal){
+        super(planTraversal);
     }
 
-    public ExecutionGenerationVisitor(String pltfs) {
-        String[] platforms = pltfs.toLowerCase().split(",");
-        for (String pltf : platforms){
-            String className = platformTable.getOrDefault(pltf, null);
-            assert className != null && !className.equals("") : String.format("暂不支持平台: %s", pltf);
 
-            try {
-                Class javaOptCls = Class.forName(className);
-                Platform platform = (Platform) javaOptCls.getConstructor().newInstance();
-                this.supportedPlatforms.add(platform);
-            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 
     /**
      * Walk through Plan, Mapping each Opt to the best(least cost) Executable Opt
@@ -53,50 +37,42 @@ public class ExecutionGenerationVisitor implements Visitor {
      */
     @Override
     public void visit(Operator opt) {
-        List<ExecutableOperator> eopts = new ArrayList<>();
-        for (Platform platform : this.supportedPlatforms){
-            String className = platform.mappingOperator(opt.getID());
-            if (className == null)
-                ; // 平台并不支持该Opt.  继续从下一个平台中找
-            Class optCls = null; // 反射
-
+        if (!isVisited(opt)){
+            visited.add(opt);
+            // 比较所有Entity，找到cost最小的
+            if (!opt.isLoaded()){
+                try {
+                    opt.getPlatformOptConf();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            // 拿到所有的entities并遍历找到cost最小的
+            Operator.OperatorEntity bestOperatorEntity = Collections.min(opt.getEntities().values(), new Comparator<Operator.OperatorEntity>() {
+                @Override
+                public int compare(Operator.OperatorEntity o1, Operator.OperatorEntity o2) {
+                    return o1.getCost().compareTo(o2.getCost());
+                }
+            });
             try {
-                optCls = Class.forName(className);
-                // 确保平台mapping到了正确的Opt
-                assert optCls.equals(ExecutableOperator.class) : String.format("Java的Mapping未得到正确类型的返回值，需要 Executable, 得到 %s", optCls.toString());
-                // 使用newInstance创建Java的Operator
-                ExecutableOperator eopt = (ExecutableOperator) optCls.getConstructor(opt.getClass()).newInstance(opt);
-                eopts.add(eopt);
-            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException e) {
+                this.logging(String.format("\n > Pick %s 's `%s[%f]` implement as best Operator\n", opt.getID(), bestOperatorEntity.getID(), bestOperatorEntity.getCost()));
+                // 为opt选择最佳的entity
+                opt.selectEntity(bestOperatorEntity.getID());
+
+            } catch (FileNotFoundException e) {
+                // 即使出了问题也不要来这找...这只是调用对象内部的ID，错也是别人往里传错了
                 e.printStackTrace();
             }
         }
+        if (planTraversal.hasNextOpt())
+            planTraversal.nextOpt().acceptVisitor(this);
+    }
 
-        Double minCost = Double.POSITIVE_INFINITY;
-        ExecutableOperator minOpt = null;
-        this.logging(String.format("Current Operator `%s` is supported by: \n   ", opt.getID()));
-        for (ExecutableOperator eopt : eopts){
-            this.logging(String.format("%s[cost=%f], ", eopt.getClass().getSimpleName(), eopt.getCost()));
-            if (eopt.getCost() < minCost){
-                minCost = eopt.getCost();
-                minOpt = eopt;
-            }
-        }
-
-        this.logging(String.format("\n > Pick `%s[%f]` as best Operator\n", minOpt.getClass().getSimpleName(), minOpt.getCost()));
-        this.executionPlan.add(minOpt);
+    private boolean isVisited(Operator opt){
+        return this.visited.contains(opt);
     }
 
     private void logging(String s){
         System.out.print(s);
-    }
-
-    @Override
-    public void visit(ExecutableOperator opt) {
-        // do nothing
-    }
-
-    public LinkedList<ExecutableOperator> getExecutionPlan(){
-        return this.executionPlan;
     }
 }

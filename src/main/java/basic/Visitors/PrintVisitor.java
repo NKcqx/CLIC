@@ -1,24 +1,33 @@
 package basic.Visitors;
 
-import basic.Operators.ExecutableOperator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import basic.Operators.Operator;
+import basic.PlanTraversal;
 
-public class PrintVisitor implements Visitor {
+import java.util.ArrayList;
+import java.util.List;
+
+public class PrintVisitor extends Visitor {
     // private static final Logger logger = LoggerFactory.getLogger(PrintVisitor.class);
+
+    public PrintVisitor(PlanTraversal planTraversal){
+        super(planTraversal);
+    }
+    private List<Operator> visited = new ArrayList<>();
 
     @Override
     public void visit(Operator opt) {
-        this.logging(opt.toString());
+        if (!isVisited(opt)){
+            this.logging(opt.toString());
+            this.visited.add(opt);
+        }
+        if (planTraversal.hasNextOpt()){
+            planTraversal.nextOpt().acceptVisitor(this);
+        }
     }
 
-    @Override
-    public void visit(ExecutableOperator opt) {
-        this.logging(opt.toString());
+    private boolean isVisited(Operator opt){
+        return this.visited.contains(opt);
     }
-
 
     private void logging(String s){
         System.out.println(s);
