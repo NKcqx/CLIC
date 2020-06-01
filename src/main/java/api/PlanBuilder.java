@@ -74,28 +74,6 @@ public class PlanBuilder {
         this.logging("===========【Stage 3】execute plan ==========");
         this.executePlan();
 
-//        // Optimize
-//        long startTime = System.currentTimeMillis();
-//        this.logging("===========【Stage 2】Optimizing Plan ===========");
-//        // 算子融合调度
-//        this.logging("Start operator fusion and re-organize...");
-//        this.optimizePipeline();
-//        Thread.sleep(1000);
-//        this.logging(String.format("Optimize Plan took: %d ms", System.currentTimeMillis() - startTime));
-//        this.printPlan(this.pipeline);
-//        this.logging("   ");
-//
-//        // Mapping
-//        startTime = System.currentTimeMillis();
-//        this.logging("=========== 【Stage 3】 Mapping Plan to Execution Plan ===========");
-//        this.traversePlan();
-//        this.logging(String.format("Mapping Plan took: %d ms", System.currentTimeMillis() - startTime));
-//        this.logging("   ");
-//
-//        this.logging("=========== 【Stage 4】Executing Current execution plan ===========");
-//        this.executePlan();
-//
-//        this.logging("\ndone.");
     }
 
     public void printPlan(){

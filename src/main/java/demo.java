@@ -9,12 +9,17 @@ public class demo {
         try {
 
             PlanBuilder planBuilder = new PlanBuilder();
-            DataQuanta nodeA = planBuilder.readDataFrom("data source file").sort();
+            DataQuanta nodeA = planBuilder
+                    .readDataFrom("data source file")
+                    .sort();
+
             DataQuanta nodeB = nodeA.filter();
+
             DataQuanta nodeC = nodeA.map(s, "map");
-            DataQuanta nodeD = nodeB.sort();
+
+            DataQuanta nodeD = nodeB.collect();
             nodeD.acceptIncoming(nodeC);
-            nodeD.collect();
+
             planBuilder.execute();
         } catch (Exception e) {
             e.printStackTrace();

@@ -45,7 +45,7 @@ public class Operator implements Visitable {
 //        this.result_list = Arrays.asList(new String[10]);
 //        this.output_channel = Arrays.asList(new Channel[10]);
 //        this.input_channel = Arrays.asList(new Channel[10]);
-
+        // TODO: 也得有对应的input_list
         this.result_list = new ArrayList<>();
         this.output_channels = new ArrayList<>();
         this.input_channels = new ArrayList<>();
@@ -111,6 +111,7 @@ public class Operator implements Visitable {
             }
         }
     }
+
     /**
      * 根据不同平台的operator的xml路径，读取相应配置
      * @throws ParserConfigurationException
@@ -172,8 +173,6 @@ public class Operator implements Visitable {
 
     // TODO: 这里使用 inputChannel,  outputChannel
     // TODO: 同时！！ 把输出结果（可以暂时是一个能表示每个instance的string）放到outputChannel里
-
-
     public void evaluate(int input_channel_index){
 
         // String one_of_data = this.input_channels.get(input_channel_index).getData();
