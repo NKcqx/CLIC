@@ -1,23 +1,23 @@
 import api.DataQuanta;
 import api.PlanBuilder;
 
-import java.util.function.Supplier;
 
 public class demo {
     public static void main(String[] args){
-        Supplier s = () -> null;
         try {
 
             PlanBuilder planBuilder = new PlanBuilder();
             DataQuanta nodeA = planBuilder
                     .readDataFrom("data source file")
-                    .sort();
+                    .then("sort");
 
-            DataQuanta nodeB = nodeA.filter();
+            DataQuanta nodeB = nodeA.then("filter");
 
-            DataQuanta nodeC = nodeA.map(s, "map");
+            DataQuanta nodeC = nodeA.then("map");
 
-            DataQuanta nodeD = nodeB.collect();
+            // nodeD的第一个输入
+            DataQuanta nodeD = nodeB.then("collect");
+            // nodeD的第2个输入
             nodeD.acceptIncoming(nodeC);
 
             planBuilder.execute();

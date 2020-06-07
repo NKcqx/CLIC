@@ -11,15 +11,14 @@ import java.util.Map;
 
 /**
  * 单例类，实现API -> OperatorTemplate的映射，以供Operator找到对应的配置文件
- * TODO: 把它改装成工厂模式（前期先算了）
  */
-public class OperatorMapping {
-    private OperatorMapping instance = new OperatorMapping();
+public class OperatorFactory {
+    private OperatorFactory instance = new OperatorFactory();
     private static Map<String, String> mapping = new HashMap<>();
 
-    private OperatorMapping() {}
+    private OperatorFactory() {}
 
-    public OperatorMapping getInstance(){
+    public OperatorFactory getInstance(){
         if (mapping.isEmpty()){ // 防止没初始化（或配置文件为空）就拿到对象
             return null;
         }
@@ -41,14 +40,14 @@ public class OperatorMapping {
                 Element pair = (Element) pair_node;
                 String ability = pair.getElementsByTagName("ability").item(0).getTextContent();
                 String template = pair.getElementsByTagName("template").item(0).getTextContent();
-                OperatorMapping.mapping.put(ability, template);
+                OperatorFactory.mapping.put(ability, template);
             }
         }
     }
 
-    public static String getTemplate(String ability) throws Exception {
-        if (OperatorMapping.mapping.containsKey(ability)){
-            return OperatorMapping.mapping.getOrDefault(ability, null);
+    private static String getTemplate(String ability) throws Exception {
+        if (OperatorFactory.mapping.containsKey(ability)){
+            return OperatorFactory.mapping.getOrDefault(ability, null);
         }else{
             throw new Exception(String.format("找不到与`%s`对应的Template，请重新检查配置文件", ability));
         }
@@ -62,7 +61,7 @@ public class OperatorMapping {
      * @throws Exception
      */
     public static Operator createOperator(String ability) throws Exception {
-        String template_path = OperatorMapping.getTemplate(ability);
+        String template_path = OperatorFactory.getTemplate(ability);
 
         Operator operator = new Operator(template_path);
         // operator.loadConfiguration(template_path); // 这步交给Visitor来做

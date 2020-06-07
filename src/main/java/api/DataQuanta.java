@@ -1,7 +1,8 @@
 package api;
 
 import basic.Operators.Operator;
-import basic.Operators.OperatorMapping;
+import basic.Operators.OperatorFactory;
+import channel.Channel;
 
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -17,28 +18,28 @@ public class DataQuanta {
     }
 
     /**
-     * 将API的map接口转为构建Plan时需要的Operator
-     * @param udf 实际应该是Function 而不是String，代表map中要执行的操作
-     * @param name 本次map操作的名字
-     * @return PlanBuilder，这样就可以用pipeline的形式使用API了
+     * 指定下一跳运算符的功能，并自动通过Channel连接
+     * @param ability 下一跳Opt需要有的功能
+     * @return 封装了下一跳的DataQuanta
+     * @throws Exception XML解析错误、找不到指定配置文件
      */
-    public DataQuanta map(Supplier udf, String name) throws Exception {
-        // TODO: UDF怎么传进去 since 系统里没有MapOperator的概念了，但是不同Operator的参数不同，必须得区分
-        return this.createDataQuanta("map");
+    public DataQuanta then(String ability) throws Exception{
+        if (ability.equals("empty")){
+            return null; // TODO
+        }else {
+            Operator nextOpt = this.createOperator(ability);
+            DataQuanta nextDataQuanta = new DataQuanta(nextOpt);
+            this.acceptOutgoing(nextDataQuanta);
+            return nextDataQuanta;
+        }
+
     }
 
-    public DataQuanta sort() throws Exception {
-        return this.createDataQuanta("sort");
+    public DataQuanta setCalculator(String ability) throws Exception {
+        Operator opt = this.createOperator(ability);
+        this.operator = opt;
+        return this;
     }
-
-    public DataQuanta filter() throws Exception {
-        return this.createDataQuanta("filter");
-    }
-
-    public DataQuanta collect() throws Exception {
-        return this.createDataQuanta("collect");
-    }
-
 
     /**
      * 给this的opt添加一个新的输入opt
@@ -46,18 +47,46 @@ public class DataQuanta {
      * @return input_channel列表的index，代表输入opt在this里放到哪里了
      */
     public int acceptIncoming(DataQuanta incoming){
-        this.operator.connectFrom(incoming.getOperator(), incoming.getOperator().getNextOutputIndex());
-        return this.operator.getNextInputIndex();
+        Channel channel = new Channel(
+                incoming.getOperator(),
+                incoming.getOperator().getNextOutputIndex(),
+                this.getOperator(),
+                this.getOperator().getNextInputIndex()
+        );
+        // 双向绑定
+        incoming.operator.connectTo(channel);
+        int next_idx = this.operator.connectFrom(channel); // 返回下一个input_idx，不知道能干什么用
+        return next_idx;
+    }
+
+    public int acceptOutgoing(DataQuanta outgoing){
+        Channel channel = new Channel(
+                this.getOperator(),
+                this.getOperator().getNextOutputIndex(),
+                outgoing.getOperator(),
+                outgoing.getOperator().getNextInputIndex()
+        );
+        // 双向绑定
+        outgoing.operator.connectFrom(channel);
+        int next_idx = this.operator.connectTo(channel); // 返回下一个input_idx，不知道能干什么用
+        return next_idx;
     }
 
     public Operator getOperator() {
         return operator;
     }
 
-    private DataQuanta createDataQuanta(String operator_ability) throws Exception {
-        Operator opt = OperatorMapping.createOperator(operator_ability);
-        this.operator.connectTo(opt, opt.getNextInputIndex());
-        return new DataQuanta(opt);
+    /**
+     * 功能单一，只是为了确保只有这一个地方提到了OperatorMapping的事
+     * @param operator_ability opt应该具有的功能
+     * @return 包含该opt的新的DataQuanta
+     * @throws Exception
+     */
+    private Operator createOperator(String operator_ability) throws Exception {
+        // 先根据功能创建对应的opt
+        Operator opt = OperatorFactory.createOperator(operator_ability);
+        // 封装为DataQuanta
+        return opt;
     }
 
 }

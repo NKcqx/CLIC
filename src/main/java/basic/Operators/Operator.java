@@ -19,7 +19,6 @@ public class Operator implements Visitable {
     private OperatorKind kind;
     private Map<String, OperatorEntity> entities = new HashMap<>();
     private OperatorEntity selected_entity = null;
-    private String execute_command = null;
 
     private  Map<String, String> plt_mapping = new HashMap<>();
 
@@ -28,6 +27,7 @@ public class Operator implements Visitable {
     private List<Channel> output_channels; // 这里Channel的index应该没什么用
     private List<String> result_list; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
     private List<Channel> input_channels;
+    private List<String> input_list;
 
     public enum OperatorKind{
         CALCULATOR, SUPPLIER, CONSUMER, TRANSFORMER, SHUFFLER
@@ -45,9 +45,9 @@ public class Operator implements Visitable {
 //        this.result_list = Arrays.asList(new String[10]);
 //        this.output_channel = Arrays.asList(new Channel[10]);
 //        this.input_channel = Arrays.asList(new Channel[10]);
-        // TODO: 也得有对应的input_list
         this.result_list = new ArrayList<>();
         this.output_channels = new ArrayList<>();
+        this.input_list = new ArrayList<>();
         this.input_channels = new ArrayList<>();
 
         // 1. 先载入Opt的基本信息，如ID、name、kind
@@ -264,14 +264,9 @@ public class Operator implements Visitable {
      * @param input_index 下一跳的input_index
      * @return 本次Channel的index
      */
-    public int connectTo(Operator outgoing, int input_index){
+    public int connectTo(Channel outgoing_channel){
         // 拿到下一个放数据的槽的index
-        int output_index = this.output_channels.size();
-        // 创建边 TODO: 这一步不知道在哪做合适
-        Channel channel = new Channel(this, output_index, outgoing, input_index);
-        // 双向绑定
-        this.output_channels.add(channel);
-        outgoing.input_channels.add(channel);
+        this.output_channels.add(outgoing_channel);
         return this.output_channels.size();
     }
 
@@ -281,14 +276,9 @@ public class Operator implements Visitable {
      * @param output_index 上一跳的output_index
      * @return 本次Channel的index
      */
-    public int connectFrom(Operator incoming, int output_index){
+    public int connectFrom(Channel incoming_channel){
         // 拿到下一个放数据的槽的index
-        int input_index = this.input_channels.size();
-        // 创建边 TODO: 这一步不知道在哪做合适
-        Channel channel = new Channel(incoming, output_index, this, input_index);
-        // 双向绑定
-        this.input_channels.add(channel);
-        incoming.output_channels.add(channel);
+        this.input_channels.add(incoming_channel);
         return this.input_channels.size();
     }
 
@@ -307,14 +297,6 @@ public class Operator implements Visitable {
     public String getName(){return this.name;}
 
     public String getID(){return this.ID;}
-
-    public String getExecute_command() {
-        return execute_command;
-    }
-
-    public void setExecute_command(String execute_command) {
-        this.execute_command = execute_command;
-    }
 
     public Map<String, OperatorEntity> getEntities() {
         return entities;
