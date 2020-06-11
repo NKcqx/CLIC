@@ -9,13 +9,11 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class PlanBuilder {
     private LinkedList<Operator> pipeline;
-    private DataQuanta headDataQuanta = null;
+    private DataQuanta headDataQuanta = null; // 其实可以有多个head
 
     // 现在最简单粗暴的方法是将图存储在PlanBuilder中
     private List<DataQuanta> dataQuantaList = new ArrayList<>();
@@ -35,7 +33,7 @@ public class PlanBuilder {
         // executionPlan = new LinkedList<>();
 
         this.context = context;
-        OperatorMapping.initMapping(context);
+        OperatorFactory.initMapping(context);
 
     }
 
@@ -45,9 +43,9 @@ public class PlanBuilder {
         this("resources/OperatorTemplates/OperatorMapping.xml");
     }
 
-    public DataQuanta readDataFrom(String filename) throws Exception {
-        Operator sourceOpt = OperatorMapping.createOperator("source");
-        this.headDataQuanta = new DataQuanta(sourceOpt);
+    public DataQuanta readDataFrom(Map<String, String> params) throws Exception {
+        DataQuanta dataQuanta = DataQuanta.createInstance("source", params);
+        this.headDataQuanta = dataQuanta;
         return this.headDataQuanta; // 不需要connectTo
     }
 

@@ -14,15 +14,20 @@ public class ExecuteVisitor extends Visitor {
 
     @Override
     public void visit(Operator opt) {
+        boolean successfully_execute = false;
         if (!isVisited(opt)){
-            // TODO: 得拿到顺着哪个Channel下来的？
-            opt.evaluate(0);
-            this.visited.add(opt);
+            successfully_execute = opt.evaluate();
+            if (successfully_execute)
+                this.visited.add(opt);
         }
-        if (planTraversal.hasNextOpt())
-            planTraversal.nextOpt().acceptVisitor(this);
+        if (planTraversal.hasNextOpt()){ //TODO: 这有BUG，对未成功执行的opt没有起到限制不做addSuccessor的作用
+            Operator nextOpt = planTraversal.nextOpt();
+            planTraversal.addSuccessor(nextOpt);
+            nextOpt.acceptVisitor(this);
+        }
 
     }
+
     private boolean isVisited(Operator opt){
         return this.visited.contains(opt);
     }

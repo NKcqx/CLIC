@@ -15,7 +15,11 @@ public abstract class Visitor {
     public abstract void visit(Operator opt);
 
     public void startVisit() {
-        if (planTraversal.hasNextOpt())
-            planTraversal.nextOpt().acceptVisitor(this);
+        if (planTraversal.hasNextOpt()){
+            Operator opt = planTraversal.nextOpt();
+            opt.acceptVisitor(this);
+        }
+
     }
+
 }

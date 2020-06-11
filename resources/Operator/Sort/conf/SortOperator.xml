@@ -11,4 +11,10 @@
         </platform>
     </platforms>
 
+    <parameters>
+        <parameter kind="input" name="data" data_type="string"> </parameter>
+        <parameter kind="input" name="is_reverse" data_type="boolean"> </parameter>
+        <parameter kind="output" name="sorted_value" data_type="string"> </parameter>
+        <parameter kind="output" name="sorted_index" data_type="int"> </parameter>
+    </parameters>
 </Operator>

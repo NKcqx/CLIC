@@ -13,13 +13,11 @@ import java.util.Queue;
 public class PlanTraversal {
     private Operator root;
 
-    //private final int traverse_type; // 0: BFS; 1: DFS TODO: 以后再支持DFS吧..
     //private Queue<Operator> bfs_queue_downstream = new LinkedList<>();
 
     private final int traverse_type;
     // private Queue<Operator> bfs_queue_downstream = new PriorityQueue<>();
     private Queue<Operator> bfs_queue_downstream = new LinkedList<>();
-    //TODO: BFS 的时候会有opt被遍历多次，需要加入一个flag，该flag需要知道是否拿齐了所有的输入数据
 
     public PlanTraversal(Operator root, int traverse_type){
         this.traverse_type = traverse_type;
@@ -28,26 +26,28 @@ public class PlanTraversal {
         // bfs_queue_upstream.add(root);
     }
 
-    /**
-     * 将算子加进队列
-     * @param root 算子
-     */
-    public void addOperator(Operator root) {
-        this.root = root;
-        bfs_queue_downstream.add(root);
-    }
-
-    // TODO: 这使用callback的形式传入Visitor 而不是Visitor里拿它去遍历（把遍历和执行逻辑完全分开，现在二者还缺个Container）
     public Operator nextOpt(){
         if(!this.bfs_queue_downstream.isEmpty()){
+            // 先拿到队列头部元素 用于返回
             Operator currentOpt = bfs_queue_downstream.poll();
-            for (Channel channel:currentOpt.getOutput_channel()){
+            // 是单纯的拿到opt还是需要将子节点加入队列
+                // 再 "顺便" 将子节点加入队列
+            for (Channel channel:currentOpt.getOutputChannel()){
                 this.bfs_queue_downstream.add(channel.getTargetOperator());
             }
             // this.bfs_queue_downstream.addAll(currentOpt.getOutgoing_opt());
             return currentOpt;
         }
         return null;
+    }
+
+    public int addSuccessor(Operator operator){
+        int num_successor = 0;
+        for (Channel channel : operator.getOutputChannel()){
+            this.bfs_queue_downstream.add(channel.getTargetOperator());
+            num_successor++;
+        }
+        return num_successor;
     }
 
     public boolean hasNextOpt(){

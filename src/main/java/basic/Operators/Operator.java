@@ -1,6 +1,7 @@
 package basic.Operators;
 
 
+import basic.Param;
 import basic.Visitors.Visitor;
 
 import java.util.*;
@@ -14,6 +15,7 @@ import java.io.*;
 
 public class Operator implements Visitable {
     private Document config = null;
+    private String config_file_path = null;
     private String ID;
     private String name;
     private OperatorKind kind;
@@ -23,11 +25,12 @@ public class Operator implements Visitable {
     private  Map<String, String> plt_mapping = new HashMap<>();
 
     private String the_data; // 临时的，代表当前Opt的计算结果，想办法赋予个unique的值
+    private List<Channel> input_channels;
+    private Map<String, Param> input_data_list;
     // 记录下一跳Opt.
     private List<Channel> output_channels; // 这里Channel的index应该没什么用
-    private List<String> result_list; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
-    private List<Channel> input_channels;
-    private List<String> input_list;
+    private Map<String, Param> output_data_list; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
+
 
     public enum OperatorKind{
         CALCULATOR, SUPPLIER, CONSUMER, TRANSFORMER, SHUFFLER
@@ -35,6 +38,7 @@ public class Operator implements Visitable {
 
     public Operator(String config_file_path) throws IOException, SAXException, ParserConfigurationException {
         //暂时使用相对路径
+        this.config_file_path = config_file_path;
         String full_config_file_path = System.getProperty("user.dir")+config_file_path;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
@@ -45,21 +49,23 @@ public class Operator implements Visitable {
 //        this.result_list = Arrays.asList(new String[10]);
 //        this.output_channel = Arrays.asList(new Channel[10]);
 //        this.input_channel = Arrays.asList(new Channel[10]);
-        this.result_list = new ArrayList<>();
+        this.input_data_list = new HashMap<String, Param>();
+        this.output_data_list = new HashMap<String, Param>();
         this.output_channels = new ArrayList<>();
-        this.input_list = new ArrayList<>();
         this.input_channels = new ArrayList<>();
 
         // 1. 先载入Opt的基本信息，如ID、name、kind
         this.loadBasicInfo();
-        // 2. 再找到opt所有平台实现的配置文件的路径
+        // 2. 加载参数列表
+        this.loadParams();
+        // 3. 再找到opt所有平台实现的配置文件的路径
         this.loadOperatorConfs();
-        // 3. 加载每个平台配置文件的信息
+        // 4. 加载每个平台配置文件的信息
         this.getPlatformOptConf();
     }
 
     /**
-     * 装载基本状态，如ID、Name、各类Entity，装载后的Opt.仍是 `抽象`的
+     * 装载基本状态，如ID、Name、params, 各类Entity，装载后的Opt.仍是 `抽象`的
      */
     private void loadBasicInfo(){
         Element root = config.getDocumentElement();
@@ -85,6 +91,33 @@ public class Operator implements Visitable {
                 break;
             default:
                 this.kind = OperatorKind.CALCULATOR;
+        }
+
+    }
+
+    /**
+     * 加载输入输出参数列表
+     */
+    private void loadParams(){
+        // 加载参数列表
+        Element root = this.config.getDocumentElement();
+        Node params_root_node = root.getElementsByTagName("parameters").item(0);
+        if (params_root_node.getNodeType() == Node.ELEMENT_NODE){
+            Element params_root_ele = (Element) params_root_node;
+            NodeList params = params_root_ele.getElementsByTagName("parameter");
+            for (int i=0;i<params.getLength();i++){
+                Element param_ele =(Element) params.item(i);
+                String kind = param_ele.getAttribute("kind");
+                String name = param_ele.getAttribute("name");
+                String data_type = param_ele.getAttribute("data_type");
+                Param param = new Param(name, data_type);
+                if (kind.equals("input")){
+                    // 输入参数
+                    this.input_data_list.put(name, param);
+                }else{
+                    this.output_data_list.put(name, param);
+                }
+            }
         }
     }
 
@@ -171,52 +204,108 @@ public class Operator implements Visitable {
         this.selectEntity(entity_id);
     }
 
-    // TODO: 这里使用 inputChannel,  outputChannel
-    // TODO: 同时！！ 把输出结果（可以暂时是一个能表示每个instance的string）放到outputChannel里
-    public void evaluate(int input_channel_index){
+    public boolean evaluate(){
+        // 1. 准备数据
+        tempPrepareData();
 
-        // String one_of_data = this.input_channels.get(input_channel_index).getData();
-        // TODO: 这不对，有多个输入时，每次走到这个节点都会拿一次所有数据！！应该是没拿到所有数据的时候就等待！
-//        List<String> datas = new ArrayList<>();
-//        for (Channel input_channel : this.input_channels){
-//            datas.add(input_channel.getData());
-//        }
-        if (this.kind == OperatorKind.SUPPLIER){
-            // Supplier 无需输入数据
-            this.logging("input data: {SUPPLIER doesn't need input data.}");
-        }else{
-            // 拿到输入数据
-            Channel inputChannel = this.input_channels.get(input_channel_index);
-            String data = inputChannel.getData();
-
-            this.logging("input data: {" + data+"}");
+        // 2. 检查是否获得了全部输入数据，是：继续执行； 否：return 特殊值
+        for (Map.Entry entry : this.input_data_list.entrySet()){
+            Param param = (Param) entry.getValue();
+            if (!param.hasValue()){
+                return false;
+            }
         }
-        // 做计算
-        this.logging("evaluate: {" + this.getID()+"}");
-        // 把结果放到所有的槽里
-        for (int i=0;i<output_channels.size();i++){
-            this.result_list.add(this.the_data);
+        // 已拿到所有输入数据, 开始"计算"
+        this.tempDoEvaluate();
+        return true;
+    }
+
+    /**
+     * 准备输入数据，实际上这个很复杂，设计各类协议的各类参数，是需要在Opt的配置文件里指定的
+     */
+    public void tempPrepareData(){
+        for (Map.Entry entry : this.input_data_list.entrySet()){
+            String key = (String) entry.getKey();
+            this.setInputData(key, key + "'s temp value");
         }
-
-        // 然后把所有输出 自己按顺序放到对应的result_list里
-//        this.logging(String.format("evaluate: \n inputs: %s, outputs:%s",
-//                this.inputChannel.getAllDatas().toString(),
-//                this.outputChannel.getAllDatas().toString()));
     }
 
-    public String getData(int index){
-        // 最前面注释里说过，channel的index和result_list的index是隐性同步的, TODO: 做成pair？
-        return this.result_list.get(index);
+    public void tempDoEvaluate(){
+        this.logging(this.getID() + " evaluate: {\n   inputs: ");
+        for (String key:this.input_data_list.keySet()){
+            this.logging("      "+key);
+        }
+        this.logging("   outputs:");
+        for (String key:this.output_data_list.keySet()){
+            this.logging("      "+key);
+        }
+        this.logging("}");
     }
 
-    public List<String> getAllData(){
-        return this.result_list;
+    /**
+     * 根据key获得该Opt的输出数据，输出列表里的值是文件路径在加载opt的时候就有了
+     * @param key
+     * @return
+     */
+    public String getOutputData(String key){
+        Param output_data = this.output_data_list.get(key);
+        return output_data.getData();
     }
 
-    private void resizeResultList(int new_size){
-        List<String> new_array = Arrays.asList(new String[new_size]);
-        new_array.addAll(this.result_list);
-        this.result_list = new_array;
+    public List<String> getOutputData(List<String> keys){
+        List<String> output_sublist = new ArrayList<>();
+        for (String key:keys){
+            output_sublist.add(this.output_data_list.get(key).getData());
+        }
+        return output_sublist;
+    }
+
+    public List<String> getAllOutputData(){
+        List<String> output_list = new ArrayList<>();
+        for (Map.Entry entry : this.output_data_list.entrySet()){
+            Param param = (Param) entry.getValue();
+            output_list.add(param.getData());
+        }
+        return output_list;
+    }
+
+    public Map<String, String> getAllKVOutputData(){
+        Map<String, String> output_list = new HashMap<>();
+        for (Map.Entry entry : this.output_data_list.entrySet()){
+            Param param = (Param) entry.getValue();
+            output_list.put((String)entry.getKey(), param.getData());
+        }
+        return output_list;
+    }
+
+    public Set<String> getInputKeys(){
+        return this.input_data_list.keySet();
+    }
+
+    public Set<String> getOutputKeys(){
+        return this.output_data_list.keySet();
+    }
+
+    public void setData(String key, String value){
+        if(this.input_data_list.containsKey(key)){
+            this.setInputData(key, value);
+        }else if(this.output_data_list.containsKey(key)){
+            this.setOutputData(key, value);
+        }
+        else{
+            throw new NoSuchElementException(String.format("未在配置文件%s中找到指定的参数名：%s", this.config_file_path, key));
+        }
+    }
+
+    private void setOutputData(String key, String value){
+        this.output_data_list.get(key).setValue(value);
+
+    }
+
+    private void setInputData(String key, String value){
+        // TODO：value的type要和Param里声明的type做类型检查
+        this.input_data_list.get(key).setValue(value);
+
     }
 
 //    TODO: 下面的execute比较重要，后期再完善,现在先拿evaluate代替
@@ -250,18 +339,17 @@ public class Operator implements Visitable {
 //    }
 
 
-    public List<Channel> getOutput_channel() {
+    public List<Channel> getOutputChannel() {
         return output_channels;
     }
 
-    public List<Channel> getInput_channel() {
+    public List<Channel> getInputChannel() {
         return input_channels;
     }
 
     /**
-     * 即 outgoing_opt的setter，但多做了一步双向注册（下一跳opt也要把this注册为它的上一跳）
-     * @param outgoing 下一跳opt
-     * @param input_index 下一跳的input_index
+     * 即 outgoing_opt的setter
+     * @param outgoing_channel 和下一跳相连的边
      * @return 本次Channel的index
      */
     public int connectTo(Channel outgoing_channel){
@@ -270,10 +358,10 @@ public class Operator implements Visitable {
         return this.output_channels.size();
     }
 
+
     /**
      * 同connectTO
-     * @param incoming 上一跳opt
-     * @param output_index 上一跳的output_index
+     * @param incoming_channel 和上一跳相连的边(channel)
      * @return 本次Channel的index
      */
     public int connectFrom(Channel incoming_channel){
@@ -283,7 +371,7 @@ public class Operator implements Visitable {
     }
 
     public boolean isLoaded(){
-        return !(this.config == null); // 用这个判断可能不太好，也许可以试试判断有没有configFIle
+        return !(this.config == null); // 用这个判断可能不太好，也许可以试试判断有没有configFile
     }
 
     public int getNextOutputIndex(){
