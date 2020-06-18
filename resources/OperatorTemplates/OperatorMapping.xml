@@ -21,5 +21,13 @@
         <ability>collect</ability>
         <template>/resources/Operator/Collect/conf/CollectOperator.xml</template>
     </pair>
+    <pair>
+        <ability>project</ability>
+        <template>/resources/Operator/Project/conf/ProjectOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>join</ability>
+        <template>/resources/Operator/Join/conf/JoinOperator.xml</template>
+    </pair>
 
 </mappings>

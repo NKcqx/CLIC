@@ -36,6 +36,21 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>2.7</version>
         </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>compile</scope>
+        </dependency>
+
+
+        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-sql_2.12</artifactId>
+            <version>2.4.6</version>
+        </dependency>
+
     </dependencies>
 
 

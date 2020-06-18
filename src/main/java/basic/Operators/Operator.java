@@ -347,6 +347,9 @@ public class Operator implements Visitable {
         return input_channels;
     }
 
+    public Map<String,Param> getInput_data_list(){return this.input_data_list;}
+    public Map<String,Param> getOutput_data_list(){return this.output_data_list;}
+
     /**
      * 即 outgoing_opt的setter
      * @param outgoing_channel 和下一跳相连的边
