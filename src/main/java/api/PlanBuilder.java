@@ -1,10 +1,13 @@
 package api;
 
 import basic.Operators.*;
-import basic.PlanTraversal;
 import basic.Visitors.ExecuteVisitor;
 import basic.Visitors.ExecutionGenerationVisitor;
 import basic.Visitors.PrintVisitor;
+import basic.traversal.AbstractTraversal;
+import basic.traversal.BfsTraversal;
+import basic.traversal.DfsTraversal;
+import basic.traversal.TopTraversal;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -76,7 +79,7 @@ public class PlanBuilder {
 
     public void printPlan(){
         this.logging("Current Plan:");
-        PlanTraversal planTraversal = new PlanTraversal(this.getHeadDataQuanta().getOperator(), 0);
+        AbstractTraversal planTraversal = new TopTraversal(this.getHeadDataQuanta().getOperator());
         PrintVisitor printVisitor = new PrintVisitor(planTraversal);
         printVisitor.startVisit();
 //        for (Visitable v : plan){
@@ -85,7 +88,7 @@ public class PlanBuilder {
     }
 
     public void optimizePlan(){
-        PlanTraversal planTraversal = new PlanTraversal(this.getHeadDataQuanta().getOperator(), 0);
+        AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
         ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor(planTraversal);
         executionGenerationVisitor.startVisit();
         // this.getHeadDataQuanta().getOperator().acceptVisitor(executionGenerationVisitor);
@@ -96,7 +99,7 @@ public class PlanBuilder {
 
 
     private void executePlan(){
-        PlanTraversal planTraversal = new PlanTraversal(this.getHeadDataQuanta().getOperator(), 0);
+        AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
         ExecuteVisitor executeVisitor = new ExecuteVisitor(planTraversal);
         executeVisitor.startVisit();
 //        for (Operator opt : this.pipeline){

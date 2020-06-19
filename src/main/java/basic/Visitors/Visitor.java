@@ -1,14 +1,15 @@
 package basic.Visitors;
 
 import basic.Operators.Operator;
-import basic.PlanTraversal;
+
+import basic.traversal.AbstractTraversal;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public abstract class Visitor {
-    protected PlanTraversal planTraversal;
-    public Visitor(PlanTraversal planTraversal){
+    protected AbstractTraversal planTraversal;
+    public Visitor(AbstractTraversal planTraversal){
         this.planTraversal = planTraversal;
     }
 
