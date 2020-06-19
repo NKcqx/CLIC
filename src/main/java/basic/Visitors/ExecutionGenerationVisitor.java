@@ -1,7 +1,7 @@
 package basic.Visitors;
 
 import basic.Operators.Operator;
-import basic.PlanTraversal;
+import basic.traversal.AbstractTraversal;
 import org.xml.sax.SAXException;
 
 
@@ -25,7 +25,7 @@ public class ExecutionGenerationVisitor extends Visitor {
     // private LinkedList<ExecutableOperator> executionPlan = new LinkedList<>();
     private List<Operator> visited = new ArrayList<>();
 
-    public ExecutionGenerationVisitor(PlanTraversal planTraversal){
+    public ExecutionGenerationVisitor(AbstractTraversal planTraversal){
         super(planTraversal);
     }
 

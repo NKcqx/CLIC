@@ -1,7 +1,8 @@
 package basic.Visitors;
 
 import basic.Operators.Operator;
-import basic.PlanTraversal;
+import basic.traversal.AbstractTraversal;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public class PrintVisitor extends Visitor {
     // private static final Logger logger = LoggerFactory.getLogger(PrintVisitor.class);
 
-    public PrintVisitor(PlanTraversal planTraversal){
+    public PrintVisitor(AbstractTraversal planTraversal){
         super(planTraversal);
     }
     private List<Operator> visited = new ArrayList<>();
@@ -20,6 +21,7 @@ public class PrintVisitor extends Visitor {
             this.logging(opt.toString());
             this.visited.add(opt);
         }
+
         if (planTraversal.hasNextOpt()){
             planTraversal.nextOpt().acceptVisitor(this);
         }

@@ -1,13 +1,13 @@
 package basic.Visitors;
 
 import basic.Operators.Operator;
-import basic.PlanTraversal;
+import basic.traversal.AbstractTraversal;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExecuteVisitor extends Visitor {
-    public ExecuteVisitor(PlanTraversal planTraversal){
+    public ExecuteVisitor(AbstractTraversal planTraversal){
         super(planTraversal);
     }
     private List<Operator> visited = new ArrayList<>();

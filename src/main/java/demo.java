@@ -33,6 +33,11 @@ public class demo {
             // 链接节点，即构建DAG
             source_node.outgoing(sort_node, null);
 
+            //test
+            source_node.outgoing(collect_node,null);
+            //test
+            source_node.outgoing(filter_node,null);
+
             sort_node.outgoing(map_node, new HashMap<String, String>(){{
                 put("sorted_value", "data");
             }});
@@ -40,13 +45,13 @@ public class demo {
                 put("sorted_value", "data");
             }});
 
-            collect_node.incoming(map_node, new HashMap<String, String>(){{
+          /*  collect_node.incoming(map_node, new HashMap<String, String>(){{
                 put("result", "data");
             }});
             collect_node.incoming(filter_node, new HashMap<String, String>(){{
                 put("result", "data");
-            }});
-
+            }});*/
+            filter_node.outgoing(map_node,null);
             planBuilder.execute();
         } catch (Exception e) {
             e.printStackTrace();
