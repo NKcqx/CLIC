@@ -1,0 +1,162 @@
+[
+  {
+    "id": "0",
+    "name": "SourceOperator",
+    "parameters": {
+      //参数有kv格式表示
+      "data_path": "customer.parquet"
+    },
+    "incoming": [
+      //datasource 节点的上游节点为空
+    ],
+    "outgoing": [
+      //outgoing 是一个json数组，也就是说一个节点计算结果可以被多个下游节点复用
+      {
+        "id": "2",
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ]
+  },
+  {
+    "id": "1",
+    "name": "SourceOperator",
+    "parameters": {
+      "data_path": "orders.parquet"
+    },
+    "incoming": [],
+    "outgoing": [
+      {
+        "id": "2",
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ]
+  },
+  {
+    "id": "2",
+    "name": "JoinOperator",
+    "parameters": {
+      "predicate": "$c_custkey==$o_custkey"
+    },
+    //    "incoming": {
+    //        "leftChild": "0",
+    //        "rightChild": "1"
+    //      //... ，k表示channel, v 表示id
+    //    },
+    "incoming": [
+      {
+        "id": "0",
+        /**
+     * 给this的opt添加一个新的上一跳opt
+     * @param incoming 上一跳opt
+     * @param params_pair 指定和上一跳Opt的输出的哪个数据的key链接，格式为 <incoming.output_key, this.input_key>；为null时默认拿到其所有的输出
+     * @return 当前已链接的incoming channel的数量，即代表有多少个上一跳了
+     */
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      },
+      {
+        "id": "1",
+        /**
+     * 给this的opt添加新的输出opt
+     * @param outgoing 下一跳opt
+     * @param params_pair 指定和下一跳Opt所需输入的哪个数据的key链接，格式为 <this.output_key, outgoing.input_key>；为null时默认传出所有数据
+     * @return 当前已链接的outgoing channel的数量，即代表有多少个下一跳了
+     */
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ],
+    "outgoing": [
+      {
+        "id": "3",
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ]
+  },
+  {
+    "id": "3",
+    "name": "FilterOperator",
+    "parameters": {
+      "predicate": "o_totalprice > 100.0"
+    },
+    "incoming": [
+      {
+        "id": "2",
+        /**
+     * 给this的opt添加一个新的上一跳opt
+     * @param incoming 上一跳opt
+     * @param params_pair 指定和上一跳Opt的输出的哪个数据的key链接，格式为 <incoming.output_key, this.input_key>；为null时默认拿到其所有的输出
+     * @return 当前已链接的incoming channel的数量，即代表有多少个上一跳了
+     */
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ],
+    "outgoing": [
+      {
+        "id": "4",
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ]
+  },
+  {
+    "id": "4",
+    "name": "ProjectOperator",
+    "parameters": {
+      "predicate": "o_totalprice"
+    },
+    "incoming": [
+      {
+        "id": "3",
+        /**
+     * 给this的opt添加一个新的上一跳opt
+     * @param incoming 上一跳opt
+     * @param params_pair 指定和上一跳Opt的输出的哪个数据的key链接，格式为 <incoming.output_key, this.input_key>；为null时默认拿到其所有的输出
+     * @return 当前已链接的incoming channel的数量，即代表有多少个上一跳了
+     */
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ],
+    "outgoing": [
+      {
+        "id": "5",
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ]
+  },
+  {
+    "id": "5",
+    "name": "CollectOpserator",
+    "parameters": {},
+    "incoming":[
+      {
+        "id": "4",
+        /**
+     * 给this的opt添加一个新的上一跳opt
+     * @param incoming 上一跳opt
+     * @param params_pair 指定和上一跳Opt的输出的哪个数据的key链接，格式为 <incoming.output_key, this.input_key>；为null时默认拿到其所有的输出
+     * @return 当前已链接的incoming channel的数量，即代表有多少个上一跳了
+     */
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ],
+    "outgoing": []
+  }
+]

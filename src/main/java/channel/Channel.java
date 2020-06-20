@@ -49,5 +49,6 @@ public class Channel {
     public Operator getTargetOperator(){
         return this.target_operator;
     }
+    public Operator getSourceOperator(){return this.source_operator;}
 
 }

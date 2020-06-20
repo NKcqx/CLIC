@@ -30,3 +30,62 @@ IRDemo底层支持的各种平台，以SparkPlatform为例，主要包括：
 * Operators：内部是Spark支持的各种运算符的实现
 * SparkPlatform：继承自basic中提供的Platform，提供抽象Operator到Spark Operator的映射接口
 
+
+## Spark Backend
+本项目中间的语言（IR）可以用Apache Spark作为计算引擎。Spark提供各种丰富的physical operator。用户使用Spark作为后端，只需以下步骤：
+* 将各个计算节点进行连接，存储到PlanBuilder中
+* 将PlanBuilder作为参数，调用SparkPlatform.SparkRunner()，即可得到最终结果
+
+## 可视化Workflow前端
+### JSON格式介绍
+格式介绍
+```JSON
+[
+{
+    "id": "",     //算子唯一标识
+    "name": "",   //算子名称，指明算子如何计算
+    "parameters": {  //指定算子的静态参数，如算法循环此时、join的predicate等
+    },
+    "incoming": [   //JSON数组，每个数组对象存储本节点的上一跳信息
+    ],
+    "outgoing": [  //JSONN 数组，每个数组对象存储本节点的下一跳信息
+    ]
+  },
+]
+```
+
+实例
+```json
+{
+    "id": "4",
+    "name": "ProjectOperator",
+    "parameters": {
+      "predicate": "o_totalprice"
+    },
+    "incoming": [
+      {
+        "id": "3",
+        /**
+     * 给this的opt添加一个新的上一跳opt
+     * @param incoming 上一跳opt
+     * @param params_pair 指定和上一跳Opt的输出的哪个数据的key链接，格式为 <incoming.output_key, this.input_key>；为null时默认拿到其所有的输出
+     * @return 当前已链接的incoming channel的数量，即代表有多少个上一跳了
+     */
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ],
+    "outgoing": [
+      {
+        "id": "5",
+        "params_pair": {
+          //对应 DataQuanta的outgoin接口
+        }
+      }
+    ]
+  },
+```
+
+
+
