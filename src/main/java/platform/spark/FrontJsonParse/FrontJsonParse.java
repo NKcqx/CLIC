@@ -1,4 +1,4 @@
-package api;
+package platform.spark.FrontJsonParse;
 
 
 
@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
+import api.DataQuanta;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -23,7 +24,7 @@ public class FrontJsonParse {
     //new feature parse JsonFile
 
     private HashMap<Integer,JSONObject> nodeOrderJSONTable = new HashMap<>();
-    private HashMap<Integer,DataQuanta> nodeOrderDataQuanta = new HashMap<>();
+    private HashMap<Integer, DataQuanta> nodeOrderDataQuanta = new HashMap<>();
 
     public void parseJson(String jsonFilePath) { //现在前端的json默认存储在浏览器下载路径下
         JSONParser jsonParser = new JSONParser();
@@ -34,7 +35,7 @@ public class FrontJsonParse {
             JSONArray nodeList = (JSONArray) nodeObject.get("nodeList");
             nodeList.forEach(node-> {
                 try {
-                    parseNodeObject1((JSONObject) node);
+                    parseNodeObject((JSONObject) node);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -47,19 +48,8 @@ public class FrontJsonParse {
             e.printStackTrace();
         }
     }
-    public static void parseNodeObject(JSONObject node) {
-        Integer nodeOrder = Integer.parseInt((String) node.get("DagOrder"));
-        String nodeName = (String)node.get("nodeName");
-        System.out.println(nodeOrder);
-        System.out.println(nodeName);
 
-        String data_path = (String)node.get("data_path");
-        String parquet = (String)node.get("parquet");
-        System.out.println(data_path);
-        System.out.println(parquet+"\n");
-    }
-
-    public void parseNodeObject1(JSONObject node) throws java.lang.Exception {
+    public void parseNodeObject(JSONObject node) throws java.lang.Exception {
 
         DataQuanta temp;
 
@@ -88,8 +78,6 @@ public class FrontJsonParse {
             JSONObject nodeJSON = entry.getValue();
             Integer outId = Integer.parseInt((String)nodeJSON.get("out_id"));
             if (outId > 0) {
-                System.out.println(outId+"\n");
-
                 node.outgoing(nodeOrderDataQuanta.get(outId),null);
             }
         }
