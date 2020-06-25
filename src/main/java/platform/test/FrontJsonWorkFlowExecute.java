@@ -4,7 +4,7 @@ import api.DataQuanta;
 import api.PlanBuilder;
 import org.apache.spark.sql.Row;
 import org.xml.sax.SAXException;
-import platform.spark.FrontJsonParse.FrontJsonParse;
+import platform.spark.Front.FrontJsonParse;
 import platform.spark.SparkPlatform;
 
 import javax.xml.parsers.ParserConfigurationException;

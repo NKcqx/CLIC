@@ -1,14 +1,10 @@
 import api.DataQuanta;
-import platform.spark.FrontJsonParse.FrontJsonParse;
 import api.PlanBuilder;
-import org.apache.spark.sql.Row;
 import org.xml.sax.SAXException;
-import platform.spark.SparkPlatform;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 
 
 public class demo {
