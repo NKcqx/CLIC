@@ -2,7 +2,6 @@ package basic.traversal;
 
 import basic.Operators.Operator;
 import channel.Channel;
-import com.sun.org.apache.xerces.internal.xs.datatypes.ObjectList;
 
 import java.util.*;
 
