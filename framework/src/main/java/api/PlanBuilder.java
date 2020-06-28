@@ -138,4 +138,8 @@ public class PlanBuilder {
     private void logging(String s){
         System.out.println(s);
     }
+
+    public void setHeadDataQuanta(DataQuanta headDataQuanta) {
+        this.headDataQuanta = headDataQuanta;
+    }
 }

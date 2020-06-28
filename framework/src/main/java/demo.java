@@ -1,11 +1,13 @@
 import api.DataQuanta;
 import api.PlanBuilder;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.IOException;
 import java.util.HashMap;
 
-
 public class demo {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
         try {
 
             PlanBuilder planBuilder = new PlanBuilder();
@@ -56,6 +58,5 @@ public class demo {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 }
