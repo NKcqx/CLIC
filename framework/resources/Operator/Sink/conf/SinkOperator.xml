@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="SinkOperator" name="SinkOperator" kind="consumer">
+
+    <platforms>
+        <platform ID="java">
+            <path>/framework/resources/Operator/Sink/conf/JavaSinkOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>/framework/resources/Operator/Sink/conf/SparkSinkOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter kind="input" name="output" data_type="string"> </parameter>
+        <parameter kind="input" name="separator" data_type="string">,</parameter> <!--参数默认值怎么做?-->
+    </parameters>
+
+</Operator>
