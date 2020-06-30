@@ -1,5 +1,6 @@
 package api;
 
+import basic.Configuration;
 import basic.Operators.Operator;
 import basic.Operators.OperatorFactory;
 import basic.Visitors.ExecuteVisitor;
@@ -22,28 +23,25 @@ public class PlanBuilder {
     private List<DataQuanta> dataQuantaList = new ArrayList<>();
     private DataQuanta presentDataQuanta = null; // head永远是present的上一个节点
 
-    private String context;
+    private Configuration configuration;
 
     /**
      *
-     * @param context 临时充当 OperatorMapping文件的路径
+     * @param configuration 配置文件，从中加载系统运行时必要的参数，即系统运行时的上下文
      * @throws IOException
      * @throws SAXException
      * @throws ParserConfigurationException
      */
-    public PlanBuilder(String context ) throws IOException, SAXException, ParserConfigurationException {
+    public PlanBuilder(Configuration configuration) throws IOException, SAXException, ParserConfigurationException {
         pipeline = new LinkedList<>();
         // executionPlan = new LinkedList<>();
 
-        this.context = context;
-        OperatorFactory.initMapping(context);
-
+        this.configuration = configuration;
+        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
     }
 
     public PlanBuilder() throws ParserConfigurationException, SAXException, IOException {
-        // TODO: 改一下默认文件路径的传输方式（用命令行传入）
-        //this(System.getProperty("user.dir")+"/resources/OperatorTemplates/OperatorMapping.xml");
-        this("framework/resources/OperatorTemplates/OperatorMapping.xml");
+        this(new Configuration());
     }
 
     public DataQuanta readDataFrom(Map<String, String> params) throws Exception {
