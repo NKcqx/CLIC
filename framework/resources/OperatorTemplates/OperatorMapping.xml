@@ -6,6 +6,10 @@
         <template>/framework/resources/Operator/Source/conf/SourceOperator.xml</template>
     </pair>
     <pair>
+        <ability>sink</ability>
+        <template>/framework/resources/Operator/Sink/conf/SinkOperator.xml</template>
+    </pair>
+    <pair>
         <ability>sort</ability>
         <template>/framework/resources/Operator/Sort/conf/SortOperator.xml</template>
     </pair>
@@ -29,5 +33,8 @@
         <ability>join</ability>
         <template>/framework/resources/Operator/Join/conf/JoinOperator.xml</template>
     </pair>
-
+    <pair>
+        <ability>reducebykey</ability>
+        <template>/framework/resources/Operator/ReduceByKey/conf/ReduceByKeyOperator.xml</template>
+    </pair>
 </mappings>
