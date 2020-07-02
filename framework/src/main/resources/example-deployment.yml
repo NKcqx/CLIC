@@ -1,0 +1,32 @@
+#使用deployment创建pod
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clickjava-dep-vol
+  labels:
+    app: clickjava
+    type: test
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: clickjava
+  template:
+    metadata:
+      labels:
+        app: clickjava
+    spec:
+      containers:
+        - name: clickjavatest
+          image: executable-java:v1
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh","-c"]
+          args: ["java -jar executable-java.jar --udfPath=/data/TestSmallWebCaseFunc.class --operator=file_source --input=/data/webClick.csv --operator=filter --udfName=filterFunc --operator=map --udfName=mapFunc --operator=reduce_by_key --udfName=reduceFunc --keyName=reduceKey --operator=sort --udfName=sortFunc --operator=file_sink --output=/data/webOutput.csv ; while true; do echo hello;sleep 100;done"]
+          volumeMounts:
+            - mountPath: /data
+              name: job-volume
+      volumes:
+        - name: job-volume
+          hostPath:
+            path: /home/cqx/codes/k8s_basics/executable-java/data
+            type: Directory

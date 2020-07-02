@@ -25,7 +25,7 @@ public class DataQuanta {
      */
     public static DataQuanta createInstance(String ability, Map<String, String> params) throws Exception {
         if (ability.equals("empty")){
-            return null; // TODO
+            return null;
         }else {
             // 先创建出符合要求的operator
             Operator opt = DataQuanta.createOperator(ability);
