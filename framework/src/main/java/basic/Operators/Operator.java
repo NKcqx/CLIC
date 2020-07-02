@@ -17,15 +17,15 @@ import java.io.*;
 import java.util.*;
 
 public class Operator implements Visitable {
-    private Document config = null;
-    private String config_file_path = null;
-    private String ID;
-    private String name;
-    private OperatorKind kind;
-    private Map<String, OperatorEntity> entities = new HashMap<>();
-    private OperatorEntity selected_entity = null;
+    private Document config = null; // Operator的XML文件
+    private String config_file_path = null; // Operator的XML文件路径
+    private String ID; // Operator ID
+    private String name; // Operator Name
+    private OperatorKind kind; // Operator Kind
+    private Map<String, OperatorEntity> entities = new HashMap<>(); // Operator的所有实现
+    private OperatorEntity selected_entity = null; // 当前Operator选择的最优的平台实现
 
-    private  Map<String, String> plt_mapping = new HashMap<>();
+    private  Map<String, String> plt_mapping = new HashMap<>(); // platform mapping，用于找到该Operator所支持的所有平台
 
     private String the_data; // 临时的，代表当前Opt的计算结果，想办法赋予个unique的值
     private List<Channel> input_channels;
@@ -113,7 +113,8 @@ public class Operator implements Visitable {
                 String kind = param_ele.getAttribute("kind");
                 String name = param_ele.getAttribute("name");
                 String data_type = param_ele.getAttribute("data_type");
-                Param param = new Param(name, data_type);
+                Boolean is_required = param_ele.getAttribute("is_required").equals("true"); // 没定义该属性时返回空字符串 默认为false
+                Param param = new Param(name, data_type, is_required);
                 if (kind.equals("input")){
                     // 输入参数
                     this.input_data_list.put(name, param);
@@ -183,8 +184,6 @@ public class Operator implements Visitable {
             OperatorEntity platform = new OperatorEntity(
                     platform_ele.getAttribute("ID"),
                     platform_ele.getElementsByTagName("language").item(0).getTextContent(),
-                    platform_ele.getElementsByTagName("implementation").item(0).getTextContent(),
-                    platform_ele.getElementsByTagName("command").item(0).getTextContent(),
                     Double.valueOf(platform_ele.getElementsByTagName("cost").item(0).getTextContent())
             );
             this.entities.put(platform_ele.getAttribute("ID"), platform);
@@ -419,18 +418,14 @@ public class Operator implements Visitable {
     public class OperatorEntity{
         String ID;
         String language;
-        String img_path;
-        String command;
         Double cost;
         public OperatorEntity(){
-            this("", "", "", "", 0.);
+            this("", "",  0.);
         }
 
-        public OperatorEntity(String ID, String language, String img_path, String command, Double cost) {
+        public OperatorEntity(String ID, String language, Double cost) {
             this.ID = ID;
             this.language = language;
-            this.img_path = img_path;
-            this.command = command;
             this.cost = cost;
         }
 
@@ -448,22 +443,6 @@ public class Operator implements Visitable {
 
         public void setLanguage(String language) {
             this.language = language;
-        }
-
-        public String getImg_path() {
-            return img_path;
-        }
-
-        public void setImg_path(String img_path) {
-            this.img_path = img_path;
-        }
-
-        public String getCommand() {
-            return command;
-        }
-
-        public void setCommand(String command) {
-            this.command = command;
         }
 
         public Double getCost() {
