@@ -12,6 +12,6 @@ public interface OperatorAdapter {
      * @param operators 所有的operator
      * @return 分组后的operator
      */
-    List<ArgoNode> groupContinuousOperator(List<Object> operators);
+    List<ArgoNode> groupContinuousOperator(List<?> operators);
 
 }

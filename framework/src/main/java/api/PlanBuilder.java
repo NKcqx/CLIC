@@ -1,14 +1,17 @@
 package api;
 
+import adapters.ArgoAdapter;
 import basic.Configuration;
 import basic.Operators.Operator;
 import basic.Operators.OperatorFactory;
 import basic.Visitors.ExecuteVisitor;
 import basic.Visitors.ExecutionGenerationVisitor;
+import basic.Visitors.PipelineVisitor;
 import basic.Visitors.PrintVisitor;
 import basic.traversal.AbstractTraversal;
 import basic.traversal.BfsTraversal;
 import basic.traversal.TopTraversal;
+import fdu.daslab.backend.executor.model.Pipeline;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -97,9 +100,18 @@ public class PlanBuilder {
 
 
     private void executePlan(){
+//        AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
+//        ExecuteVisitor executeVisitor = new ExecuteVisitor(planTraversal);
+//        executeVisitor.startVisit();
         AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
-        ExecuteVisitor executeVisitor = new ExecuteVisitor(planTraversal);
+        PipelineVisitor executeVisitor = new PipelineVisitor(planTraversal);
         executeVisitor.startVisit();
+        // 获取所有的operator
+        List<Operator> allOperators = executeVisitor.getAllOperators();
+        // 调用argo平台运行
+        Pipeline argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
+        argoPipeline.execute();
+
 //        for (Operator opt : this.pipeline){
 //            opt.acceptVisitor(executeVisitor);
 //        }

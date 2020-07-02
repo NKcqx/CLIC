@@ -8,7 +8,7 @@ import java.util.List;
 public class ArgoNode {
 
     // 参数定义
-    static class Parameter {
+    public static class Parameter {
         String name;  // 参数名
         String value;   // 参数值
 
@@ -34,6 +34,10 @@ public class ArgoNode {
         this.name = name;
         this.template = template;
         this.dependencies = dependencies;
+        this.parameters = parameters;
+    }
+
+    public void setParameters(List<Parameter> parameters) {
         this.parameters = parameters;
     }
 }
