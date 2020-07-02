@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="ReduceByKeyOperator" name="ReduceByKeyOperator" kind="consumer">
+
+    <platform ID="spark">
+        <language>spark</language>
+        <cost>18.1102</cost>
+    </platform>
+
+</Operator>

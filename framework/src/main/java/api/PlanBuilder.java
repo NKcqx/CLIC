@@ -117,7 +117,6 @@ public class PlanBuilder {
 //        }
     }
 
-    // TODO: 这switch就得改了 DAG里不知道1，2是哪个opt
     private LinkedList<Operator> optimizePipeline(){
         this.switchOperator(1, 2);
         return this.pipeline;
