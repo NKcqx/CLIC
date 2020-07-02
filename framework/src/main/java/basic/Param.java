@@ -7,19 +7,24 @@ public class Param {
     private String name;
     private ParamKind type;
     private String value = null; // 暂定String类型，之后用Object？总觉得不是这么做泛化的(或者就是Obj，反正每个Opt知道自己想用什么格式的数据)
+    private Boolean is_required = false;
     public enum ParamKind{
         LIST, FUNCTION, STRING
     }
 
     public Param(String name){
-        this(name, "string", null);
+        this(name, "string", false, null);
     }
 
     public Param(String name, String type){
-        this(name, type, null);
+        this(name, type, false, null);
     }
 
-    public Param(String name, String type, String value){
+    public Param(String name, String type, Boolean is_required){
+        this(name, type, false, null);
+    }
+
+    public Param(String name, String type, Boolean is_required, String value){
         this.name = name;
         switch (type){
             case "list":
@@ -36,6 +41,7 @@ public class Param {
                 break;
         }
         this.value = value;
+        this.is_required = is_required;
     }
 
     public String getName() {

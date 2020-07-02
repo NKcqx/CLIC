@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="ReduceByKeyOperator" name="ReduceByKeyOperator" kind="consumer">
+
+    <platform ID="java">
+        <language>java</language>
+        <cost>17.1102</cost>
+    </platform>
+
+</Operator>

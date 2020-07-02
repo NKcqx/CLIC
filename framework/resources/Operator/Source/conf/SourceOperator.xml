@@ -12,7 +12,8 @@
     </platforms>
 
     <parameters>
-        <parameter kind="input" name="data_path" data_type="string"> </parameter>
+        <parameter kind="input" name="input" data_type="string"> </parameter>
+        <parameter kind="input" name="separator" data_type="string">,</parameter> <!--参数默认值怎么做?-->
     </parameters>
 
 </Operator>

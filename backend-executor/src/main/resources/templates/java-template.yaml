@@ -1,0 +1,7 @@
+- name: java
+  inputs:
+    parameters:
+      - name: message
+  container:
+    image: executable-java
+    command: [java, "{{inputs.parameters.message}}"]
