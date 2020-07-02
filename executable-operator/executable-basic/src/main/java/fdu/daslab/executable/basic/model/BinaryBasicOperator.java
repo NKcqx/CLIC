@@ -1,21 +1,20 @@
 package fdu.daslab.executable.basic.model;
 
-import java.util.List;
-import java.util.stream.Stream;
+import java.io.Serializable;
 
 /**
- * join等需要结合多条stream的基础算子
+ * Bi类型算子
  */
-public class BinaryBasicOperator implements BasicOperator<Stream<List<String>>> {
+public interface BinaryBasicOperator<PARAM, INPUT1, INPUT2> extends Serializable {
 
-    @Override
-    public void execute(ParamsModel<Stream<List<String>>> inputArgs,
-                        ResultModel<Stream<List<String>>> result) {
-
-    }
-
-    public void binaryExecute(ParamsModel<Stream<List<String>>> inputArgs,
-                              ResultModel<Stream<List<String>>> result1,
-                              ResultModel<Stream<List<String>>> result2) {
-    }
+    /**
+     * 算子的执行
+     *
+     * @param inputArgs 参数列表
+     * @param input1 第一条流
+     * @param input2 第二条流
+     */
+    void execute(ParamsModel<PARAM> inputArgs,
+                 ResultModel<INPUT1> input1,
+                 ResultModel<INPUT2> input2);
 }

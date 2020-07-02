@@ -54,9 +54,24 @@ public class TestSmallWebCaseFunc {
         return new Integer(record2.get(1)) - new Integer(record1.get(1));
     }
 
-    // join（有点bug）
-    // 网站信息表webClick.csv，黑名单表blackList.csv，join这两个表，将是黑名单的网站剔除
-    public List<String> joinFunc(List<String> record) {
+    // join
+    // 网站公司表webCompany.csv（网站一级域名，公司id），公司国家表companyCountry.csv（公司id，国家id）
+    // join这两个表，将网站所属国家列出
+    // key是公司id
+    // join的key
+    public String rightTableKey(List<String> record) {
+        return record.get(0);
+    }
+    public String leftTableKey(List<String> record) {
+        return record.get(1);
+    }
+    // join的func
+    // 自定义join之后右表中要保留的属性
+    public List<String> rightTableFunc(List<String> record) {
+        return record;
+    }
+    // 自定义join之后左表中要保留的属性
+    public List<String> leftTableFunc(List<String> record) {
         return record;
     }
 }

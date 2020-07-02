@@ -3,7 +3,7 @@
 cur_dir=$(pwd)
 echo ${cur_dir}
 function compile_udf_class(){
-    cd executable-operator
+    cd ../executable-operator
     # 先判断原来是否已存在输出.class文件的目录
     rm -rf output-class
     # 再创建输出.class文件的目录
@@ -11,7 +11,7 @@ function compile_udf_class(){
     mkdir output-class
     # 开始编译
     echo "begin compile"
-    cd executable-basic/src/main/java/edu/daslab/executable/udf
+    cd executable-basic/src/main/java/fdu/daslab/executable/udf
     javac -d ../../../../../../../../output-class -encoding UTF-8 TestSmallWebCaseFunc.java
     echo "end compile"
 }
