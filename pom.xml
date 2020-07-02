@@ -59,5 +59,6 @@
     <modules>
         <module>framework</module>
         <module>executable-operator</module>
+        <module>backend-executor</module>
     </modules>
 </project>
