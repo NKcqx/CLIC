@@ -33,7 +33,7 @@ public class JavaOperatorEnums {
             put(MAP, new MapOperator());
             put(REDUCE_BY_KEY, new ReduceByKeyOperator());
             put(SORT, new SortOperator());
-            put(JOIN, new JoinOperator());
+            //put(JOIN, new JoinOperator());
         }};
     }
 

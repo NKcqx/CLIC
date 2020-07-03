@@ -33,17 +33,19 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>, S
         JoinOperator joinArgs = (JoinOperator) inputArgs.getOperatorParam();
         FunctionModel joinFunction = inputArgs.getFunctionModel();
         assert joinFunction != null;
+
         // 新右表(用户指定join的时候右表要select哪几列)
         Stream<List<String>> newRightTable = input2.getInnerResult()
                 .map(data -> (List<String>) joinFunction.invoke(joinArgs.rightTableFuncName, data));
         // 新左表(用户指定join的时候左表要select哪几列)
         Stream<List<String>> newLeftTable = input1.getInnerResult()
                 .map(data -> (List<String>) joinFunction.invoke(joinArgs.leftTableFuncName, data));
+
         // 右表转化成Map(把用户定义的join key提取出来作为Map的key)
         // 该Map已去重复key(key相等则对应的value取代该key的旧value)
         Map<String, List<String>> rightTableMap = newRightTable
                 .collect(Collectors.toMap(
-                        data -> (String) joinFunction.invoke(joinArgs.rightTableKeyExtractFunctionName, data),
+                        key -> (String) joinFunction.invoke(joinArgs.rightTableKeyExtractFunctionName, key),
                         value -> value,
                         (value1, value2) -> value1
                         ));
@@ -51,7 +53,7 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>, S
         // 该Map已去重复key(key相等则对应的value取代该key的旧value)
         Map<String, List<String>> leftTableMap = newLeftTable
                 .collect(Collectors.toMap(
-                        data -> (String) joinFunction.invoke(joinArgs.leftTableKeyExtractFunctionName, data),
+                        key -> (String) joinFunction.invoke(joinArgs.leftTableKeyExtractFunctionName, key),
                         value -> value,
                         (value1, value2) -> value1
                 ));
@@ -64,53 +66,156 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>, S
 //                if(entry1.getKey().equals(entry2.getKey())) {
 //                    resultLine.addAll(entry1.getValue());
 //                    resultLine.addAll(entry2.getValue());
+
+//                    resultList.add(String.join(",",resultLine));
+//                    resultLine.clear();
 //                }
 //            }
-//            resultList.add(String.join(",",resultLine));
-//            resultLine.clear();
+//
 //        }
 //        Stream<List<String>> nextStream = (Stream<List<String>>) resultList;
 //        input1.setInnerResult(nextStream);
 
-        // 左表join右表(Hash Join) (暂未可用)
+        // 左表join右表(Hash Join) (可用)
         // 哈希表的装填因子一般设为0.75
         double loadFactory = 0.75;
         int hashTableLength = 0;
-        int primeNumber = 0;
+        int keyHashCode;
+
+        // 保存可以join的每一行
+        List<String> resultLine = new ArrayList<>();
+        // 保存所有join的行
+        List<String> resultList = new ArrayList<>();
+
         // 确定大表和小表，小表作Build Table，大表作Probe Table
         if(rightTableMap.size() < leftTableMap.size()) {
+            // 右表是小表
+
             // 确定哈希表表长
             hashTableLength = (int) Math.ceil(rightTableMap.size() / loadFactory);
-            // 除留取余法，模数取不大于表长的最大质数，先用23代替
-            primeNumber = 23;
-            HashTable hashTable = new HashTable(hashTableLength);
+            // 构建hashTable
+            HashJoinTable hashTable = new HashJoinTable(hashTableLength);
             // 遍历rightTableHash，将其按key值构建hashTable
+            for(Map.Entry<String, List<String>> entry : rightTableMap.entrySet()) {
+                hashTable.put(entry.getKey(), entry.getValue());
+            }
             // 遍历leftTableHash，找到hashcode相同的桶，再匹配right和left的key是否相等，相等则该项join成功
+            for(Map.Entry<String, List<String>> entry : leftTableMap.entrySet()) {
+                keyHashCode = hashTable.hash(entry.getKey(), hashTableLength);
+                if(hashTable.nodeIsEmpty(keyHashCode)) {
+                    // 如果这个hashcode对应的桶没有value，则跳过
+                    continue;
+                }
+                // 如果该hashcode对应的桶有value
+                // 则先看该索引的头节点的key值是否相等
+                Node temp = hashTable.Headlist[keyHashCode];
+                if(temp.key.equals(entry.getKey())) {
+                    resultLine.addAll(entry.getValue());
+                    resultLine.addAll((List<String>) temp.data);
+
+                    resultList.add(String.join(",", resultLine));
+                    resultLine.clear();
+                } else {
+                    // 再循环遍历这个hashcode索引对应的链表，比较是否存在与左表key相等的右表key
+                    while(temp.next != null) {
+                        temp = temp.next;
+                        if(temp.key.equals(entry.getKey())) {
+                            resultLine.addAll(entry.getValue());
+                            resultLine.addAll((List<String>) temp.data);
+
+                            resultList.add(String.join(",", resultLine));
+                            resultLine.clear();
+                        }
+
+                    }
+                }
+            }
+
+            // join结果写进输出流
+            Stream<List<String>> nextStream = (Stream<List<String>>) resultList;
+            input1.setInnerResult(nextStream);
+
         } else {
+            // 左表是小表
+
+            // 确定哈希表表长
+            hashTableLength = (int) Math.ceil(leftTableMap.size() / loadFactory);
+            // 构建hashTable
+            HashJoinTable hashTable = new HashJoinTable(hashTableLength);
+            // 遍历rightTableHash，将其按key值构建hashTable
+            for(Map.Entry<String, List<String>> entry : leftTableMap.entrySet()) {
+                hashTable.put(entry.getKey(), entry.getValue());
+            }
+            // 遍历leftTableHash，找到hashcode相同的桶，再匹配right和left的key是否相等，相等则该项join成功
+            for(Map.Entry<String, List<String>> entry : rightTableMap.entrySet()) {
+                keyHashCode = hashTable.hash(entry.getKey(), hashTableLength);
+                if(hashTable.nodeIsEmpty(keyHashCode)) {
+                    // 如果这个hashcode对应的桶没有value，则跳过
+                    continue;
+                }
+                // 如果该hashcode对应的桶有value
+                // 则先看该索引的头节点的key值是否相等
+                Node temp = hashTable.Headlist[keyHashCode];
+                if(temp.key.equals(entry.getKey())) {
+                    resultLine.addAll(entry.getValue());
+                    resultLine.addAll((List<String>) temp.data);
+
+                    resultList.add(String.join(",", resultLine));
+                    resultLine.clear();
+                } else {
+                    // 再循环遍历这个hashcode索引对应的链表，比较是否存在与左表key相等的右表key
+                    while(temp.next != null) {
+                        temp = temp.next;
+                        if(temp.key.equals(entry.getKey())) {
+                            resultLine.addAll(entry.getValue());
+                            resultLine.addAll((List<String>) temp.data);
+
+                            resultList.add(String.join(",", resultLine));
+                            resultLine.clear();
+                        }
+
+                    }
+                }
+            }
+
+            // join结果写进输出流
+            Stream<List<String>> nextStream = (Stream<List<String>>) resultList;
+            input1.setInnerResult(nextStream);
 
         }
-
     }
 
-    // 拉链法构建哈希表
-    public static class HashTable {
-        public class Node {
-            Node next;
-            Object key;
-            Object data;
+    /**
+     * 构建 hash join table 需要用到的节点类
+     */
+    public static class Node {
+        Node next;
+        Object key;
+        Object data;
+        Integer hashCode;
 
-            public Node(Object key, Object data) {
-                this.key = key;
-                this.data = data;
-            }
+        public Node(Object key, Object data, Integer hashCode) {
+            this.key = key;
+            this.data = data;
+            this.hashCode = hashCode;
         }
+    }
+
+    /**
+     * 拉链法构建 hash join table
+     */
+    public static class HashJoinTable {
+
+        // 一个定长数组
         public Node[] Headlist;
+        // 数组初始分配空间长度
+        public int initialLength;
         // 当前哈希表元素个数
         public int size = 0;
 
-        public HashTable(int size) {
-            this.size = size;
-            Headlist = new Node[size];
+        public HashJoinTable(int initialLength) {
+            this.initialLength = initialLength;
+            Headlist = new Node[initialLength];
         }
 
         // hash函数计算hashcode，即头结点位置
@@ -130,16 +235,17 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>, S
             return index;
         }
 
+        // 放置节点
         public void put(Object key, Object data) {
             int index = hash(key, Headlist.length);
             // 当前节点封装成Node节点
-            Node node = new Node(key, data);
+            Node node = new Node(key, data, index);
             // 加入哈希表
             input(node, Headlist, index);
             size++;
         }
 
-        // 添加函数
+        // 插入节点
         private void input(Node node, Node[] list, int index) {
             // 若头结点位置为空，则把当前节点赋值给头节点
             if(list[index] == null ) {
@@ -160,6 +266,14 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>, S
                     temp.next = node;
                 }
             }
+        }
+
+        public boolean nodeIsEmpty(int index) {
+            Node temp = Headlist[index];
+            if(temp == null)
+                return true;
+            else
+                return false;
         }
 
         // 获取键值对应的数据
@@ -187,6 +301,64 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>, S
         // 返回当前哈希表大小
         public int length() {
             return size;
+        }
+
+        public void show() {
+            for(int i=0;i<Headlist.length;i++) {
+                if(Headlist[i] != null) {
+                    System.out.print(Headlist[i].key + ":" + Headlist[i].data
+                            + " hashcode is" + Headlist[i].hashCode + "-->");
+                    Node temp = Headlist[i];
+                    while(temp.next!=null) {
+                        temp = temp.next;
+                        System.out.println(temp.key + ":" + temp.data
+                                + " hashcode is" + temp.hashCode + "-->");
+                    }
+                    //System.out.println();
+                }
+            }
+        }
+
+        // 该main函数仅用来测试HashJoinTable
+        public static void main(String[] args) {
+            //定义一定数量的键值对
+            String[] key= {"sam","tom","water","banana","fine","watch","goal","new"};
+            String[] data= {"1","2","3","4","5","6","7","8"};
+            List<String> oneTable;
+            List<String> anotherTable;
+
+            // 测试resultLine和resultList
+            List<String> resultLine = new ArrayList<>();
+            List<String> resultList = new ArrayList<>();
+
+            //初始化哈希表
+            HashJoinTable table=new HashJoinTable(5);
+            for(int i=0;i<key.length;i++) {
+                //将每一个键值对一一加到构造好的哈希表中
+                oneTable = new ArrayList<>(Arrays.asList("xxx", "yyy", "zzz"));
+                table.put(key[i], oneTable);
+                //table.put(key[i], data[i]);
+
+                anotherTable = new ArrayList<>(Arrays.asList("aa", "bb", "cc"));
+                resultLine.addAll((List<String>) oneTable);
+                resultLine.addAll((List<String>) anotherTable);
+
+                resultList.add(String.join(",",resultLine));
+                resultLine.clear();
+            }
+            table.show();
+            System.out.println();
+            for(int i=0;i<key.length;i++) {
+                //根据键值从哈希表中获取相应的数据
+                Object data1= table.get(key[i]);
+                System.out.print(data1 + " ");
+            }
+
+            System.out.println();
+            System.out.println("-----------------resultList--------------------");
+            resultList.forEach(s -> {
+                System.out.println(s);
+            });
         }
     }
 }
