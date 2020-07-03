@@ -1,5 +1,0 @@
-# argo server的相关配置
-argoServer:
-  url: http://localhost
-  port: 2746
-  submitPath: /api/v1/workflows/argo
