@@ -398,6 +398,9 @@ public class Operator implements Visitable {
     private void logging(String s){
         System.out.println(s);
     }
+    public OperatorEntity getSelectedEntities() {
+        return selected_entity;
+    }
 
     @Override
     public void acceptVisitor(Visitor visitor) {

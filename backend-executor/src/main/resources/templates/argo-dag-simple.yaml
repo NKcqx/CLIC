@@ -1,0 +1,16 @@
+# 使用argo创建argo workflow
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: compute-scheduling-flow
+spec:
+  entrypoint: task-flow
+  volumes:
+    - name: job-volume
+      hostPath:
+        path: /home/dqh/codes/k8s_basics/executable-java/data
+        type: Directory
+  templates:
+    - name: my-flow
+      dag:
+        tasks:
