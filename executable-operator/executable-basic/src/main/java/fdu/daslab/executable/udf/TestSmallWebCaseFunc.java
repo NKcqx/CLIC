@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 public class TestSmallWebCaseFunc {
 
     // 网站信息表webClick.csv（点击者id，网站url）
-    // 黑名单表blackList.csv（网站一级域名，是否是黑名单）
 
     // groupby
     // 将网站按一级域名分类并记录总点击量（目前这个算子功能用下面的mapFunc实现了）
@@ -52,26 +51,5 @@ public class TestSmallWebCaseFunc {
     // 按照网站点击量从大到小排序
     public int sortFunc(List<String> record1, List<String> record2) {
         return new Integer(record2.get(1)) - new Integer(record1.get(1));
-    }
-
-    // join
-    // 网站公司表webCompany.csv（网站一级域名，公司id），公司国家表companyCountry.csv（公司id，国家id）
-    // join这两个表，将网站所属国家列出
-    // key是公司id
-    // join的key
-    public String rightTableKey(List<String> record) {
-        return record.get(0);
-    }
-    public String leftTableKey(List<String> record) {
-        return record.get(1);
-    }
-    // join的func
-    // 自定义join之后右表中要保留的属性
-    public List<String> rightTableFunc(List<String> record) {
-        return record;
-    }
-    // 自定义join之后左表中要保留的属性
-    public List<String> leftTableFunc(List<String> record) {
-        return record;
     }
 }
