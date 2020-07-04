@@ -1,7 +1,12 @@
-- name: java
-  inputs:
-    parameters:
-      - name: message
-  container:
-    image: executable-java
-    command: [java, "{{inputs.parameters.message}}"]
+name: java-template
+inputs:
+  parameters:
+    - name: javaArgs
+container:
+  image: executable-java:v1
+  imagePullPolicy: IfNotPresent
+  command: ["/bin/sh","-c"]
+  args: ["{{inputs.parameters.javaArgs}}"]
+  volumeMounts:
+    - mountPath: /data
+      name: job-volume
