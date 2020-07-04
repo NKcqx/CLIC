@@ -2,12 +2,14 @@ package basic.Visitors;
 
 import basic.Operators.Operator;
 import basic.traversal.AbstractTraversal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PrintVisitor extends Visitor {
-    // private static final Logger logger = LoggerFactory.getLogger(PrintVisitor.class);
+    private static final Logger logger = LoggerFactory.getLogger(PrintVisitor.class);
 
     public PrintVisitor(AbstractTraversal planTraversal){
         super(planTraversal);
@@ -31,6 +33,6 @@ public class PrintVisitor extends Visitor {
     }
 
     private void logging(String s){
-        System.out.println(s);
+        logger.info(s);
     }
 }

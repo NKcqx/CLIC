@@ -12,6 +12,8 @@ import basic.traversal.AbstractTraversal;
 import basic.traversal.BfsTraversal;
 import basic.traversal.TopTraversal;
 import fdu.daslab.backend.executor.model.Pipeline;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -21,7 +23,7 @@ import java.util.*;
 public class PlanBuilder {
     private LinkedList<Operator> pipeline;
     private DataQuanta headDataQuanta = null; // 其实可以有多个head
-
+    private static final Logger logger = LoggerFactory.getLogger(PlanBuilder.class);
     // 现在最简单粗暴的方法是将图存储在PlanBuilder中
     private List<DataQuanta> dataQuantaList = new ArrayList<>();
     private DataQuanta presentDataQuanta = null; // head永远是present的上一个节点
@@ -145,7 +147,7 @@ public class PlanBuilder {
     }
 
     private void logging(String s){
-        System.out.println(s);
+        logger.info(s);
     }
 
     public void setHeadDataQuanta(DataQuanta headDataQuanta) {

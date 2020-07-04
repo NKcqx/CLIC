@@ -17,9 +17,11 @@ public class ArgoNode {
             this.name = name;
             this.value = value;
         }
+
         public String getName() {
             return name;
         }
+
         public String getValue() {
             return value;
         }
@@ -41,7 +43,7 @@ public class ArgoNode {
     List<Parameter> parameters;
 
     public ArgoNode(int id, String name, String template, List<ArgoNode> dependencies, List<Parameter> parameters) {
-        this.id=id;
+        this.id = id;
         this.name = name;
         this.template = template;
         this.dependencies = dependencies;
@@ -51,6 +53,7 @@ public class ArgoNode {
     public void setParameters(List<Parameter> parameters) {
         this.parameters = parameters;
     }
+
     public String getName() {
         return name;
     }
@@ -66,6 +69,7 @@ public class ArgoNode {
     public List<Parameter> getParameters() {
         return parameters;
     }
+
     public int getId() {
         return id;
     }
