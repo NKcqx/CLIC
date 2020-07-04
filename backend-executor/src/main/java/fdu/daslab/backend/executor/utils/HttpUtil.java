@@ -1,60 +1,49 @@
 package fdu.daslab.backend.executor.utils;
 
-import fdu.daslab.backend.executor.model.ArgoNode;
+import com.google.gson.Gson;
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
-import org.apache.commons.io.output.ByteArrayOutputStream;
+import org.apache.commons.httpclient.methods.RequestEntity;
+import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.List;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 调用argo server的post接口提交任务
  */
 public class HttpUtil {
 
+    // argo server的配置路径
+    private static final String ARGO_SERVER_CONFIG = "argo-server.yaml";
+
     /**
      * 提交post请求到指定路径
      *
      * @param url 提交路径
      * @param params post的参数
-     * @return response
      */
-    public static String postHttp(String url, String params) {
-        String responseMsg = "";
+    public static void postHttp(String url, String params) {
         HttpClient httpClient = new HttpClient();
         httpClient.getParams().setContentCharset("UTF-8");
         PostMethod postMethod = new PostMethod(url);
-        // 提交的数据，是一个json串
-        postMethod.addParameter("data", params);
+
         try {
+            // 提交的数据，是一个json串
+            RequestEntity requestEntity = new StringRequestEntity(
+                    params ,"application/json" ,"UTF-8");
+            postMethod.setRequestEntity(requestEntity);
+            postMethod.setRequestHeader("Content-Type","application/json");
             httpClient.executeMethod(postMethod);
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            InputStream in = postMethod.getResponseBodyAsStream();
-            int len = 0;
-            byte[] buf = new byte[1024];
-            while((len=in.read(buf))!=-1){
-                out.write(buf, 0, len);
-            }
-            responseMsg = out.toString("UTF-8");
+            String responseMsg = postMethod.getResponseBodyAsString();
+            System.out.println(responseMsg);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
             postMethod.releaseConnection();
         }
-        return responseMsg;
-    }
-
-    // argo submit的url
-    final String ARGO_URL = "http://localhost:2746/api/v1/workflows/argo";
-
-    /**
-     * 调用argo的接口直接提交pipeline
-     * @param pipeLine argo需要的pipeline结构
-     */
-    public static void submitPipeline(List<ArgoNode> pipeLine) {
-
     }
 
     /**
@@ -63,7 +52,31 @@ public class HttpUtil {
      * @param yamlPath yaml路径
      */
     public static void submitPipelineByYaml(String yamlPath) {
-
+        Yaml yaml = new Yaml();
+        // 读取yamlPath的文件
+        File yamlFile = new File(yamlPath);
+        String yamlJson = "";
+        try (InputStream inputStream = new FileInputStream(yamlFile)) {
+            Map<String, Object> yamlObject = yaml.load(inputStream);
+            // 包装下
+            Map<String, Object> wrappedObject = new HashMap<>();
+            wrappedObject.put("namespace", "argo");
+            wrappedObject.put("serverDryRun", false);
+            wrappedObject.put("workflow", yamlObject);
+            Gson gson = new Gson();
+            yamlJson = gson.toJson(wrappedObject);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        // 获取argo server的配置路径
+        InputStream argoServerStream = HttpUtil.class.getClassLoader().getResourceAsStream(ARGO_SERVER_CONFIG);
+        Map<String, Object> yamlObject = yaml.load(argoServerStream);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> serverPathMap = (Map<String, Object>) yamlObject.get("argoServer");
+        String argoPath = serverPathMap.get("url") + ":" + serverPathMap.get("port").toString()
+                + serverPathMap.get("submitPath");
+        // 提交请求
+        postHttp(argoPath, yamlJson);
     }
 
 }
