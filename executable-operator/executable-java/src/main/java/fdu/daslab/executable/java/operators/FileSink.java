@@ -23,7 +23,7 @@ public class FileSink implements BasicOperator<Stream<List<String>>> {
     String outputFileName;
 
     // 输出的分隔符
-    @Parameter(names={"--sep"})
+    @Parameter(names={"--separator"})
     String separateStr = ",";
 
     @Override

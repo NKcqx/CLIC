@@ -15,13 +15,13 @@ import java.util.stream.Stream;
 public class JavaOperatorEnums {
 
     // 以下用于参数的传递
-    public static final String FILE_SOURCE = "file_source";  // 读取文件的source
-    public static final String FILE_SINK = "file_sink";   // 写入文件的sink
-    public static final String FILTER = "filter";
-    public static final String MAP = "map";
-    public static final String REDUCE_BY_KEY = "reduce_by_key";
-    public static final String SORT = "sort";
-    public static final String JOIN = "join";
+    public static final String FILE_SOURCE = "SourceOperator";  // 读取文件的source
+    public static final String FILE_SINK = "SinkOperator";   // 写入文件的sink
+    public static final String FILTER = "FilterOperator";
+    public static final String MAP = "MapOperator";
+    public static final String REDUCE_BY_KEY = "ReduceByKeyOperator";
+    public static final String SORT = "SortOperator";
+    public static final String JOIN = "JoinOperator";
 //    public static final String TOP = "top";
 
     // 所有支持的operator
