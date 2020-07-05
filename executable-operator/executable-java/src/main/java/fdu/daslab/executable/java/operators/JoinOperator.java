@@ -4,45 +4,71 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Java平台的join算子 暂时有点bug
+ * Java平台的join算子
  */
 @Parameters(separators = "=")
-public class JoinOperator implements BasicOperator<Stream<List<String>>> {
+public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>> {
 
-    // 通过指定路径来获取代码的udf
-    @Parameter(names={"--udfName"})
-    String joinFunctionName;
+    @Parameter(names={"--leftTableKeyName"})
+    String leftTableKeyExtractFunctionName;
+
+    @Parameter(names={"--rightTableKeyName"})
+    String rightTableKeyExtractFunctionName;
+
+    @Parameter(names={"--leftTableFuncName"})
+    String leftTableFuncName;
+
+    @Parameter(names={"--rightTableFuncName"})
+    String rightTableFuncName;
 
     @Override
-    public void execute(ParamsModel<Stream<List<String>>> inputArgs,
+    public void execute(BiOptParamsModel<Stream<List<String>>> inputArgs,
+                        ResultModel<Stream<List<String>>> input1,
+                        ResultModel<Stream<List<String>>> input2,
                         ResultModel<Stream<List<String>>> result) {
         JoinOperator joinArgs = (JoinOperator) inputArgs.getOperatorParam();
         FunctionModel joinFunction = inputArgs.getFunctionModel();
         assert joinFunction != null;
-//        另一条stream从本地文件读取
-//        try {
-//            BufferedReader inBuf = new BufferedReader(
-//                    new FileReader("D:/executable-operator/executable-basic/src/main/resources/data/webBlackList.txt")
-//            );
-//            List<String> list2 = new ArrayList<>();
-//            String lineTemp = "";
-//            while ((lineTemp = inBuf.readLine()) != null) {
-//                list2.add(lineTemp);
-//            }
-//            inBuf.close();
-//
-//            Stream<List<String>> nextStream = result.getInnerResult()
-//                .flatMap(i -> {
-//                    return list2.stream().map(j -> new String[]{i, j});
-//                });
-//
-//            result.setInnerResult(nextStream);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
+
+        List<String> leftKeys = new ArrayList();
+        List<String> rightKeys = new ArrayList();
+        List<List<String>> leftTable = new ArrayList();
+        List<List<String>> rightTable = new ArrayList();
+
+        input1.getInnerResult().forEach(item -> {
+            // 用户指定key
+            leftKeys.add((String) joinFunction.invoke(joinArgs.leftTableKeyExtractFunctionName, item));
+            // 用户指定join时左表要select哪几列
+            leftTable.add((List<String>) joinFunction.invoke(joinArgs.leftTableFuncName, item));
+        });
+        input2.getInnerResult().forEach(item -> {
+            // 用户指定key
+            rightKeys.add((String) joinFunction.invoke(joinArgs.rightTableKeyExtractFunctionName, item));
+            // 用户指定join时右表要select哪几列
+            rightTable.add((List<String>) joinFunction.invoke(joinArgs.rightTableFuncName, item));
+        });
+
+        List<String> resultLine = new ArrayList<>();
+        List<List<String>> resultList = new ArrayList<>();
+        for(int i=0;i<leftTable.size();i++) {
+            for(int j=0;j<rightTable.size();j++) {
+                if(leftKeys.get(i).equals(rightKeys.get(j))) {
+                    resultLine.add(leftKeys.get(i));
+                    resultLine.addAll(leftTable.get(i));
+                    resultLine.addAll(rightTable.get(j));
+
+                    resultList.add(Collections.singletonList(String.join(",", resultLine)));
+                    resultLine.clear();
+                }
+            }
+        }
+
+        Stream<List<String>> nextStream = resultList.stream();
+        result.setInnerResult(nextStream);
     }
 }

@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 public class TestSmallWebCaseFunc {
 
     // 网站信息表webClick.csv（点击者id，网站url）
-    // 黑名单表blackList.csv（网站一级域名，是否是黑名单）
 
     // groupby
     // 将网站按一级域名分类并记录总点击量（目前这个算子功能用下面的mapFunc实现了）
@@ -52,11 +51,5 @@ public class TestSmallWebCaseFunc {
     // 按照网站点击量从大到小排序
     public int sortFunc(List<String> record1, List<String> record2) {
         return new Integer(record2.get(1)) - new Integer(record1.get(1));
-    }
-
-    // join（有点bug）
-    // 网站信息表webClick.csv，黑名单表blackList.csv，join这两个表，将是黑名单的网站剔除
-    public List<String> joinFunc(List<String> record) {
-        return record;
     }
 }
