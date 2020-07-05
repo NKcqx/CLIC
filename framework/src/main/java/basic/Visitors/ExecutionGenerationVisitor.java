@@ -2,6 +2,8 @@ package basic.Visitors;
 
 import basic.Operators.Operator;
 import basic.traversal.AbstractTraversal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
 import java.util.*;
@@ -13,8 +15,7 @@ import java.util.*;
  *
  */
 public class ExecutionGenerationVisitor extends Visitor {
-    //private List<Platform> supportedPlatforms = new ArrayList<>();
-    // private LinkedList<ExecutableOperator> executionPlan = new LinkedList<>();
+    private static final Logger logger = LoggerFactory.getLogger(ExecutionGenerationVisitor.class);
     private List<Operator> visited = new ArrayList<>();
 
     public ExecutionGenerationVisitor(AbstractTraversal planTraversal){
@@ -47,7 +48,7 @@ public class ExecutionGenerationVisitor extends Visitor {
                 }
             });
             try {
-                this.logging(String.format("\n > Pick %s 's `%s[%f]` implement as best Operator\n", opt.getID(), bestOperatorEntity.getID(), bestOperatorEntity.getCost()));
+                this.logging(String.format("> Pick %s 's `%s[%f]` implement as best Operator\n", opt.getID(), bestOperatorEntity.getID(), bestOperatorEntity.getCost()));
                 // 为opt选择最佳的entity
                 opt.selectEntity(bestOperatorEntity.getID());
 
@@ -68,6 +69,6 @@ public class ExecutionGenerationVisitor extends Visitor {
     }
 
     private void logging(String s){
-        System.out.print(s);
+        logger.info(s);
     }
 }

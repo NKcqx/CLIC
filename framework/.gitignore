@@ -30,7 +30,7 @@ hs_err_pid*
 .mvn
 
 ##ignore this file##
-/target/
+*/target/
 
 .classpath
 .project
