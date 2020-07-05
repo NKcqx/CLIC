@@ -34,6 +34,6 @@ public class Pipeline {
         YamlUtil yamlUtil = new YamlUtil();
         String path = yamlUtil.createArgoYaml(tasks);
         // 2.调用argo server api提交post请求
-        // HttpUtil.submitPipelineByYaml(path);
+        HttpUtil.submitPipelineByYaml(path);
     }
 }
