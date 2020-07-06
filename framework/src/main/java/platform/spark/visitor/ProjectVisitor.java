@@ -25,7 +25,8 @@ public final class ProjectVisitor implements SparkVisitor {
 
     @Override
     public Dataset<Row> execute(SparkSession sparkSession) {
-        Dataset<Row> table = (Dataset<Row>) SparkPlatform.convertOperator2SparkVisitor(this.child).execute(sparkSession);
+        Dataset<Row> table = SparkPlatform.convertOperator2SparkVisitor(this.child)
+                .execute(sparkSession);
         return table.select(colList[0], Arrays.copyOfRange(colList, 1, colList.length));
     }
 }

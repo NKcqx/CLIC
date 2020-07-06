@@ -24,19 +24,21 @@ public final class SparkPlatform {
         if (singleton == null) {
             singleton = new SparkPlatform();
             return singleton;
-        } else return singleton;
+        } else {
+            return singleton;
+        }
     }
 
-    public static Object SparkRunner(PlanBuilder planBuilder) {
+    public static Object sparkRunner(PlanBuilder planBuilder) {
         SparkPlatform sparkPlatform = getSingleton();
         Operator tail = sparkPlatform.getSinkOperator(planBuilder);
-        return sparkPlatform.Visitor(tail);
+        return sparkPlatform.visitor(tail);
     }
 
     public static SparkVisitor convertOperator2SparkVisitor(Operator operator) {
         SparkVisitor result;
         String operatorName = operator.getOperatorName();
-        Class<?> visitorClass = SparkVisitorConfiguration.opMap.get(operatorName);
+        Class<?> visitorClass = SparkVisitorConfiguration.OP_MAP.get(operatorName);
         try {
             Method newInstanceMethod = visitorClass.getMethod("newInstance", Operator.class);
             result = (SparkVisitor) newInstanceMethod.invoke(null, operator);
@@ -47,7 +49,7 @@ public final class SparkPlatform {
         return result;
     }
 
-    private Object Visitor(Operator tail) {
+    private Object visitor(Operator tail) {
         return convertOperator2SparkVisitor(tail).execute(sparkSession);
     }
 
