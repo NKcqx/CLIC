@@ -1,8 +1,4 @@
-/**
- * @author 杜清华
- * @since  2020/7/6 11:39
- * @version 1.0
- */
+
 package adapters;
 
 import basic.operators.Operator;
@@ -14,6 +10,11 @@ import java.util.List;
 
 /**
  * 将平台内部的operator，按照连续的平台分为一组，并组装成argo的形式
+ *
+ * @author 杜清华
+ * @since  2020/7/6 11:39
+ * @version 1.0
+ *
  */
 public class ArgoAdapter implements OperatorAdapter {
 
