@@ -38,7 +38,8 @@ public class ReduceByKeyOperator implements BasicOperator<Stream<List<String>>> 
         assert functionModel != null;
         @SuppressWarnings("unchecked")
         Map<String, List<String>> reduceMap = result.getInnerResult()
-                .collect(Collectors.groupingBy(data -> (String) functionModel.invoke(reduceArgs.keyExtractFunctionName, data),
+                .collect(Collectors.groupingBy(data -> (String) functionModel.invoke(
+                        reduceArgs.keyExtractFunctionName, data),
                         new ReducingCollector<>((data1, data2) ->
                                 (List<String>) functionModel.invoke(reduceArgs.reduceFunctionName, data1, data2))));
         result.setInnerResult(reduceMap.values().stream());

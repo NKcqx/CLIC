@@ -46,7 +46,7 @@ public class SortOperator implements BasicOperator<JavaRDD<List<String>>> {
         private ParamsModel<JavaRDD<List<String>>> inputArgs;
         private SortOperator sortOperator;
 
-        public SerializableComparator(List<String> data, ParamsModel<JavaRDD<List<String>>> inputArgs,
+        SerializableComparator(List<String> data, ParamsModel<JavaRDD<List<String>>> inputArgs,
                                       SortOperator sortOperator) {
             this.data = data;
             this.inputArgs = inputArgs;

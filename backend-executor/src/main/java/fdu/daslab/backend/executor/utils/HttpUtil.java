@@ -5,6 +5,8 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -18,6 +20,8 @@ import java.util.Map;
  * 调用argo server的post接口提交任务
  */
 public class HttpUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
 
     // argo server的配置路径
     private static final String ARGO_SERVER_CONFIG = "argo-server.yaml";
@@ -41,7 +45,7 @@ public class HttpUtil {
             postMethod.setRequestHeader("Content-Type", "application/json");
             httpClient.executeMethod(postMethod);
             String responseMsg = postMethod.getResponseBodyAsString();
-            System.out.println(responseMsg);
+            LOGGER.info(responseMsg);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
