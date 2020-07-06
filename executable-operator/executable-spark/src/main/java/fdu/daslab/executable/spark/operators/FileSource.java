@@ -14,6 +14,10 @@ import java.util.List;
 
 /**
  * Spark平台的文件读取source
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:52 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class FileSource implements BasicOperator<JavaRDD<List<String>>> {

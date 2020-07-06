@@ -10,7 +10,11 @@ import java.util.Map;
 
 
 /**
- * spark平台支持的算子
+ * spark平台支持的算子的枚举
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:51 PM
+ * @version 1.0
  */
 public final class SparkOperatorEnums {
 

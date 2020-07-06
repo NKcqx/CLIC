@@ -15,6 +15,10 @@ import java.util.stream.StreamSupport;
 
 /**
  * spark平台的reduceByKey算子，可执行
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:53 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class ReduceByKeyOperator implements BasicOperator<JavaRDD<List<String>>> {

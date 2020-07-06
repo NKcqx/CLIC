@@ -9,6 +9,10 @@ import java.util.List;
 
 /**
  * 将所有的operator放在一起，便于argo的运行
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 2:00 PM
+ * @version 1.0
  */
 public class PipelineVisitor extends Visitor {
 

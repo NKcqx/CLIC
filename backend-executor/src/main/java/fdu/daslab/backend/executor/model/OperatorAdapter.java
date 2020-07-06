@@ -4,6 +4,10 @@ import java.util.List;
 
 /**
  * 将平台的operator适配到argo的节点上
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:56 PM
+ * @version 1.0
  */
 public interface OperatorAdapter {
 

@@ -12,6 +12,10 @@ import java.util.stream.Stream;
 
 /**
  * Java平台sort算子
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:48 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class SortOperator implements BasicOperator<Stream<List<String>>> {

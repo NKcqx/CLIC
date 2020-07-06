@@ -6,8 +6,11 @@ import org.apache.spark.api.java.JavaRDD;
 import java.util.List;
 
 /**
- * 封装JavaRDD
+ * 封装JavaRDD的ResultModel
  *
+ * @author 唐志伟
+ * @since 2020/7/6 1:52 PM
+ * @version 1.0
  */
 public class RddResult implements ResultModel<JavaRDD<List<String>>> {
 
