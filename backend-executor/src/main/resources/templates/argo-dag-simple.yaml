@@ -4,7 +4,7 @@ kind: Workflow
 metadata:
   generateName: compute-scheduling-flow
 spec:
-  entrypoint: task-flow
+  entrypoint: my-flow
   volumes:
     - name: job-volume
       hostPath:

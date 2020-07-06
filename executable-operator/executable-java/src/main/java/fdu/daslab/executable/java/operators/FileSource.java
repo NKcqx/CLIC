@@ -23,7 +23,7 @@ public class FileSource implements BasicOperator<Stream<List<String>>> {
     String inputFileName;
 
     // 输入的分隔符
-    @Parameter(names={"--sep"})
+    @Parameter(names={"--separator"})
     String separateStr = ",";
 
     @Override

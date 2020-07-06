@@ -11,7 +11,7 @@
         </platform>
     </platforms>
     <parameters>
-        <parameter kind="input" name="udfName"  data_type="string"> </parameter>
+        <parameter kind="input" name="udfName"  data_type="string" required="true"> </parameter>
         <parameter kind="output" name="result" data_type="string"> </parameter>
     </parameters>
 

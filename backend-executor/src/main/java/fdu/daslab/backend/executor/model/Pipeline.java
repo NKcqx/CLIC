@@ -31,7 +31,7 @@ public class Pipeline {
      */
     public void execute() {
         // 1.组装DAG成一个yaml文件，并保存下本地
-        YamlUtil yamlUtil=new YamlUtil();
+        YamlUtil yamlUtil = new YamlUtil();
         String path = yamlUtil.createArgoYaml(tasks);
         // 2.调用argo server api提交post请求
         HttpUtil.submitPipelineByYaml(path);

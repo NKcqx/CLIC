@@ -23,7 +23,7 @@ public class ReflectUtil {
             String[] paths = path.split("/");
             String className = paths[paths.length - 1].substring(0, paths[paths.length - 1].lastIndexOf(".class"));
             // 加载class文件
-            Class<?> c = diskLoader.loadClass("edu.daslab.executable.udf." + className);
+            Class<?> c = diskLoader.loadClass("fdu.daslab.executable.udf." + className);
             if (c != null) {
                 try {
                     Object obj =  c.newInstance();
