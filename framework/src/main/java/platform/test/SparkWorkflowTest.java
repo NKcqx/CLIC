@@ -57,7 +57,7 @@ public class SparkWorkflowTest {
                 null//new HashMap<String, String>(){{ put("sorted_value", "data"); }}
         );
 
-        List<Row> object = (List<Row>) SparkPlatform.SparkRunner(planBuilder);
+        List<Row> object = (List<Row>) SparkPlatform.sparkRunner(planBuilder);
         int numRow = (int) (object.size() * 0.0001);
         for (int i = 0; i < numRow; i++) {
             LOGGER.info(object.get(i).toString());

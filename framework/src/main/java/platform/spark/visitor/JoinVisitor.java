@@ -37,8 +37,10 @@ public final class JoinVisitor implements SparkVisitor {
 
     @Override
     public Dataset<Row> execute(SparkSession sparkSession) {
-        Dataset<Row> rightTable = (Dataset<Row>) SparkPlatform.convertOperator2SparkVisitor(this.rightChild).execute(sparkSession);
-        Dataset<Row> leftTable = (Dataset<Row>) SparkPlatform.convertOperator2SparkVisitor(this.leftChild).execute(sparkSession);
+        Dataset<Row> rightTable = (Dataset<Row>) SparkPlatform.convertOperator2SparkVisitor(
+                this.rightChild).execute(sparkSession);
+        Dataset<Row> leftTable = (Dataset<Row>) SparkPlatform.convertOperator2SparkVisitor(
+                this.leftChild).execute(sparkSession);
         return leftTable.join(rightTable, leftTable.col(equalJoinPredicatePair.leftCol).
                 equalTo(rightTable.col(equalJoinPredicatePair.rightCol)));
     }
