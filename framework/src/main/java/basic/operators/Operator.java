@@ -1,7 +1,7 @@
 /**
- * @author 陈齐翔
+ * @author 陈齐翔，杜清华
+ * @since  2020/7/6 11:39
  * @version 1.0
- * @since 2020/7/6 1:40 下午
  */
 package basic.operators;
 

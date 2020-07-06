@@ -1,3 +1,8 @@
+/**
+ * @author 杜清华，唐志伟
+ * @since  2020/7/6 11:39
+ * @version 1.0
+ */
 package fdu.daslab.backend.executor.model;
 
 import java.util.List;

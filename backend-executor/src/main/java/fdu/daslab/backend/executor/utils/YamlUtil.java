@@ -1,5 +1,9 @@
+/**
+ * @author 杜清华
+ * @since  2020/7/6 11:39
+ * @version 1.0
+ */
 package fdu.daslab.backend.executor.utils;
-
 import fdu.daslab.backend.executor.model.ArgoNode;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
@@ -14,9 +18,12 @@ import java.util.*;
  */
 public class YamlUtil {
 
-    private static String argoDag = YamlUtil.class.getClassLoader().getResource("templates/argo-dag-simple.yaml").getPath();
-    private static String javaTemplate = YamlUtil.class.getClassLoader().getResource("templates/java-template.yaml").getPath();
-    private static String sparkTemplate = YamlUtil.class.getClassLoader().getResource("templates/spark-template.yaml").getPath();
+    private static String argoDag = YamlUtil.class.getClassLoader().
+            getResource("templates/argo-dag-simple.yaml").getPath();
+    private static String javaTemplate = YamlUtil.class.getClassLoader().
+            getResource("templates/java-template.yaml").getPath();
+    private static String sparkTemplate = YamlUtil.class.getClassLoader().
+            getResource("templates/spark-template.yaml").getPath();
 
     private static String resPath = System.getProperty("user.dir") + "/backend-executor/src/main/resources/result/job-";
 
@@ -28,9 +35,9 @@ public class YamlUtil {
      */
     public String createArgoYaml(List<ArgoNode> tasks) {
 
-        String resPath = joinYaml(tasks);
+        String resultPath = joinYaml(tasks);
 
-        return resPath;
+        return resultPath;
     }
 
     /**
@@ -96,7 +103,7 @@ public class YamlUtil {
         String parameterStr = "";
         if (node.getTemplate().equals("java")) {
             // TODO: --UDFPath属于Image级别的参数（不属于Opt），这种参数该怎么指定呢？
-            parameterStr += "java -jar executable-java.jar --udfPath=/data/TestSmallWebCaseFunc.class ";//java运行封装好的jar
+            parameterStr += "java -jar executable-java.jar --udfPath=/data/TestSmallWebCaseFunc.class "; //java运行封装好的jar
         }
         for (ArgoNode.Parameter parameter : node.getParameters()) {
             parameterStr += parameter.getName() + "=" + parameter.getValue() + " ";
@@ -116,7 +123,7 @@ public class YamlUtil {
         //判断是否加dependencies，暂定的依赖判断逻辑是：
         //取当前node的id和dependencies，然后取dependencies中id-1位置的node即为其依赖（先考虑单个依赖）
         List<ArgoNode> dep = node.getDependencies();
-        if (dep.get(dep.size() - 1) != null) {//存在依赖，则添加dependencies
+        if (dep.get(dep.size() - 1) != null) { //存在依赖，则添加dependencies
             taskDep.put("dependencies", "[" + dep.get(dep.size() - 1).getName() + "]");
             taskMap.putAll(taskDep);
         }
