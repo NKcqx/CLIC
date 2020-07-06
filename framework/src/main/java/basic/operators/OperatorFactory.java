@@ -1,3 +1,8 @@
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 package basic.operators;
 
 import org.w3c.dom.Document;
@@ -24,19 +29,19 @@ public final class OperatorFactory {
     private OperatorFactory() {
     }
 
-    public static void initMapping(String config_path) throws ParserConfigurationException, IOException, SAXException {
+    public static void initMapping(String configPath) throws ParserConfigurationException, IOException, SAXException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        Document configFile = builder.parse(new File(config_path));
+        Document configFile = builder.parse(new File(configPath));
         configFile.getDocumentElement().normalize();
 
         Element root = configFile.getDocumentElement();
         NodeList pairs = root.getElementsByTagName("pair");
 
         for (int i = 0; i < pairs.getLength(); i++) {
-            Node pair_node = pairs.item(i);
-            if (pair_node.getNodeType() == Node.ELEMENT_NODE) {
-                Element pair = (Element) pair_node;
+            Node pairNode = pairs.item(i);
+            if (pairNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element pair = (Element) pairNode;
                 String ability = pair.getElementsByTagName("ability").item(0).getTextContent();
                 String template = pair.getElementsByTagName("template").item(0).getTextContent();
                 OperatorFactory.mapping.put(ability, template);

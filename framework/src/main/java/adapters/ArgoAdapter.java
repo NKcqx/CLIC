@@ -1,3 +1,8 @@
+/**
+ * @author 杜清华
+ * @since  2020/7/6 11:39
+ * @version 1.0
+ */
 package adapters;
 
 import basic.operators.Operator;
@@ -30,13 +35,12 @@ public class ArgoAdapter implements OperatorAdapter {
         int idInJob = 0; //记录node的id作为标记（在同一个job下可用）
 
         if (operators.isEmpty()) {
-            System.out.println("Warning: the param(operators) is empty in groupContinuousOperator function!!!");
             return argoNodeList;
         }
         //先将operator进行分组
         for (Object o : operators) {
             Operator op = (Operator) o;
-            String platform = op.getSelectedEntities().getID(); //获取选择的最优的platform
+            String platform = op.getSelectedEntities().getEntityID(); //获取选择的最优的platform
             if ((!platform.equals(preplatform)) && (preplatform != null)) {
                 //当前opt与之前opt的平台不同，所以先将前面的组合起来
                 operatorGroups.add(operatorGroup);
@@ -76,10 +80,10 @@ public class ArgoAdapter implements OperatorAdapter {
         for (Operator operator : operators) {
             //获取当前分组的platform
             if (platform == null) {
-                platform = operator.getSelectedEntities().getID();
+                platform = operator.getSelectedEntities().getEntityID();
             }
             //获取所有opt的name
-            optName.add(operator.getName());
+            optName.add(operator.getOperatorName());
         }
         String nameSub = "";
         //设置argo node的name
@@ -102,7 +106,7 @@ public class ArgoAdapter implements OperatorAdapter {
         ArgoNode node = new ArgoNode(id, name, platform, dependencies, null);
         // 前期串行，分组内所有的参数放到一起
         operators.forEach(operator -> {
-            params.add(new ArgoNode.Parameter("--operator", operator.getName()));
+            params.add(new ArgoNode.Parameter("--operator", operator.getOperatorName()));
             operator.getInputDataList().forEach((paramName, paramVal) -> {
                 params.add(new ArgoNode.Parameter("--" + paramName, paramVal.getData()));
             });

@@ -1,3 +1,8 @@
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 package channel;
 
 import basic.operators.Operator;
@@ -5,9 +10,6 @@ import basic.operators.Operator;
 import java.util.List;
 import java.util.Map;
 
-/**
- * @description：为{@link Operator}管理数据的存储位置、IO等工作
- */
 public class Channel {
 
     private Operator sourceOperator; // 边的起始点

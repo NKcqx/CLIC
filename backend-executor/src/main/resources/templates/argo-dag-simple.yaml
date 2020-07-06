@@ -1,3 +1,6 @@
+# @author 杜清华
+# @since  2020/7/6 11:39
+# @version 1.0
 # 使用argo创建argo workflow
 apiVersion: argoproj.io/v1alpha1
 kind: Workflow
