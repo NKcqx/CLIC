@@ -1,8 +1,4 @@
-/**
- * @author 陈齐翔，杜清华
- * @since  2020/7/6 11:39
- * @version 1.0
- */
+
 package basic.operators;
 
 
@@ -24,7 +20,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
-
+/**
+ * operator类
+ *
+ * @author 陈齐翔，杜清华
+ * @since  2020/7/6 11:39
+ * @version 1.0
+ */
 
 public class Operator implements Visitable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Operator.class);

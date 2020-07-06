@@ -1,8 +1,3 @@
-/**
- * @author 杜清华
- * @since  2020/7/6 11:39
- * @version 1.0
- */
 package fdu.daslab.backend.executor.utils;
 import fdu.daslab.backend.executor.model.ArgoNode;
 import org.yaml.snakeyaml.DumperOptions;
@@ -15,6 +10,10 @@ import java.util.*;
 
 /**
  * 写入yaml的工具类
+ *
+ *  @author 杜清华
+ *  @since  2020/7/6 11:39
+ *  @version 1.0
  */
 public class YamlUtil {
 
