@@ -1,8 +1,4 @@
-/**
- * @author 陈齐翔
- * @version 1.0
- * @since 2020/7/6 1:40 下午
- */
+
 package channel;
 
 import basic.operators.Operator;
@@ -10,6 +6,11 @@ import basic.operators.Operator;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 public class Channel {
 
     private Operator sourceOperator; // 边的起始点

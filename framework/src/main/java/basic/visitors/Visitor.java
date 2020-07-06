@@ -1,13 +1,14 @@
-/**
- * @author 陈齐翔
- * @version 1.0
- * @since 2020/7/6 1:40 下午
- */
+
 package basic.visitors;
 
 import basic.operators.Operator;
 import basic.traversal.AbstractTraversal;
 
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 public abstract class Visitor {
     protected AbstractTraversal planTraversal;
 

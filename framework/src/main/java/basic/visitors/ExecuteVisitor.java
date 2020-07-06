@@ -1,8 +1,4 @@
-/**
- * @author 陈齐翔
- * @version 1.0
- * @since 2020/7/6 1:40 下午
- */
+
 package basic.visitors;
 
 import basic.operators.Operator;
@@ -13,6 +9,11 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 public class ExecuteVisitor extends Visitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecuteVisitor.class);
     private List<Operator> visited = new ArrayList<>();

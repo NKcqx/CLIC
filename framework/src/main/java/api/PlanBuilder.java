@@ -1,8 +1,4 @@
-/**
- * @author 陈齐翔
- * @version 1.0
- * @since 2020/7/6 1:40 下午
- */
+
 package api;
 
 import adapters.ArgoAdapter;
@@ -27,6 +23,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 public class PlanBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlanBuilder.class);
     private LinkedList<Operator> pipeline;

@@ -1,7 +1,5 @@
 /**
- * @author 陈齐翔
- * @version 1.0
- * @since 2020/7/6 1:40 下午
+
  */
 package basic.operators;
 
@@ -21,6 +19,10 @@ import java.util.Map;
 
 /**
  * 单例类，实现API -> OperatorTemplate的映射，以供Operator找到对应的配置文件
+ *
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
  */
 public final class OperatorFactory {
     private static Map<String, String> mapping = new HashMap<>();

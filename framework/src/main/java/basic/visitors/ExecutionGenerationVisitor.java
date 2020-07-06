@@ -1,8 +1,4 @@
-/**
- * @author 陈齐翔
- * @version 1.0
- * @since 2020/7/6 1:40 下午
- */
+
 package basic.visitors;
 
 import basic.operators.Operator;
@@ -18,8 +14,12 @@ import java.util.List;
 
 /**
  * 1. 调出Opt的配置文件，从所有implement中选择最优的
- * 1. 管理Execution Plan的处理方式，如输出的格式、文件类型、文件路径等
- * 2. 管理Execution Opt.的输入输出
+ * 2. 管理Execution Plan的处理方式，如输出的格式、文件类型、文件路径等
+ * 3. 管理Execution Opt.的输入输出
+ *
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
  */
 public class ExecutionGenerationVisitor extends Visitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionGenerationVisitor.class);

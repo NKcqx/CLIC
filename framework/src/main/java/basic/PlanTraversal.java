@@ -1,7 +1,5 @@
 /**
- * @author 陈齐翔
- * @version 1.0
- * @since 2020/7/6 1:40 下午
+
  */
 package basic;
 
@@ -13,6 +11,10 @@ import java.util.Queue;
 
 /**
  * 用于遍历plan的，提供DFS、BFS TODO:以后改成抽象基类，再在此基础上实现DFSTraversal, BFSTraversal , UDFTraversal等等
+ *
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
  */
 public class PlanTraversal {
     private final int traverseType;

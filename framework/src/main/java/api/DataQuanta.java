@@ -1,7 +1,5 @@
 /**
- * @author 陈齐翔
- * @version 1.0
- * @since 2020/7/6 1:40 下午
+
  */
 package api;
 
@@ -14,6 +12,10 @@ import java.util.Map;
 
 /**
  * 相当于DAG图中的每个节点，节点内部保存实际的Operator，提供一系列API以供构造下一跳（可以有多个）
+ *
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
  */
 public final class DataQuanta {
     private Operator operator;
