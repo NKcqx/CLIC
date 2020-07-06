@@ -6,7 +6,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * 测试 Java Join Operator的udf
+ * @author 唐志伟，刘丰艺
+ * @since 2020/7/6 14:05
+ * @version 1.0
  */
 public class TestJoinCaseFunc {
 

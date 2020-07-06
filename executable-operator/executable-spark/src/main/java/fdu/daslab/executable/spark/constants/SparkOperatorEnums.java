@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * spark平台支持的算子
  */
-public class SparkOperatorEnums {
+public final class SparkOperatorEnums {
 
     // 以下用于参数的传递
     public static final String FILE_SOURCE = "file_source";  // 读取文件的source
@@ -22,6 +22,9 @@ public class SparkOperatorEnums {
     public static final String REDUCE_BY_KEY = "reduce_by_key";
     public static final String SORT = "sort";
 ////    public static final String JOIN = "join";
+
+    private SparkOperatorEnums() {
+    }
 
     // 所有支持的operator
     public static Map<String, BasicOperator<JavaRDD<List<String>>>> getAllOperators() {
@@ -34,6 +37,4 @@ public class SparkOperatorEnums {
             put(SORT, new SortOperator());
         }};
     }
-
-    private SparkOperatorEnums() {}
 }

@@ -1,18 +1,18 @@
 package basic.traversal;
 
-import basic.Operators.Operator;
+import basic.operators.Operator;
 import channel.Channel;
 
 import java.util.*;
 
-
-public class DfsTraversal extends AbstractTraversal{
+public class DfsTraversal extends AbstractTraversal {
     private final Deque<Operator> stack;
     private final List<Operator> visited;
-    public DfsTraversal(Operator root){
+
+    public DfsTraversal(Operator root) {
         super(root);
-        stack=new ArrayDeque<Operator>();
-        visited=new ArrayList<>();
+        stack = new ArrayDeque<Operator>();
+        visited = new ArrayList<>();
         stack.addLast(root);
 
     }
@@ -24,25 +24,26 @@ public class DfsTraversal extends AbstractTraversal{
 
     @Override
     public Operator nextOpt() {
-        if(hasNextOpt()){
-            Operator res=stack.pollLast();
+        if (hasNextOpt()) {
+            Operator res = stack.pollLast();
             visited.add(res);
 
-            ListIterator<Channel> iterator=res.getOutputChannel().listIterator(res.getOutputChannel().size());
-            while(iterator.hasPrevious()){
-                Operator toadd=iterator.previous().getTargetOperator();
+            ListIterator<Channel> iterator = res.getOutputChannel().listIterator(res.getOutputChannel().size());
+            while (iterator.hasPrevious()) {
+                Operator toadd = iterator.previous().getTargetOperator();
                 stack.addLast(toadd);
             }
 
-            Operator toRemove=stack.peekLast();
-            while(visited.contains(toRemove)){
-                 stack.pollLast();
-                 toRemove=stack.peekLast();
+            Operator toRemove = stack.peekLast();
+            while (visited.contains(toRemove)) {
+                stack.pollLast();
+                toRemove = stack.peekLast();
             }
 
             return res;
+        } else {
+            return null;
         }
-        else return null;
     }
 
     @Override

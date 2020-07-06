@@ -15,7 +15,9 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * 测试 Java Join Operator 是否可用的main函数类
+ * @author 唐志伟，刘丰艺
+ * @since 2020/7/6 14:05
+ * @version 1.0
  */
 public class ExecuteJavaJoin {
 

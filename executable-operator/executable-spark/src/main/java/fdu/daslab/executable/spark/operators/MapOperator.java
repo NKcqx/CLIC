@@ -16,18 +16,17 @@ import java.util.List;
 @Parameters(separators = "=")
 public class MapOperator implements BasicOperator<JavaRDD<List<String>>> {
     // 通过指定路径来获取代码的udf
-    @Parameter(names={"--udfName"})
+    @Parameter(names = {"--udfName"})
     String mapFunctionName;
 
     @Override
     public void execute(ParamsModel<JavaRDD<List<String>>> inputArgs, ResultModel<JavaRDD<List<String>>> result) {
         MapOperator mapArgs = (MapOperator) inputArgs.getOperatorParam();
-        @SuppressWarnings("unchecked")
-        final JavaRDD<List<String>> nextStream = result.getInnerResult()
+        @SuppressWarnings("unchecked") final JavaRDD<List<String>> nextStream = result.getInnerResult()
                 .map(data -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel
                     FunctionModel functionModel = inputArgs.getFunctionModel();
-                    return (List<String>)functionModel.invoke(mapArgs.mapFunctionName, data);
+                    return (List<String>) functionModel.invoke(mapArgs.mapFunctionName, data);
                 });
         result.setInnerResult(nextStream);
     }

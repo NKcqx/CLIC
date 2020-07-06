@@ -23,7 +23,7 @@ public class FunctionModel {
      * @param args 参数列表
      * @return 结果
      */
-    public Object invoke(String functionName, Object ...args) {
+    public Object invoke(String functionName, Object... args) {
         try {
             return functionMap.get(functionName).invoke(obj, args);
         } catch (IllegalAccessException | InvocationTargetException e) {

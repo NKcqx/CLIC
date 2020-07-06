@@ -2,14 +2,20 @@ package fdu.daslab.executable.java.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.*;
+import fdu.daslab.executable.basic.model.BiOptParamsModel;
+import fdu.daslab.executable.basic.model.BinaryBasicOperator;
+import fdu.daslab.executable.basic.model.FunctionModel;
+import fdu.daslab.executable.basic.model.ResultModel;
 
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Java平台的join算子
+ * @author 唐志伟，刘丰艺
+ * @since 2020/7/6 14:05
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>> {

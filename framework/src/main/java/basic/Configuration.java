@@ -1,3 +1,8 @@
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 package basic;
 
 import org.apache.commons.io.IOUtils;
@@ -5,7 +10,6 @@ import org.apache.commons.io.IOUtils;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -18,20 +22,20 @@ public class Configuration {
         this(DEFAULT_CONFIGURATION_FILE_NAME);
     }
 
-    public Configuration(String config_file_name) throws FileNotFoundException {
+    public Configuration(String configFileName) throws FileNotFoundException {
         try {
-            InputStream in = this.getClass().getClassLoader().getResourceAsStream(config_file_name);
+            InputStream in = this.getClass().getClassLoader().getResourceAsStream(configFileName);
             this.loadConfig(in);
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new FileNotFoundException(String.format("无法加载默认配置文件，请检查是否存在: ", DEFAULT_CONFIGURATION_FILE_NAME));
         }
     }
 
-    private void loadConfig(InputStream config_stream) throws FileNotFoundException {
+    private void loadConfig(InputStream configStream) throws FileNotFoundException {
         try {
-            final Properties properties = new Properties();
-            properties.load(config_stream);
-            for (Map.Entry<Object, Object> propertyEntry : properties.entrySet()) {
+            final Properties configProperties = new Properties();
+            configProperties.load(configStream);
+            for (Map.Entry<Object, Object> propertyEntry : configProperties.entrySet()) {
                 final String key = propertyEntry.getKey().toString();
                 final String value = propertyEntry.getValue().toString();
                 this.properties.put(key, value);
@@ -39,10 +43,11 @@ public class Configuration {
         } catch (IOException e) {
             throw new FileNotFoundException(String.format("无法加载默认配置文件，请检查是否存在: ", DEFAULT_CONFIGURATION_FILE_NAME));
         } finally {
-            IOUtils.closeQuietly(config_stream);
+            IOUtils.closeQuietly(configStream);
         }
     }
-    public String getProperty(String key){
+
+    public String getProperty(String key) {
         return this.properties.get(key);
     }
 }

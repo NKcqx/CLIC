@@ -5,7 +5,9 @@ import fdu.daslab.executable.basic.utils.ReflectUtil;
 import java.io.Serializable;
 
 /**
- * BinaryOperator使用的参数模型
+ * @author 唐志伟，刘丰艺
+ * @since 2020/7/6 14:05
+ * @version 1.0
  */
 public class BiOptParamsModel<MODEL> implements Serializable {
 
