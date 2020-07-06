@@ -13,17 +13,21 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * 文件写入
+ * 文件写入的算子
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:41 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class FileSink implements BasicOperator<Stream<List<String>>> {
 
     // 输入路径
-    @Parameter(names={"--output"}, required = true)
+    @Parameter(names = {"--output"}, required = true)
     String outputFileName;
 
     // 输出的分隔符
-    @Parameter(names={"--separator"})
+    @Parameter(names = {"--separator"})
     String separateStr = ",";
 
     @Override
@@ -31,7 +35,7 @@ public class FileSink implements BasicOperator<Stream<List<String>>> {
                         ResultModel<Stream<List<String>>> result) {
         FileSink fileSinkArgs = (FileSink) inputArgs.getOperatorParam();
         try {
-            FileWriter fileWritter = new FileWriter(fileSinkArgs.outputFileName,true);
+            FileWriter fileWritter = new FileWriter(fileSinkArgs.outputFileName, true);
             BufferedWriter out = new BufferedWriter(fileWritter);
             result.getInnerResult()
                     .forEach(record -> {

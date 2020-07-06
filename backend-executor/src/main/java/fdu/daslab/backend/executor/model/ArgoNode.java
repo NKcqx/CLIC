@@ -4,6 +4,10 @@ import java.util.List;
 
 /**
  * 定义argo的DAG上的一个node
+ *
+ * @author 杜清华，唐志伟
+ * @since  2020/7/6 11:39
+ * @version 1.0
  */
 public class ArgoNode {
 

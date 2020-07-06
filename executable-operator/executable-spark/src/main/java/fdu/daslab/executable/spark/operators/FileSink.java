@@ -11,16 +11,20 @@ import org.apache.spark.api.java.JavaRDD;
 import java.util.List;
 
 /**
- * 写入文件
+ * 写入文件的算子
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:52 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class FileSink implements BasicOperator<JavaRDD<List<String>>> {
     // 输入路径
-    @Parameter(names={"--output"}, required = true)
+    @Parameter(names = {"--output"}, required = true)
     String outputFileName;
 
     // 输出的分隔符
-    @Parameter(names={"--sep"})
+    @Parameter(names = {"--sep"})
     String separateStr = ",";
 
     @Override

@@ -6,6 +6,10 @@ import java.util.Map;
 
 /**
  * 定义的function实体，包含function的对象，以及其中声明的方法
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:22 PM
+ * @version 1.0
  */
 public class FunctionModel {
 
@@ -23,7 +27,7 @@ public class FunctionModel {
      * @param args 参数列表
      * @return 结果
      */
-    public Object invoke(String functionName, Object ...args) {
+    public Object invoke(String functionName, Object... args) {
         try {
             return functionMap.get(functionName).invoke(obj, args);
         } catch (IllegalAccessException | InvocationTargetException e) {

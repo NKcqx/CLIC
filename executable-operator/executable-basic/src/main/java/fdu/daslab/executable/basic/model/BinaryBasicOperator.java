@@ -3,7 +3,9 @@ package fdu.daslab.executable.basic.model;
 import java.io.Serializable;
 
 /**
- * Bi类型算子
+ * @author 唐志伟，刘丰艺
+ * @since 2020/7/6 14:05
+ * @version 1.0
  */
 public interface BinaryBasicOperator<MODEL> extends Serializable {
 
