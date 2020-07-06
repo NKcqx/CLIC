@@ -18,6 +18,10 @@ import java.util.Map;
 
 /**
  * 调用argo server的post接口提交任务
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:59 PM
+ * @version 1.0
  */
 public class HttpUtil {
 

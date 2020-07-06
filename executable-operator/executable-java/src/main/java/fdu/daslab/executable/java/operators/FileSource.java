@@ -16,6 +16,10 @@ import java.util.stream.Stream;
 
 /**
  * 文件读取，返回一个二维数组，不指定类型
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:46 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class FileSource implements BasicOperator<Stream<List<String>>> {

@@ -14,6 +14,10 @@ import java.util.List;
 
 /**
  * spark平台的sort算子，可执行
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:53 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class SortOperator implements BasicOperator<JavaRDD<List<String>>> {

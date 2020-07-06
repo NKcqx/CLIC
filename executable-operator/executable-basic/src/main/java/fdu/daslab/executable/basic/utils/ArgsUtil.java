@@ -8,6 +8,10 @@ import java.util.Map;
 
 /**
  * 参数解析的工具类
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:36 PM
+ * @version 1.0
  */
 public class ArgsUtil {
 

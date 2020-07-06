@@ -5,7 +5,13 @@ import fdu.daslab.executable.basic.utils.ReflectUtil;
 import java.io.Serializable;
 
 /**
- * 参数模型
+ * 平台的参数模型
+ *
+ * @param <MODEL> 每个平台定义流转的数据模型，比如Stream、RDD
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:35 PM
+ * @version 1.0
  */
 public class ParamsModel<MODEL> implements Serializable {
 

@@ -7,7 +7,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 反射工具类
+ * 反射需要的工具类，如访问获取FunctionModel
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:39 PM
+ * @version 1.0
  */
 public class ReflectUtil {
 

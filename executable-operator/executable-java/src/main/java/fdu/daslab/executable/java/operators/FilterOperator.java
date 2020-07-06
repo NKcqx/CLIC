@@ -12,6 +12,10 @@ import java.util.stream.Stream;
 
 /**
  * java平台的filter算子，可执行
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:47 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class FilterOperator implements BasicOperator<Stream<List<String>>> {

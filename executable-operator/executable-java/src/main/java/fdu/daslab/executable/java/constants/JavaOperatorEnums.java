@@ -8,9 +8,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
-
 /**
  * java平台支持的所有算子
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:40 PM
+ * @version 1.0
  */
 public final class JavaOperatorEnums {
 
