@@ -1,6 +1,6 @@
-package basic.Operators;
+package basic.operators;
 
-import basic.Visitors.Visitor;
+import basic.visitors.Visitor;
 
 public interface Visitable {
     void acceptVisitor(Visitor visitor);

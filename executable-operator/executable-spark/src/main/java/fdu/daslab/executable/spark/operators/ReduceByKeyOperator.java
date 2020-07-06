@@ -20,11 +20,11 @@ import java.util.stream.StreamSupport;
 public class ReduceByKeyOperator implements BasicOperator<JavaRDD<List<String>>> {
 
     // 通过指定路径来获取代码的udf
-    @Parameter(names={"--udfName"})
+    @Parameter(names = {"--udfName"})
     String reduceFunctionName;
 
     // 获取key的function
-    @Parameter(names={"--keyName"})
+    @Parameter(names = {"--keyName"})
     String keyExtractFunctionName;
 
     @Override
@@ -36,7 +36,7 @@ public class ReduceByKeyOperator implements BasicOperator<JavaRDD<List<String>>>
                 .groupBy(data -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel
                     FunctionModel functionModel = inputArgs.getFunctionModel();
-                    return (String)functionModel.invoke(reduceArgs.keyExtractFunctionName, data);
+                    return (String) functionModel.invoke(reduceArgs.keyExtractFunctionName, data);
                 })
                 .map(groupedData -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel

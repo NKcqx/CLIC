@@ -6,7 +6,9 @@ import fdu.daslab.executable.basic.model.BasicOperator;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -19,11 +21,11 @@ import java.util.stream.Stream;
 public class FileSource implements BasicOperator<Stream<List<String>>> {
 
     // 输入路径
-    @Parameter(names={"--input"}, required = true)
+    @Parameter(names = {"--input"}, required = true)
     String inputFileName;
 
     // 输入的分隔符
-    @Parameter(names={"--separator"})
+    @Parameter(names = {"--separator"})
     String separateStr = ",";
 
     @Override
@@ -38,7 +40,7 @@ public class FileSource implements BasicOperator<Stream<List<String>>> {
             while ((line = bufferedReader.readLine()) != null) {
                 resultList.add(Arrays.asList(line.split(sourceArgs.separateStr)));
             }
-            result.setInnerResult(resultList.stream());// 设置最后的stream
+            result.setInnerResult(resultList.stream()); // 设置最后的stream
             bufferedReader.close();
             inputStream.close();
         } catch (Exception e) {

@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 public class MapOperator implements BasicOperator<Stream<List<String>>> {
 
     // 通过指定路径来获取代码的udf
-    @Parameter(names={"--udfName"})
+    @Parameter(names = {"--udfName"})
     String mapFunctionName;
 
     @Override

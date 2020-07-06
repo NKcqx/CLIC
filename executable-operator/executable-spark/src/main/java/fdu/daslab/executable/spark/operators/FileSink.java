@@ -16,11 +16,11 @@ import java.util.List;
 @Parameters(separators = "=")
 public class FileSink implements BasicOperator<JavaRDD<List<String>>> {
     // 输入路径
-    @Parameter(names={"--output"}, required = true)
+    @Parameter(names = {"--output"}, required = true)
     String outputFileName;
 
     // 输出的分隔符
-    @Parameter(names={"--sep"})
+    @Parameter(names = {"--sep"})
     String separateStr = ",";
 
     @Override

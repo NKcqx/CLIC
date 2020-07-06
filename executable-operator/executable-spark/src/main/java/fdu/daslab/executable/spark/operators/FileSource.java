@@ -19,11 +19,11 @@ import java.util.List;
 public class FileSource implements BasicOperator<JavaRDD<List<String>>> {
 
     // 输入路径
-    @Parameter(names={"--input"}, required = true)
+    @Parameter(names = {"--input"}, required = true)
     String inputFileName;
 
     // 输入的分隔符
-    @Parameter(names={"--sep"})
+    @Parameter(names = {"--sep"})
     String separateStr = ",";
 
     // 初始的partition数量
@@ -36,7 +36,8 @@ public class FileSource implements BasicOperator<JavaRDD<List<String>>> {
         final JavaSparkContext javaSparkContext = SparkInitUtil.getDefaultSparkContext();
         FileSource sourceArgs = (FileSource) inputArgs.getOperatorParam();
         // 读取文件，并按照分割符分隔开来
-        final JavaRDD<List<String>> listJavaRDD = javaSparkContext.textFile(sourceArgs.inputFileName, sourceArgs.partitionNum)
+        final JavaRDD<List<String>> listJavaRDD = javaSparkContext
+                .textFile(sourceArgs.inputFileName, sourceArgs.partitionNum)
                 .map(line -> Arrays.asList(line.split(sourceArgs.separateStr)));
         result.setInnerResult(listJavaRDD);
     }

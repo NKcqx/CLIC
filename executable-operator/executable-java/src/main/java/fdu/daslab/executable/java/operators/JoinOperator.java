@@ -2,7 +2,10 @@ package fdu.daslab.executable.java.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.*;
+import fdu.daslab.executable.basic.model.BasicOperator;
+import fdu.daslab.executable.basic.model.FunctionModel;
+import fdu.daslab.executable.basic.model.ParamsModel;
+import fdu.daslab.executable.basic.model.ResultModel;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -14,7 +17,7 @@ import java.util.stream.Stream;
 public class JoinOperator implements BasicOperator<Stream<List<String>>> {
 
     // 通过指定路径来获取代码的udf
-    @Parameter(names={"--udfName"})
+    @Parameter(names = {"--udfName"})
     String joinFunctionName;
 
     @Override

@@ -1,6 +1,6 @@
 package channel;
 
-import basic.Operators.Operator;
+import basic.operators.Operator;
 
 import java.util.List;
 import java.util.Map;
@@ -10,23 +10,25 @@ import java.util.Map;
  */
 public class Channel {
 
-    private Operator source_operator; // 边的起始点
-    private Operator target_operator; // 边的终点
+    private Operator sourceOperator; // 边的起始点
+    private Operator targetOperator; // 边的终点
 
-    private Map<String, String> key_pair; // source输出数据的key - target输入数据的key, 即source输出的值 传给 target输入数据的值
+    private Map<String, String> keyPair; // source输出数据的key - target输入数据的key, 即source输出的值 传给 target输入数据的值
 
-    public Channel(Operator source, Operator target, Map<String, String> key_pair){
-        this.source_operator = source;
-        this.target_operator = target;
-        this.key_pair = key_pair;
+    public Channel(Operator source, Operator target, Map<String, String> keyPair) {
+        this.sourceOperator = source;
+        this.targetOperator = target;
+        this.keyPair = keyPair;
     }
 
-    public Channel(Operator source, List<String> output_keyset, Operator target, List<String> input_keyset) {
-        source_operator = source;
-        target_operator = target;
+    public Channel(Operator source, List<String> outputKeySet, Operator target, List<String> inputKeySet) {
+        sourceOperator = source;
+        targetOperator = target;
     }
 
-    public Map<String, String> getKeyPair(){return this.key_pair;}
+    public Map<String, String> getKeyPair() {
+        return this.keyPair;
+    }
 
 //    /**
 //     * 从起点Opt把key代表的数据发送到终点Opt的指定Key中
@@ -40,13 +42,16 @@ public class Channel {
 //        }
 //    }
 
-    public String retriveData(String key){
-        return source_operator.getOutputData(key);
+    public String retriveData(String key) {
+        return sourceOperator.getOutputData(key);
     }
 
-    public Operator getTargetOperator(){
-        return this.target_operator;
+    public Operator getTargetOperator() {
+        return this.targetOperator;
     }
-    public Operator getSourceOperator(){return this.source_operator;}
+
+    public Operator getSourceOperator() {
+        return this.sourceOperator;
+    }
 
 }

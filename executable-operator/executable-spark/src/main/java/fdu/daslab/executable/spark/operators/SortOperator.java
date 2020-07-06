@@ -19,7 +19,7 @@ import java.util.List;
 public class SortOperator implements BasicOperator<JavaRDD<List<String>>> {
 
     // 通过指定路径来获取代码的udf
-    @Parameter(names={"--udfName"})
+    @Parameter(names = {"--udfName"})
     String sortFunctionName;
 
     // 升序还是降序
@@ -30,11 +30,22 @@ public class SortOperator implements BasicOperator<JavaRDD<List<String>>> {
     @Parameter(names = {"--partitionNum"})
     Integer partitionNum = 5;
 
+    @Override
+    public void execute(ParamsModel<JavaRDD<List<String>>> inputArgs,
+                        ResultModel<JavaRDD<List<String>>> result) {
+        SortOperator sortOperator = (SortOperator) inputArgs.getOperatorParam();
+        final JavaRDD<List<String>> nextStream = result.getInnerResult()
+                .sortBy(data -> new SerializableComparator(data, inputArgs, sortOperator),
+                        sortOperator.isAscending, sortOperator.partitionNum);
+        result.setInnerResult(nextStream);
+    }
+
     // 默认的比较器Comparable是不能序列化的，因此需要重新定义一个
     static class SerializableComparator implements Serializable, Comparable<SerializableComparator> {
         private List<String> data;
         private ParamsModel<JavaRDD<List<String>>> inputArgs;
         private SortOperator sortOperator;
+
         public SerializableComparator(List<String> data, ParamsModel<JavaRDD<List<String>>> inputArgs,
                                       SortOperator sortOperator) {
             this.data = data;
@@ -49,15 +60,5 @@ public class SortOperator implements BasicOperator<JavaRDD<List<String>>> {
             return (int) functionModel.invoke(sortOperator.sortFunctionName,
                     this.data, that.data);
         }
-    }
-
-    @Override
-    public void execute(ParamsModel<JavaRDD<List<String>>> inputArgs,
-                        ResultModel<JavaRDD<List<String>>> result) {
-        SortOperator sortOperator = (SortOperator) inputArgs.getOperatorParam();
-        final JavaRDD<List<String>> nextStream = result.getInnerResult()
-                .sortBy(data -> new SerializableComparator(data, inputArgs, sortOperator),
-                        sortOperator.isAscending, sortOperator.partitionNum);
-        result.setInnerResult(nextStream);
     }
 }

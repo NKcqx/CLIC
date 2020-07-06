@@ -1,7 +1,6 @@
 package fdu.daslab.backend.executor.utils;
 
 import fdu.daslab.backend.executor.model.ArgoNode;
-import org.apache.hadoop.yarn.webapp.hamlet.Hamlet;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -62,7 +61,7 @@ public class YamlUtil {
         }
         if (tpl.contains("spark")) {
             templates.add(readYaml(sparkTemplate));
-        }//后续可根据平台添加
+        } //后续可根据平台添加
         long n = System.nanoTime();
         String storePath = resPath + n + ".yaml";
         //存入指定路径

@@ -12,7 +12,7 @@ import java.util.stream.Stream;
 /**
  * java平台支持的所有算子
  */
-public class JavaOperatorEnums {
+public final class JavaOperatorEnums {
 
     // 以下用于参数的传递
     public static final String FILE_SOURCE = "SourceOperator";  // 读取文件的source
@@ -23,6 +23,9 @@ public class JavaOperatorEnums {
     public static final String SORT = "SortOperator";
     public static final String JOIN = "JoinOperator";
 //    public static final String TOP = "top";
+
+    private JavaOperatorEnums() {
+    }
 
     // 所有支持的operator
     public static Map<String, BasicOperator<Stream<List<String>>>> getAllOperators() {
@@ -36,6 +39,4 @@ public class JavaOperatorEnums {
             put(JOIN, new JoinOperator());
         }};
     }
-
-    private JavaOperatorEnums() {}
 }

@@ -23,11 +23,11 @@ import java.util.stream.Stream;
 public class ReduceByKeyOperator implements BasicOperator<Stream<List<String>>> {
 
     // 通过指定路径来获取代码的udf
-    @Parameter(names={"--udfName"})
+    @Parameter(names = {"--udfName"})
     String reduceFunctionName;
 
     // 获取key的function
-    @Parameter(names={"--keyName"})
+    @Parameter(names = {"--keyName"})
     String keyExtractFunctionName;
 
     @Override

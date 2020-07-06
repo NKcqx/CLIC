@@ -19,11 +19,11 @@ import java.util.stream.Stream;
 public class FileSink implements BasicOperator<Stream<List<String>>> {
 
     // 输入路径
-    @Parameter(names={"--output"}, required = true)
+    @Parameter(names = {"--output"}, required = true)
     String outputFileName;
 
     // 输出的分隔符
-    @Parameter(names={"--separator"})
+    @Parameter(names = {"--separator"})
     String separateStr = ",";
 
     @Override
@@ -31,7 +31,7 @@ public class FileSink implements BasicOperator<Stream<List<String>>> {
                         ResultModel<Stream<List<String>>> result) {
         FileSink fileSinkArgs = (FileSink) inputArgs.getOperatorParam();
         try {
-            FileWriter fileWritter = new FileWriter(fileSinkArgs.outputFileName,true);
+            FileWriter fileWritter = new FileWriter(fileSinkArgs.outputFileName, true);
             BufferedWriter out = new BufferedWriter(fileWritter);
             result.getInnerResult()
                     .forEach(record -> {

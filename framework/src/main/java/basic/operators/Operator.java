@@ -1,8 +1,8 @@
-package basic.Operators;
+package basic.operators;
 
 
 import basic.Param;
-import basic.Visitors.Visitor;
+import basic.visitors.Visitor;
 import channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,37 +15,35 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.*;
 
 public class Operator implements Visitable {
-    private static final Logger logger = LoggerFactory.getLogger(Operator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(Operator.class);
 
     private Document config = null; // Operator的XML文件
-    private String config_file_path = null; // Operator的XML文件路径
-    private String ID; // Operator ID
+    private String configFilePath = null; // Operator的XML文件路径
+    private String id; // Operator ID
     private String name; // Operator Name
     private OperatorKind kind; // Operator Kind
     private Map<String, OperatorEntity> entities = new HashMap<>(); // Operator的所有实现
-    private OperatorEntity selected_entity = null; // 当前Operator选择的最优的平台实现
+    private OperatorEntity selectedEntity = null; // 当前Operator选择的最优的平台实现
 
-    private Map<String, String> plt_mapping = new HashMap<>(); // platform mapping，用于找到该Operator所支持的所有平台
-    private String the_data; // 临时的，代表当前Opt的计算结果，想办法赋予个unique的值
-    private List<Channel> input_channels;
-    private Map<String, Param> input_data_list;
+    private Map<String, String> pltMapping = new HashMap<>(); // platform mapping，用于找到该Operator所支持的所有平台
+    private String theData; // 临时的，代表当前Opt的计算结果，想办法赋予个unique的值
+    private List<Channel> inputChannels;
+    private Map<String, Param> inputDataList;
     // 记录下一跳Opt.
-    private List<Channel> output_channels; // 这里Channel的index应该没什么用
-    private Map<String, Param> output_data_list; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
+    private List<Channel> outputChannels; // 这里Channel的index应该没什么用
+    private Map<String, Param> outputDataList; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
 
 
-    public enum OperatorKind {
-        CALCULATOR, SUPPLIER, CONSUMER, TRANSFORMER, SHUFFLER
-    }
-
-    public Operator(String config_file_path) throws IOException, SAXException, ParserConfigurationException {
+    public Operator(String configFilePath) throws IOException, SAXException, ParserConfigurationException {
         //暂时使用相对路径
-        this.config_file_path = config_file_path;
-        String full_config_file_path = System.getProperty("user.dir") + config_file_path;
+        this.configFilePath = configFilePath;
+        String full_config_file_path = System.getProperty("user.dir") + configFilePath;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
         this.config = builder.parse(new File(full_config_file_path));
@@ -55,10 +53,10 @@ public class Operator implements Visitable {
 //        this.result_list = Arrays.asList(new String[10]);
 //        this.output_channel = Arrays.asList(new Channel[10]);
 //        this.input_channel = Arrays.asList(new Channel[10]);
-        this.input_data_list = new HashMap<String, Param>();
-        this.output_data_list = new HashMap<String, Param>();
-        this.output_channels = new ArrayList<>();
-        this.input_channels = new ArrayList<>();
+        this.inputDataList = new HashMap<String, Param>();
+        this.outputDataList = new HashMap<String, Param>();
+        this.outputChannels = new ArrayList<>();
+        this.inputChannels = new ArrayList<>();
 
         // 1. 先载入Opt的基本信息，如ID、name、kind
         this.loadBasicInfo();
@@ -75,10 +73,10 @@ public class Operator implements Visitable {
      */
     private void loadBasicInfo() {
         Element root = config.getDocumentElement();
-        this.ID = root.getAttribute("ID");
+        this.id = root.getAttribute("ID");
         this.name = root.getAttribute("name");
         // Temp data, 下一版就删除
-        this.the_data = "Compute Result: `" + this.ID + this.hashCode() + "`";
+        this.theData = "Compute Result: `" + this.id + this.hashCode() + "`";
         switch (root.getAttribute("kind")) {
             case "calculator":
                 this.kind = OperatorKind.CALCULATOR;
@@ -121,9 +119,9 @@ public class Operator implements Visitable {
                 Param param = new Param(name, data_type, is_required, default_value.isEmpty() ? null : default_value);
                 if (kind.equals("input")) {
                     // 输入参数
-                    this.input_data_list.put(name, param);
+                    this.inputDataList.put(name, param);
                 } else {
-                    this.output_data_list.put(name, param);
+                    this.outputDataList.put(name, param);
                 }
             }
         }
@@ -147,7 +145,7 @@ public class Operator implements Visitable {
                     String platform = platform_ele.getAttribute("ID");
                     String path = platform_ele.getElementsByTagName("path").item(0).getTextContent();
                     //格式<platform，path>
-                    this.plt_mapping.put(platform, path);
+                    this.pltMapping.put(platform, path);
                 }
             }
         }
@@ -161,12 +159,12 @@ public class Operator implements Visitable {
      * @throws SAXException
      */
     public void getPlatformOptConf() throws ParserConfigurationException, IOException, SAXException {
-        if (this.plt_mapping == null || this.plt_mapping.isEmpty()) {
+        if (this.pltMapping == null || this.pltMapping.isEmpty()) {
             throw new FileNotFoundException("该算子没有具体平台的实现");
         }
-        for (String key : plt_mapping.keySet()) {
+        for (String key : pltMapping.keySet()) {
             //相对路径
-            String path = System.getProperty("user.dir") + plt_mapping.get(key);
+            String path = System.getProperty("user.dir") + pltMapping.get(key);
 
             File configFile = new File(path);
             DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -197,12 +195,13 @@ public class Operator implements Visitable {
 
     /**
      * 根据传入的entity_id为当前opt设置其对应的要运行的平台
+     *
      * @param entity_id 特定平台的ID
      * @throws FileNotFoundException
      */
     public void selectEntity(String entity_id) throws FileNotFoundException {
         if (this.entities.containsKey(entity_id)) {
-            this.selected_entity = this.entities.get(entity_id);
+            this.selectedEntity = this.entities.get(entity_id);
         } else
             throw new FileNotFoundException("未找到与 %s 匹配的实体，请使用配置文件中platform的ID属性");
 
@@ -210,11 +209,12 @@ public class Operator implements Visitable {
 
     /**
      * 由用户直接为Opt指定具体计算平台，而不用系统择优选择
+     *
      * @param entity_id
      * @throws FileNotFoundException
      */
     public void withTargetPlatform(String entity_id) throws FileNotFoundException {
-        if (this.selected_entity != null) {
+        if (this.selectedEntity != null) {
             // TODO: 已经选好了 还能变吗？
             ;
         }
@@ -226,7 +226,7 @@ public class Operator implements Visitable {
         tempPrepareData();
 
         // 2. 检查是否获得了全部输入数据，是：继续执行； 否：return 特殊值
-        for (Map.Entry entry : this.input_data_list.entrySet()) {
+        for (Map.Entry entry : this.inputDataList.entrySet()) {
             Param param = (Param) entry.getValue();
             if (!param.hasValue()) {
                 return false;
@@ -241,19 +241,19 @@ public class Operator implements Visitable {
      * 准备输入数据，实际上这个很复杂，设计各类协议的各类参数，是需要在Opt的配置文件里指定的
      */
     public void tempPrepareData() {
-        for (Map.Entry entry : this.input_data_list.entrySet()) {
+        for (Map.Entry entry : this.inputDataList.entrySet()) {
             String key = (String) entry.getKey();
             this.setInputData(key, key + "'s temp value");
         }
     }
 
     public void tempDoEvaluate() {
-        this.logging(this.getID() + " evaluate: {\n   inputs: ");
-        for (String key : this.input_data_list.keySet()) {
+        this.logging(this.getId() + " evaluate: {\n   inputs: ");
+        for (String key : this.inputDataList.keySet()) {
             this.logging("      " + key);
         }
         this.logging("   outputs:");
-        for (String key : this.output_data_list.keySet()) {
+        for (String key : this.outputDataList.keySet()) {
             this.logging("      " + key);
         }
         this.logging("}");
@@ -266,16 +266,26 @@ public class Operator implements Visitable {
      * @return
      */
     public String getOutputData(String key) {
-        Param output_data = this.output_data_list.get(key);
+        Param output_data = this.outputDataList.get(key);
         return output_data.getData();
     }
 
     public List<String> getOutputData(List<String> keys) {
         List<String> output_sublist = new ArrayList<>();
         for (String key : keys) {
-            output_sublist.add(this.output_data_list.get(key).getData());
+            output_sublist.add(this.outputDataList.get(key).getData());
         }
         return output_sublist;
+    }
+
+    public void setData(String key, String value) {
+        if (this.inputDataList.containsKey(key)) {
+            this.setInputData(key, value);
+        } else if (this.outputDataList.containsKey(key)) {
+            this.setOutputData(key, value);
+        } else {
+            throw new NoSuchElementException(String.format("未在配置文件%s中找到指定的参数名：%s", this.configFilePath, key));
+        }
     }
 
 //    public List<String> getAllOutputData() {
@@ -304,41 +314,31 @@ public class Operator implements Visitable {
 //        return this.output_data_list.keySet();
 //    }
 
-    public void setData(String key, String value) {
-        if (this.input_data_list.containsKey(key)) {
-            this.setInputData(key, value);
-        } else if (this.output_data_list.containsKey(key)) {
-            this.setOutputData(key, value);
-        } else {
-            throw new NoSuchElementException(String.format("未在配置文件%s中找到指定的参数名：%s", this.config_file_path, key));
-        }
-    }
-
     private void setOutputData(String key, String value) {
-        this.output_data_list.get(key).setValue(value);
+        this.outputDataList.get(key).setValue(value);
 
     }
 
     private void setInputData(String key, String value) {
         // TODO：value的type要和Param里声明的type做类型检查
-        this.input_data_list.get(key).setValue(value);
+        this.inputDataList.get(key).setValue(value);
 
     }
 
     public List<Channel> getOutputChannel() {
-        return output_channels;
+        return outputChannels;
     }
 
     public List<Channel> getInputChannel() {
-        return input_channels;
+        return inputChannels;
     }
 
-    public Map<String, Param> getInput_data_list() {
-        return this.input_data_list;
+    public Map<String, Param> getInputDataList() {
+        return this.inputDataList;
     }
 
-    public Map<String, Param> getOutput_data_list() {
-        return this.output_data_list;
+    public Map<String, Param> getOutputDataList() {
+        return this.outputDataList;
     }
 
     /**
@@ -349,10 +349,9 @@ public class Operator implements Visitable {
      */
     public int connectTo(Channel outgoing_channel) {
         // 拿到下一个放数据的槽的index
-        this.output_channels.add(outgoing_channel);
-        return this.output_channels.size();
+        this.outputChannels.add(outgoing_channel);
+        return this.outputChannels.size();
     }
-
 
     /**
      * 同connectTO
@@ -362,8 +361,8 @@ public class Operator implements Visitable {
      */
     public int connectFrom(Channel incoming_channel) {
         // 拿到下一个放数据的槽的index
-        this.input_channels.add(incoming_channel);
-        return this.input_channels.size();
+        this.inputChannels.add(incoming_channel);
+        return this.inputChannels.size();
     }
 
     public boolean isLoaded() {
@@ -371,19 +370,19 @@ public class Operator implements Visitable {
     }
 
     public int getNextOutputIndex() {
-        return this.output_channels.size();
+        return this.outputChannels.size();
     }
 
     public int getNextInputIndex() {
-        return this.input_channels.size();
+        return this.inputChannels.size();
     }
 
     public String getName() {
         return this.name;
     }
 
-    public String getID() {
-        return this.ID;
+    public String getId() {
+        return this.id;
     }
 
     public Map<String, OperatorEntity> getEntities() {
@@ -391,11 +390,11 @@ public class Operator implements Visitable {
     }
 
     private void logging(String s) {
-        logger.info(s);
+        LOGGER.info(s);
     }
 
     public OperatorEntity getSelectedEntities() {
-        return selected_entity;
+        return selectedEntity;
     }
 
     @Override
@@ -407,11 +406,15 @@ public class Operator implements Visitable {
     public String toString() {
         return "Operator{" +
                 "config=" + config +
-                ", ID='" + ID + '\'' +
+                ", ID='" + id + '\'' +
                 ", name='" + name + '\'' +
                 ", kind=" + kind +
                 ", entities=" + entities +
                 '}';
+    }
+
+    public enum OperatorKind {
+        CALCULATOR, SUPPLIER, CONSUMER, TRANSFORMER, SHUFFLER
     }
 
     public class OperatorEntity {
