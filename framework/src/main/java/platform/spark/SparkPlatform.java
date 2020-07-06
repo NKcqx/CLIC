@@ -35,14 +35,14 @@ public final class SparkPlatform {
 
     public static SparkVisitor convertOperator2SparkVisitor(Operator operator) {
         SparkVisitor result;
-        String operatorName = operator.getName();
+        String operatorName = operator.getOperatorName();
         Class<?> visitorClass = SparkVisitorConfiguration.opMap.get(operatorName);
         try {
             Method newInstanceMethod = visitorClass.getMethod("newInstance", Operator.class);
             result = (SparkVisitor) newInstanceMethod.invoke(null, operator);
         } catch (Exception e) {
             e.printStackTrace();
-            throw new AssertionError("operator " + operator.getName() + " not exists:\n" + e.getMessage());
+            throw new AssertionError("operator " + operator.getOperatorName() + " not exists:\n" + e.getMessage());
         }
         return result;
     }

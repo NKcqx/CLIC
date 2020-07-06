@@ -1,3 +1,8 @@
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 package api;
 
 import adapters.ArgoAdapter;
@@ -136,8 +141,8 @@ public class PlanBuilder {
      */
     private void switchOperator(int idx1, int idx2) {
         this.logging(String.format("->    Switching Opt %s @%d with %s @%d",
-                this.pipeline.get(idx1).getId(), idx1,
-                this.pipeline.get(idx2).getId(), idx2
+                this.pipeline.get(idx1).getOperatorID(), idx1,
+                this.pipeline.get(idx2).getOperatorID(), idx2
         ));
         assert idx1 < this.pipeline.size() : "idx1是无效的索引";
         assert idx2 < this.pipeline.size() : "idx2是无效的索引";

@@ -1,3 +1,8 @@
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 package basic.visitors;
 
 import basic.operators.Operator;
@@ -52,9 +57,9 @@ public class ExecutionGenerationVisitor extends Visitor {
             });
             try {
                 this.logging(String.format("> Pick %s 's `%s[%f]` implement as best Operator\n",
-                        opt.getId(), bestOperatorEntity.getID(), bestOperatorEntity.getCost()));
+                        opt.getOperatorID(), bestOperatorEntity.getEntityID(), bestOperatorEntity.getCost()));
                 // 为opt选择最佳的entity
-                opt.selectEntity(bestOperatorEntity.getID());
+                opt.selectEntity(bestOperatorEntity.getEntityID());
 
             } catch (FileNotFoundException e) {
                 // 即使出了问题也不要来这找...这只是调用对象内部的ID，错也是别人往里传错了

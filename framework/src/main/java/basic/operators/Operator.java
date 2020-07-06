@@ -1,3 +1,8 @@
+/**
+ * @author 陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 1:40 下午
+ */
 package basic.operators;
 
 
@@ -20,14 +25,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.*;
 
+
 public class Operator implements Visitable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Operator.class);
 
-    private Document config = null; // Operator的XML文件
+    private Document operatorConfig = null; // Operator的XML文件
     private String configFilePath = null; // Operator的XML文件路径
-    private String id; // Operator ID
-    private String name; // Operator Name
-    private OperatorKind kind; // Operator Kind
+    private String operatorID; // Operator ID
+    private String operatorName; // Operator Name
+    private OperatorKind operatorKind; // Operator Kind
     private Map<String, OperatorEntity> entities = new HashMap<>(); // Operator的所有实现
     private OperatorEntity selectedEntity = null; // 当前Operator选择的最优的平台实现
 
@@ -43,11 +49,11 @@ public class Operator implements Visitable {
     public Operator(String configFilePath) throws IOException, SAXException, ParserConfigurationException {
         //暂时使用相对路径
         this.configFilePath = configFilePath;
-        String full_config_file_path = System.getProperty("user.dir") + configFilePath;
+        String fullConfigFilePath = System.getProperty("user.dir") + configFilePath;
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder builder = factory.newDocumentBuilder();
-        this.config = builder.parse(new File(full_config_file_path));
-        this.config.getDocumentElement().normalize();
+        this.operatorConfig = builder.parse(new File(fullConfigFilePath));
+        this.operatorConfig.getDocumentElement().normalize();
 
         // 现在拿到index的方式还比较草率（.size()），所以不敢随便初始化大小
 //        this.result_list = Arrays.asList(new String[10]);
@@ -72,29 +78,29 @@ public class Operator implements Visitable {
      * 装载基本状态，如ID、Name、params, 各类Entity，装载后的Opt.仍是 `抽象`的
      */
     private void loadBasicInfo() {
-        Element root = config.getDocumentElement();
-        this.id = root.getAttribute("ID");
-        this.name = root.getAttribute("name");
+        Element root = operatorConfig.getDocumentElement();
+        this.operatorID = root.getAttribute("ID");
+        this.operatorName = root.getAttribute("name");
         // Temp data, 下一版就删除
-        this.theData = "Compute Result: `" + this.id + this.hashCode() + "`";
+        this.theData = "Compute Result: `" + this.operatorID + this.hashCode() + "`";
         switch (root.getAttribute("kind")) {
             case "calculator":
-                this.kind = OperatorKind.CALCULATOR;
+                this.operatorKind = OperatorKind.CALCULATOR;
                 break;
             case "supplier":
-                this.kind = OperatorKind.SUPPLIER;
+                this.operatorKind = OperatorKind.SUPPLIER;
                 break;
             case "consumer":
-                this.kind = OperatorKind.CONSUMER;
+                this.operatorKind = OperatorKind.CONSUMER;
                 break;
             case "transformer":
-                this.kind = OperatorKind.TRANSFORMER;
+                this.operatorKind = OperatorKind.TRANSFORMER;
                 break;
             case "shuffler":
-                this.kind = OperatorKind.SHUFFLER;
+                this.operatorKind = OperatorKind.SHUFFLER;
                 break;
             default:
-                this.kind = OperatorKind.CALCULATOR;
+                this.operatorKind = OperatorKind.CALCULATOR;
         }
 
     }
@@ -104,19 +110,19 @@ public class Operator implements Visitable {
      */
     private void loadParams() {
         // 加载参数列表
-        Element root = this.config.getDocumentElement();
-        Node params_root_node = root.getElementsByTagName("parameters").item(0);
-        if (params_root_node.getNodeType() == Node.ELEMENT_NODE) {
-            Element params_root_ele = (Element) params_root_node;
-            NodeList params = params_root_ele.getElementsByTagName("parameter");
+        Element root = this.operatorConfig.getDocumentElement();
+        Node paramsRootNode = root.getElementsByTagName("parameters").item(0);
+        if (paramsRootNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element paramsRootEle = (Element) paramsRootNode;
+            NodeList params = paramsRootEle.getElementsByTagName("parameter");
             for (int i = 0; i < params.getLength(); i++) {
-                Element param_ele = (Element) params.item(i);
-                String kind = param_ele.getAttribute("kind");
-                String name = param_ele.getAttribute("name");
-                String data_type = param_ele.getAttribute("data_type");
-                String default_value = param_ele.getAttribute("default");
-                Boolean is_required = param_ele.getAttribute("is_required").equals("true"); // 没定义该属性时返回空字符串,于是默认为false
-                Param param = new Param(name, data_type, is_required, default_value.isEmpty() ? null : default_value);
+                Element paramEle = (Element) params.item(i);
+                String kind = paramEle.getAttribute("kind");
+                String name = paramEle.getAttribute("name");
+                String dataType = paramEle.getAttribute("data_type");
+                String defaultValue = paramEle.getAttribute("default");
+                Boolean isRequired = paramEle.getAttribute("is_required").equals("true"); // 没定义该属性时返回空字符串,于是默认为false
+                Param param = new Param(name, dataType, isRequired, defaultValue.isEmpty() ? null : defaultValue);
                 if (kind.equals("input")) {
                     // 输入参数
                     this.inputDataList.put(name, param);
@@ -132,18 +138,18 @@ public class Operator implements Visitable {
      */
     public void loadOperatorConfs() {
         // 再依次载入所有的平台实现（XML）
-        Element root = this.config.getDocumentElement();
-        Node platforms_root_node = root.getElementsByTagName("platforms").item(0);
-        if (platforms_root_node.getNodeType() == Node.ELEMENT_NODE) {
-            Element platform_root_ele = (Element) platforms_root_node;
-            NodeList platforms = platform_root_ele.getElementsByTagName("platform");
+        Element root = this.operatorConfig.getDocumentElement();
+        Node platformsRootNode = root.getElementsByTagName("platforms").item(0);
+        if (platformsRootNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element platformRootEle = (Element) platformsRootNode;
+            NodeList platforms = platformRootEle.getElementsByTagName("platform");
             // 逐个遍历所有Platform
             for (int i = 0; i < platforms.getLength(); i++) {
-                Node platform_node = platforms.item(i);
-                if (platform_node.getNodeType() == Node.ELEMENT_NODE) {
-                    Element platform_ele = (Element) platform_node;
-                    String platform = platform_ele.getAttribute("ID");
-                    String path = platform_ele.getElementsByTagName("path").item(0).getTextContent();
+                Node platformNode = platforms.item(i);
+                if (platformNode.getNodeType() == Node.ELEMENT_NODE) {
+                    Element platformEle = (Element) platformNode;
+                    String platform = platformEle.getAttribute("ID");
+                    String path = platformEle.getElementsByTagName("path").item(0).getTextContent();
                     //格式<platform，path>
                     this.pltMapping.put(platform, path);
                 }
@@ -181,44 +187,45 @@ public class Operator implements Visitable {
      */
     private void loadImplements(Document config) {
         Element root = config.getDocumentElement();
-        Node platform_node = root.getElementsByTagName("platform").item(0);
-        if (platform_node.getNodeType() == Node.ELEMENT_NODE) {
-            Element platform_ele = (Element) platform_node;
+        Node platformNode = root.getElementsByTagName("platform").item(0);
+        if (platformNode.getNodeType() == Node.ELEMENT_NODE) {
+            Element platformEle = (Element) platformNode;
             OperatorEntity platform = new OperatorEntity(
-                    platform_ele.getAttribute("ID"),
-                    platform_ele.getElementsByTagName("language").item(0).getTextContent(),
-                    Double.valueOf(platform_ele.getElementsByTagName("cost").item(0).getTextContent())
+                    platformEle.getAttribute("ID"),
+                    platformEle.getElementsByTagName("language").item(0).getTextContent(),
+                    Double.valueOf(platformEle.getElementsByTagName("cost").item(0).getTextContent())
             );
-            this.entities.put(platform_ele.getAttribute("ID"), platform);
+            this.entities.put(platformEle.getAttribute("ID"), platform);
         }
     }
 
     /**
      * 根据传入的entity_id为当前opt设置其对应的要运行的平台
      *
-     * @param entity_id 特定平台的ID
+     * @param entityId 特定平台的ID
      * @throws FileNotFoundException
      */
-    public void selectEntity(String entity_id) throws FileNotFoundException {
-        if (this.entities.containsKey(entity_id)) {
-            this.selectedEntity = this.entities.get(entity_id);
-        } else
+    public void selectEntity(String entityId) throws FileNotFoundException {
+        if (this.entities.containsKey(entityId)) {
+            this.selectedEntity = this.entities.get(entityId);
+        } else {
             throw new FileNotFoundException("未找到与 %s 匹配的实体，请使用配置文件中platform的ID属性");
+        }
 
     }
 
     /**
      * 由用户直接为Opt指定具体计算平台，而不用系统择优选择
      *
-     * @param entity_id
+     * @param entityId
      * @throws FileNotFoundException
      */
-    public void withTargetPlatform(String entity_id) throws FileNotFoundException {
-        if (this.selectedEntity != null) {
-            // TODO: 已经选好了 还能变吗？
-            ;
-        }
-        this.selectEntity(entity_id);
+    public void withTargetPlatform(String entityId) throws FileNotFoundException {
+//        if (this.selectedEntity != null) {
+//            // TODO: 已经选好了 还能变吗？
+//            ;
+//        }
+        this.selectEntity(entityId);
     }
 
     public boolean evaluate() {
@@ -248,7 +255,7 @@ public class Operator implements Visitable {
     }
 
     public void tempDoEvaluate() {
-        this.logging(this.getId() + " evaluate: {\n   inputs: ");
+        this.logging(this.getOperatorID() + " evaluate: {\n   inputs: ");
         for (String key : this.inputDataList.keySet()) {
             this.logging("      " + key);
         }
@@ -266,16 +273,16 @@ public class Operator implements Visitable {
      * @return
      */
     public String getOutputData(String key) {
-        Param output_data = this.outputDataList.get(key);
-        return output_data.getData();
+        Param outputData = this.outputDataList.get(key);
+        return outputData.getData();
     }
 
     public List<String> getOutputData(List<String> keys) {
-        List<String> output_sublist = new ArrayList<>();
+        List<String> outputSublist = new ArrayList<>();
         for (String key : keys) {
-            output_sublist.add(this.outputDataList.get(key).getData());
+            outputSublist.add(this.outputDataList.get(key).getData());
         }
-        return output_sublist;
+        return outputSublist;
     }
 
     public void setData(String key, String value) {
@@ -344,29 +351,29 @@ public class Operator implements Visitable {
     /**
      * 即 outgoing_opt的setter
      *
-     * @param outgoing_channel 和下一跳相连的边
+     * @param outgoingChannel 和下一跳相连的边
      * @return 本次Channel的index
      */
-    public int connectTo(Channel outgoing_channel) {
+    public int connectTo(Channel outgoingChannel) {
         // 拿到下一个放数据的槽的index
-        this.outputChannels.add(outgoing_channel);
+        this.outputChannels.add(outgoingChannel);
         return this.outputChannels.size();
     }
 
     /**
      * 同connectTO
      *
-     * @param incoming_channel 和上一跳相连的边(channel)
+     * @param incomingChannel 和上一跳相连的边(channel)
      * @return 本次Channel的index
      */
-    public int connectFrom(Channel incoming_channel) {
+    public int connectFrom(Channel incomingChannel) {
         // 拿到下一个放数据的槽的index
-        this.inputChannels.add(incoming_channel);
+        this.inputChannels.add(incomingChannel);
         return this.inputChannels.size();
     }
 
     public boolean isLoaded() {
-        return !(this.config == null); // 用这个判断可能不太好，也许可以试试判断有没有configFile
+        return !(this.operatorConfig == null); // 用这个判断可能不太好，也许可以试试判断有没有configFile
     }
 
     public int getNextOutputIndex() {
@@ -377,12 +384,12 @@ public class Operator implements Visitable {
         return this.inputChannels.size();
     }
 
-    public String getName() {
-        return this.name;
+    public String getOperatorName() {
+        return this.operatorName;
     }
 
-    public String getId() {
-        return this.id;
+    public String getOperatorID() {
+        return this.operatorID;
     }
 
     public Map<String, OperatorEntity> getEntities() {
@@ -404,13 +411,13 @@ public class Operator implements Visitable {
 
     @Override
     public String toString() {
-        return "Operator{" +
-                "config=" + config +
-                ", ID='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", kind=" + kind +
-                ", entities=" + entities +
-                '}';
+        return "Operator{"
+                + "config=" + operatorConfig
+                + ", ID='" + operatorID + '\''
+                + ", name='" + operatorName + '\''
+                + ", kind=" + operatorKind
+                + ", entities=" + entities
+                + '}';
     }
 
     public enum OperatorKind {
@@ -418,7 +425,7 @@ public class Operator implements Visitable {
     }
 
     public class OperatorEntity {
-        String ID;
+        String entityID;
         String language;
         Double cost;
 
@@ -426,18 +433,18 @@ public class Operator implements Visitable {
             this("", "", 0.);
         }
 
-        public OperatorEntity(String ID, String language, Double cost) {
-            this.ID = ID;
+        public OperatorEntity(String entityID, String language, Double cost) {
+            this.entityID = entityID;
             this.language = language;
             this.cost = cost;
         }
 
-        public String getID() {
-            return ID;
+        public String getEntityID() {
+            return entityID;
         }
 
-        public void setID(String ID) {
-            this.ID = ID;
+        public void setEntityID(String entityID) {
+            this.entityID = entityID;
         }
 
         public String getLanguage() {
@@ -458,10 +465,10 @@ public class Operator implements Visitable {
 
         @Override
         public String toString() {
-            return "OperatorEntity{" +
-                    "language='" + language + '\'' +
-                    ", cost=" + cost +
-                    '}';
+            return "OperatorEntity{"
+                    + "language='" + language + '\''
+                    + ", cost=" + cost
+                    + '}';
         }
     }
 }

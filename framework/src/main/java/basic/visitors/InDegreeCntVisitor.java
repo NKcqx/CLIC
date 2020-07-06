@@ -22,11 +22,7 @@ public class InDegreeCntVisitor extends Visitor {
             int before = map.getOrDefault(channel.getTargetOperator(), Integer.valueOf(0));
             map.put(channel.getTargetOperator(), before + 1);
         }
-  /*      System.out.println("new round");
-        for(Map.Entry<Operator,Integer> entry:map.entrySet()){
-            System.out.println(entry.getKey()+"    "+entry.getValue());
-        }
-        System.out.println("-------------------");*/
+
         if (planTraversal.hasNextOpt()) {
             planTraversal.nextOpt().acceptVisitor(this);
         }
