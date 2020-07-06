@@ -22,12 +22,10 @@ public class TestJoinCaseFunc {
         String pattern = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(record.get(0));
-        //System.out.println("左表过滤函数运行");
         return m.find();
     }
     // companyInfo.csv中将“公司领域”是“US”的过滤掉
     public boolean filterCompanyInfoFunc(List<String> record) {
-        //System.out.println("右表过滤函数运行");
         return (!record.get(3).equals("US"));
     }
 
@@ -43,12 +41,10 @@ public class TestJoinCaseFunc {
 
     // 自定义join之后左表中要select的属性
     public List<String> leftTableFunc(List<String> record) {
-        //System.out.println("左表新表函数运行");
         return Arrays.asList(record.get(0), record.get(1));
     }
     // 自定义join之后右表中要select的属性
     public List<String> rightTableFunc(List<String> record) {
-        //System.out.println("右表新表函数运行");
         return Arrays.asList(record.get(1), record.get(2), record.get(3));
     }
 

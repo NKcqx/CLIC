@@ -19,7 +19,9 @@ public class BiOptParamsModel<MODEL> implements Serializable {
     // 对于spark等而言，无法序列化内部反射类，因此只记录class文件路径（目前需要将udf发送给各个workder端）
     private String functionClasspath;
 
-    public void setFunctionClasspath(String functionClasspath) { this.functionClasspath = functionClasspath; }
+    public void setFunctionClasspath(String functionClasspath) {
+        this.functionClasspath = functionClasspath;
+    }
 
     public BiOptParamsModel(BinaryBasicOperator<MODEL> operatorParam, FunctionModel functionModel) {
         this.operatorParam = operatorParam;

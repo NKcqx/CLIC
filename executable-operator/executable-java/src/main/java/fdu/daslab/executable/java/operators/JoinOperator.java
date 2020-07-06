@@ -20,16 +20,16 @@ import java.util.stream.Stream;
 @Parameters(separators = "=")
 public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>> {
 
-    @Parameter(names={"--leftTableKeyName"})
+    @Parameter(names = {"--leftTableKeyName"})
     String leftTableKeyExtractFunctionName;
 
-    @Parameter(names={"--rightTableKeyName"})
+    @Parameter(names = {"--rightTableKeyName"})
     String rightTableKeyExtractFunctionName;
 
-    @Parameter(names={"--leftTableFuncName"})
+    @Parameter(names = {"--leftTableFuncName"})
     String leftTableFuncName;
 
-    @Parameter(names={"--rightTableFuncName"})
+    @Parameter(names = {"--rightTableFuncName"})
     String rightTableFuncName;
 
     @Override
@@ -61,9 +61,9 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>> {
 
         List<String> resultLine = new ArrayList<>();
         List<List<String>> resultList = new ArrayList<>();
-        for(int i=0;i<leftTable.size();i++) {
-            for(int j=0;j<rightTable.size();j++) {
-                if(leftKeys.get(i).equals(rightKeys.get(j))) {
+        for (int i = 0; i < leftTable.size(); i++) {
+            for (int j = 0; j < rightTable.size(); j++) {
+                if (leftKeys.get(i).equals(rightKeys.get(j))) {
                     resultLine.add(leftKeys.get(i));
                     resultLine.addAll(leftTable.get(i));
                     resultLine.addAll(rightTable.get(j));
