@@ -1,3 +1,8 @@
+/**
+ * @author 杜清华
+ * @since  2020/7/6 11:39
+ * @version 1.0
+ */
 package adapters;
 
 import basic.operators.Operator;
@@ -30,7 +35,6 @@ public class ArgoAdapter implements OperatorAdapter {
         int idInJob = 0; //记录node的id作为标记（在同一个job下可用）
 
         if (operators.isEmpty()) {
-            System.out.println("Warning: the param(operators) is empty in groupContinuousOperator function!!!");
             return argoNodeList;
         }
         //先将operator进行分组
