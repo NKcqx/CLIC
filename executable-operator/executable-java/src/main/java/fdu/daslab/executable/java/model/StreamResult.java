@@ -6,8 +6,11 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * 封装JavaStream
+ * 将JavaStream封装成一个ResultMode
  *
+ * @author 唐志伟
+ * @since 2020/7/6 1:40 PM
+ * @version 1.0
  */
 public class StreamResult implements ResultModel<Stream<List<String>>> {
 

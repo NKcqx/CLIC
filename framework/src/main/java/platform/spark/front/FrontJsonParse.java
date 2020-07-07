@@ -1,18 +1,17 @@
-package platform.spark.Front;
+package platform.spark.front;
 
-
-
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 import api.DataQuanta;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 public class FrontJsonParse {
 
@@ -29,7 +28,7 @@ public class FrontJsonParse {
             Object obj = jsonParser.parse(reader);
             JSONObject nodeObject = (JSONObject) obj;
             JSONArray nodeList = (JSONArray) nodeObject.get("nodeList");
-            nodeList.forEach(node-> {
+            nodeList.forEach(node -> {
                 try {
                     parseNodeObject((JSONObject) node);
                 } catch (Exception e) {
@@ -49,38 +48,38 @@ public class FrontJsonParse {
 
         DataQuanta temp;
 
-        Integer nodeOrder = Integer.parseInt((String)node.get("DagOrder"));
-        String nodeName = (String)node.get("nodeName");
-        String data_path = (String)node.get("data_path");
-        String parquet = (String)node.get("parquet");
+        Integer nodeOrder = Integer.parseInt((String) node.get("DagOrder"));
+        String nodeName = (String) node.get("nodeName");
+        String dataPath = (String) node.get("data_path");
+        String parquet = (String) node.get("parquet");
 
-        if(nodeOrder == 5) {
-            temp = DataQuanta.createInstance(nodeName,null);
+        if (nodeOrder == 5) {
+            temp = DataQuanta.createInstance(nodeName, null);
         } else {
-            temp = DataQuanta.createInstance(nodeName, new HashMap<String,String>() {{
-                put(data_path,parquet);
+            temp = DataQuanta.createInstance(nodeName, new HashMap<String, String>() {{
+                put(dataPath, parquet);
             }});
         }
 
 
-        nodeOrderDataQuanta.put(nodeOrder,temp);
-        nodeOrderJSONTable.put(nodeOrder,node);
+        nodeOrderDataQuanta.put(nodeOrder, temp);
+        nodeOrderJSONTable.put(nodeOrder, node);
     }
 
     public void connectDAG() {
-        for(Map.Entry<Integer,JSONObject> entry : nodeOrderJSONTable.entrySet()) {
+        for (Map.Entry<Integer, JSONObject> entry : nodeOrderJSONTable.entrySet()) {
             Integer nodeOrder = entry.getKey();
             DataQuanta node = nodeOrderDataQuanta.get(nodeOrder);
             JSONObject nodeJSON = entry.getValue();
-            Integer outId = Integer.parseInt((String)nodeJSON.get("out_id"));
+            Integer outId = Integer.parseInt((String) nodeJSON.get("out_id"));
             if (outId > 0) {
-                node.outgoing(nodeOrderDataQuanta.get(outId),null);
+                node.outgoing(nodeOrderDataQuanta.get(outId), null);
             }
         }
 
     }
 
-    public HashMap<Integer,DataQuanta> getNodeOrderDataQuanta() {
+    public HashMap<Integer, DataQuanta> getNodeOrderDataQuanta() {
         return this.nodeOrderDataQuanta;
     }
 

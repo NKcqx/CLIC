@@ -7,6 +7,10 @@ import java.util.List;
 
 /**
  * 定义一个可以在argo上实际运行所需要的参数的pipeline
+ *
+ * @author 杜清华，唐志伟
+ * @since  2020/7/6 11:39
+ * @version 1.0
  */
 public class Pipeline {
 

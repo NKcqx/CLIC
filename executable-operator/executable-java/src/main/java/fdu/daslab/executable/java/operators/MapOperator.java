@@ -11,13 +11,17 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Java平台的map函数
+ * java平台的map函数，可执行
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:47 PM
+ * @version 1.0
  */
 @Parameters(separators = "=")
 public class MapOperator implements BasicOperator<Stream<List<String>>> {
 
     // 通过指定路径来获取代码的udf
-    @Parameter(names={"--udfName"})
+    @Parameter(names = {"--udfName"})
     String mapFunctionName;
 
     @Override

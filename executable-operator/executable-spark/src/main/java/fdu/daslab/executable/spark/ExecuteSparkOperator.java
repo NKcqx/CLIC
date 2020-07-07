@@ -12,11 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * spark平台的operator的具体实现，兼顾算子融合，因为是线性，只支持线性的合并，不支持 n - 1 ===> 依赖前面的pipeline同步，不依赖具体执行
+ * spark平台的operator的具体实现，兼顾算子融合，因为是线性，只支持线性的合并，不支持 n - 1
+ * ===> 依赖前面的pipeline同步，不依赖具体执行
  *
  * 按照--udfPath指定用户定义的类的位置
  * 按照--master --appName --... 以及一些其他参数设置spark的配置信息
  * 按照--operator指定实际的算子，可以指定多个，多个在一个平台上，后台统一执行
+ * @author 唐志伟
+ * @since 2020/7/6 1:55 PM
+ * @version 1.0
  */
 public class ExecuteSparkOperator {
 

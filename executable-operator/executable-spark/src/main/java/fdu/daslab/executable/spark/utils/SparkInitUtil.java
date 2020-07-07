@@ -5,6 +5,10 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 /**
  * 初始化spark需要的一些方法
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:53 PM
+ * @version 1.0
  */
 public class SparkInitUtil {
 

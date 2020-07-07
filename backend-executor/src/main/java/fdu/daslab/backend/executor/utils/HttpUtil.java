@@ -5,16 +5,27 @@ import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.apache.commons.httpclient.methods.StringRequestEntity;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 调用argo server的post接口提交任务
+ *
+ * @author 唐志伟
+ * @since 2020/7/6 1:59 PM
+ * @version 1.0
  */
 public class HttpUtil {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpUtil.class);
 
     // argo server的配置路径
     private static final String ARGO_SERVER_CONFIG = "argo-server.yaml";
@@ -22,7 +33,7 @@ public class HttpUtil {
     /**
      * 提交post请求到指定路径
      *
-     * @param url 提交路径
+     * @param url    提交路径
      * @param params post的参数
      */
     public static void postHttp(String url, String params) {
@@ -33,12 +44,12 @@ public class HttpUtil {
         try {
             // 提交的数据，是一个json串
             RequestEntity requestEntity = new StringRequestEntity(
-                    params ,"application/json" ,"UTF-8");
+                    params, "application/json", "UTF-8");
             postMethod.setRequestEntity(requestEntity);
-            postMethod.setRequestHeader("Content-Type","application/json");
+            postMethod.setRequestHeader("Content-Type", "application/json");
             httpClient.executeMethod(postMethod);
             String responseMsg = postMethod.getResponseBodyAsString();
-            System.out.println(responseMsg);
+            LOGGER.info(responseMsg);
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
@@ -69,7 +80,8 @@ public class HttpUtil {
             e.printStackTrace();
         }
         // 获取argo server的配置路径
-        InputStream argoServerStream = HttpUtil.class.getClassLoader().getResourceAsStream(ARGO_SERVER_CONFIG);
+        InputStream argoServerStream = HttpUtil.class.getClassLoader()
+                .getResourceAsStream(ARGO_SERVER_CONFIG);
         Map<String, Object> yamlObject = yaml.load(argoServerStream);
         @SuppressWarnings("unchecked")
         Map<String, Object> serverPathMap = (Map<String, Object>) yamlObject.get("argoServer");
