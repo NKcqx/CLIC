@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<platform name="SparkPlatform" ID="SparkPlatform">
+
+    <docker-image>executable-spark:v1</docker-image>
+
+
+    <execute>
+        <parameter name="environment">/bin/sh -c</parameter>
+        <parameter name="package">executable-spark</parameter>
+    </execute>
+
+    <parameters>
+        <parameter name="udfPath" required="true"> </parameter>
+    </parameters>
+
+    <properties>
+        <property name="master">local[2]</property>
+
+    </properties>
+
+    <cost-estimation>
+        <factor name="cpu-mhz">2700</factor>
+        <factor name="machines">1</factor>
+        <factor name="cores-per-machine">2</factor>
+    </cost-estimation>
+
+</platform>

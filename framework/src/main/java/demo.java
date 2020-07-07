@@ -30,7 +30,6 @@ public class demo {
             }});
 
             DataQuanta sort_node = DataQuanta.createInstance("sort", new HashMap<String, String>(){{
-                put("is_reverse", "false");
                 put("udfName", "sortFunc");
             }});
 
