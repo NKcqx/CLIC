@@ -70,5 +70,6 @@
         <module>framework</module>
         <module>executable-operator</module>
         <module>backend-executor</module>
+        <module>test</module>
     </modules>
 </project>
