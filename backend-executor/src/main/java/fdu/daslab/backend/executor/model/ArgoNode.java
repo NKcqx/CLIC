@@ -37,8 +37,8 @@ public class ArgoNode {
     //节点编号，在每个job中，id是依次的
     int id;
 
-    // 该节点使用的template（image）
-    String template;
+    // 该节点锁子啊的平台platform
+    String platform;
 
     // 该节点依赖的上游
     List<ArgoNode> dependencies;
@@ -46,10 +46,11 @@ public class ArgoNode {
     // 该节点的输入参数
     List<Parameter> parameters;
 
-    public ArgoNode(int id, String name, String template, List<ArgoNode> dependencies, List<Parameter> parameters) {
+    public ArgoNode(int id, String name, String platform, List<ArgoNode> dependencies,
+                    List<Parameter> parameters) {
         this.id = id;
         this.name = name;
-        this.template = template;
+        this.platform = platform;
         this.dependencies = dependencies;
         this.parameters = parameters;
     }
@@ -62,8 +63,8 @@ public class ArgoNode {
         return name;
     }
 
-    public String getTemplate() {
-        return template;
+    public String getPlatform() {
+        return platform;
     }
 
     public List<ArgoNode> getDependencies() {

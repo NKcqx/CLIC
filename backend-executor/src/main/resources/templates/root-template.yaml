@@ -1,0 +1,12 @@
+name: xxx
+inputs:
+  parameters:
+    - name: xxxArgs
+container:
+  image: xxx
+  imagePullPolicy: IfNotPresent
+  command: [xxx]
+  args: [xxx]
+  volumeMounts:
+    - mountPath: /data
+      name: job-volume

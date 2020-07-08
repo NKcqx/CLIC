@@ -2,11 +2,16 @@
 package adapters;
 
 import basic.operators.Operator;
+import basic.platforms.PlatformFactory;
 import fdu.daslab.backend.executor.model.ArgoNode;
+import fdu.daslab.backend.executor.model.ImageTemplate;
 import fdu.daslab.backend.executor.model.OperatorAdapter;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 将平台内部的operator，按照连续的平台分为一组，并组装成argo的形式
@@ -63,6 +68,31 @@ public class ArgoAdapter implements OperatorAdapter {
             argoNodeList.add(node);
         }
         return argoNodeList;
+    }
+
+    /**
+     * 读取xml配置，获取所有已知的image配置
+     *
+     * @return 系统所有已知的image配置
+     */
+    @Override
+    public List<ImageTemplate> generateTemplateByConfig() {
+        List<ImageTemplate> templates = new ArrayList<>();
+        for (String platform : PlatformFactory.getAllPlatform()) {
+            // 设置需要的配置信息到ImageTemplate中
+            ImageTemplate template = new ImageTemplate();
+            template.setPlatform(platform);
+            Map<String, Object> platformConfig = PlatformFactory.getConfigByPlatformName(platform);
+            template.setImage((String) platformConfig.get("dockerImage"));
+            template.setCommend(Arrays.asList(((String) platformConfig.get("environment")).split(" ")));
+            // 把executor和所有的arg按照空格拼装在一起构成运行的命令
+            String executor = (String) platformConfig.get("executor");
+            @SuppressWarnings("unchecked")
+            String args = StringUtils.join(((List<String>) platformConfig.get("args")).toArray(), " ");
+            template.setParamPrefix(executor + " " + args);
+            templates.add(template);
+        }
+        return templates;
     }
 
     /**

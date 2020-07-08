@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<mappings>
+    <pair>
+        <name>spark</name>
+        <platform>
+            <docker-image>executable-spark:v1</docker-image>
+
+            <execution>
+                <environment>/bin/sh -c</environment> <!--  -c: 从string中读取命令  -->
+                <executor>spark submit</executor>
+                <args>
+                    <!-- 平台级运行时参数 由用户或系统填入 -->
+                    <!-- 按序读取、写入 -->
+                    <arg name="package" required="true" with-name="false">executable-spark.jar</arg>
+                    <arg name="--udfPath" required="true" with-name="true"> </arg>
+                </args>
+            </execution>
+
+            <!-- 平台自定义属性，framework仅负责传递，不进去看都有什么 -->
+            <properties>
+                <property name="master">local[2]</property>
+            </properties>
+        </platform>
+    </pair>
+
+    <pair>
+        <name>java</name>
+        <platform>
+            <docker-image>executable-java:v1</docker-image>
+
+            <execution>
+                <environment>/bin/sh -c</environment>
+                <executor>java -jar</executor>
+                <args>
+                    <!-- 平台级运行时参数 -->
+                    <arg name="package" required="true" with-name="false">executable-java.jar</arg>
+                    <arg name="--udfPath" required="true" with-name="true"> </arg>
+                </args>
+            </execution>
+
+        </platform>
+    </pair>
+
+    <pair>
+        <!-- 可以是随便一个C++的平台，以CMake构建的MPI工程为例 -->
+        <name>alchemist</name>
+        <platform>
+            <docker-image>executable-alchemist:v1</docker-image>
+
+            <execution>
+                <environment>/bin/sh -c</environment>
+                <executor>mpiexec</executor> <!-- mpi在MacOS & Linux上的executor -->
+                <args>
+                    <arg name="-n" with-name="true" default="1"> </arg> <!-- 没办法，1能避免socket错误 -->
+                    <arg name="package" with-name="false" required="true">alchemist</arg> <!-- 入口程序 可执行文件 -->
+                    <arg name="--udfPath" required="true" with-name="true"> </arg> <!--  xx.dylib、 xx.dll -->
+                </args>
+            </execution>
+
+            <properties>
+                <property name="OS">linux</property>
+            </properties>
+        </platform>
+    </pair>
+
+</mappings>
