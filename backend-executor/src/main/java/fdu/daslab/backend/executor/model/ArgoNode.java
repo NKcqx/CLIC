@@ -37,7 +37,7 @@ public class ArgoNode {
     //节点编号，在每个job中，id是依次的
     int id;
 
-    // 该节点锁子啊的平台platform
+    // 该节点所使用的平台platform
     String platform;
 
     // 该节点依赖的上游
