@@ -1,6 +1,5 @@
 package api;
 
-import basic.operators.OperatorFactory;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -15,12 +14,12 @@ public class DataQuantaTest {
     @Test
     public void testIncoming() throws Exception {
 
-        int end=System.getProperty("user.dir").indexOf("framework");
-        System.setProperty("user.dir",System.getProperty("user.dir").substring(0,end));
-        System.out.println(System.getProperty("user.dir"));
+        int end = System.getProperty("user.dir").indexOf("framework");
+        System.setProperty("user.dir", System.getProperty("user.dir").substring(0, end));
+//        System.out.print(System.getProperty("user.dir")+"\n");
 
 //        OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
-        PlanBuilder planBuilder=new PlanBuilder();
+        PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
             put("input", "fake path");
         }});
@@ -31,22 +30,22 @@ public class DataQuantaTest {
 //        assert dataQuanta1.incoming(dataQuanta, new HashMap<String, String>() {{
 //            put("incoming.output_key", "this.input_key");
 //        }})==1;
-        dataQuanta1.incoming(dataQuanta,new HashMap<String, String>() {{
+        dataQuanta1.incoming(dataQuanta, new HashMap<String, String>() {{
             put("incoming.output_key", "this.input_key");
         }});
-        assert dataQuanta1.getOperator().getInputChannel().get(0)==dataQuanta.getOperator().getOutputChannel().get(0);
+        assert dataQuanta1.getOperator().getInputChannel().get(0) == dataQuanta.getOperator().getOutputChannel().get(0);
 
     }
 
     @Test
     public void testOutgoing() throws Exception {
 
-        int end=System.getProperty("user.dir").indexOf("framework");
-        System.setProperty("user.dir",System.getProperty("user.dir").substring(0,end));
-        System.out.println(System.getProperty("user.dir"));
+        int end = System.getProperty("user.dir").indexOf("framework");
+        System.setProperty("user.dir", System.getProperty("user.dir").substring(0, end));
+        //System.out.print(System.getProperty("user.dir")+"\n");
 
         //OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
-        PlanBuilder planBuilder=new PlanBuilder();
+        PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
             put("input", "fake path");
         }});
@@ -55,10 +54,10 @@ public class DataQuantaTest {
             put("result", "resultVaule");
         }});
 
-        dataQuanta.outgoing(dataQuanta1,new HashMap<String, String>() {{
+        dataQuanta.outgoing(dataQuanta1, new HashMap<String, String>() {{
             put("incoming.output_key", "this.input_key");
         }});
-        assert dataQuanta.getOperator().getOutputChannel().get(0)==dataQuanta1.getOperator().getInputChannel().get(0);
+        assert dataQuanta.getOperator().getOutputChannel().get(0) == dataQuanta1.getOperator().getInputChannel().get(0);
     }
 
 
