@@ -1,6 +1,9 @@
 package api;
 
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.HashMap;
 
@@ -19,7 +22,12 @@ public class PlanBuilderTest {
         System.out.println(System.getProperty("user.dir"));
 
         PlanBuilder planBuilder=new PlanBuilder();
-//        PlanBuilder test=spy(planBuilder);
+        assert planBuilder.readDataFrom(new HashMap<String,String>(){{put("input", "data/test.csv");}})==planBuilder.getHeadDataQuanta();
+
+        DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String,String>(){{put("input", "data/test.csv");}});
+        planBuilder.setHeadDataQuanta(dataQuanta);
+        assert  planBuilder.getHeadDataQuanta()==dataQuanta;
+
 
     }
 }
