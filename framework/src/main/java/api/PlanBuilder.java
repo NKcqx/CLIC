@@ -162,4 +162,14 @@ public class PlanBuilder {
     private void logging(String s) {
         LOGGER.info(s);
     }
+
+    /**
+     * 设置平台的utf的路径
+     *
+     * @param platform 平台名称
+     * @param utfPath 路径
+     */
+    public void setPlatformUtfPath(String platform, String utfPath) {
+        PlatformFactory.setPlatformArgValue(platform, "--udfPath", utfPath);
+    }
 }

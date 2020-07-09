@@ -118,12 +118,14 @@ public class PlatformFactory {
         Optional<Element> execution = getElementByTag(node, "execution");
         String environment = getElementContentByTag(execution, "environment");
         String executor = getElementContentByTag(execution, "executor");
-        List<String> argsVal = new ArrayList<String>() {{
+        // args在传入参数时是有序的
+        Map<String, String> argsVal = new LinkedHashMap<String, String>() {{
             for (Element arg : getElementListByTag(execution, "args", "arg")) {
                 if (arg.getAttribute("with-name").equals("false")) {
-                    add(arg.getTextContent());
+                    put(arg.getAttribute("name"), arg.getTextContent());
                 } else {
-                    add(arg.getAttribute("name") + "=" + arg.getTextContent());
+                    put(arg.getAttribute("name"),
+                            arg.getAttribute("name") + "=" + arg.getTextContent());
                 }
             }
         }};
@@ -160,6 +162,39 @@ public class PlatformFactory {
      */
     public static Set<String> getAllPlatform() {
         return platformConfigMap.keySet();
+    }
+
+    /**
+     * 设置平台的参数的值
+     *
+     * @param platform 平台
+     * @param arg      参数key
+     * @param newVal   新的值
+     */
+    public static void setPlatformArgValue(String platform, String arg, String newVal) {
+        if (platformConfigMap.containsKey(platform)) {
+            // 使用新的值替换，为了不改变顺序，重新插入一遍
+            Map<String, String> newArgMap = new LinkedHashMap<>();
+
+            Map<String, Object> platformInfo = platformConfigMap.get(platform);
+            @SuppressWarnings("unchecked")
+            Map<String, String> argMap = (Map<String, String>) platformInfo.getOrDefault("args",
+                    new LinkedHashMap<String, String>());
+            argMap.forEach((key, value) -> {
+                if (key.equals(arg)) {
+                    // 说明包含key
+                    if (value.startsWith(key)) {
+                        newArgMap.put(key, key + "=" + newVal);
+                    } else {
+                        newArgMap.put(key, newVal);
+                    }
+                } else {
+                    newArgMap.put(key, value);
+                }
+            });
+            platformInfo.put("args", newArgMap);
+            platformConfigMap.put(platform, platformInfo);
+        }
     }
 
 }

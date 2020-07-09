@@ -51,7 +51,7 @@
                 <environment>/bin/sh -c</environment>
                 <executor>mpiexec</executor> <!-- mpi在MacOS & Linux上的executor -->
                 <args>
-                    <arg name="-n" with-name="true" default="1"> </arg> <!-- 没办法，1能避免socket错误 -->
+                    <arg name="-n" with-name="true">1</arg> <!-- 没办法，1能避免socket错误 -->
                     <arg name="package" with-name="false" required="true">alchemist</arg> <!-- 入口程序 可执行文件 -->
                     <arg name="--udfPath" required="true" with-name="true"> </arg> <!--  xx.dylib、 xx.dll -->
                 </args>

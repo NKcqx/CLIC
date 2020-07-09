@@ -88,7 +88,7 @@ public class ArgoAdapter implements OperatorAdapter {
             // 把executor和所有的arg按照空格拼装在一起构成运行的命令
             String executor = (String) platformConfig.get("executor");
             @SuppressWarnings("unchecked")
-            String args = StringUtils.join(((List<String>) platformConfig.get("args")).toArray(), " ");
+            String args = StringUtils.join(((Map<String, String>) platformConfig.get("args")).values(), " ");
             template.setParamPrefix(executor + " " + args);
             templates.add(template);
         }
