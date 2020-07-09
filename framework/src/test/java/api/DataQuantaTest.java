@@ -15,11 +15,12 @@ public class DataQuantaTest {
     @Test
     public void testIncoming() throws Exception {
 
-        int end=System.getProperty("user.dir").indexOf("framework")-1;
+        int end=System.getProperty("user.dir").indexOf("framework");
         System.setProperty("user.dir",System.getProperty("user.dir").substring(0,end));
         System.out.println(System.getProperty("user.dir"));
 
-        OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
+//        OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
+        PlanBuilder planBuilder=new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
             put("input", "fake path");
         }});
@@ -27,19 +28,25 @@ public class DataQuantaTest {
             put("udfName", "udfNameValue");
             put("result", "resultVaule");
         }});
-        assert dataQuanta1.incoming(dataQuanta, new HashMap<String, String>() {{
+//        assert dataQuanta1.incoming(dataQuanta, new HashMap<String, String>() {{
+//            put("incoming.output_key", "this.input_key");
+//        }})==1;
+        dataQuanta1.incoming(dataQuanta,new HashMap<String, String>() {{
             put("incoming.output_key", "this.input_key");
-        }})==1;
+        }});
+        assert dataQuanta1.getOperator().getInputChannel().get(0)==dataQuanta.getOperator().getOutputChannel().get(0);
+
     }
 
     @Test
     public void testOutgoing() throws Exception {
 
-        int end=System.getProperty("user.dir").indexOf("framework")-1;
+        int end=System.getProperty("user.dir").indexOf("framework");
         System.setProperty("user.dir",System.getProperty("user.dir").substring(0,end));
         System.out.println(System.getProperty("user.dir"));
 
-        OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
+        //OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
+        PlanBuilder planBuilder=new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
             put("input", "fake path");
         }});
@@ -47,9 +54,11 @@ public class DataQuantaTest {
             put("udfName", "udfNameValue");
             put("result", "resultVaule");
         }});
-        assert dataQuanta1.outgoing(dataQuanta, new HashMap<String, String>() {{
+
+        dataQuanta.outgoing(dataQuanta1,new HashMap<String, String>() {{
             put("incoming.output_key", "this.input_key");
-        }})==1;
+        }});
+        assert dataQuanta.getOperator().getOutputChannel().get(0)==dataQuanta1.getOperator().getInputChannel().get(0);
     }
 
 
