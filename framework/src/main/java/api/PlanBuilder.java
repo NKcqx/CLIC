@@ -5,6 +5,7 @@ import adapters.ArgoAdapter;
 import basic.Configuration;
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
+import basic.platforms.PlatformFactory;
 import basic.traversal.AbstractTraversal;
 import basic.traversal.BfsTraversal;
 import basic.traversal.TopTraversal;
@@ -50,6 +51,7 @@ public class PlanBuilder {
 
         this.configuration = configuration;
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
+        PlatformFactory.initMapping(configuration.getProperty("platform-mapping-file"));
     }
 
     public PlanBuilder() throws ParserConfigurationException, SAXException, IOException {
@@ -159,5 +161,15 @@ public class PlanBuilder {
 
     private void logging(String s) {
         LOGGER.info(s);
+    }
+
+    /**
+     * 设置平台的udf的路径
+     *
+     * @param platform 平台名称
+     * @param udfPath 路径
+     */
+    public void setPlatformUdfPath(String platform, String udfPath) {
+        PlatformFactory.setPlatformArgValue(platform, "--udfPath", udfPath);
     }
 }

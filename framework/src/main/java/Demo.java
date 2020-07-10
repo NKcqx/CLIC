@@ -14,8 +14,10 @@ import java.util.HashMap;
 public class Demo {
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
         try {
-
             PlanBuilder planBuilder = new PlanBuilder();
+            // 设置udf路径
+            planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
+
             // 创建节点
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
                 put("input", "data/test.csv");

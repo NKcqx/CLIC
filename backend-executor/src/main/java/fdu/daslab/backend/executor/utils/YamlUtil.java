@@ -1,5 +1,6 @@
 package fdu.daslab.backend.executor.utils;
 import fdu.daslab.backend.executor.model.ArgoNode;
+import fdu.daslab.backend.executor.model.ImageTemplate;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -7,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 写入yaml的工具类
@@ -19,10 +21,6 @@ public class YamlUtil {
 
     private static String argoDag = YamlUtil.class.getClassLoader().
             getResource("templates/argo-dag-simple.yaml").getPath();
-    private static String javaTemplate = YamlUtil.class.getClassLoader().
-            getResource("templates/java-template.yaml").getPath();
-    private static String sparkTemplate = YamlUtil.class.getClassLoader().
-            getResource("templates/spark-template.yaml").getPath();
 
     private static String resPath = System.getProperty("user.dir") + "/backend-executor/src/main/resources/result/job-";
 
@@ -30,11 +28,12 @@ public class YamlUtil {
      * 根据pipeline生成yaml，并保存，返回保存的路径
      *
      * @param tasks argoNodes
+     * @param imageTemplates image列表
      * @return 生成路径
      */
-    public String createArgoYaml(List<ArgoNode> tasks) {
+    public String createArgoYaml(List<ArgoNode> tasks, List<ImageTemplate> imageTemplates) {
 
-        String resultPath = joinYaml(tasks);
+        String resultPath = joinYaml(tasks, imageTemplates);
 
         return resultPath;
     }
@@ -43,9 +42,10 @@ public class YamlUtil {
      * 读取dag模板以及template并进行拼接
      *
      * @param nodes argonodes
+     * @param imageTemplates image列表
      * @return 拼接完成的yaml路径
      */
-    public String joinYaml(List<ArgoNode> nodes) {
+    public String joinYaml(List<ArgoNode> nodes, List<ImageTemplate> imageTemplates) {
         List tasks = new LinkedList();
         List templatePlt = new LinkedList();
         List<String> tpl = new ArrayList<>();
@@ -57,17 +57,19 @@ public class YamlUtil {
         Map dag = (Map) dagTemp.get("dag");
         //添加task
         for (ArgoNode node : nodes) {
-            tasks.add(joinTask(node));
-            tpl.add(node.getTemplate());
+            // 首先获取该node对应的template配置
+            ImageTemplate imageTemplate = imageTemplates.stream()
+                    .filter(template -> template.getPlatform().equals(node.getPlatform()))
+                    .collect(Collectors.toList())
+                    .get(0);
+            tasks.add(joinTask(node, imageTemplate));
+            tpl.add(node.getPlatform());
         }
         dag.put("tasks", tasks);
         //根据node中所需要的template去加载相应的Template
-        if (tpl.contains("java")) {
-            templates.add(readYaml(javaTemplate));
+        for (String platform : tpl) {
+            templates.add(readYaml(TemplateUtil.getTemplatePathByPlatform(platform)));
         }
-        if (tpl.contains("spark")) {
-            templates.add(readYaml(sparkTemplate));
-        } //后续可根据平台添加
         long n = System.nanoTime();
         String storePath = resPath + n + ".yaml";
         //存入指定路径
@@ -79,11 +81,11 @@ public class YamlUtil {
     /**
      * 拼接task部分
      *
-     * @param node
+     * @param node argo节点
+     * @param imageTemplate 模版
      * @return task map
      */
-    public Map joinTask(ArgoNode node) {
-
+    public Map joinTask(ArgoNode node, ImageTemplate imageTemplate) {
         //List<Map> tasks=new LinkedList<>();
         Map taskName = new HashMap();
         Map taskTem = new HashMap();
@@ -96,14 +98,9 @@ public class YamlUtil {
         Map paraName = new HashMap();
         Map paraValue = new HashMap();
 
-        paraName.put("name", node.getTemplate() + "Args");
+        paraName.put("name", node.getPlatform() + "Args");
 
-
-        String parameterStr = "";
-        if (node.getTemplate().equals("java")) {
-            // TODO: --UDFPath属于Image级别的参数（不属于Opt），这种参数该怎么指定呢？
-            parameterStr += "java -jar executable-java.jar --udfPath=/data/TestSmallWebCaseFunc.class "; //java运行封装好的jar
-        }
+        String parameterStr = imageTemplate.getParamPrefix() + " "; // 运行字符串前缀
         for (ArgoNode.Parameter parameter : node.getParameters()) {
             parameterStr += parameter.getName() + "=" + parameter.getValue() + " ";
         }
@@ -114,7 +111,9 @@ public class YamlUtil {
         paraList.add(paraMap);
         arguPara.put("parameters", paraList);
         taskArgu.put("arguments", arguPara);
-        taskTem.put("template", node.getTemplate() + "-template");
+        // template需要查询然后获得，传入的明确来说应该是platform，而不是template
+        String templateName = TemplateUtil.getOrCreateTemplate(imageTemplate);
+        taskTem.put("template", templateName);
         taskName.put("name", node.getName());
 
         taskMap.putAll(taskName);
