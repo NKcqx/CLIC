@@ -164,12 +164,12 @@ public class PlanBuilder {
     }
 
     /**
-     * 设置平台的utf的路径
+     * 设置平台的udf的路径
      *
      * @param platform 平台名称
-     * @param utfPath 路径
+     * @param udfPath 路径
      */
-    public void setPlatformUdfPath(String platform, String utfPath) {
-        PlatformFactory.setPlatformArgValue(platform, "--udfPath", utfPath);
+    public void setPlatformUdfPath(String platform, String udfPath) {
+        PlatformFactory.setPlatformArgValue(platform, "--udfPath", udfPath);
     }
 }
