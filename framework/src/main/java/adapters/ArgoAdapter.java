@@ -84,7 +84,7 @@ public class ArgoAdapter implements OperatorAdapter {
             template.setPlatform(platform);
             Map<String, Object> platformConfig = PlatformFactory.getConfigByPlatformName(platform);
             template.setImage((String) platformConfig.get("dockerImage"));
-            template.setCommend(Arrays.asList(((String) platformConfig.get("environment")).split(" ")));
+            template.setCommand(Arrays.asList(((String) platformConfig.get("environment")).split(" ")));
             // 把executor和所有的arg按照空格拼装在一起构成运行的命令
             String executor = (String) platformConfig.get("executor");
             @SuppressWarnings("unchecked")

@@ -75,7 +75,7 @@ public class TemplateUtil {
             @SuppressWarnings("unchecked")
             Map<String, Object> templateContainer = (Map<String, Object>) templateMap.get("container");
             templateContainer.put("image", imageTemplate.getImage());
-            templateContainer.put("command", imageTemplate.getCommend());
+            templateContainer.put("command", imageTemplate.getCommand());
             // args暂时没有用途，和之前定义的绑定即可
             templateContainer.put("args", new ArrayList<String>() {{
                 add("{{inputs.parameters." + imageTemplate.getPlatform() + "Args}}");

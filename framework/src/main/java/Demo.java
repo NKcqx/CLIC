@@ -16,7 +16,7 @@ public class Demo {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
             // 设置udf路径
-            planBuilder.setPlatformUtfPath("java", "/data/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
 
             // 创建节点
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{

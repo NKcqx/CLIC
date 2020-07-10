@@ -18,7 +18,7 @@ public class ImageTemplate {
     private String image;
 
     // 运行命令
-    private List<String> commend;
+    private List<String> command;
 
     // 运行参数，和template有关
     private List<String> args;
@@ -42,12 +42,12 @@ public class ImageTemplate {
         this.image = image;
     }
 
-    public List<String> getCommend() {
-        return commend;
+    public List<String> getCommand() {
+        return command;
     }
 
-    public void setCommend(List<String> commend) {
-        this.commend = commend;
+    public void setCommand(List<String> command) {
+        this.command = command;
     }
 
     public List<String> getArgs() {

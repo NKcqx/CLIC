@@ -169,7 +169,7 @@ public class PlanBuilder {
      * @param platform 平台名称
      * @param utfPath 路径
      */
-    public void setPlatformUtfPath(String platform, String utfPath) {
+    public void setPlatformUdfPath(String platform, String utfPath) {
         PlatformFactory.setPlatformArgValue(platform, "--udfPath", utfPath);
     }
 }
