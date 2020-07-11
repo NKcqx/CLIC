@@ -49,15 +49,15 @@ public class YamlUtil {
         List<Object> tasks = new LinkedList<>();
         List<String> tpl = new ArrayList<>();
 
-        Map<String,Object> argoDagMap = readYaml(argoDag);
+        Map<String, Object> argoDagMap = readYaml(argoDag);
         @SuppressWarnings("unchecked")
-        Map<Object,Object> spec =  (Map<Object,Object>) argoDagMap.get("spec");
+        Map<Object, Object> spec =  (Map<Object, Object>) argoDagMap.get("spec");
         @SuppressWarnings("unchecked")
         List<Object> templates = (List<Object>) spec.get("templates");
         @SuppressWarnings("unchecked")
-        Map<Object,Object> dagTemp = (Map<Object,Object>) templates.get(0);
+        Map<Object, Object> dagTemp = (Map<Object, Object>) templates.get(0);
         @SuppressWarnings("unchecked")
-        Map<Object,Object> dag =(Map<Object,Object>) dagTemp.get("dag");
+        Map<Object, Object> dag = (Map<Object, Object>) dagTemp.get("dag");
         //添加task
         for (ArgoNode node : nodes) {
             // 首先获取该node对应的template配置
@@ -65,7 +65,7 @@ public class YamlUtil {
                     .filter(template -> template.getPlatform().equals(node.getPlatform()))
                     .collect(Collectors.toList())
                     .get(0);
-           if (!tpl.contains(node.getPlatform())){
+           if (!tpl.contains(node.getPlatform())) {
                tpl.add(node.getPlatform());
            }
 
@@ -94,16 +94,16 @@ public class YamlUtil {
      */
     public Map joinTask(ArgoNode node, ImageTemplate imageTemplate) {
         //List<Map> tasks=new LinkedList<>();
-        Map<String,Object> taskName = new HashMap<>();
-        Map<String,Object> taskTem = new HashMap<>();
-        Map<String,Object> taskArgu = new HashMap<>();
-        Map<String,Object> taskMap = new HashMap<>();
-        Map<String,Object> taskDep = new HashMap<>();
-        Map<String,Object> arguPara = new HashMap<>();
-        List<Map<String,Object>> paraList = new LinkedList<>();
-        Map<String,Object> paraMap = new HashMap<>();
-        Map<String,Object> paraName = new HashMap<>();
-        Map<String,Object> paraValue = new HashMap<>();
+        Map<String, Object> taskName = new HashMap<>();
+        Map<String, Object> taskTem = new HashMap<>();
+        Map<String, Object> taskArgu = new HashMap<>();
+        Map<String, Object> taskMap = new HashMap<>();
+        Map<String, Object> taskDep = new HashMap<>();
+        Map<String, Object> arguPara = new HashMap<>();
+        List<Map<String, Object>> paraList = new LinkedList<>();
+        Map<String, Object> paraMap = new HashMap<>();
+        Map<String, Object> paraName = new HashMap<>();
+        Map<String, Object> paraValue = new HashMap<>();
 
         paraName.put("name", node.getPlatform() + "Args");
 
@@ -125,10 +125,10 @@ public class YamlUtil {
         //判断是否加dependencies，暂定的依赖判断逻辑是：
         //取当前node的id和dependencies，然后取dependencies中id-1位置的node即为其依赖（先考虑单个依赖）
         List<ArgoNode> deps = node.getDependencies();
-        List<String > depsName=new ArrayList<>();
+        List<String > depsName = new ArrayList<>();
 
         if (deps.get(0) != null) { //存在依赖，则添加dependencies
-            deps.forEach(dep->{
+            deps.forEach(dep -> {
                 depsName.add(dep.getName());
             });
             taskDep.put("dependencies", depsName);
@@ -148,8 +148,8 @@ public class YamlUtil {
      * @param path 需要读取的文件路径
      * @return 读取结果
      */
-    public Map<String,Object> readYaml(String path) {
-        Map<String,Object> m = null;
+    public Map<String, Object> readYaml(String path) {
+        Map<String, Object> m = null;
         try {
             //设置yaml文件格式
             DumperOptions dumperOptions = new DumperOptions();
