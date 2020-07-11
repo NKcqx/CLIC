@@ -11,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -36,9 +37,12 @@ public class PlatformFactory {
      */
     public static void initMapping(String configPath) throws ParserConfigurationException,
             IOException, SAXException {
+        InputStream configStream = PlatformFactory.class.getClassLoader().getResourceAsStream(configPath);
+        assert configStream != null;
         Document configFile = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder()
-                .parse(new File(configPath));
+                .parse(configStream);
+
         configFile.getDocumentElement().normalize();
 
         Element root = configFile.getDocumentElement();
