@@ -24,7 +24,7 @@ import java.util.Map;
  */
 public class  ExecuteSparkOperator {
 
-    public static void main  (String[] args) {
+    public static void main(String[] args) {
         // 用户定义的函数放在一个文件里面
         String functionPath = args[0].substring(args[0].indexOf("=") + 1);
         // 可能存在一些spark配置数据，暂时没有
@@ -35,7 +35,7 @@ public class  ExecuteSparkOperator {
         // 目前支持的算子
         Map<String, BasicOperator<JavaRDD<List<String>>>> allOperators = SparkOperatorEnums.getAllOperators();
         // spark平台的每个算子（除了sink），均返回一个JavaRDD
-        RddResult result = new RddResult();;
+        RddResult result = new RddResult();
 
         standaloneArgs.forEach((operator, operatorArgs) -> {
             // 目前执行的算子
