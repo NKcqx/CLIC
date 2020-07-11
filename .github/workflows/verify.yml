@@ -19,7 +19,7 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
       - name: Checkout
-          uses: actions/checkout@v2
+        uses: actions/checkout@v2
       - name: Run java checkstyle
         uses: nikitasavinov/checkstyle-action@0.3.0
         with:
