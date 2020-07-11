@@ -61,7 +61,7 @@ public class YamlUtil {
         //添加task
         for (ArgoNode node : nodes) {
             // 首先获取该node对应的template配置
-            ImageTemplate  imageTemplate = imageTemplates.stream()
+            ImageTemplate imageTemplate = imageTemplates.stream()
                     .filter(template -> template.getPlatform().equals(node.getPlatform()))
                     .collect(Collectors.toList())
                     .get(0);
@@ -125,7 +125,7 @@ public class YamlUtil {
         //判断是否加dependencies，暂定的依赖判断逻辑是：
         //取当前node的id和dependencies，然后取dependencies中id-1位置的node即为其依赖（先考虑单个依赖）
         List<ArgoNode> deps = node.getDependencies();
-        List<String > depsName = new ArrayList<>();
+        List<String> depsName = new ArrayList<>();
 
         if (deps.get(0) != null) { //存在依赖，则添加dependencies
             deps.forEach(dep -> {
