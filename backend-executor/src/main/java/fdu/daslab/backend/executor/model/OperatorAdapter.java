@@ -18,4 +18,10 @@ public interface OperatorAdapter {
      */
     List<ArgoNode> groupContinuousOperator(List<?> operators);
 
+    /**
+     * 平台需要根据配置信息，组装成ImageTemplate传入
+     *
+     * @return 各个平台的ImageTemplate实体
+     */
+    List<ImageTemplate> generateTemplateByConfig();
 }
