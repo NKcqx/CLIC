@@ -18,5 +18,14 @@ jobs:
           path: ~/.m2
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
+      - name: Checkout
+          uses: actions/checkout@v2
+      - name: Run java checkstyle
+        uses: nikitasavinov/checkstyle-action@0.3.0
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          reporter: 'github-pr-check'
+          tool_name: 'testtool'
+          checkstyle_config: 'checkstyle.xml'
       - name: Build with Maven
         run: mvn -B package --file pom.xml
