@@ -1,6 +1,6 @@
 name: Java CI
 
-on: [push, pull_request]
+on: [pull_request]
 
 jobs:
   build:
@@ -21,7 +21,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Run java checkstyle
-        uses: nikitasavinov/checkstyle-action@0.3.0
+        uses: nikitasavinov/checkstyle-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           reporter: 'github-pr-check'
