@@ -35,6 +35,7 @@ public class OperatorTest {
          * Solve the contradiction between junit and System.getProperty("user.dir")
          */
         String userDir = "user.dir";
+        // 下面路径根据本地实际情况改，只要到项目根目录就行
         System.setProperty(userDir, "D:\\IRDemo\\");
     }
 
@@ -94,6 +95,7 @@ public class OperatorTest {
 
         for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
             // 打印出inputDataList可发现put函数调用成功
+            String entryKey = entry.getKey();
         }
     }
 
@@ -190,6 +192,7 @@ public class OperatorTest {
 
         for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
             // 打印出inputDataList可发现setData函数和setInputData函数调用成功
+            String entryKey = entry.getKey();
         }
 
         verify(spyOpt, times(1)).setData("inputKey", "inputData");

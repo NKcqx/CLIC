@@ -27,9 +27,11 @@ public class OperatorFactoryTest {
          * Solve the contradiction between junit and System.getProperty("user.dir")
          */
         String userDir = "user.dir";
+        // 下面路径根据本地实际情况改，只要到项目根目录就行
         System.setProperty(userDir, "D:\\IRDemo\\");
     }
 
+    @SuppressWarnings("checkstyle:LeftCurly")
     @Test
     public void initMappingTest() throws Exception {
         Configuration configuration = new Configuration();
@@ -39,43 +41,53 @@ public class OperatorFactoryTest {
         Map<String, String> factoryMapping =
                 (Map<String, String>) ReflectionTestUtils.getField(OperatorFactory.class, "mapping");
         for (Map.Entry<String, String> entry : factoryMapping.entrySet()) {
-            if(entry.getKey().equals("filter"))
+            if (entry.getKey().equals("filter")) {
                 assertEquals("/framework/resources/Operator/Filter/conf/FilterOperator.xml",
                         entry.getValue());
-            if(entry.getKey().equals("reducebykey"))
+            }
+            if (entry.getKey().equals("reducebykey"))
+            {
                 assertEquals("/framework/resources/Operator/ReduceByKey/conf/ReduceByKeyOperator.xml",
                         entry.getValue());
-            if(entry.getKey().equals("sink"))
+            }
+            if (entry.getKey().equals("sink")) {
                 assertEquals("/framework/resources/Operator/Sink/conf/SinkOperator.xml",
                         entry.getValue());
-            if(entry.getKey().equals("project"))
+            }
+            if (entry.getKey().equals("project")) {
                 assertEquals("/framework/resources/Operator/Project/conf/ProjectOperator.xml",
                         entry.getValue());
-            if(entry.getKey().equals("source"))
+            }
+            if (entry.getKey().equals("source")) {
                 assertEquals("/framework/resources/Operator/Source/conf/SourceOperator.xml",
                         entry.getValue());
-            if(entry.getKey().equals("sort"))
+            }
+            if (entry.getKey().equals("sort")) {
                 assertEquals("/framework/resources/Operator/Sort/conf/SortOperator.xml",
                         entry.getValue());
-            if(entry.getKey().equals("join"))
+            }
+            if (entry.getKey().equals("join")) {
                 assertEquals("/framework/resources/Operator/Join/conf/JoinOperator.xml",
                         entry.getValue());
-            if(entry.getKey().equals("map"))
+            }
+            if (entry.getKey().equals("map")) {
                 assertEquals("/framework/resources/Operator/Map/conf/MapOperator.xml",
                         entry.getValue());
-            if(entry.getKey().equals("collect"))
+            }
+            if (entry.getKey().equals("collect")) {
                 assertEquals("/framework/resources/Operator/Collect/conf/CollectOperator.xml",
                         entry.getValue());
+            }
         }
     }
 
     @Test
-    public void getTemplateTest() throws Exception{
+    public void getTemplateTest() throws Exception {
         Configuration configuration = new Configuration();
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
 
         // 通过java反射访问私有静态方法
-        Method getTemplateMethod=Class.forName("basic.operators.OperatorFactory")
+        Method getTemplateMethod = Class.forName("basic.operators.OperatorFactory")
                 .getDeclaredMethod("getTemplate", new Class[]{String.class});
         getTemplateMethod.setAccessible(true);
 

@@ -8,13 +8,11 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.reflect.Whitebox;
 
 /**
- * Testing for BfsTraversal.java
- *
  * @author 刘丰艺
  * @version 1.0
- * @since 2020/7/11 13:42
+ * @since 2020/7/11 17:07
  */
-public class BfsTraversalTest {
+public class TopTraversalTest {
 
     /**
      * 测试DAG的节点
@@ -66,7 +64,7 @@ public class BfsTraversalTest {
 
     @Test
     public void bfsTraversalTest() {
-        AbstractTraversal dagTraversal = new BfsTraversal(optA);
+        AbstractTraversal dagTraversal = new TopTraversal(optA);
         Operator optTemp;
         Operator spyOptTemp;
         String optName;
@@ -76,7 +74,7 @@ public class BfsTraversalTest {
             spyOptTemp = PowerMockito.spy(optTemp);
             // 用Whitebox获取私有成员
             optName = Whitebox.getInternalState(spyOptTemp, "operatorName");
-            // 依次打印出optName可知BFS遍历成功
+            // 依次打印出optName可知Top遍历成功
         }
     }
 }
