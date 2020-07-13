@@ -19,6 +19,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.*;
 
 /**
@@ -51,10 +52,11 @@ public class Operator implements Visitable {
     public Operator(String configFilePath) throws IOException, SAXException, ParserConfigurationException {
         //暂时使用相对路径
         this.configFilePath = configFilePath;
-        String fullConfigFilePath = System.getProperty("user.dir") + configFilePath;
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        this.operatorConfig = builder.parse(new File(fullConfigFilePath));
+        // String fullConfigFilePath = System.getProperty("user.dir") + configFilePath;
+        InputStream fullConfigFileStream = this.getClass().getClassLoader().getResourceAsStream(configFilePath);
+        this.operatorConfig = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(fullConfigFileStream);
         this.operatorConfig.getDocumentElement().normalize();
 
         // 现在拿到index的方式还比较草率（.size()），所以不敢随便初始化大小
@@ -172,12 +174,12 @@ public class Operator implements Visitable {
         }
         for (String key : pltMapping.keySet()) {
             //相对路径
-            String path = System.getProperty("user.dir") + pltMapping.get(key);
-
-            File configFile = new File(path);
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document config = builder.parse(configFile);
+            // String path = System.getProperty("user.dir") + pltMapping.get(key);
+            String pltPath = pltMapping.get(key);
+            InputStream pltConfigStream = this.getClass().getClassLoader().getResourceAsStream(pltPath);
+            Document config = DocumentBuilderFactory.newInstance()
+                    .newDocumentBuilder()
+                    .parse(pltConfigStream);
             config.getDocumentElement().normalize();
             this.loadImplements(config);
         }

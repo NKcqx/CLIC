@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.*;
@@ -22,7 +23,18 @@ public class YamlUtil {
     private static String argoDag = Objects.requireNonNull(YamlUtil.class.getClassLoader().
             getResource("templates/argo-dag-simple.yaml")).getPath();
 
-    private static String resPath = System.getProperty("user.dir") + "/backend-executor/src/main/resources/result/job-";
+    // private static String resPath = System.getProperty("user.dir") + "/backend-executor/src/main/resources/result/job-";
+    // private static String resPath = YamlUtil.class.getClassLoader().getResource("result/").toString() + "job-";
+    private static String resPath;
+
+    static {
+        try {
+            Configuration configuration = new Configuration();
+            resPath = configuration.getProperty("yaml-output-path") + configuration.getProperty("yaml-prefix");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 根据pipeline生成yaml，并保存，返回保存的路径
@@ -170,7 +182,6 @@ public class YamlUtil {
      * @param res  需要写入yaml的内容
      */
     public void writeYaml(String path, Map<String, Object> res) {
-
         try {
             //设置yaml文件格式
             DumperOptions dumperOptions = new DumperOptions();
