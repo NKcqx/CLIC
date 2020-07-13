@@ -4,11 +4,7 @@ import basic.Configuration;
 import org.junit.Before;
 import org.junit.Test;
 import org.powermock.api.mockito.PowerMockito;
-import org.powermock.reflect.Whitebox;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import java.lang.reflect.Method;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -21,69 +17,27 @@ import static org.junit.Assert.assertEquals;
  */
 public class OperatorFactoryTest {
 
+    private Configuration configuration;
+
     @Before
-    public void before() {
+    public void before() throws Exception {
         /**
          * Solve the contradiction between junit and System.getProperty("user.dir")
          */
         String userDir = "user.dir";
         // 下面路径根据本地实际情况改，只要到项目根目录就行
         System.setProperty(userDir, "D:\\IRDemo\\");
+
+        configuration = new Configuration();
     }
 
-    @SuppressWarnings("checkstyle:LeftCurly")
     @Test
     public void initMappingTest() throws Exception {
-        Configuration configuration = new Configuration();
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
-
-        // 用spring-test包的ReflectionTestUtils从外部访问私有静态成员
-        Map<String, String> factoryMapping =
-                (Map<String, String>) ReflectionTestUtils.getField(OperatorFactory.class, "mapping");
-        for (Map.Entry<String, String> entry : factoryMapping.entrySet()) {
-            if (entry.getKey().equals("filter")) {
-                assertEquals("/framework/resources/Operator/Filter/conf/FilterOperator.xml",
-                        entry.getValue());
-            }
-            if (entry.getKey().equals("reducebykey"))
-            {
-                assertEquals("/framework/resources/Operator/ReduceByKey/conf/ReduceByKeyOperator.xml",
-                        entry.getValue());
-            }
-            if (entry.getKey().equals("sink")) {
-                assertEquals("/framework/resources/Operator/Sink/conf/SinkOperator.xml",
-                        entry.getValue());
-            }
-            if (entry.getKey().equals("project")) {
-                assertEquals("/framework/resources/Operator/Project/conf/ProjectOperator.xml",
-                        entry.getValue());
-            }
-            if (entry.getKey().equals("source")) {
-                assertEquals("/framework/resources/Operator/Source/conf/SourceOperator.xml",
-                        entry.getValue());
-            }
-            if (entry.getKey().equals("sort")) {
-                assertEquals("/framework/resources/Operator/Sort/conf/SortOperator.xml",
-                        entry.getValue());
-            }
-            if (entry.getKey().equals("join")) {
-                assertEquals("/framework/resources/Operator/Join/conf/JoinOperator.xml",
-                        entry.getValue());
-            }
-            if (entry.getKey().equals("map")) {
-                assertEquals("/framework/resources/Operator/Map/conf/MapOperator.xml",
-                        entry.getValue());
-            }
-            if (entry.getKey().equals("collect")) {
-                assertEquals("/framework/resources/Operator/Collect/conf/CollectOperator.xml",
-                        entry.getValue());
-            }
-        }
     }
 
     @Test
     public void getTemplateTest() throws Exception {
-        Configuration configuration = new Configuration();
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
 
         // 通过java反射访问私有静态方法
@@ -115,14 +69,11 @@ public class OperatorFactoryTest {
 
     @Test
     public void createOperatorTest() throws Exception {
-        Configuration configuration = new Configuration();
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
 
         Operator opt = OperatorFactory.createOperator("filter");
         Operator spyOpt = PowerMockito.spy(opt);
 
-        String configFilePath =
-                Whitebox.getInternalState(spyOpt, "configFilePath");
-        assertEquals("/framework/resources/Operator/Filter/conf/FilterOperator.xml", configFilePath);
+        assertEquals("FilterOperator", spyOpt.getOperatorName());
     }
 }

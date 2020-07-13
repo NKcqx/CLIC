@@ -10,7 +10,6 @@ import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.powermock.reflect.Whitebox;
 import org.w3c.dom.Document;
 import java.util.Map;
 
@@ -29,14 +28,20 @@ import static org.mockito.Mockito.*;
 @PowerMockIgnore({"javax.management.*"}) // 解决使用Powermock之后的classloader错误
 public class OperatorTest {
 
+    private String configFilePath;
+    private Operator spyOpt;
+
     @Before
-    public void before() {
+    public void before() throws Exception {
         /**
          * Solve the contradiction between junit and System.getProperty("user.dir")
          */
         String userDir = "user.dir";
         // 下面路径根据本地实际情况改，只要到项目根目录就行
         System.setProperty(userDir, "D:\\IRDemo\\");
+
+        configFilePath = "/framework/resources/Operator/Filter/conf/FilterOperator.xml";
+        spyOpt = PowerMockito.spy(new Operator(configFilePath));
     }
 
     @Test
@@ -46,9 +51,6 @@ public class OperatorTest {
 
     @Test
     public void constructorTest() throws Exception {
-        String configFilePath = "/framework/resources/Operator/Filter/conf/FilterOperator.xml";
-        Operator spyOpt = PowerMockito.spy(
-                new Operator(configFilePath));
         PowerMockito.whenNew(Operator.class).withArguments(configFilePath).thenReturn(spyOpt);
         Operator realOperator = new Operator(configFilePath);
         realOperator.loadOperatorConfs();
@@ -60,27 +62,8 @@ public class OperatorTest {
     }
 
     @Test
-    // TODO loadBasicInfo函数只在构造函数中调用，不方便进行Test
-    public void loadBasicInfoTest() throws Exception {
-        Operator opt = PowerMockito.spy(
-                new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml"));
-        PowerMockito.doNothing().when(opt, "loadParams");
-        PowerMockito.verifyPrivate(opt, Mockito.times(0)).invoke("loadBasicInfo");
-    }
-
-    @Test
-    // TODO loadParams函数只在构造函数中调用，不方便进行Test
-    public void loadParamsTest() throws Exception {
-        Operator spyOpt = PowerMockito.spy(
-                new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml"));
-        PowerMockito.doNothing().when(spyOpt, "loadParams");
-        PowerMockito.verifyPrivate(spyOpt, Mockito.times(0)).invoke("loadParams");
-    }
-
-    @Test
     public void inputDataListTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
-        Operator spyOpt = Mockito.spy(opt);
+
         String name = "udfName2";
         String dataType = "string";
         String defaultValue = null;
@@ -91,7 +74,7 @@ public class OperatorTest {
 
         // 使用Whitebox去访问私有成员
         // 实际上getInputDataList()函数已让inputDataList可对外访问，Whitebox这行可以省略
-        Whitebox.setInternalState(spyOpt, "inputDataList", inputDataList);
+        // Whitebox.setInternalState(spyOpt, "inputDataList", inputDataList);
 
         for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
             // 打印出inputDataList可发现put函数调用成功
@@ -100,25 +83,22 @@ public class OperatorTest {
     }
 
     @Test
-    public void loadOperatorConfsTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
-        Operator spyOpt = Mockito.spy(opt);
-        spyOpt.loadOperatorConfs();
-        verify(spyOpt, times(1)).loadOperatorConfs();
-    }
-
-    @Test
     public void getPlatformOptConfTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
-        Operator spyOpt = Mockito.spy(opt);
         spyOpt.getPlatformOptConf();
         verify(spyOpt, times(1)).getPlatformOptConf();
+
+        spyOpt.getEntities().forEach((k, v) -> {
+            if (k.equals("java")) {
+               assertEquals("java", v.getLanguage());
+            }
+            if (k.equals("spark")) {
+                assertEquals("java", v.getLanguage());
+            }
+        });
     }
 
     @Test
     public void loadImplementsTest1() throws Exception {
-        Operator spyOpt = PowerMockito.spy(
-                new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml"));
         spyOpt.getPlatformOptConf();
         PowerMockito.verifyPrivate(spyOpt, Mockito.times(2))
                 .invoke("loadImplements", Mockito.any(Document.class));
@@ -126,8 +106,6 @@ public class OperatorTest {
 
     @Test
     public void loadImplementsTest2() throws Exception {
-        Operator spyOpt = PowerMockito.spy(
-                new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml"));
         PowerMockito.doAnswer((Answer) invocation -> {
             return null;
         }).when(spyOpt, "loadImplements", Mockito.any(Document.class));
@@ -138,8 +116,6 @@ public class OperatorTest {
 
     @Test
     public void selectEntityTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
-        Operator spyOpt = Mockito.spy(opt);
         spyOpt.selectEntity("java");
         verify(spyOpt, times(1)).selectEntity("java");
         verify(spyOpt, times(0)).selectEntity("spark");
@@ -147,8 +123,6 @@ public class OperatorTest {
 
     @Test
     public void evaluateTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
-        Operator spyOpt = Mockito.spy(opt);
         boolean flag = spyOpt.evaluate();
         assertEquals(true, flag);
         Mockito.when(spyOpt.evaluate()).thenReturn(false);
@@ -159,24 +133,22 @@ public class OperatorTest {
 
     @Test
     public void tempPrepareDataTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
-        Operator spyOpt = Mockito.spy(opt);
         spyOpt.tempPrepareData();
         verify(spyOpt, times(1)).tempPrepareData();
+
+        spyOpt.getInputDataList().forEach((k, v) -> {
+            assertEquals(k + "'s temp value", v.getData());
+        });
     }
 
     @Test
     public void tempDoEvaluateTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
-        Operator spyOpt = Mockito.spy(opt);
         spyOpt.tempDoEvaluate();
         verify(spyOpt, times(1)).tempDoEvaluate();
     }
 
     @Test
-    public void setDataAndSetInputDataTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
-        Operator spyOpt = Mockito.spy(opt);
+    public void inputDataTest() {
 
         //spyOpt.setData("inputKey", "inputData"); // 此时会抛出NoSuchElementException“未在配置文件中...”
 
@@ -190,11 +162,46 @@ public class OperatorTest {
 
         spyOpt.setData("inputKey", "inputData");
 
-        for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
-            // 打印出inputDataList可发现setData函数和setInputData函数调用成功
-            String entryKey = entry.getKey();
-        }
+        spyOpt.getInputDataList().forEach((k, v) -> {
+            if (k.equals("inputKey")) {
+                assertEquals("inputKey", v.getName());
+                assertEquals("inputData", v.getData());
+            }
+            if (k.equals("udfName")) {
+                assertEquals("udfName", v.getName());
+                assertEquals(null, v.getData());
+            }
+        });
 
         verify(spyOpt, times(1)).setData("inputKey", "inputData");
+    }
+
+    @Test
+    public void outputDataTest() {
+
+        //spyOpt.setData("outputKey", "outputData"); // 此时会抛出NoSuchElementException“未在配置文件中...”
+
+        String name = "outputKey";
+        String dataType = "string";
+        String defaultValue = null;
+        Boolean isRequired = false;
+        Param param = new Param(name, dataType, isRequired, defaultValue);
+        Map<String, Param> outputDataList = spyOpt.getOutputDataList();
+        outputDataList.put(name, param);
+
+        spyOpt.setData("outputKey", "outputData");
+
+        spyOpt.getOutputDataList().forEach((k, v) -> {
+            if (k.equals("result")) {
+                assertEquals("result", v.getName());
+                assertEquals(null, v.getData());
+            }
+            if (k.equals("outputKey")) {
+                assertEquals("outputKey", v.getName());
+                assertEquals("outputData", v.getData());
+            }
+        });
+
+        verify(spyOpt, times(1)).setData("outputKey", "outputData");
     }
 }
