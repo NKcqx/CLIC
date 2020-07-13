@@ -14,10 +14,6 @@ public class DataQuantaTest {
     @Test
     public void testIncoming() throws Exception {
 
-        int end = System.getProperty("user.dir").indexOf("framework");
-        System.setProperty("user.dir", System.getProperty("user.dir").substring(0, end));
-//        System.out.print(System.getProperty("user.dir")+"\n");
-
 //        OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
         PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
@@ -39,11 +35,6 @@ public class DataQuantaTest {
 
     @Test
     public void testOutgoing() throws Exception {
-
-        int end = System.getProperty("user.dir").indexOf("framework");
-        System.setProperty("user.dir", System.getProperty("user.dir").substring(0, end));
-        //System.out.print(System.getProperty("user.dir")+"\n");
-
         //OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
         PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
