@@ -33,20 +33,13 @@ public class OperatorTest {
 
     @Before
     public void before() throws Exception {
-        /**
-         * Solve the contradiction between junit and System.getProperty("user.dir")
-         */
-        String userDir = "user.dir";
-        // 下面路径根据本地实际情况改，只要到项目根目录就行
-        System.setProperty(userDir, "D:\\IRDemo\\");
-
-        configFilePath = "/framework/resources/Operator/Filter/conf/FilterOperator.xml";
+        configFilePath = "Operator/Filter/conf/FilterOperator.xml";
         spyOpt = PowerMockito.spy(new Operator(configFilePath));
     }
 
     @Test
     public void simpleConstructorTest() throws Exception {
-        Operator opt = new Operator("/framework/resources/Operator/Filter/conf/FilterOperator.xml");
+        Operator opt = new Operator("Operator/Filter/conf/FilterOperator.xml");
     }
 
     @Test
