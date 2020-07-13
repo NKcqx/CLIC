@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="MapOperator" name="MapOperator" kind="transformer">
+
+    <platforms>
+        <platform ID="java">
+            <path>Operator/Map/conf/JavaMapOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>Operator/Map/conf/SparkMapOperator.xml</path>
+        </platform>
+    </platforms>
+    <parameters>
+        <parameter kind="input" name="udfName"  data_type="string" required="true"> </parameter>
+        <parameter kind="output" name="result" data_type="string"> </parameter>
+    </parameters>
+
+
+</Operator>

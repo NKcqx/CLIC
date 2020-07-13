@@ -1,4 +1,4 @@
-package basic;
+package fdu.daslab.backend.executor.utils;
 
 import org.apache.commons.io.IOUtils;
 
@@ -12,7 +12,7 @@ import java.util.Properties;
 /**
  * @author 陈齐翔
  * @version 1.0
- * @since 2020/7/6 1:40 下午
+ * @since 2020/7/12 12:50 上午
  */
 public class Configuration {
     private static final String DEFAULT_CONFIGURATION_FILE_NAME = "default-config.properties";

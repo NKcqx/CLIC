@@ -50,7 +50,7 @@ public class ArgoAdapter implements OperatorAdapter {
             if ((!platform.equals(preplatform)) && (preplatform != null)) {
                 //当前opt与之前opt的平台不同，所以先将前面的组合起来
                 operatorGroups.add(operatorGroup);
-                operatorGroup.clear();
+                operatorGroup = new ArrayList<>();
             }
 
             operatorGroup.add(op);
@@ -65,6 +65,7 @@ public class ArgoAdapter implements OperatorAdapter {
             //当前是串行，所以暂定传入的dependencies是前一个node
             dependencies.add(node);
             node = setArgoNode(plt, idInJob, dependencies); //为分组设置Argo node
+            dependencies = new ArrayList<>();
             argoNodeList.add(node);
         }
         return argoNodeList;
@@ -109,11 +110,9 @@ public class ArgoAdapter implements OperatorAdapter {
         String platform = null;
         List<String> optName = new ArrayList<>();
         for (Operator operator : operators) {
-            //获取当前分组的platform
             if (platform == null) {
                 platform = operator.getSelectedEntities().getEntityID();
             }
-            //获取所有opt的name
             optName.add(operator.getOperatorName());
         }
         String nameSub = "";
@@ -133,18 +132,26 @@ public class ArgoAdapter implements OperatorAdapter {
             }
         }
         String name = "Job-" + platform + "-" + nameSub + randomNumber + "-" + id;
-
         ArgoNode node = new ArgoNode(id, name, platform, dependencies, null);
-        // 前期串行，分组内所有的参数放到一起
+        // 前期串行，分组内所有的参数放到一起为了按照steps串行，以及各个node之间的数据传递(通过文件传递)，在每个node中加上source
+        // 和 sink 算子，分别用于读取和保存各个node的输入和输出。如果operator的开始算子不是source，则添加
+        if (!operators.get(0).getOperatorName().equals("SourceOperator")) {
+            params.add(new ArgoNode.Parameter("--operator", "SourceOperator"));
+            params.add(new ArgoNode.Parameter("--input", "data/" + (id - 1) + ".csv"));
+            params.add(new ArgoNode.Parameter("--separator", ","));
+        }
         operators.forEach(operator -> {
             params.add(new ArgoNode.Parameter("--operator", operator.getOperatorName()));
             operator.getInputDataList().forEach((paramName, paramVal) -> {
                 params.add(new ArgoNode.Parameter("--" + paramName, paramVal.getData()));
             });
         });
-        //设置当前node的参数
+        if (!operators.get(operators.size() - 1).getOperatorName().equals("SinkOperator")) {
+            params.add(new ArgoNode.Parameter("--operator", "SinkOperator"));
+            params.add(new ArgoNode.Parameter("--output", "data/" + id + ".csv"));
+            params.add(new ArgoNode.Parameter("--separator", ","));
+        }
         node.setParameters(params);
-
         return node;
     }
 }

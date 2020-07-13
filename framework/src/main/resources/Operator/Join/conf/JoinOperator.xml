@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="JoinOperator" name="JoinOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="java">
+            <path>Operator/Source/conf/JavaSourceOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>Operator/Source/conf/SparkSourceOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter kind="input" name="predicate" data_type="string" required="true"> </parameter>
+    </parameters>
+
+</Operator>

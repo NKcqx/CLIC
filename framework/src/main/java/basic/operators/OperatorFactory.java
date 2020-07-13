@@ -1,6 +1,3 @@
-/**
-
- */
 package basic.operators;
 
 import org.w3c.dom.Document;
@@ -14,6 +11,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -31,11 +29,12 @@ public final class OperatorFactory {
     private OperatorFactory() {
     }
 
-    public static void initMapping(String configPath) throws ParserConfigurationException, IOException, SAXException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document configFile = builder.parse(new File(configPath));
-        configFile.getDocumentElement().normalize();
+    public static void initMapping(String configName) throws ParserConfigurationException, IOException, SAXException {
+        InputStream configStream = OperatorFactory.class.getClassLoader().getResourceAsStream(configName);
+        assert configStream != null;
+        Document configFile = DocumentBuilderFactory.newInstance()
+                .newDocumentBuilder()
+                .parse(configStream);
 
         Element root = configFile.getDocumentElement();
         NodeList pairs = root.getElementsByTagName("pair");
@@ -52,6 +51,9 @@ public final class OperatorFactory {
     }
 
     private static String getTemplate(String ability) throws Exception {
+        if (mapping.isEmpty()){
+            throw new Exception("未初始化OperatorFactory");
+        }
         if (OperatorFactory.mapping.containsKey(ability)) {
             return OperatorFactory.mapping.getOrDefault(ability, null);
         } else {
@@ -68,8 +70,10 @@ public final class OperatorFactory {
      * @throws Exception
      */
     public static Operator createOperator(String ability) throws Exception {
+        if (mapping.isEmpty()){
+            throw new Exception("未初始化OperatorFactory");
+        }
         String templatePath = OperatorFactory.getTemplate(ability);
-
         Operator operator = new Operator(templatePath);
         // operator.loadConfiguration(template_path); // 这步交给Visitor来做
         return operator;

@@ -5,7 +5,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.InputStream;
-import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -43,8 +42,11 @@ public class TemplateUtil {
      * @return 默认存放在templates目录下
      */
     public static String getTemplatePathByPlatform(String platform) {
-        return Paths.get(templateDir, getTemplateNameByPlatform(platform) + ".yaml")
-                .toString();
+        //由于存在转义问题，暂时先拼接
+        String path = templateDir + getTemplateNameByPlatform(platform) + ".yaml";
+        return path;
+//        return Paths.get(templateDir, getTemplateNameByPlatform(platform) + ".yaml")
+//                .toString();
     }
 
     /**

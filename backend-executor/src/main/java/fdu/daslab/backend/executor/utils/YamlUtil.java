@@ -5,6 +5,7 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.OutputStreamWriter;
 import java.util.*;
@@ -19,10 +20,21 @@ import java.util.stream.Collectors;
  */
 public class YamlUtil {
 
-    private static String argoDag = YamlUtil.class.getClassLoader().
-            getResource("templates/argo-dag-simple.yaml").getPath();
+    private static String argoDag = Objects.requireNonNull(YamlUtil.class.getClassLoader().
+            getResource("templates/argo-dag-simple.yaml")).getPath();
 
-    private static String resPath = System.getProperty("user.dir") + "/backend-executor/src/main/resources/result/job-";
+    // private static String resPath = System.getProperty("user.dir") + "/backend-executor/src/main/resources/result/job-";
+    // private static String resPath = YamlUtil.class.getClassLoader().getResource("result/").toString() + "job-";
+    private static String resPath;
+
+    static {
+        try {
+            Configuration configuration = new Configuration();
+            resPath = configuration.getProperty("yaml-output-path") + configuration.getProperty("yaml-prefix");
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 根据pipeline生成yaml，并保存，返回保存的路径
@@ -46,15 +58,18 @@ public class YamlUtil {
      * @return 拼接完成的yaml路径
      */
     public String joinYaml(List<ArgoNode> nodes, List<ImageTemplate> imageTemplates) {
-        List tasks = new LinkedList();
-        List templatePlt = new LinkedList();
+        List<Object> tasks = new LinkedList<>();
         List<String> tpl = new ArrayList<>();
 
-        Map argoDagMap = readYaml(argoDag);
-        Map spec = (Map) argoDagMap.get("spec");
-        List templates = (List) spec.get("templates");
-        Map dagTemp = (Map) templates.get(0);
-        Map dag = (Map) dagTemp.get("dag");
+        Map<String, Object> argoDagMap = readYaml(argoDag);
+        @SuppressWarnings("unchecked")
+        Map<Object, Object> spec =  (Map<Object, Object>) argoDagMap.get("spec");
+        @SuppressWarnings("unchecked")
+        List<Object> templates = (List<Object>) spec.get("templates");
+        @SuppressWarnings("unchecked")
+        Map<Object, Object> dagTemp = (Map<Object, Object>) templates.get(0);
+        @SuppressWarnings("unchecked")
+        Map<Object, Object> dag = (Map<Object, Object>) dagTemp.get("dag");
         //添加task
         for (ArgoNode node : nodes) {
             // 首先获取该node对应的template配置
@@ -62,8 +77,12 @@ public class YamlUtil {
                     .filter(template -> template.getPlatform().equals(node.getPlatform()))
                     .collect(Collectors.toList())
                     .get(0);
+           if (!tpl.contains(node.getPlatform())) {
+               tpl.add(node.getPlatform());
+           }
+
             tasks.add(joinTask(node, imageTemplate));
-            tpl.add(node.getPlatform());
+
         }
         dag.put("tasks", tasks);
         //根据node中所需要的template去加载相应的Template
@@ -87,16 +106,16 @@ public class YamlUtil {
      */
     public Map joinTask(ArgoNode node, ImageTemplate imageTemplate) {
         //List<Map> tasks=new LinkedList<>();
-        Map taskName = new HashMap();
-        Map taskTem = new HashMap();
-        Map taskArgu = new HashMap();
-        Map taskMap = new HashMap();
-        Map taskDep = new HashMap();
-        Map arguPara = new HashMap();
-        List<Map> paraList = new LinkedList<>();
-        Map paraMap = new HashMap();
-        Map paraName = new HashMap();
-        Map paraValue = new HashMap();
+        Map<String, Object> taskName = new HashMap<>();
+        Map<String, Object> taskTem = new HashMap<>();
+        Map<String, Object> taskArgu = new HashMap<>();
+        Map<String, Object> taskMap = new HashMap<>();
+        Map<String, Object> taskDep = new HashMap<>();
+        Map<String, Object> arguPara = new HashMap<>();
+        List<Map<String, Object>> paraList = new LinkedList<>();
+        Map<String, Object> paraMap = new HashMap<>();
+        Map<String, Object> paraName = new HashMap<>();
+        Map<String, Object> paraValue = new HashMap<>();
 
         paraName.put("name", node.getPlatform() + "Args");
 
@@ -115,16 +134,19 @@ public class YamlUtil {
         String templateName = TemplateUtil.getOrCreateTemplate(imageTemplate);
         taskTem.put("template", templateName);
         taskName.put("name", node.getName());
-
-        taskMap.putAll(taskName);
-
         //判断是否加dependencies，暂定的依赖判断逻辑是：
         //取当前node的id和dependencies，然后取dependencies中id-1位置的node即为其依赖（先考虑单个依赖）
-        List<ArgoNode> dep = node.getDependencies();
-        if (dep.get(dep.size() - 1) != null) { //存在依赖，则添加dependencies
-            taskDep.put("dependencies", "[" + dep.get(dep.size() - 1).getName() + "]");
+        List<ArgoNode> deps = node.getDependencies();
+        List<String> depsName = new ArrayList<>();
+
+        if (deps.get(0) != null) { //存在依赖，则添加dependencies
+            deps.forEach(dep -> {
+                depsName.add(dep.getName());
+            });
+            taskDep.put("dependencies", depsName);
             taskMap.putAll(taskDep);
         }
+        taskMap.putAll(taskName);
         taskMap.putAll(taskTem);
         taskMap.putAll(taskArgu);
         // tasks.add(taskMap);
@@ -138,8 +160,8 @@ public class YamlUtil {
      * @param path 需要读取的文件路径
      * @return 读取结果
      */
-    public Map readYaml(String path) {
-        Map m = null;
+    public Map<String, Object> readYaml(String path) {
+        Map<String, Object> m = null;
         try {
             //设置yaml文件格式
             DumperOptions dumperOptions = new DumperOptions();
@@ -158,10 +180,8 @@ public class YamlUtil {
     /**
      * @param path 需要写入的文件路径
      * @param res  需要写入yaml的内容
-     * @return boolean
      */
-    public boolean writeYaml(String path, Map res) {
-
+    public void writeYaml(String path, Map<String, Object> res) {
         try {
             //设置yaml文件格式
             DumperOptions dumperOptions = new DumperOptions();
@@ -174,7 +194,6 @@ public class YamlUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return true;
     }
 
 }
