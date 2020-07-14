@@ -3,12 +3,7 @@ package basic.operators;
 import basic.Param;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.Mockito;
-import org.powermock.api.mockito.PowerMockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.w3c.dom.Document;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -21,8 +16,6 @@ import static org.mockito.Mockito.*;
  * @version 1.0
  * @since 2020/7/10 0:52
  */
-@RunWith(PowerMockRunner.class) // 指定run的是PowerMockRunner
-@PrepareForTest(Operator.class) // 所有要测试的类（本例只有Operator.java）
 public class OperatorTest {
 
     private String configFilePath;
@@ -70,14 +63,6 @@ public class OperatorTest {
             }
         });
     }
-
-    @Test
-    public void loadImplementsTest() throws Exception {
-        spyOpt.getPlatformOptConf();
-        PowerMockito.verifyPrivate(spyOpt, Mockito.times(2))
-                .invoke("loadImplements", Mockito.any(Document.class));
-    }
-
 
     @Test
     public void selectEntityTest() throws Exception {
