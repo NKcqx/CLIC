@@ -5,6 +5,8 @@ import channel.Channel;
 import org.junit.Before;
 import org.junit.Test;
 
+import static org.junit.Assert.assertArrayEquals;
+
 /**
  * Testing for BfsTraversal.java
  *
@@ -22,14 +24,25 @@ public class BfsTraversalTest {
     private Operator optC;
     private Operator optD;
     private Operator optE;
+    private Operator optF;
+    private Operator optG;
+    private Operator optH;
+    private Operator optI;
+    private Operator optJ;
+
 
     /**
      * 测试DAG的边
      */
     private Channel aTb;
     private Channel aTc;
-    private Channel cTd;
-    private Channel cTe;
+    private Channel aTd;
+    private Channel bTe;
+    private Channel dTf;
+    private Channel dTg;
+    private Channel fTi;
+    private Channel eTh;
+    private Channel hTj;
 
     @Before
     public void before() throws Exception {
@@ -39,21 +52,41 @@ public class BfsTraversalTest {
          */
         optA = new Operator("Operator/Source/conf/SourceOperator.xml");
         optB = new Operator("Operator/Map/conf/MapOperator.xml");
-        optC = new Operator("Operator/Filter/conf/FilterOperator.xml");
-        optD = new Operator("Operator/Sort/conf/SortOperator.xml");
-        optE = new Operator("Operator/Sink/conf/SinkOperator.xml");
+        optC = new Operator("Operator/Sort/conf/SortOperator.xml");
+        optD = new Operator("Operator/Filter/conf/FilterOperator.xml");
+        optE = new Operator("Operator/Map/conf/MapOperator.xml");
+        optF = new Operator("Operator/ReduceByKey/conf/ReduceByKeyOperator.xml");
+        optG = new Operator("Operator/Join/conf/JoinOperator.xml");
+        optH = new Operator("Operator/Source/conf/SourceOperator.xml");
+        optI = new Operator("Operator/Sink/conf/SinkOperator.xml");
+        optJ = new Operator("Operator/Map/conf/MapOperator.xml");
         aTb = new Channel(optA, optB, null);
         aTc = new Channel(optA, optC, null);
-        cTd = new Channel(optC, optD, null);
-        cTe = new Channel(optC, optE, null);
+        aTd = new Channel(optA, optD, null);
+        bTe = new Channel(optB, optE, null);
+        dTf = new Channel(optD, optF, null);
+        dTg = new Channel(optD, optG, null);
+        eTh = new Channel(optE, optH, null);
+        fTi = new Channel(optF, optI, null);
+        hTj = new Channel(optH, optJ, null);
         optA.connectTo(aTb);
         optB.connectFrom(aTb);
         optA.connectTo(aTc);
         optC.connectFrom(aTc);
-        optC.connectTo(cTd);
-        optD.connectFrom(cTd);
-        optC.connectTo(cTe);
-        optE.connectFrom(cTe);
+        optA.connectTo(aTd);
+        optD.connectFrom(aTd);
+        optB.connectTo(bTe);
+        optE.connectFrom(bTe);
+        optD.connectTo(dTf);
+        optF.connectFrom(dTf);
+        optD.connectTo(dTg);
+        optG.connectFrom(dTg);
+        optE.connectTo(eTh);
+        optH.connectFrom(eTh);
+        optF.connectTo(fTi);
+        optI.connectFrom(fTi);
+        optH.connectTo(hTj);
+        optJ.connectFrom(hTj);
     }
 
     @Test
@@ -61,10 +94,19 @@ public class BfsTraversalTest {
         AbstractTraversal dagTraversal = new BfsTraversal(optA);
         Operator optTemp;
         String optName;
+        String[] expectedNames = {
+                "SourceOperator", "MapOperator", "SortOperator", "FilterOperator", "MapOperator",
+                "ReduceByKeyOperator", "JoinOperator", "SourceOperator", "SinkOperator", "MapOperator"
+        };
+        String[] optNames = new String[10];
+
+        int i = 0;
         while (dagTraversal.hasNextOpt()) {
             optTemp = dagTraversal.nextOpt();
-            // 依次打印出optName可知BFS遍历成功
             optName = optTemp.getOperatorName();
+            optNames[i] = optName;
+            i += 1;
         }
+        assertArrayEquals(expectedNames, optNames);
     }
 }
