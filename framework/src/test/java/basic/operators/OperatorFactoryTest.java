@@ -3,10 +3,10 @@ package basic.operators;
 import basic.Configuration;
 import org.junit.Before;
 import org.junit.Test;
-import org.powermock.api.mockito.PowerMockito;
 import java.lang.reflect.Method;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
 
 /**
  * Testing for OperatorFactory.java
@@ -65,7 +65,7 @@ public class OperatorFactoryTest {
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
 
         Operator opt = OperatorFactory.createOperator("filter");
-        Operator spyOpt = PowerMockito.spy(opt);
+        Operator spyOpt = spy(opt);
 
         assertEquals("FilterOperator", spyOpt.getOperatorName());
     }
