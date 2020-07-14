@@ -6,6 +6,7 @@ import org.junit.Test;
 import org.mockito.Mockito;
 import java.util.Map;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
@@ -43,10 +44,16 @@ public class OperatorTest {
         Map<String, Param> inputDataList = spyOpt.getInputDataList();
         inputDataList.put(name, param);
 
+        String[] expectedKeys = {"udfName", "udfName2"};
+        String[] actualKeys = new String[2];
+
+        int i = 0;
         for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
-            // 打印出inputDataList可发现put函数调用成功
-            String entryKey = entry.getKey();
+            actualKeys[i] = entry.getKey();
+            i += 1;
         }
+
+        assertArrayEquals(expectedKeys, actualKeys);
     }
 
     @Test
@@ -54,14 +61,8 @@ public class OperatorTest {
         spyOpt.getPlatformOptConf();
         verify(spyOpt, times(1)).getPlatformOptConf();
 
-        spyOpt.getEntities().forEach((k, v) -> {
-            if (k.equals("java")) {
-               assertEquals("java", v.getLanguage());
-            }
-            if (k.equals("spark")) {
-                assertEquals("java", v.getLanguage());
-            }
-        });
+        assert (spyOpt.getEntities().containsKey("java"));
+        assert (spyOpt.getEntities().containsKey("spark"));
     }
 
     @Test
@@ -100,8 +101,6 @@ public class OperatorTest {
     @Test
     public void inputDataTest() {
 
-        //spyOpt.setData("inputKey", "inputData"); // 此时会抛出NoSuchElementException“未在配置文件中...”
-
         String name = "inputKey";
         String dataType = "string";
         String defaultValue = null;
@@ -112,24 +111,25 @@ public class OperatorTest {
 
         spyOpt.setData("inputKey", "inputData");
 
-        spyOpt.getInputDataList().forEach((k, v) -> {
-            if (k.equals("inputKey")) {
-                assertEquals("inputKey", v.getName());
-                assertEquals("inputData", v.getData());
-            }
-            if (k.equals("udfName")) {
-                assertEquals("udfName", v.getName());
-                assertEquals(null, v.getData());
-            }
-        });
+        String[] expectedNames = {"inputKey", "udfName"};
+        String[] expectedDatas = {"inputData", null};
+        String[] actualNames = new String[2];
+        String[] actualDatas = new String[2];
 
+        int i = 0;
+        for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
+            actualNames[i] = entry.getValue().getName();
+            actualDatas[i] = entry.getValue().getData();
+            i += 1;
+        }
+
+        assertArrayEquals(expectedNames, actualNames);
+        assertArrayEquals(expectedDatas, actualDatas);
         verify(spyOpt, times(1)).setData("inputKey", "inputData");
     }
 
     @Test
     public void outputDataTest() {
-
-        //spyOpt.setData("outputKey", "outputData"); // 此时会抛出NoSuchElementException“未在配置文件中...”
 
         String name = "outputKey";
         String dataType = "string";
@@ -141,17 +141,20 @@ public class OperatorTest {
 
         spyOpt.setData("outputKey", "outputData");
 
-        spyOpt.getOutputDataList().forEach((k, v) -> {
-            if (k.equals("result")) {
-                assertEquals("result", v.getName());
-                assertEquals(null, v.getData());
-            }
-            if (k.equals("outputKey")) {
-                assertEquals("outputKey", v.getName());
-                assertEquals("outputData", v.getData());
-            }
-        });
+        String[] expectedNames = {"result", "outputKey"};
+        String[] expectedDatas = {null, "outputData"};
+        String[] actualNames = new String[2];
+        String[] actualDatas = new String[2];
 
+        int i = 0;
+        for (Map.Entry<String, Param> entry : spyOpt.getOutputDataList().entrySet()) {
+            actualNames[i] = entry.getValue().getName();
+            actualDatas[i] = entry.getValue().getData();
+            i += 1;
+        }
+
+        assertArrayEquals(expectedNames, actualNames);
+        assertArrayEquals(expectedDatas, actualDatas);
         verify(spyOpt, times(1)).setData("outputKey", "outputData");
     }
 }
