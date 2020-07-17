@@ -9,10 +9,9 @@ metadata:
 spec:
   entrypoint: my-flow
   volumes:
-    - name: job-volume
-      hostPath:
-        path: /home/dqh/codes/k8s_basics/executable-java/data
-        type: Directory
+    - name: nfs-volume
+      persistentVolumeClaim:
+        claimName: pvc-nfs
   templates:
     - name: my-flow
       dag:

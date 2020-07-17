@@ -9,4 +9,4 @@ container:
   args: [xxx]
   volumeMounts:
     - mountPath: /data
-      name: job-volume
+      name: nfs-volume
