@@ -1,6 +1,5 @@
 package fdu.daslab.backend.executor.utils;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -11,16 +10,12 @@ public class HttpUtilTest {
     @Test
     public void submitPipelineByYaml() {
         URL url = Thread.currentThread().getContextClassLoader().getResource("templates/argo-dag.yaml");
-        assert url!=null;
+        assert url != null;
         HttpUtil.submitPipelineByYaml(url.getPath());
     }
 
     @Before
     public void setUp() throws Exception {
-    }
-
-    @After
-    public void tearDown() throws Exception {
     }
 
     @Test
