@@ -26,7 +26,7 @@ public class FileSink implements BasicOperator<JavaRDD<List<String>>> {
     String outputFileName;
 
     // 输出的分隔符
-    @Parameter(names = {"--sep"})
+    @Parameter(names = {"--separator"})
     String separateStr = ",";
 
     // 是否输出一个文件
