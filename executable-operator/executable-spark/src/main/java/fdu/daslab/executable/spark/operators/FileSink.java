@@ -8,6 +8,9 @@ import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.api.java.JavaRDD;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -27,13 +30,43 @@ public class FileSink implements BasicOperator<JavaRDD<List<String>>> {
     @Parameter(names = {"--sep"})
     String separateStr = ",";
 
+    // 是否输出一个文件
+    @Parameter(names = {"--isCombined"})
+    Boolean isCombined = Boolean.TRUE;
+
     @Override
     public void execute(ParamsModel<JavaRDD<List<String>>> inputArgs,
                         ResultModel<JavaRDD<List<String>>> result) {
         FileSink fileSinkArgs = (FileSink) inputArgs.getOperatorParam();
         // 写入文件
-        result.getInnerResult()
+        if (isCombined) {
+            // 为了方便其他的节点交互，提供写入一个文件的可能性
+            result.getInnerResult()
+                .foreachPartition(partitionIter -> {
+                    // 所有数据均追加到一个文件上
+                    FileWriter fileWritter = new FileWriter(fileSinkArgs.outputFileName, true);
+                    BufferedWriter out = new BufferedWriter(fileWritter);
+                    partitionIter.forEachRemaining(record -> {
+                        StringBuilder writeLine = new StringBuilder();
+                        record.forEach(field -> {
+                            writeLine.append(field);
+                            writeLine.append(fileSinkArgs.separateStr);
+                        });
+                        writeLine.deleteCharAt(writeLine.length() - 1);
+                        writeLine.append("\n");
+                        try {
+                            out.write(writeLine.toString());
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    });
+                });
+        } else {
+            // 一个partition写入一个文件
+            result.getInnerResult()
                 .map(line -> StringUtils.join(line, fileSinkArgs.separateStr))
                 .saveAsTextFile(fileSinkArgs.outputFileName);
+        }
+
     }
 }
