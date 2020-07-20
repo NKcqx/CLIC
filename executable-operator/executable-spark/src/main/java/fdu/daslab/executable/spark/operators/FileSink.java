@@ -8,9 +8,8 @@ import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.api.java.JavaRDD;
 
-import java.io.BufferedWriter;
 import java.io.FileWriter;
-import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 
 /**
@@ -45,7 +44,7 @@ public class FileSink implements BasicOperator<JavaRDD<List<String>>> {
                 .foreachPartition(partitionIter -> {
                     // 所有数据均追加到一个文件上
                     FileWriter fileWritter = new FileWriter(fileSinkArgs.outputFileName, true);
-                    BufferedWriter out = new BufferedWriter(fileWritter);
+                    PrintWriter out = new PrintWriter(fileWritter);
                     partitionIter.forEachRemaining(record -> {
                         StringBuilder writeLine = new StringBuilder();
                         record.forEach(field -> {
@@ -53,13 +52,11 @@ public class FileSink implements BasicOperator<JavaRDD<List<String>>> {
                             writeLine.append(fileSinkArgs.separateStr);
                         });
                         writeLine.deleteCharAt(writeLine.length() - 1);
-                        writeLine.append("\n");
-                        try {
-                            out.write(writeLine.toString());
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
+                        out.println(writeLine);
+                        out.flush();
                     });
+                    out.close();
+                    fileWritter.close();
                 });
         } else {
             // 一个partition写入一个文件
