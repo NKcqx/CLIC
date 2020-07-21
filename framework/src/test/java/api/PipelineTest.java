@@ -55,16 +55,16 @@ public class PipelineTest {
         argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
     }
 
-    @Test(expected = IndexOutOfBoundsException.class)
-    public void execute() {
-        // YamlUti.java 77行的filter操作
-        // .filter(template -> template.getPlatform().equals(node.getPlatform()))
-        // 返回结果为空
-        // 抛出IndexOutOfBoundsException异常
-        // java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
-        // at fdu.daslab.backend.executor.utils.YamlUtil.joinYaml(YamlUtil.java:79)
-        //	at fdu.daslab.backend.executor.utils.YamlUtil.createArgoYaml(YamlUtil.java:48)
-        //	at fdu.daslab.backend.executor.model.Pipeline.execute(Pipeline.java:43)
-        argoPipeline.execute();
-    }
+//    @Test(expected = IndexOutOfBoundsException.class)
+//    public void execute() {
+//        // YamlUti.java 77行的filter操作
+//        // .filter(template -> template.getPlatform().equals(node.getPlatform()))
+//        // 返回结果为空
+//        // 抛出IndexOutOfBoundsException异常
+//        // java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
+//        // at fdu.daslab.backend.executor.utils.YamlUtil.joinYaml(YamlUtil.java:79)
+//        //	at fdu.daslab.backend.executor.utils.YamlUtil.createArgoYaml(YamlUtil.java:48)
+//        //	at fdu.daslab.backend.executor.model.Pipeline.execute(Pipeline.java:43)
+//        argoPipeline.execute();
+//    }
 }
