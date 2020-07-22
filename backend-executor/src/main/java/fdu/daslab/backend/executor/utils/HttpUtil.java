@@ -51,7 +51,8 @@ public class HttpUtil {
             String responseMsg = postMethod.getResponseBodyAsString();
             LOGGER.info(responseMsg);
         } catch (IOException e) {
-            e.printStackTrace();
+//            e.printStackTrace();
+            LOGGER.error(e.getMessage());
         } finally {
             postMethod.releaseConnection();
         }

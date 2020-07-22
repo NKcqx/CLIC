@@ -1,6 +1,3 @@
-/**
-
- */
 package api;
 
 import basic.operators.Operator;
@@ -43,7 +40,11 @@ public final class DataQuanta {
                 for (Map.Entry entry : params.entrySet()) {
                     String key = (String) entry.getKey();
                     String value = (String) entry.getValue();
-                    opt.setData(key, value);
+                    if ("deterministic".equals(key)) {
+                        opt.setDeterministic(value.equalsIgnoreCase("true"));
+                    } else {
+                        opt.setData(key, value);
+                    }
                 }
             }
             DataQuanta dq = new DataQuanta(opt);
@@ -113,5 +114,4 @@ public final class DataQuanta {
     public Operator getOperator() {
         return operator;
     }
-
 }

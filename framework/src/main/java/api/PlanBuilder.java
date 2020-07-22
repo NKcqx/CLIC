@@ -13,6 +13,7 @@ import basic.visitors.ExecutionGenerationVisitor;
 import basic.visitors.PipelineVisitor;
 import basic.visitors.PrintVisitor;
 import fdu.daslab.backend.executor.model.Pipeline;
+import optimizer.Optimizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
@@ -83,12 +84,17 @@ public class PlanBuilder {
         this.printPlan();
         this.logging("   ");
 
-        this.logging("===========【Stage 2】Choose best Operator implementation ===========");
-        this.optimizePlan();
+        this.logging("===========【Stage 2】Optimize best DAG by rule ===========");
+        this.optimizePlanByRule();
         this.printPlan();
         this.logging("   ");
 
-        this.logging("===========【Stage 3】execute plan ==========");
+        this.logging("===========【Stage 3】Choose best Operator implementation ===========");
+        this.optimizePlanByCost();
+        this.printPlan();
+        this.logging("   ");
+
+        this.logging("===========【Stage 4】execute plan ==========");
         this.executePlan();
 
     }
@@ -103,7 +109,16 @@ public class PlanBuilder {
 //        }
     }
 
-    public void optimizePlan() {
+    /**
+     * 基于规则优化dag，包含：调整dag中的operator的执行顺序；合并相邻的相同算子等
+     */
+    private void optimizePlanByRule() {
+        Operator sourceOperator = this.getHeadDataQuanta().getOperator();
+        Optimizer optimizer = new Optimizer();
+        optimizer.execute(sourceOperator);
+    }
+
+    public void optimizePlanByCost() {
         AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
         ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor(planTraversal);
         executionGenerationVisitor.startVisit();

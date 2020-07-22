@@ -13,10 +13,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
@@ -47,6 +45,18 @@ public class Operator implements Visitable {
     // 记录下一跳Opt.
     private List<Channel> outputChannels; // 这里Channel的index应该没什么用
     private Map<String, Param> outputDataList; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
+
+    /**
+     * 标记算子是不是决定性的（无状态的），也并且不会改变值
+     * 某些算子，本身可能就不是deterministic的，比如rand，需要配置
+     * 某些算子的UDF，可能本身也不是deterministic，需要使用set方法配置，比如map
+     */
+    private boolean deterministic = false;
+
+    // dummy operator
+    public Operator() {
+        this.outputChannels = new ArrayList<>();
+    }
 
 
     public Operator(String configFilePath) throws IOException, SAXException, ParserConfigurationException {
@@ -413,6 +423,24 @@ public class Operator implements Visitable {
         visitor.visit(this);
     }
 
+    public boolean isDeterministic() {
+        return deterministic;
+    }
+
+    public void setDeterministic(boolean deterministic) {
+        this.deterministic = deterministic;
+    }
+
+    // 清空input
+    public void cleanInputChannel() {
+        this.inputChannels.clear();
+    }
+
+    // 清空output
+    public void cleanOutputChannel() {
+        this.outputChannels.clear();
+    }
+
     @Override
     public String toString() {
         return "Operator{"
@@ -466,6 +494,8 @@ public class Operator implements Visitable {
         public void setCost(Double cost) {
             this.cost = cost;
         }
+
+
 
         @Override
         public String toString() {
