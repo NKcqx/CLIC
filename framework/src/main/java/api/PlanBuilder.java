@@ -126,6 +126,12 @@ public class PlanBuilder {
         Pipeline argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
         argoPipeline.execute();
 
+        /**
+         * 1. 调用WorkflowVisitor 得到Stages
+         * 2. 创建Workflow 传入stages和ArgoAdapter（adapter使用新写的setArgoNode 接收List of Stage）
+         * 3. Workflow,execute()
+         */
+
 //        for (Operator opt : this.pipeline){
 //            opt.acceptVisitor(executeVisitor);
 //        }

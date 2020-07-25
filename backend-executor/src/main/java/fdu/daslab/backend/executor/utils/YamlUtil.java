@@ -57,7 +57,7 @@ public class YamlUtil {
      * @param imageTemplates image列表
      * @return 拼接完成的yaml路径
      */
-    public String joinYaml(List<ArgoNode> nodes, List<ImageTemplate> imageTemplates) {
+    private String joinYaml(List<ArgoNode> nodes, List<ImageTemplate> imageTemplates) {
         List<Object> tasks = new LinkedList<>();
         List<String> tpl = new ArrayList<>();
 
@@ -77,9 +77,9 @@ public class YamlUtil {
                     .filter(template -> template.getPlatform().equals(node.getPlatform()))
                     .collect(Collectors.toList())
                     .get(0);
-           if (!tpl.contains(node.getPlatform())) {
-               tpl.add(node.getPlatform());
-           }
+            if (!tpl.contains(node.getPlatform())) {
+                tpl.add(node.getPlatform());
+            }
 
             tasks.add(joinTask(node, imageTemplate));
 
@@ -104,7 +104,7 @@ public class YamlUtil {
      * @param imageTemplate 模版
      * @return task map
      */
-    public Map joinTask(ArgoNode node, ImageTemplate imageTemplate) {
+    private Map joinTask(ArgoNode node, ImageTemplate imageTemplate) {
         //List<Map> tasks=new LinkedList<>();
         Map<String, Object> taskName = new HashMap<>();
         Map<String, Object> taskTem = new HashMap<>();
@@ -160,7 +160,7 @@ public class YamlUtil {
      * @param path 需要读取的文件路径
      * @return 读取结果
      */
-    public Map<String, Object> readYaml(String path) {
+    private Map<String, Object> readYaml(String path) {
         Map<String, Object> m = null;
         try {
             //设置yaml文件格式

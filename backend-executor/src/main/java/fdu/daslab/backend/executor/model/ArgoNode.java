@@ -55,6 +55,10 @@ public class ArgoNode {
         this.parameters = parameters;
     }
 
+    public ArgoNode(int id, String name, String platform, List<ArgoNode> dependencies) {
+        this(id, name, platform, dependencies, null);
+    }
+
     public void setParameters(List<Parameter> parameters) {
         this.parameters = parameters;
     }

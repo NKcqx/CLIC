@@ -299,32 +299,6 @@ public class Operator implements Visitable {
         }
     }
 
-//    public List<String> getAllOutputData() {
-//        List<String> output_list = new ArrayList<>();
-//        for (Map.Entry entry : this.output_data_list.entrySet()) {
-//            Param param = (Param) entry.getValue();
-//            output_list.add(param.getData());
-//        }
-//        return output_list;
-//    }
-//
-//    public Map<String, String> getAllKVOutputData() {
-//        Map<String, String> output_list = new HashMap<>();
-//        for (Map.Entry entry : this.output_data_list.entrySet()) {
-//            Param param = (Param) entry.getValue();
-//            output_list.put((String) entry.getKey(), param.getData());
-//        }
-//        return output_list;
-//    }
-//
-//    public Set<String> getInputKeys() {
-//        return this.input_data_list.keySet();
-//    }
-//
-//    public Set<String> getOutputKeys() {
-//        return this.output_data_list.keySet();
-//    }
-
     private void setOutputData(String key, String value) {
         this.outputDataList.get(key).setValue(value);
 

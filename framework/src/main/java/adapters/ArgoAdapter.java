@@ -1,17 +1,16 @@
-
 package adapters;
 
+import basic.Param;
+import basic.Stage;
 import basic.operators.Operator;
 import basic.platforms.PlatformFactory;
+import basic.traversal.BfsTraversal;
 import fdu.daslab.backend.executor.model.ArgoNode;
 import fdu.daslab.backend.executor.model.ImageTemplate;
 import fdu.daslab.backend.executor.model.OperatorAdapter;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 将平台内部的operator，按照连续的平台分为一组，并组装成argo的形式
@@ -59,7 +58,7 @@ public class ArgoAdapter implements OperatorAdapter {
                 operatorGroups.add(operatorGroup);
             }
         }
-        //遍历每个分组，并设置arg onode
+        //遍历每个分组，并设置arg node
         for (List<Operator> plt : operatorGroups) {
             idInJob += 1;
             //当前是串行，所以暂定传入的dependencies是前一个node
@@ -153,5 +152,45 @@ public class ArgoAdapter implements OperatorAdapter {
         }
         node.setParameters(params);
         return node;
+    }
+
+    public List<ArgoNode> setArgoNode(List<Stage> stages){
+        List<ArgoNode> argoNodeList = new ArrayList<>();
+        // 1. 遍历stage里的dag，生成ArgoNode
+        for (Stage stage : stages){
+            // todo id好好生成下
+            ArgoNode argoNode = new ArgoNode(0, stage.getName(), stage.getPlatform(), null);
+            // 遍历stage里的dag, 转成YAML字符串
+            List<Map<String, Object>> optMapList = new ArrayList<>(); // stage里所有opt的列表 YML列表
+            List<Map<String, Object>> dagList = new ArrayList<>();
+
+            Operator stageRootOpt = stage.getHeadOpt();
+            BfsTraversal bfsTraversal = new BfsTraversal(stageRootOpt);
+            while (bfsTraversal.hasNextOpt()){
+                Operator curOpt = bfsTraversal.nextOpt();
+                optMapList.add(operator2Map(curOpt)); // 先把 opt -> map 为了生成yaml
+                dagList.add(operatorDenpendency2Map(curOpt));
+            }
+
+            argoNode.setParameter(Yaml(optMapList) + Yaml(dagList));
+        }
+        return null;
+    }
+
+    private Map<String, Object> operator2Map(Operator opt){
+        List<Map<String, String>> paramsList = new ArrayList<>();
+        for (Param param : opt.getInputDataList().values()){
+            paramsList.add(param.getKVData());
+        }
+        Map<String, Object> optMap = new HashMap<String, Object>(){{
+            put("name", opt.getOperatorName());
+            put("id", opt.getOperatorID()); // TODO: 这实际应该是一个动态生成的ID，所有Opt都不一样
+            put("params", paramsList);
+        }};
+        return  optMap;
+    }
+
+    private Map<String, Object> operatorDenpendency2Map(Operator opt){
+        if (opt.)
     }
 }
