@@ -21,17 +21,14 @@ public class ConfigurationTest {
 
     }
 
-//    @Test(expected = FileNotFoundException.class)
-//    public void getProperty() throws FileNotFoundException {
-//        // 这里抛出FileNotFoundException异常
-//        // 是否是Configuration类有bug
-//        // 还是我在这的构造函数用法不对？
-//        configuration = new Configuration();
-//
-//        String resPath1 = configuration.getProperty("yaml-output-path");
-//        String resPath2 = configuration.getProperty("yaml-prefix");
-//
-//        assertEquals("/tmp/irdemo_output/", resPath1);
-//        assertEquals("job-", resPath2);
-//    }
+    @Test
+    public void getProperty() throws FileNotFoundException {
+        configuration = new Configuration();
+
+        String resPath1 = configuration.getProperty("yaml-output-path");
+        String resPath2 = configuration.getProperty("yaml-prefix");
+
+        assertEquals("/tmp/irdemo_output/", resPath1);
+        assertEquals("job-", resPath2);
+    }
 }
