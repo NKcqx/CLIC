@@ -23,12 +23,8 @@ public class Configuration {
     }
 
     public Configuration(String configFileName) throws FileNotFoundException {
-        try {
-            InputStream in = this.getClass().getClassLoader().getResourceAsStream(configFileName);
-            this.loadConfig(in);
-        } catch (Exception e) {
-            throw new FileNotFoundException(String.format("无法加载默认配置文件，请检查是否存在: ", DEFAULT_CONFIGURATION_FILE_NAME));
-        }
+        InputStream in = this.getClass().getClassLoader().getResourceAsStream(configFileName);
+        this.loadConfig(in);
     }
 
     private void loadConfig(InputStream configStream) throws FileNotFoundException {
