@@ -1,13 +1,13 @@
 package api;
 
 import adapters.ArgoAdapter;
+import basic.Configuration;
 import basic.operators.Operator;
-import channel.Channel;
+import basic.operators.OperatorFactory;
+import basic.platforms.PlatformFactory;
 import fdu.daslab.backend.executor.model.Pipeline;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,25 +29,34 @@ public class PipelineTest {
 
     @Before
     public void setUp() throws Exception {
-        Operator opt1 = new Operator("Operator/Source/conf/SourceOperator.xml");
-        Operator opt2 = new Operator("Operator/Sink/conf/SinkOperator.xml");
-        Operator opt3 = new Operator("Operator/Filter/conf/FilterOperator.xml");
-        Operator opt4 = new Operator("Operator/Map/conf/MapOperator.xml");
-        Operator opt5 = new Operator("Operator/Sink/conf/SinkOperator.xml");
+        Configuration configuration = new Configuration();
+        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
+        PlatformFactory.initMapping(configuration.getProperty("platform-mapping-file"));
+
+        Operator opt1 = OperatorFactory.createOperator("source");
+        Operator opt2 = OperatorFactory.createOperator("filter");
+        Operator opt3 = OperatorFactory.createOperator("map");
+        Operator opt4 = OperatorFactory.createOperator("reducebykey");
+        Operator opt5 = OperatorFactory.createOperator("sort");
+        Operator opt6 = OperatorFactory.createOperator("sink");
+
         opt1.selectEntity("java");
         opt2.selectEntity("java");
-        opt3.selectEntity("java");
+        opt3.selectEntity("spark");
         opt4.selectEntity("java");
         opt5.selectEntity("java");
+        opt6.selectEntity("java");
 
-        opt1.connectTo(new Channel(opt1, opt2, null));
-        opt2.connectFrom(new Channel(opt1, opt2, null));
-        opt1.connectTo(new Channel(opt1, opt3, null));
-        opt3.connectFrom(new Channel(opt1, opt3, null));
-        opt3.connectTo(new Channel(opt3, opt4, null));
-        opt4.connectFrom(new Channel(opt3, opt4, null));
-        opt3.connectTo(new Channel(opt3, opt5, null));
-        opt5.connectFrom(new Channel(opt3, opt5, null));
+//        opt1.connectTo(new Channel(opt1, opt2, null));
+//        opt2.connectFrom(new Channel(opt1, opt2, null));
+//        opt2.connectTo(new Channel(opt2, opt3, null));
+//        opt3.connectFrom(new Channel(opt2, opt3, null));
+//        opt3.connectTo(new Channel(opt3, opt4, null));
+//        opt4.connectFrom(new Channel(opt3, opt4, null));
+//        opt4.connectTo(new Channel(opt4, opt5, null));
+//        opt5.connectFrom(new Channel(opt4, opt5, null));
+//        opt5.connectTo(new Channel(opt5, opt6, null));
+//        opt6.connectFrom(new Channel(opt5, opt6, null));
 
         List<Operator> allOperators = new ArrayList<>();
         allOperators.add(opt1);
@@ -55,20 +64,14 @@ public class PipelineTest {
         allOperators.add(opt3);
         allOperators.add(opt4);
         allOperators.add(opt5);
+        allOperators.add(opt6);
         argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
         spyArgoPipeline = spy(argoPipeline);
     }
 
     @Test
     public void execute() {
-        // YamlUti.java 77行的filter操作
-        // .filter(template -> template.getPlatform().equals(node.getPlatform()))
-        // 返回结果为空
-        // 抛出IndexOutOfBoundsException异常
-        // java.lang.IndexOutOfBoundsException: Index: 0, Size: 0
-        // at fdu.daslab.backend.executor.utils.YamlUtil.joinYaml(YamlUtil.java:79)
-        //	at fdu.daslab.backend.executor.utils.YamlUtil.createArgoYaml(YamlUtil.java:48)
-        //	at fdu.daslab.backend.executor.model.Pipeline.execute(Pipeline.java:43)
-        doThrow(IndexOutOfBoundsException.class).when(spyArgoPipeline).execute();
+        spyArgoPipeline.execute();
+        verify(spyArgoPipeline, times(1)).execute();
     }
 }
