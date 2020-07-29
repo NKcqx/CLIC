@@ -87,7 +87,7 @@ public final class DataQuanta {
         return numIncoming;
     }
 
-    public int incoming(DataQuanta incoming) {
+    public int incoming(DataQuanta incoming) throws Exception {
         assert incoming != null : "上一跳不能为空";
         Channel channel = new Channel(
                 incoming.getOperator(),

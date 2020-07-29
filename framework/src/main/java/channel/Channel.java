@@ -22,11 +22,17 @@ public class Channel {
         this.sourceOperator = source;
         this.targetOperator = target;
         this.keyPair = keyPair;
-
     }
 
-    public Channel(Operator source, Operator target) {
-        this(source, target, new Pair<>("result", "data")); // todo 之后Operator会改属性的加载、读取方式，这里就不用硬编码了
+    public Channel(Operator source, Operator target) throws Exception {
+        if (source.getOutputDataList().size() != 1 || target.getInputDataList().size() != 1) {
+            throw new Exception("source 或 target 具有多个输入输出，请指明要链接的Key Pair");
+        }
+        String sourceOutputKey = (String) source.getOutputDataList().keySet().toArray()[0];
+        String targetInputKey = (String) target.getInputDataList().keySet().toArray()[0];
+        this.sourceOperator = source;
+        this.targetOperator = target;
+        this.keyPair = new Pair<>(sourceOutputKey, targetInputKey);
     }
 
     public Channel(Operator source, List<String> outputKeySet, Operator target, List<String> inputKeySet) {
