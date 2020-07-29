@@ -34,6 +34,13 @@ public class Operator implements Visitable {
     private List<Channel> outputChannels; // 这里Channel的index应该没什么用
     private Map<String, Param> outputDataList; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
 
+    /**
+     * 应避免直接创建Operator，而是使用OperatorFactory的 createOperator 或 createOperatorFromFile
+     *
+     * @param id
+     * @param name
+     * @param kind
+     */
     public Operator(String id, String name, String kind){
         this.operatorID = id;
         this.operatorName = name;
@@ -60,6 +67,7 @@ public class Operator implements Visitable {
         this.outputDataList = new HashMap<>();
         this.outputChannels = new ArrayList<>();
         this.inputChannels = new ArrayList<>();
+        this.inputDataList = new HashMap<>();
     }
 
     /**
@@ -173,8 +181,12 @@ public class Operator implements Visitable {
         return inputChannels;
     }
 
-    public Map<String, Param> getInputDataList() {
+    public Map<String, Param> getInputParamList() {
         return this.inputParamList;
+    }
+
+    public Map<String, Param> getInputDataList(){
+        return this.inputDataList;
     }
 
     public Map<String, Param> getOutputDataList() {
@@ -248,47 +260,4 @@ public class Operator implements Visitable {
         CALCULATOR, SUPPLIER, CONSUMER, TRANSFORMER, SHUFFLER
     }
 
-    public static class OperatorEntity {
-        String entityID;
-        String language;
-        Double cost;
-
-        public OperatorEntity(String entityID, String language, Double cost) {
-            this.entityID = entityID;
-            this.language = language;
-            this.cost = cost;
-        }
-
-        public String getEntityID() {
-            return entityID;
-        }
-
-        public void setEntityID(String entityID) {
-            this.entityID = entityID;
-        }
-
-        public String getLanguage() {
-            return language;
-        }
-
-        public void setLanguage(String language) {
-            this.language = language;
-        }
-
-        public Double getCost() {
-            return cost;
-        }
-
-        public void setCost(Double cost) {
-            this.cost = cost;
-        }
-
-        @Override
-        public String toString() {
-            return "OperatorEntity{"
-                    + "language='" + language + '\''
-                    + ", cost=" + cost
-                    + '}';
-        }
-    }
 }

@@ -41,14 +41,14 @@ public class OperatorTest {
         String defaultValue = null;
         Boolean isRequired = false;
         Param param = new Param(name, dataType, isRequired, defaultValue);
-        Map<String, Param> inputDataList = spyOpt.getInputDataList();
+        Map<String, Param> inputDataList = spyOpt.getInputParamList();
         inputDataList.put(name, param);
 
         String[] expectedKeys = {"udfName", "udfName2"};
         String[] actualKeys = new String[2];
 
         int i = 0;
-        for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
+        for (Map.Entry<String, Param> entry : spyOpt.getInputParamList().entrySet()) {
             actualKeys[i] = entry.getKey();
             i += 1;
         }
@@ -88,7 +88,7 @@ public class OperatorTest {
         String defaultValue = null;
         Boolean isRequired = false;
         Param param = new Param(name, dataType, isRequired, defaultValue);
-        Map<String, Param> inputDataList = spyOpt.getInputDataList();
+        Map<String, Param> inputDataList = spyOpt.getInputParamList();
         inputDataList.put(name, param);
 
         spyOpt.setParamValue("inputKey", "inputData");
@@ -99,7 +99,7 @@ public class OperatorTest {
         String[] actualDatas = new String[2];
 
         int i = 0;
-        for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
+        for (Map.Entry<String, Param> entry : spyOpt.getInputParamList().entrySet()) {
             actualNames[i] = entry.getValue().getName();
             actualDatas[i] = entry.getValue().getData();
             i += 1;

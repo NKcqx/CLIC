@@ -29,7 +29,7 @@ public final class JoinVisitor implements SparkVisitor {
 
     public static JoinVisitor newInstance(Operator operator) {
         List<Channel> inputChannel = operator.getInputChannel();
-        Map<String, Param> inputParameterList = operator.getInputDataList();
+        Map<String, Param> inputParameterList = operator.getInputParamList();
         Param inputParameter = inputParameterList.get("predicate");
         return new JoinVisitor(inputChannel.get(0).getSourceOperator(),
                 inputChannel.get(1).getSourceOperator(), inputParameter);

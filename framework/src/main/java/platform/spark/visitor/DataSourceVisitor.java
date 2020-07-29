@@ -17,7 +17,7 @@ public final class DataSourceVisitor implements SparkVisitor {
     }
 
     public static DataSourceVisitor newInstance(Operator operator) {
-        Map<String, Param> inputParameter = operator.getInputDataList();
+        Map<String, Param> inputParameter = operator.getInputParamList();
         String path = inputParameter.get("data_path").getData(); //获取源文件路径
         return new DataSourceVisitor(path);
     }

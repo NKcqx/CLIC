@@ -22,7 +22,7 @@ public class Demo {
 
             // 创建节点
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("data", "data/test.csv");
+                put("input_path", "data/test.csv");
             }});
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
@@ -43,7 +43,7 @@ public class Demo {
             }});
 
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
-                put("result", "data/output.csv"); // 具体resources的路径通过配置文件获得
+                put("output_path", "data/output.csv"); // 具体resources的路径通过配置文件获得
             }});
 
             // 链接节点，即构建DAG

@@ -126,7 +126,7 @@ public class PlanBuilder {
         WorkflowVisitor workflowVisitor = new WorkflowVisitor(planTraversal);
         workflowVisitor.startVisit();
         List<Stage> stages = workflowVisitor.getStages(); // 划分好的Stage
-        stages = wrapStageWithHeadTail(stages);
+        wrapStageWithHeadTail(stages); // 为每个Stage添加一个对应平台的SourceOpt 和 SinkOpt
         Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
         argoWorkflow.execute(); // 将workflow生成为YAML
 //        for (Operator opt : this.pipeline){
@@ -134,56 +134,50 @@ public class PlanBuilder {
 //        }
     }
 
-    private Stage insertSink(Stage stage, String filePath) throws Exception {
+    private void insertSink(Stage stage, String filePath) throws Exception {
         // 先创建一个Sink
         Operator sinkOperator = OperatorFactory.createOperator("sink");
         sinkOperator.selectEntity(stage.getPlatform());
-        sinkOperator.setParamValue("output", filePath);
+        sinkOperator.setParamValue("output_path", filePath);
         // 再链接两个opt
         Channel channel = new Channel(stage.getTail(), sinkOperator);
         stage.getTail().connectTo(channel);
         sinkOperator.connectFrom(channel);
         // 最后更新stage的首尾
         stage.setTail(sinkOperator);
-        return stage;
     }
 
-    private Stage insertSource(Stage stage, String filePath) throws Exception {
+    private void insertSource(Stage stage, String filePath) throws Exception {
         // 先创建一个Source
         Operator sourceOperator = OperatorFactory.createOperator("source");
         sourceOperator.selectEntity(stage.getPlatform());
-        sourceOperator.setParamValue("output", filePath);
+        sourceOperator.setParamValue("input_path", filePath);
         // 再链接两个opt
         Channel channel = new Channel(sourceOperator, stage.getHead());
         sourceOperator.connectTo(channel);
         stage.getHead().connectFrom(channel);
         // 最后更新stage的首尾
         stage.setHead(sourceOperator);
-        return stage;
     }
 
-    private List<Stage> wrapStageWithHeadTail(List<Stage> stages) throws Exception {
-        String code = String.valueOf(new Date().hashCode());
+    private void wrapStageWithHeadTail(List<Stage> stages) throws Exception {
         String filePath = null;
         for (int i=0;i<stages.size();++i){
             Stage stage = stages.get(i);
-            Operator stageHead = stage.getHead();
-            Operator stageTail = stage.getTail();
             if (i==0){
                 // sink file path
-                filePath = String.format("stage-%s-output@%s", stage.getId(), code);
+                filePath = String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
                 insertSink(stage, filePath);
             }else if(i == stages.size()-1){
                 insertSource(stage, filePath);
             }else{
                 insertSource(stage, filePath);
-                filePath = String.format("stage-%s-output@%s", stage.getId(), code);
+                filePath = String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
                 insertSink(stage, filePath);
             }
 
 
         }
-        return null;
     }
 
     private LinkedList<Operator> optimizePipeline() {

@@ -18,7 +18,7 @@ public final class ProjectVisitor implements SparkVisitor {
     }
 
     public static ProjectVisitor newInstance(Operator operator) {
-        String cols = operator.getInputDataList().get("predicate").getData();
+        String cols = operator.getInputParamList().get("predicate").getData();
         Operator srcTable = operator.getInputChannel().get(0).getSourceOperator();
         return new ProjectVisitor(srcTable, cols);
     }

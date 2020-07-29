@@ -16,7 +16,7 @@ public class FilterVisitor implements SparkVisitor {
     }
 
     public static FilterVisitor newInstance(Operator operator) {
-        String predicate = operator.getInputDataList().get("predicate").getData();
+        String predicate = operator.getInputParamList().get("predicate").getData();
         Operator srcOperator = operator.getInputChannel().get(0).getSourceOperator();
         return new FilterVisitor(srcOperator, predicate);
     }

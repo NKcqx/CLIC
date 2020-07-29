@@ -3,6 +3,7 @@ package basic.visitors;
 import basic.Param;
 import basic.Stage;
 import basic.operators.Operator;
+import basic.operators.OperatorEntity;
 import basic.traversal.TopTraversal;
 
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ import java.util.Map;
 public class WorkflowVisitor extends Visitor {
     private List<Stage> stages = new ArrayList<>(); // stage列表
     private Stage curStage = null;
-    private Operator.OperatorEntity curOptPlatform = null;
+    private OperatorEntity curOptPlatform = null;
     private Operator stageHeadOpt = null;
     private TopTraversal planTraversal;
     private Integer jobID = 1;
@@ -64,6 +65,9 @@ public class WorkflowVisitor extends Visitor {
                 // 遍历下一跳
                 nextOpt.acceptVisitor(this);
             }
+        }else {
+            curStage.setTail(opt);
+            stages.add(curStage);
         }
     }
 

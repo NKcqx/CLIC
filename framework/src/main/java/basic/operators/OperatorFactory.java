@@ -75,6 +75,13 @@ public final class OperatorFactory {
         return createOperatorFromFile(templatePath);
     }
 
+    /**
+     * 从给定配置文件中读取并创建一个Operator
+     *
+     * @param templatePath 配置文件的资源路径（相对resource目录的路径）
+     * @return 创建完成的Operator
+     * @throws Exception 配置文件不存在、XML解析错误
+     */
     public static Operator createOperatorFromFile(String templatePath) throws Exception {
         InputStream fullConfigFileStream = OperatorFactory.class.getClassLoader().getResourceAsStream(templatePath);
         assert fullConfigFileStream != null;
@@ -87,8 +94,8 @@ public final class OperatorFactory {
 
         // 1. 先载入Opt的基本信息，如ID、name、kind
         String code = String.valueOf(new Date().hashCode());
-        Operator operator = new Operator(root.getAttribute("ID") + "-" + code,
-                root.getAttribute("Name"),
+        Operator operator = new Operator(root.getAttribute("ID") + code,
+                root.getAttribute("name"),
                 root.getAttribute("kind"));
 
         // 2. 加载输入参数列表
@@ -107,8 +114,8 @@ public final class OperatorFactory {
             operator.setOutputData(output);
 
         // 5. 加载每个平台配置文件的信息
-        List<Operator.OperatorEntity> platformEntity = getOptPlatforms(root);
-        for (Operator.OperatorEntity entity : platformEntity){
+        List<OperatorEntity> platformEntity = getOptPlatforms(root);
+        for (OperatorEntity entity : platformEntity){
             operator.setEntity(entity);
         }
 
@@ -129,12 +136,12 @@ public final class OperatorFactory {
         return result;
     }
 
-    private static List<Operator.OperatorEntity> getOptPlatforms(Element root) throws Exception {
-        List<Operator.OperatorEntity> operatorEntities = new ArrayList<>();
+    private static List<OperatorEntity> getOptPlatforms(Element root) throws Exception {
+        List<OperatorEntity> operatorEntities = new ArrayList<>();
         ArrayList<Element> eleList = getElementListByTag(Optional.ofNullable(root), "platforms", "platform");
         for (Element ele : eleList){
             String platform = ele.getAttribute("ID");
-            String path = ele.getAttribute("path");
+            String path = getElementContentByTag(Optional.of(ele), "path");
             InputStream pltConfigStream = OperatorFactory.class.getClassLoader().getResourceAsStream(path);
             assert pltConfigStream != null;
             Document config = DocumentBuilderFactory.newInstance()
@@ -146,7 +153,7 @@ public final class OperatorFactory {
             String language = getElementContentByTag(plt_ele, "language");
             Double cost = Double.valueOf(getElementContentByTag(plt_ele, "cost"));
             // String id = plt_ele.map(element -> element.getAttribute("ID")).orElse(""); // 用根XML里得到的ID
-            operatorEntities.add(new Operator.OperatorEntity(platform, language, cost));
+            operatorEntities.add(new OperatorEntity(platform, language, cost));
         }
         return operatorEntities;
     }

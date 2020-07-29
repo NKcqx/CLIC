@@ -10,7 +10,6 @@ import fdu.daslab.backend.executor.model.ArgoNode;
 import fdu.daslab.backend.executor.model.ImageTemplate;
 import fdu.daslab.backend.executor.model.OperatorAdapter;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.hadoop.util.hash.Hash;
 
 import java.util.*;
 
@@ -194,14 +193,22 @@ public class ArgoAdapter implements OperatorAdapter {
     }
 
     private Map<String, Object> operator2Map(Operator opt){
-        List<Map<String, String>> paramsList = new ArrayList<>();
+        /*Map<String, String> paramsList = new ArrayList<>();
         for (Param param : opt.getInputDataList().values()){
             paramsList.add(param.getKVData());
-        }
+        }*/
+        Map<String, Param> paramsList =  opt.getInputParamList();
+        Map<String, Param> inputDataList = opt.getInputDataList();
+        Map<String, Param> outputDataList = opt.getOutputDataList();
+
+        Map<String, String> paramsMap = new HashMap<>();
+        paramsList.forEach((s, param) -> paramsMap.putAll(param.getKVData()));
         Map<String, Object> optMap = new HashMap<String, Object>(){{
             put("name", opt.getOperatorName());
             put("id", opt.getOperatorID());
-            put("params", paramsList);
+            put("params", paramsMap);
+            put("inputKeys", inputDataList.keySet().toArray());
+            put("outputKeys", outputDataList.keySet().toArray());
         }};
         return  optMap;
     }
@@ -213,7 +220,6 @@ public class ArgoAdapter implements OperatorAdapter {
             List<Channel> inputChannels =  opt.getInputChannel(); // todo 这该不该直接拿Channel呢
             List<Map<String, String>> dependencies = new ArrayList<>(); // denpendencies字段，是一个List<Map> 每个元素是其中一个依赖
             for (Channel channel : inputChannels){
-                String id = channel.getSourceOperator().getOperatorID();
                 dependencies.add(new HashMap<String, String>(){{
                     put("id", channel.getSourceOperator().getOperatorID());
                     put("sourceKey", channel.getKeyPair().getKey());
