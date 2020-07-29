@@ -17,9 +17,8 @@ import java.util.*;
  * 将平台内部的operator，按照连续的平台分为一组，并组装成argo的形式
  *
  * @author 杜清华，陈齐翔
- * @since  2020/7/6 11:39
  * @version 1.0
- *
+ * @since 2020/7/6 11:39
  */
 public class ArgoAdapter implements OperatorAdapter {
 
@@ -162,10 +161,10 @@ public class ArgoAdapter implements OperatorAdapter {
 //    }
 
 
-    public List<ArgoNode> setArgoNode(List<Stage> stages){
+    public List<ArgoNode> setArgoNode(List<Stage> stages) {
         List<ArgoNode> argoNodeList = new ArrayList<>();
         // 1. 遍历stage里的dag，生成ArgoNode
-        for (Stage stage : stages){
+        for (Stage stage : stages) {
             // todo id好好生成下, dependency是上一个ArgoNode
             ArgoNode argoNode = new ArgoNode(0, stage.getName(), stage.getPlatform(), null);
             // 遍历stage里的dag, 转成YAML字符串
@@ -174,16 +173,16 @@ public class ArgoAdapter implements OperatorAdapter {
 
             Operator stageRootOpt = stage.getHead();
             BfsTraversal bfsTraversal = new BfsTraversal(stageRootOpt);
-            while (bfsTraversal.hasNextOpt()){
+            while (bfsTraversal.hasNextOpt()) {
                 Operator curOpt = bfsTraversal.nextOpt();
                 optMapList.add(operator2Map(curOpt)); // 先把 opt -> map 为了生成yaml
                 dagList.add(operatorDependency2Map(curOpt, curOpt == stageRootOpt)); // channel -> map
-                if  (curOpt == stage.getTail()){
+                if (curOpt == stage.getTail()) {
                     break;
                 }
             }
 
-            argoNode.setParameters(new HashMap<String, Object>(){{
+            argoNode.setParameters(new HashMap<String, Object>() {{
                 put("operators", optMapList);
                 put("dag", dagList);
             }});
@@ -192,35 +191,35 @@ public class ArgoAdapter implements OperatorAdapter {
         return argoNodeList;
     }
 
-    private Map<String, Object> operator2Map(Operator opt){
+    private Map<String, Object> operator2Map(Operator opt) {
         /*Map<String, String> paramsList = new ArrayList<>();
         for (Param param : opt.getInputDataList().values()){
             paramsList.add(param.getKVData());
         }*/
-        Map<String, Param> paramsList =  opt.getInputParamList();
+        Map<String, Param> paramsList = opt.getInputParamList();
         Map<String, Param> inputDataList = opt.getInputDataList();
         Map<String, Param> outputDataList = opt.getOutputDataList();
 
         Map<String, String> paramsMap = new HashMap<>();
         paramsList.forEach((s, param) -> paramsMap.putAll(param.getKVData()));
-        Map<String, Object> optMap = new HashMap<String, Object>(){{
+        Map<String, Object> optMap = new HashMap<String, Object>() {{
             put("name", opt.getOperatorName());
             put("id", opt.getOperatorID());
             put("params", paramsMap);
             put("inputKeys", inputDataList.keySet().toArray());
             put("outputKeys", outputDataList.keySet().toArray());
         }};
-        return  optMap;
+        return optMap;
     }
 
-    private Map<String, Object> operatorDependency2Map(Operator opt, boolean isHead){
+    private Map<String, Object> operatorDependency2Map(Operator opt, boolean isHead) {
         Map<String, Object> dependencyMap = new HashMap<>(); // 当前Opt的依赖对象
         dependencyMap.put("name", opt.getOperatorName());
-        if (!isHead){
-            List<Channel> inputChannels =  opt.getInputChannel(); // todo 这该不该直接拿Channel呢
+        if (!isHead) {
+            List<Channel> inputChannels = opt.getInputChannel(); // todo 这该不该直接拿Channel呢
             List<Map<String, String>> dependencies = new ArrayList<>(); // denpendencies字段，是一个List<Map> 每个元素是其中一个依赖
-            for (Channel channel : inputChannels){
-                dependencies.add(new HashMap<String, String>(){{
+            for (Channel channel : inputChannels) {
+                dependencies.add(new HashMap<String, String>() {{
                     put("id", channel.getSourceOperator().getOperatorID());
                     put("sourceKey", channel.getKeyPair().getKey());
                     put("targetKey", channel.getKeyPair().getValue());

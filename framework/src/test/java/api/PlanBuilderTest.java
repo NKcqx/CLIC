@@ -14,11 +14,11 @@ public class PlanBuilderTest {
     public void testReadFromData() throws Exception {
         PlanBuilder planBuilder = new PlanBuilder();
         assert planBuilder.readDataFrom(new HashMap<String, String>() {{
-            put("input", "data/test.csv");
+            put("input_path", "data/test.csv");
         }}) == planBuilder.getHeadDataQuanta();
 
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
-            put("input", "data/test.csv");
+            put("input_path", "data/test.csv");
         }});
         planBuilder.setHeadDataQuanta(dataQuanta);
         assert planBuilder.getHeadDataQuanta() == dataQuanta;

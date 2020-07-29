@@ -1,15 +1,12 @@
 package basic.visitors;
 
-import basic.Param;
 import basic.Stage;
 import basic.operators.Operator;
 import basic.operators.OperatorEntity;
 import basic.traversal.TopTraversal;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * StageVisitor
@@ -34,7 +31,7 @@ public class WorkflowVisitor extends Visitor {
         this.planTraversal = planTraversal;
     }
 
-    public List<Stage> getStages(){
+    public List<Stage> getStages() {
         return this.stages;
     }
 
@@ -65,7 +62,7 @@ public class WorkflowVisitor extends Visitor {
                 // 遍历下一跳
                 nextOpt.acceptVisitor(this);
             }
-        }else {
+        } else {
             curStage.setTail(opt);
             stages.add(curStage);
         }

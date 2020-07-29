@@ -1,7 +1,6 @@
 package basic;
 
 import basic.operators.Operator;
-import basic.operators.OperatorFactory;
 
 import java.io.Serializable;
 
@@ -45,15 +44,15 @@ public class Stage implements Serializable {
         return tailOpt;
     }
 
-    public void setTail(Operator tail){
+    public void setTail(Operator tail) {
         this.tailOpt = tail;
     }
 
-    public void setHead(Operator head){
+    public void setHead(Operator head) {
         this.headOpt = head;
     }
 
-    public Operator getHead(){
+    public Operator getHead() {
         return headOpt;
     }
 
@@ -65,7 +64,7 @@ public class Stage implements Serializable {
         return platform;
     }
 
-    public boolean isEnd(Operator opt){
+    public boolean isEnd(Operator opt) {
         return tailOpt == opt;
     }
 }

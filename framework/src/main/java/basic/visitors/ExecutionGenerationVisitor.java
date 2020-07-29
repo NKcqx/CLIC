@@ -43,18 +43,18 @@ public class ExecutionGenerationVisitor extends Visitor {
             // 拿到所有的entities并遍历找到cost最小的
             OperatorEntity bestOperatorEntity = Collections.min(
                     opt.getEntities().values(), new Comparator<OperatorEntity>() {
-                @Override
-                public int compare(OperatorEntity o1, OperatorEntity o2) {
-                    return o1.getCost().compareTo(o2.getCost());
-                }
-            });
+                        @Override
+                        public int compare(OperatorEntity o1, OperatorEntity o2) {
+                            return o1.getCost().compareTo(o2.getCost());
+                        }
+                    });
             try {
                 // 为opt选择最佳的entity
                 opt.selectEntity(bestOperatorEntity.getEntityID());
                 this.logging(String.format("> Pick %s 's `%s[%f]` implement as best Operator\n",
                         opt.getOperatorID(),
                         opt.getSelectedEntities().getEntityID(),
-                        opt.getSelectedEntities().getCost()) );
+                        opt.getSelectedEntities().getCost()));
 
             } catch (FileNotFoundException e) {
                 // 即使出了问题也不要来这找...这只是调用对象内部的ID，错也是别人往里传错了

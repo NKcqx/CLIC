@@ -1,5 +1,5 @@
 /**
-
+ *
  */
 package api;
 
@@ -120,7 +120,7 @@ public final class DataQuanta {
         return numIncoming;
     }
 
-    public int outgoing(DataQuanta outgoing){
+    public int outgoing(DataQuanta outgoing) {
         return outgoing(outgoing, "result", "data"); // todo  应该从opt的属性里找?
     }
 

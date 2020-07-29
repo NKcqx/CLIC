@@ -17,11 +17,10 @@ public class DataQuantaTest {
 //        OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
         PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
-            put("input", "fake path");
+            put("input_path", "fake path");
         }});
         DataQuanta dataQuanta1 = DataQuanta.createInstance("map", new HashMap<String, String>() {{
             put("udfName", "udfNameValue");
-            put("result", "resultVaule");
         }});
 //        assert dataQuanta1.incoming(dataQuanta, new HashMap<String, String>() {{
 //            put("incoming.output_key", "this.input_key");
@@ -36,11 +35,10 @@ public class DataQuantaTest {
         //OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
         PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
-            put("input", "fake path");
+            put("input_path", "fake path");
         }});
         DataQuanta dataQuanta1 = DataQuanta.createInstance("map", new HashMap<String, String>() {{
             put("udfName", "udfNameValue");
-            put("result", "resultVaule");
         }});
 
         dataQuanta.outgoing(dataQuanta1,"output_key", "input_key");

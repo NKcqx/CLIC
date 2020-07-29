@@ -68,7 +68,7 @@ public final class OperatorFactory {
      * @throws Exception
      */
     public static Operator createOperator(String ability) throws Exception {
-        if (mapping.isEmpty()){
+        if (mapping.isEmpty()) {
             throw new Exception("未初始化OperatorFactory");
         }
         String templatePath = OperatorFactory.getTemplate(ability);
@@ -85,7 +85,7 @@ public final class OperatorFactory {
     public static Operator createOperatorFromFile(String templatePath) throws Exception {
         InputStream fullConfigFileStream = OperatorFactory.class.getClassLoader().getResourceAsStream(templatePath);
         assert fullConfigFileStream != null;
-        Document operatorConfig  = DocumentBuilderFactory.newInstance()
+        Document operatorConfig = DocumentBuilderFactory.newInstance()
                 .newDocumentBuilder()
                 .parse(fullConfigFileStream);
         operatorConfig.getDocumentElement().normalize();
@@ -100,22 +100,28 @@ public final class OperatorFactory {
 
         // 2. 加载输入参数列表
         List<Param> parameters = getParams(root, "parameters", "parameter");
-        for (Param param : parameters)
-            operator.setParameter(param);
+        for (Param param : parameters) {
+            operator.addParameter(param);
+        }
+
 
         // 3. 加载输入数据列表
         List<Param> inputs = getParams(root, "inputs", "input");
-        for (Param input : inputs)
-            operator.setInputData(input);
+        for (Param input : inputs) {
+            operator.addInputData(input);
+        }
+
 
         // 4. 加载输出数据列表
         List<Param> outputs = getParams(root, "outputs", "output");
-        for (Param output : outputs)
-            operator.setOutputData(output);
+        for (Param output : outputs) {
+            operator.addOutputData(output);
+        }
+
 
         // 5. 加载每个平台配置文件的信息
         List<OperatorEntity> platformEntity = getOptPlatforms(root);
-        for (OperatorEntity entity : platformEntity){
+        for (OperatorEntity entity : platformEntity) {
             operator.setEntity(entity);
         }
 
@@ -139,7 +145,7 @@ public final class OperatorFactory {
     private static List<OperatorEntity> getOptPlatforms(Element root) throws Exception {
         List<OperatorEntity> operatorEntities = new ArrayList<>();
         ArrayList<Element> eleList = getElementListByTag(Optional.ofNullable(root), "platforms", "platform");
-        for (Element ele : eleList){
+        for (Element ele : eleList) {
             String platform = ele.getAttribute("ID");
             String path = getElementContentByTag(Optional.of(ele), "path");
             InputStream pltConfigStream = OperatorFactory.class.getClassLoader().getResourceAsStream(path);
@@ -148,11 +154,11 @@ public final class OperatorFactory {
                     .newDocumentBuilder()
                     .parse(pltConfigStream);
             config.getDocumentElement().normalize();
-            Element plt_root = config.getDocumentElement();
-            Optional<Element> plt_ele = getElementByTag(plt_root, "platform");
-            String language = getElementContentByTag(plt_ele, "language");
-            Double cost = Double.valueOf(getElementContentByTag(plt_ele, "cost"));
-            // String id = plt_ele.map(element -> element.getAttribute("ID")).orElse(""); // 用根XML里得到的ID
+            Element pltRoot = config.getDocumentElement();
+            Optional<Element> pltEle = getElementByTag(pltRoot, "platform");
+            String language = getElementContentByTag(pltEle, "language");
+            Double cost = Double.valueOf(getElementContentByTag(pltEle, "cost"));
+            // String id = pltEle.map(element -> element.getAttribute("ID")).orElse(""); // 用根XML里得到的ID
             operatorEntities.add(new OperatorEntity(platform, language, cost));
         }
         return operatorEntities;

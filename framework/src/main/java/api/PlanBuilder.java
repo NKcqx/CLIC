@@ -162,15 +162,15 @@ public class PlanBuilder {
 
     private void wrapStageWithHeadTail(List<Stage> stages) throws Exception {
         String filePath = null;
-        for (int i=0;i<stages.size();++i){
+        for (int i = 0; i < stages.size(); ++i) {
             Stage stage = stages.get(i);
-            if (i==0){
+            if (i == 0) {
                 // sink file path
                 filePath = String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
                 insertSink(stage, filePath);
-            }else if(i == stages.size()-1){
+            } else if (i == stages.size() - 1) {
                 insertSource(stage, filePath);
-            }else{
+            } else {
                 insertSource(stage, filePath);
                 filePath = String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
                 insertSink(stage, filePath);
@@ -216,7 +216,7 @@ public class PlanBuilder {
      * 设置平台的udf的路径
      *
      * @param platform 平台名称
-     * @param udfPath 路径
+     * @param udfPath  路径
      */
     public void setPlatformUdfPath(String platform, String udfPath) {
         PlatformFactory.setPlatformArgValue(platform, "--udfPath", udfPath);

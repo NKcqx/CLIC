@@ -1,4 +1,5 @@
 package fdu.daslab.backend.executor.utils;
+
 import fdu.daslab.backend.executor.model.ArgoNode;
 import fdu.daslab.backend.executor.model.ImageTemplate;
 import org.yaml.snakeyaml.DumperOptions;
@@ -11,17 +12,15 @@ import java.util.stream.Collectors;
 /**
  * 写入yaml的工具类
  *
- *  @author 杜清华，陈齐翔
- *  @since  2020/7/6 11:39
- *  @version 1.0
+ * @author 杜清华，陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 11:39
  */
 public class YamlUtil {
 
     private static String argoDag = Objects.requireNonNull(YamlUtil.class.getClassLoader().
             getResource("templates/argo-dag-simple.yaml")).getPath();
 
-    // private static String resPath = System.getProperty("user.dir") + "/backend-executor/src/main/resources/result/job-";
-    // private static String resPath = YamlUtil.class.getClassLoader().getResource("result/").toString() + "job-";
     private static String resPath;
 
     static {
@@ -36,7 +35,7 @@ public class YamlUtil {
     /**
      * 根据pipeline生成yaml，并保存，返回保存的路径
      *
-     * @param tasks argoNodes
+     * @param tasks          argoNodes
      * @param imageTemplates image列表
      * @return 生成路径
      */
@@ -47,7 +46,7 @@ public class YamlUtil {
     /**
      * 读取dag模板以及template并进行拼接
      *
-     * @param nodes argonodes
+     * @param nodes          argonodes
      * @param imageTemplates image列表
      * @return 拼接完成的yaml路径
      */
@@ -57,7 +56,7 @@ public class YamlUtil {
 
         Map<String, Object> argoDagMap = readYaml(argoDag);
         @SuppressWarnings("unchecked")
-        Map<Object, Object> spec =  (Map<Object, Object>) argoDagMap.get("spec");
+        Map<Object, Object> spec = (Map<Object, Object>) argoDagMap.get("spec");
         @SuppressWarnings("unchecked")
         List<Object> templates = (List<Object>) spec.get("templates");
         @SuppressWarnings("unchecked")
@@ -94,12 +93,11 @@ public class YamlUtil {
     /**
      * 拼接task部分
      *
-     * @param node argo节点
+     * @param node          argo节点
      * @param imageTemplate 模版
      * @return task map
      */
     private Map joinTask(ArgoNode node, ImageTemplate imageTemplate) {
-        //List<Map> tasks=new LinkedList<>();
         Map<String, Object> taskName = new HashMap<>();
         Map<String, Object> taskTem = new HashMap<>();
         Map<String, Object> taskArgu = new HashMap<>();
@@ -136,7 +134,7 @@ public class YamlUtil {
         List<ArgoNode> deps = node.getDependencies();
         List<String> depsName = new ArrayList<>();
 
-        if (deps!=null && !deps.isEmpty() && deps.get(0) != null) { //存在依赖，则添加dependencies
+        if (deps != null && !deps.isEmpty() && deps.get(0) != null) { //存在依赖，则添加dependencies
             deps.forEach(dep -> {
                 depsName.add(dep.getName());
             });
@@ -146,8 +144,6 @@ public class YamlUtil {
         taskMap.putAll(taskName);
         taskMap.putAll(taskTem);
         taskMap.putAll(taskArgu);
-        // tasks.add(taskMap);
-
         return taskMap;
     }
 

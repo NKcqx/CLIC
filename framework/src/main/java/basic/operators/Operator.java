@@ -14,8 +14,8 @@ import java.util.*;
  * operator类
  *
  * @author 陈齐翔，杜清华
- * @since  2020/7/6 11:39
  * @version 1.0
+ * @since 2020/7/6 11:39
  */
 public class Operator implements Visitable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Operator.class);
@@ -41,7 +41,7 @@ public class Operator implements Visitable {
      * @param name
      * @param kind
      */
-    public Operator(String id, String name, String kind){
+    public Operator(String id, String name, String kind) {
         this.operatorID = id;
         this.operatorName = name;
         switch (kind) {
@@ -89,7 +89,7 @@ public class Operator implements Visitable {
      *
      * @param entity 平台对象，OperatorEntity
      */
-    public void setEntity(OperatorEntity entity){
+    public void setEntity(OperatorEntity entity) {
         this.entities.put(entity.entityID, entity);
     }
 
@@ -137,20 +137,20 @@ public class Operator implements Visitable {
      *
      * @param param 参数，类型为内置的Param
      */
-    public void setParameter(Param param){
+    public void addParameter(Param param) {
         this.inputParamList.put(param.getName(), param);
     }
 
     /**
      * 设置输入参数的值，用于某些参数没有默认值，需在代码中设置时使用
      *
-     * @param key Param参数的name字段
+     * @param key   Param参数的name字段
      * @param value 参数对应的值 todo 类型泛化
      */
     public void setParamValue(String key, String value) {
         if (this.inputParamList.containsKey(key)) {
             this.inputParamList.get(key).setValue(value);
-        }else {
+        } else {
             throw new NoSuchElementException(String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
         }
     }
@@ -160,7 +160,7 @@ public class Operator implements Visitable {
      *
      * @param param 输入数据的：Key, DataType
      */
-    public void setInputData(Param param){
+    public void addInputData(Param param) {
         this.inputDataList.put(param.getName(), param);
     }
 
@@ -169,7 +169,7 @@ public class Operator implements Visitable {
      *
      * @param param 输出数据的：Key, DataType
      */
-    public void setOutputData(Param param){
+    public void addOutputData(Param param) {
         this.outputDataList.put(param.getName(), param);
     }
 
@@ -185,7 +185,7 @@ public class Operator implements Visitable {
         return this.inputParamList;
     }
 
-    public Map<String, Param> getInputDataList(){
+    public Map<String, Param> getInputDataList() {
         return this.inputDataList;
     }
 
