@@ -39,7 +39,6 @@ public class YamlUtilTest {
         argoDag = Objects.requireNonNull(YamlUtil.class.getClassLoader()
                 .getResource("templates/argo-dag-simple.yaml")).getPath();
         spyYamlUtil = spy(new YamlUtil());
-        argoDagMap = spyYamlUtil.readYaml(argoDag);
 
         basic.Configuration configuration = new Configuration();
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
@@ -81,6 +80,8 @@ public class YamlUtilTest {
 
     @Test
     public void joinYaml() {
+        argoDagMap = spyYamlUtil.readYaml(argoDag);
+
 //        String resultPath = spyYamlUtil.joinYaml(tasks, imageTemplateList);
 //
 //        assertEquals("/tmp/irdemo_output/job-xxx.yaml", resultPath.substring(0, 22) + "-xxx.yaml");
@@ -95,28 +96,20 @@ public class YamlUtilTest {
                 .collect(Collectors.toList())
                 .get(0);
 //            newTasks.add(spyYamlUtil.joinTask(node, imageTemplate));
-//
 //            verify(spyYamlUtil, times(1)).joinTask(node, imageTemplate);
         }
     }
 
     @Test
     public void readYaml() {
-        Map<String, Object> expectedMap = new LinkedHashMap<>();
-        expectedMap.put("apiVersion", "argoproj.io/v1alpha1");
-        expectedMap.put("kind", "Workflow");
-        expectedMap.put("metadata", "{generateName=compute-scheduling-flow}");
-        expectedMap.put("spec", "{entrypoint=my-flow, "
-                + "volumes=[{name=nfs-volume, persistentVolumeClaim={claimName=pvc-nfs}}], "
-                + "templates=[{name=my-flow, dag={tasks=null}}]}");
+        argoDagMap = spyYamlUtil.readYaml(argoDag);
 
-//        for (Map.Entry<String, Object> entry : argoDagMap.entrySet()) {
-//            assertEquals(expectedMap.get(entry.getKey()), entry.getValue().toString());
-//        }
+        verify(spyYamlUtil, times(1)).readYaml(argoDag);
     }
 
     @Test
     public void writeYaml() {
+        argoDagMap = spyYamlUtil.readYaml(argoDag);
         String templatePath = TemplateUtil.getTemplatePathByPlatform("java");
         spyYamlUtil.writeYaml(templatePath, argoDagMap);
 
