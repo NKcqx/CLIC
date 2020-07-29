@@ -21,7 +21,7 @@ import java.util.Map;
  * @since 2020/7/20 10:14 上午
  */
 public class WorkflowVisitor extends Visitor {
-    private List<Stage> stages; // stage列表
+    private List<Stage> stages = new ArrayList<>(); // stage列表
     private Stage curStage = null;
     private Operator.OperatorEntity curOptPlatform = null;
     private Operator stageHeadOpt = null;
@@ -42,8 +42,8 @@ public class WorkflowVisitor extends Visitor {
         // 拓扑排序不会出现重复访问同一元素的情况，无需判断visited
         if (curOptPlatform == null) {
             curOptPlatform = opt.getSelectedEntities();
-            stageHeadOpt = opt;
-            curStage = new Stage(String.valueOf(jobID), curOptPlatform.getEntityID());
+            curStage = new Stage(String.valueOf(jobID), "Stage-" + opt.getOperatorName(), curOptPlatform.getEntityID());
+            curStage.setHead(opt);
         }
 
         if (planTraversal.hasNextOpt()) {
@@ -55,11 +55,9 @@ public class WorkflowVisitor extends Visitor {
                 curStage.setTail(opt);
                 stages.add(curStage);
                 this.jobID++;
+                curOptPlatform = null;
                 // 重新随便找一个下一跳
                 nextOpt = planTraversal.nextOpt();
-                // 设置新的处理平台
-                curOptPlatform = nextOpt.getSelectedEntities();
-                curStage = new Stage(String.valueOf(jobID), curOptPlatform.getEntityID());
                 // 遍历下一跳
                 nextOpt.acceptVisitor(this);
             } else {
@@ -68,8 +66,5 @@ public class WorkflowVisitor extends Visitor {
             }
         }
     }
-
-
-
 
 }

@@ -11,7 +11,6 @@ import java.util.List;
  * @since 2020/7/20 10:02 上午
  */
 public class Workflow {
-    // 任务列表, 虽然Operator是DAG 但是暂定生成的task还是线性的 TODO
     List<ArgoNode> tasks;
 
     // image列表
@@ -27,7 +26,8 @@ public class Workflow {
         this.adapter = adapter;
         this.stages = stages;
         // 适配
-        this.tasks = this.adapter.groupContinuousOperator(this.stages);
+        // this.tasks = this.adapter.groupContinuousOperator(this.stages);
+        this.tasks = this.adapter.adaptOperator(stages);
         this.imageTemplateList = this.adapter.generateTemplateByConfig();
     }
 
@@ -36,6 +36,6 @@ public class Workflow {
         YamlUtil yamlUtil = new YamlUtil();
         String path = yamlUtil.createArgoYaml(tasks, imageTemplateList);
         // 2.调用argo server api提交post请求
-        HttpUtil.submitPipelineByYaml(path);
+        // HttpUtil.submitPipelineByYaml(path);
     }
 }

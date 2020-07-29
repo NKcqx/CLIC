@@ -39,14 +39,6 @@ public class ExecutionGenerationVisitor extends Visitor {
     public void visit(Operator opt) {
         if (!isVisited(opt)) {
             visited.add(opt);
-            // 比较所有Entity，找到cost最小的
-            if (!opt.isLoaded()) {
-                try {
-                    opt.getPlatformOptConf();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
             // 拿到所有的entities并遍历找到cost最小的
             Operator.OperatorEntity bestOperatorEntity = Collections.min(
                     opt.getEntities().values(), new Comparator<Operator.OperatorEntity>() {

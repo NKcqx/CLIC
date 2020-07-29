@@ -1,6 +1,7 @@
 package basic.traversal;
 
 import basic.operators.Operator;
+import basic.operators.OperatorFactory;
 import channel.Channel;
 import org.junit.Before;
 import org.junit.Test;
@@ -50,16 +51,16 @@ public class BfsTraversalTest {
         /**
          * DAG的初始化
          */
-        optA = new Operator("Operator/Source/conf/SourceOperator.xml");
-        optB = new Operator("Operator/Map/conf/MapOperator.xml");
-        optC = new Operator("Operator/Sort/conf/SortOperator.xml");
-        optD = new Operator("Operator/Filter/conf/FilterOperator.xml");
-        optE = new Operator("Operator/Map/conf/MapOperator.xml");
-        optF = new Operator("Operator/ReduceByKey/conf/ReduceByKeyOperator.xml");
-        optG = new Operator("Operator/Join/conf/JoinOperator.xml");
-        optH = new Operator("Operator/Source/conf/SourceOperator.xml");
-        optI = new Operator("Operator/Sink/conf/SinkOperator.xml");
-        optJ = new Operator("Operator/Map/conf/MapOperator.xml");
+        optA = OperatorFactory.createOperatorFromFile("Operator/Source/conf/SourceOperator.xml");
+        optB = OperatorFactory.createOperatorFromFile("Operator/Map/conf/MapOperator.xml");
+        optC = OperatorFactory.createOperatorFromFile("Operator/Sort/conf/SortOperator.xml");
+        optD = OperatorFactory.createOperatorFromFile("Operator/Filter/conf/FilterOperator.xml");
+        optE = OperatorFactory.createOperatorFromFile("Operator/Map/conf/MapOperator.xml");
+        optF = OperatorFactory.createOperatorFromFile("Operator/ReduceByKey/conf/ReduceByKeyOperator.xml");
+        optG = OperatorFactory.createOperatorFromFile("Operator/Join/conf/JoinOperator.xml");
+        optH = OperatorFactory.createOperatorFromFile("Operator/Source/conf/SourceOperator.xml");
+        optI = OperatorFactory.createOperatorFromFile("Operator/Sink/conf/SinkOperator.xml");
+        optJ = OperatorFactory.createOperatorFromFile("Operator/Map/conf/MapOperator.xml");
         aTb = new Channel(optA, optB, null);
         aTc = new Channel(optA, optC, null);
         aTd = new Channel(optA, optD, null);

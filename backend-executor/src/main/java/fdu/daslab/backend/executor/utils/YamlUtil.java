@@ -4,17 +4,14 @@ import fdu.daslab.backend.executor.model.ImageTemplate;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * 写入yaml的工具类
  *
- *  @author 杜清华
+ *  @author 杜清华，陈齐翔
  *  @since  2020/7/6 11:39
  *  @version 1.0
  */
@@ -44,10 +41,7 @@ public class YamlUtil {
      * @return 生成路径
      */
     public String createArgoYaml(List<ArgoNode> tasks, List<ImageTemplate> imageTemplates) {
-
-        String resultPath = joinYaml(tasks, imageTemplates);
-
-        return resultPath;
+        return joinYaml(tasks, imageTemplates);
     }
 
     /**
@@ -120,9 +114,12 @@ public class YamlUtil {
         paraName.put("name", node.getPlatform() + "Args");
 
         String parameterStr = imageTemplate.getParamPrefix() + " "; // 运行字符串前缀
-        for (ArgoNode.Parameter parameter : node.getParameters()) {
-            parameterStr += parameter.getName() + "=" + parameter.getValue() + " ";
-        }
+        Map<String, Object> params = node.getParameters(); // yml格式的字典型参数对象
+        // map -> yaml string
+        Yaml yaml = new Yaml();
+        StringWriter stringWriter = new StringWriter();
+        yaml.dump(params, stringWriter);
+        parameterStr += stringWriter.toString();
         paraValue.put("value", parameterStr);
 
         paraMap.putAll(paraName);
@@ -139,7 +136,7 @@ public class YamlUtil {
         List<ArgoNode> deps = node.getDependencies();
         List<String> depsName = new ArrayList<>();
 
-        if (deps.get(0) != null) { //存在依赖，则添加dependencies
+        if (deps!=null && !deps.isEmpty() && deps.get(0) != null) { //存在依赖，则添加dependencies
             deps.forEach(dep -> {
                 depsName.add(dep.getName());
             });

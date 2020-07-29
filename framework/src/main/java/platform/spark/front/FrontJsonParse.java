@@ -73,7 +73,7 @@ public class FrontJsonParse {
             JSONObject nodeJSON = entry.getValue();
             Integer outId = Integer.parseInt((String) nodeJSON.get("out_id"));
             if (outId > 0) {
-                node.outgoing(nodeOrderDataQuanta.get(outId), null);
+                node.outgoing(nodeOrderDataQuanta.get(outId));
             }
         }
 

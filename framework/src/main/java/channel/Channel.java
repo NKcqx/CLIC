@@ -2,6 +2,7 @@
 package channel;
 
 import basic.operators.Operator;
+import javafx.util.Pair;
 
 import java.util.List;
 import java.util.Map;
@@ -16,12 +17,17 @@ public class Channel {
     private Operator sourceOperator; // 边的起始点
     private Operator targetOperator; // 边的终点
 
-    private Map<String, String> keyPair; // source输出数据的key - target输入数据的key, 即source输出的值 传给 target输入数据的值
+    private Pair<String, String> keyPair; // source输出数据的key - target输入数据的key, 即source输出的值 传给 target输入数据的值
 
-    public Channel(Operator source, Operator target, Map<String, String> keyPair) {
+    public Channel(Operator source, Operator target, Pair<String, String> keyPair) {
         this.sourceOperator = source;
         this.targetOperator = target;
         this.keyPair = keyPair;
+
+    }
+
+    public Channel(Operator source, Operator target) {
+        this(source, target, new Pair<>("result", "data")); // todo 之后Operator会改属性的加载、读取方式，这里就不用硬编码了
     }
 
     public Channel(Operator source, List<String> outputKeySet, Operator target, List<String> inputKeySet) {
@@ -29,7 +35,7 @@ public class Channel {
         targetOperator = target;
     }
 
-    public Map<String, String> getKeyPair() {
+    public Pair<String, String> getKeyPair() {
         return this.keyPair;
     }
 
@@ -45,9 +51,6 @@ public class Channel {
 //        }
 //    }
 
-    public String retriveData(String key) {
-        return sourceOperator.getOutputData(key);
-    }
 
     public Operator getTargetOperator() {
         return this.targetOperator;

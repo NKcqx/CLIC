@@ -1,6 +1,7 @@
 package fdu.daslab.backend.executor.model;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 定义argo的DAG上的一个node
@@ -44,10 +45,11 @@ public class ArgoNode {
     List<ArgoNode> dependencies;
 
     // 该节点的输入参数
-    List<Parameter> parameters;
+    // List<Parameter> parameters;
+    Map<String, Object> parameters;
 
     public ArgoNode(int id, String name, String platform, List<ArgoNode> dependencies,
-                    List<Parameter> parameters) {
+                    Map<String, Object> parameters) {
         this.id = id;
         this.name = name;
         this.platform = platform;
@@ -59,7 +61,7 @@ public class ArgoNode {
         this(id, name, platform, dependencies, null);
     }
 
-    public void setParameters(List<Parameter> parameters) {
+    public void setParameters(Map<String, Object> parameters) {
         this.parameters = parameters;
     }
 
@@ -75,7 +77,7 @@ public class ArgoNode {
         return dependencies;
     }
 
-    public List<Parameter> getParameters() {
+    public Map<String, Object> getParameters() {
         return parameters;
     }
 

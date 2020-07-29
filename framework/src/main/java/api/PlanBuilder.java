@@ -3,6 +3,7 @@ package api;
 
 import adapters.ArgoAdapter;
 import basic.Configuration;
+import basic.Stage;
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
 import basic.platforms.PlatformFactory;
@@ -10,19 +11,17 @@ import basic.traversal.AbstractTraversal;
 import basic.traversal.BfsTraversal;
 import basic.traversal.TopTraversal;
 import basic.visitors.ExecutionGenerationVisitor;
-import basic.visitors.PipelineVisitor;
 import basic.visitors.PrintVisitor;
-import fdu.daslab.backend.executor.model.Pipeline;
+import basic.visitors.WorkflowVisitor;
+import channel.Channel;
+import fdu.daslab.backend.executor.model.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 陈齐翔
@@ -78,7 +77,7 @@ public class PlanBuilder {
      * 2: Mapping operator to Executable, Platform depended Operator
      * 3. Run
      */
-    public void execute() throws InterruptedException {
+    public void execute() throws Exception {
         this.logging("===========【Stage 1】Get User Defined Plan ===========");
         this.printPlan();
         this.logging("   ");
@@ -98,43 +97,93 @@ public class PlanBuilder {
         AbstractTraversal planTraversal = new TopTraversal(this.getHeadDataQuanta().getOperator());
         PrintVisitor printVisitor = new PrintVisitor(planTraversal);
         printVisitor.startVisit();
-//        for (Visitable v : plan){
-//            v.acceptVisitor(printVisitor);
-//        }
     }
 
     public void optimizePlan() {
         AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
         ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor(planTraversal);
         executionGenerationVisitor.startVisit();
-        // this.getHeadDataQuanta().getOperator().acceptVisitor(executionGenerationVisitor);
-//        for (Operator operator : this.pipeline){
-//            operator.acceptVisitor(executionGenerationVisitor);
-//        }
     }
 
-    private void executePlan() {
+    private void executePlan() throws Exception {
 //        AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
 //        ExecuteVisitor executeVisitor = new ExecuteVisitor(planTraversal);
 //        executeVisitor.startVisit();
-        AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
-        PipelineVisitor executeVisitor = new PipelineVisitor(planTraversal);
-        executeVisitor.startVisit();
+        TopTraversal planTraversal = new TopTraversal(this.getHeadDataQuanta().getOperator());
+        // PipelineVisitor executeVisitor = new PipelineVisitor(planTraversal);
+        // executeVisitor.startVisit();
         // 获取所有的operator
-        List<Operator> allOperators = executeVisitor.getAllOperators();
+        // List<Operator> allOperators = executeVisitor.getAllOperators();
         // 调用argo平台运行
-        Pipeline argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
-        argoPipeline.execute();
+        // Pipeline argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
+        // argoPipeline.execute();
 
         /**
          * 1. 调用WorkflowVisitor 得到Stages
          * 2. 创建Workflow 传入stages和ArgoAdapter（adapter使用新写的setArgoNode 接收List of Stage）
          * 3. Workflow,execute()
          */
-
+        WorkflowVisitor workflowVisitor = new WorkflowVisitor(planTraversal);
+        workflowVisitor.startVisit();
+        List<Stage> stages = workflowVisitor.getStages(); // 划分好的Stage
+        stages = wrapStageWithHeadTail(stages);
+        Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
+        argoWorkflow.execute(); // 将workflow生成为YAML
 //        for (Operator opt : this.pipeline){
 //            opt.acceptVisitor(executeVisitor);
 //        }
+    }
+
+    private Stage insertSink(Stage stage, String filePath) throws Exception {
+        // 先创建一个Sink
+        Operator sinkOperator = OperatorFactory.createOperator("sink");
+        sinkOperator.selectEntity(stage.getPlatform());
+        sinkOperator.setParamValue("output", filePath);
+        // 再链接两个opt
+        Channel channel = new Channel(stage.getTail(), sinkOperator);
+        stage.getTail().connectTo(channel);
+        sinkOperator.connectFrom(channel);
+        // 最后更新stage的首尾
+        stage.setTail(sinkOperator);
+        return stage;
+    }
+
+    private Stage insertSource(Stage stage, String filePath) throws Exception {
+        // 先创建一个Source
+        Operator sourceOperator = OperatorFactory.createOperator("source");
+        sourceOperator.selectEntity(stage.getPlatform());
+        sourceOperator.setParamValue("output", filePath);
+        // 再链接两个opt
+        Channel channel = new Channel(sourceOperator, stage.getHead());
+        sourceOperator.connectTo(channel);
+        stage.getHead().connectFrom(channel);
+        // 最后更新stage的首尾
+        stage.setHead(sourceOperator);
+        return stage;
+    }
+
+    private List<Stage> wrapStageWithHeadTail(List<Stage> stages) throws Exception {
+        String code = String.valueOf(new Date().hashCode());
+        String filePath = null;
+        for (int i=0;i<stages.size();++i){
+            Stage stage = stages.get(i);
+            Operator stageHead = stage.getHead();
+            Operator stageTail = stage.getTail();
+            if (i==0){
+                // sink file path
+                filePath = String.format("stage-%s-output@%s", stage.getId(), code);
+                insertSink(stage, filePath);
+            }else if(i == stages.size()-1){
+                insertSource(stage, filePath);
+            }else{
+                insertSource(stage, filePath);
+                filePath = String.format("stage-%s-output@%s", stage.getId(), code);
+                insertSink(stage, filePath);
+            }
+
+
+        }
+        return null;
     }
 
     private LinkedList<Operator> optimizePipeline() {

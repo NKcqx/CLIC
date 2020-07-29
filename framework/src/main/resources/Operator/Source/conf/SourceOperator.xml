@@ -12,8 +12,13 @@
     </platforms>
 
     <parameters>
-        <parameter kind="input" name="input" data_type="string" required="true"> </parameter>
+        <parameter kind="input" name="input_path" data_type="string" required="true"> </parameter>
         <parameter kind="input" name="separator" data_type="string" default=","> </parameter> <!--参数默认值怎么做?-->
     </parameters>
+    <inputs>  </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
 
 </Operator>

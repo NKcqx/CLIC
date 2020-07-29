@@ -12,8 +12,13 @@
     </platforms>
 
     <parameters>
-        <parameter kind="input" name="udfName" data_type="string" required="true"> </parameter>
-        <parameter kind="output" name="sorted_value" data_type="string"> </parameter>
-        <parameter kind="output" name="sorted_index" data_type="int"> </parameter>
+        <parameter name="udfName" data_type="string" required="true"> </parameter>
     </parameters>
+    <inputs>  <!-- 输入数据 只是key -->
+        <input name="data" data_type="string"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 只是key-->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
 </Operator>

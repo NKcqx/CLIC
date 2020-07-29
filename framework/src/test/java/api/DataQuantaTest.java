@@ -26,9 +26,7 @@ public class DataQuantaTest {
 //        assert dataQuanta1.incoming(dataQuanta, new HashMap<String, String>() {{
 //            put("incoming.output_key", "this.input_key");
 //        }})==1;
-        dataQuanta1.incoming(dataQuanta, new HashMap<String, String>() {{
-            put("incoming.output_key", "this.input_key");
-        }});
+        dataQuanta1.incoming(dataQuanta, "output_key", "input_key");
         assert dataQuanta1.getOperator().getInputChannel().get(0) == dataQuanta.getOperator().getOutputChannel().get(0);
 
     }
@@ -45,9 +43,7 @@ public class DataQuantaTest {
             put("result", "resultVaule");
         }});
 
-        dataQuanta.outgoing(dataQuanta1, new HashMap<String, String>() {{
-            put("incoming.output_key", "this.input_key");
-        }});
+        dataQuanta.outgoing(dataQuanta1,"output_key", "input_key");
         assert dataQuanta.getOperator().getOutputChannel().get(0) == dataQuanta1.getOperator().getInputChannel().get(0);
     }
 

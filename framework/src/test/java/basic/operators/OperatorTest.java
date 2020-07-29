@@ -25,12 +25,12 @@ public class OperatorTest {
     @Before
     public void before() throws Exception {
         configFilePath = "Operator/Filter/conf/FilterOperator.xml";
-        spyOpt = spy(new Operator(configFilePath));
+        spyOpt = spy(OperatorFactory.createOperatorFromFile(configFilePath));
     }
 
     @Test
     public void simpleConstructorTest() throws Exception {
-        Operator opt = new Operator("Operator/Filter/conf/FilterOperator.xml");
+        Operator opt = OperatorFactory.createOperatorFromFile("Operator/Filter/conf/FilterOperator.xml");
     }
 
     @Test
@@ -58,9 +58,6 @@ public class OperatorTest {
 
     @Test
     public void getPlatformOptConfTest() throws Exception {
-        spyOpt.getPlatformOptConf();
-        verify(spyOpt, times(1)).getPlatformOptConf();
-
         assert (spyOpt.getEntities().containsKey("java"));
         assert (spyOpt.getEntities().containsKey("spark"));
     }
@@ -82,21 +79,6 @@ public class OperatorTest {
         verify(spyOpt, times(3)).evaluate();
     }
 
-    @Test
-    public void tempPrepareDataTest() {
-        spyOpt.tempPrepareData();
-        verify(spyOpt, times(1)).tempPrepareData();
-
-        spyOpt.getInputDataList().forEach((k, v) -> {
-            assertEquals(k + "'s temp value", v.getData());
-        });
-    }
-
-    @Test
-    public void tempDoEvaluateTest() {
-        spyOpt.tempDoEvaluate();
-        verify(spyOpt, times(1)).tempDoEvaluate();
-    }
 
     @Test
     public void inputDataTest() {
@@ -109,7 +91,7 @@ public class OperatorTest {
         Map<String, Param> inputDataList = spyOpt.getInputDataList();
         inputDataList.put(name, param);
 
-        spyOpt.setData("inputKey", "inputData");
+        spyOpt.setParamValue("inputKey", "inputData");
 
         String[] expectedNames = {"inputKey", "udfName"};
         String[] expectedDatas = {"inputData", null};
@@ -125,7 +107,7 @@ public class OperatorTest {
 
         assertArrayEquals(expectedNames, actualNames);
         assertArrayEquals(expectedDatas, actualDatas);
-        verify(spyOpt, times(1)).setData("inputKey", "inputData");
+        verify(spyOpt, times(1)).setParamValue("inputKey", "inputData");
     }
 
     @Test
@@ -139,7 +121,7 @@ public class OperatorTest {
         Map<String, Param> outputDataList = spyOpt.getOutputDataList();
         outputDataList.put(name, param);
 
-        spyOpt.setData("outputKey", "outputData");
+        spyOpt.setParamValue("outputKey", "outputData");
 
         String[] expectedNames = {"result", "outputKey"};
         String[] expectedDatas = {null, "outputData"};
@@ -155,6 +137,6 @@ public class OperatorTest {
 
         assertArrayEquals(expectedNames, actualNames);
         assertArrayEquals(expectedDatas, actualDatas);
-        verify(spyOpt, times(1)).setData("outputKey", "outputData");
+        verify(spyOpt, times(1)).setParamValue("outputKey", "outputData");
     }
 }

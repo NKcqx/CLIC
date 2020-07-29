@@ -45,7 +45,7 @@ public class TopTraversal extends AbstractTraversal {
                     queue.add(target);
                 }
             }
-
+            queue.remove(res);
             return res;
         }
         return null;
@@ -63,6 +63,7 @@ public class TopTraversal extends AbstractTraversal {
             for (Operator operator : queue) {
                 if (predicate.test(operator)) {
                     res = operator;
+                    queue.remove(res);
                     break;
                 }
             }
