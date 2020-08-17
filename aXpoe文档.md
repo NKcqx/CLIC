@@ -44,7 +44,7 @@
 
 ### 2.2 系统架构
 
-AxPoe的结构主要包括以下5部分
+AxPoe的结构主要包括以下4部分
 
 **Core**
 
@@ -724,7 +724,7 @@ AxPoe从运行日志中学习cost model各个输入的权重参数，训练完�
 
 #### 3.6.1 AxPoe中的计算平台
 
-在当前的视线中，一个计算平台（如Spark, MPI）在AxPoe中是一个完整的、可独立运行的docker image；Image中不仅包含计算平台的运行环境，更重要的是还包含该平台实现的所有 (Physical) Operator。
+在当前的实现中，一个计算平台（如Spark, MPI）在AxPoe中是一个完整的、可独立运行的docker image；Image中不仅包含计算平台的运行环境，更重要的是还包含该平台实现的所有 (Physical) Operator。
 
 因为所有的计算任务最终都会部署在k8s中运行，而k8s是基于容器的，所以每个计算任务最终都会被封装到Docker Image（以下简称Image）内。
 
