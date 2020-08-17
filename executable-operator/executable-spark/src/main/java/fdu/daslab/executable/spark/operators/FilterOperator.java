@@ -11,7 +11,7 @@ import org.apache.spark.api.java.JavaRDD;
 import java.util.List;
 
 /**
- * java平台的filter算子，可执行
+ * Spark平台的filter算子，可执行
  *
  * @author 唐志伟
  * @since 2020/7/6 1:53 PM
