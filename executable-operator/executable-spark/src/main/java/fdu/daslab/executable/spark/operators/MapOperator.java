@@ -19,6 +19,7 @@ import java.util.List;
  */
 @Parameters(separators = "=")
 public class MapOperator implements BasicOperator<JavaRDD<List<String>>> {
+
     // 通过指定路径来获取代码的udf
     @Parameter(names = {"--udfName"})
     String mapFunctionName;
