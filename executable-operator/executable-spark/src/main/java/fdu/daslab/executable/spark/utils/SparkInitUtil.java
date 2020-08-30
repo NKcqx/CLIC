@@ -12,6 +12,12 @@ import org.apache.spark.api.java.JavaSparkContext;
  */
 public class SparkInitUtil {
 
+    // SparkContext，这里的配置实际上没有意义，配置通过参数传递
+    private static JavaSparkContext sparkContext =
+            new JavaSparkContext(new SparkConf()
+                    .setAppName("Test")
+                    .setMaster("local"));
+
     /**
      *  初始化JavaSparkContext
      *
@@ -19,9 +25,6 @@ public class SparkInitUtil {
      */
     public static JavaSparkContext getDefaultSparkContext() {
         // 初始化spark
-        SparkConf conf = new SparkConf()
-                .setAppName("Test")
-                .setMaster("local");
 //        // 部分类需要序列化
 //        conf.set("spark.serializer", "org.apache.spark.serializer.KryoSerializer");
 //        conf.set("spark.kryo.registrationRequired", "true");
@@ -29,6 +32,6 @@ public class SparkInitUtil {
 //                java.lang.reflect.Method.class,
 //                edu.daslab.executable.basic.model.FunctionModel.class
 //        });
-        return new JavaSparkContext(conf);
+        return sparkContext;
     }
 }
