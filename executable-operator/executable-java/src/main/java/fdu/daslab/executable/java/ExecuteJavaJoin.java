@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.stream.Stream;
 
 /**
+ * 这个可执行类是用来测试java平台的join算子是否可用
+ *
  * @author 唐志伟，刘丰艺
  * @since 2020/7/6 14:05
  * @version 1.0
@@ -21,7 +23,8 @@ public class ExecuteJavaJoin {
     /**
      * 命令行参数
      */
-//        --udfPath=D:/IRDemo/executable-operator/output-class/fdu/daslab/executable/udf/TestJoinCaseFunc.class
+//        --udfPath=D:/IRDemo/executable-operator/executable-basic/target/classes
+//        /fdu/daslab/executable/udf/TestJoinCaseFunc.class
 //                --input=D:/IRDemo/executable-operator/executable-basic/src/main/resources/data/join/webCompany.csv
 //                --udfName=filterWebCompanyFunc
 //                --input=D:/IRDemo/executable-operator/executable-basic/src/main/resources/data/join/companyInfo.csv
