@@ -9,6 +9,7 @@ import channel.Channel;
 import fdu.daslab.backend.executor.model.ArgoNode;
 import fdu.daslab.backend.executor.model.ImageTemplate;
 import fdu.daslab.backend.executor.model.OperatorAdapter;
+import fdu.daslab.backend.executor.utils.YamlUtil;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
@@ -171,7 +172,8 @@ public class ArgoAdapter implements OperatorAdapter {
         // 1. 遍历stage里的dag，生成ArgoNode
         for (Stage stage : stages) {
             // todo id好好生成下, dependency是上一个ArgoNode
-            ArgoNode argoNode = new ArgoNode(0, stage.getName(), stage.getPlatform(), null);
+            int id = new Date().hashCode();
+            ArgoNode argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(), null);
             // 遍历stage里的dag, 转成YAML字符串
             List<Map<String, Object>> optMapList = new ArrayList<>(); // "operators"字段，是stage里所有opt的列表 YML列表
             List<Map<String, Object>> dagList = new ArrayList<>(); // "dag"字段，各个边的列表
@@ -187,10 +189,13 @@ public class ArgoAdapter implements OperatorAdapter {
                     break;
                 }
             }
-
-            argoNode.setParameters(new HashMap<String, Object>() {{
+            String path = YamlUtil.resPltDagPath + "physical-dag-" + argoNode.getId() + ".yml";
+            YamlUtil.writeYaml(path, new HashMap<String, Object>() {{
                 put("operators", optMapList);
                 put("dag", dagList);
+            }});
+            argoNode.setParameters(new HashMap<String, String>() {{
+                put("--dagPath", path);
             }});
             argoNodeList.add(argoNode);
         }

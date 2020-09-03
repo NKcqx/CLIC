@@ -18,11 +18,11 @@ public class Demo {
             // 设置udf路径
             planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
             //供测试生成文件使用
-            planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWebCaseFuncSpark.class");
+            planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWebCaseFunc.class");
 
             // 创建节点
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("inputPath", "~/Desktop/test.csv");
+                put("inputPath", "/Users/jason/Desktop/test.csv");
             }});
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{

@@ -21,12 +21,14 @@ public class YamlUtil {
     private static String argoDag = Objects.requireNonNull(YamlUtil.class.getClassLoader().
             getResource("templates/argo-dag-simple.yaml")).getPath();
 
-    private static String resPath;
+    private static String resJobPath;
+    public static String resPltDagPath;
 
     static {
         try {
             Configuration configuration = new Configuration();
-            resPath = configuration.getProperty("yaml-output-path") + configuration.getProperty("yaml-prefix");
+            resJobPath = configuration.getProperty("yaml-output-path") + configuration.getProperty("yaml-prefix");
+            resPltDagPath = configuration.getProperty("yaml-output-path");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -83,7 +85,7 @@ public class YamlUtil {
             templates.add(readYaml(TemplateUtil.getTemplatePathByPlatform(platform)));
         }
         long n = System.nanoTime();
-        String storePath = resPath + n + ".yaml";
+        String storePath = resJobPath + n + ".yaml";
         //存入指定路径
         writeYaml(storePath, argoDagMap);
 
@@ -112,12 +114,16 @@ public class YamlUtil {
         paraName.put("name", node.getPlatform() + "Args");
 
         String parameterStr = imageTemplate.getParamPrefix() + " "; // 运行字符串前缀
-        Map<String, Object> params = node.getParameters(); // yml格式的字典型参数对象
-        // map -> yaml string
+        Map<String, String> params = node.getParameters(); // yml格式的字典型参数对象
+        /*// map -> yaml string
         Yaml yaml = new Yaml();
         StringWriter stringWriter = new StringWriter();
-        yaml.dump(params, stringWriter);
-        parameterStr += stringWriter.toString();
+        yaml.dump(params, stringWriter);*/
+        StringBuilder stringBuilder = new StringBuilder();
+        params.forEach((key, value) -> {
+            stringBuilder.append(key).append("=").append(value);
+        });
+        parameterStr += stringBuilder.toString();
         paraValue.put("value", parameterStr);
 
         paraMap.putAll(paraName);
@@ -174,7 +180,7 @@ public class YamlUtil {
      * @param path 需要写入的文件路径
      * @param res  需要写入yaml的内容
      */
-    public void writeYaml(String path, Map<String, Object> res) {
+    public static void writeYaml(String path, Map<String, Object> res) {
         try {
             //设置yaml文件格式
             DumperOptions dumperOptions = new DumperOptions();

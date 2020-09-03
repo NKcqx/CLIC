@@ -46,10 +46,10 @@ public class ArgoNode {
 
     // 该节点的输入参数
     // List<Parameter> parameters;
-    Map<String, Object> parameters;
+    Map<String, String> parameters;
 
     public ArgoNode(int id, String name, String platform, List<ArgoNode> dependencies,
-                    Map<String, Object> parameters) {
+                    Map<String, String> parameters) {
         this.id = id;
         this.name = name;
         this.platform = platform;
@@ -61,7 +61,7 @@ public class ArgoNode {
         this(id, name, platform, dependencies, null);
     }
 
-    public void setParameters(Map<String, Object> parameters) {
+    public void setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
     }
 
@@ -77,7 +77,7 @@ public class ArgoNode {
         return dependencies;
     }
 
-    public Map<String, Object> getParameters() {
+    public Map<String, String> getParameters() {
         return parameters;
     }
 

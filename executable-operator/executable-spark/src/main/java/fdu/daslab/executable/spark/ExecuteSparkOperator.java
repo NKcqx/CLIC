@@ -2,6 +2,7 @@ package fdu.daslab.executable.spark;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
@@ -27,6 +28,7 @@ import java.util.stream.Stream;
  * @since 2020/7/6 1:55 PM
  * @version 1.0
  */
+@Parameters(separators = "=")
 public class ExecuteSparkOperator {
 //    master, deploy-mode 这类参数是Spark需要的
 //    @Parameter(names = {"--master", "k8s://https://10.141.221.219:6443"})
@@ -43,12 +45,14 @@ public class ExecuteSparkOperator {
                 .addObject(entry)
                 .build()
                 .parse(args);
-        final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(entry.udfPath);
+        // String functionPath =  entry.udfPath;
+        // final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(entry.udfPath);
 
         try {
             OperatorBase headOperator = ArgsUtil.parseArgs(entry.dagPath, new SparkOperatorFactory());
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
-            ParamsModel inputArgs = new ParamsModel(functionModel);
+            ParamsModel inputArgs = new ParamsModel(null);
+            inputArgs.setFunctionClasspath(entry.udfPath);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
             TopTraversal topTraversal = new TopTraversal(headOperator);
 
@@ -70,30 +74,5 @@ public class ExecuteSparkOperator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//
-//        // 用户定义的函数放在一个文件里面
-//        String functionPath = args[0].substring(args[0].indexOf("=") + 1);
-//        // 可能存在一些spark配置数据，暂时没有
-//
-//        // 这个Map是有序的
-//        Map<String, String[]> standaloneArgs = ArgsUtil.separateArgsByKey(
-//                Arrays.copyOfRange(args, 1, args.length), "--operator");
-//        // 目前支持的算子
-//        Map<String, ExecutionOperator<JavaRDD<List<String>>>> allOperators = SparkOperatorEnums.getAllOperators();
-//        // spark平台的每个算子（除了sink），均返回一个JavaRDD
-//        RddResult result = new RddResult();
-//
-//        standaloneArgs.forEach((operator, operatorArgs) -> {
-//            // 目前执行的算子
-//            ExecutionOperator<JavaRDD<List<String>>> curOperator = allOperators.get(operator);
-//            // 解析参数
-//            ArgsUtil.parseArgs(curOperator, operatorArgs);
-//            ParamsModel inputArgs = new ParamsModel(curOperator, null);
-//            // FunctionModel为空，因为无法序列化，手动设置路径
-//            inputArgs.setFunctionClasspath(functionPath);
-//            // 实际的运行
-//            curOperator.execute(inputArgs, result);
-//        });
     }
 }

@@ -2,6 +2,7 @@ package fdu.daslab.executable.java;
 
 import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
+import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.TopTraversal;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
@@ -21,6 +22,7 @@ import java.util.stream.Stream;
  * @version 1.0
  * @since 2020/7/6 1:48 PM
  */
+@Parameters(separators = "=")
 public class ExecuteJavaOperator {
     @Parameter(names = {"--udfPath", "-udf"})
     String udfPath;

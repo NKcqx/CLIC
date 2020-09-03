@@ -37,7 +37,6 @@ public class ReduceByKeyOperator extends OperatorBase<JavaRDD<List<String>>, Jav
     public void execute(ParamsModel inputArgs,
                         ResultModel<JavaRDD<List<String>>> result) {
         // ReduceByKeyOperator reduceArgs = (ReduceByKeyOperator) inputArgs.getOperatorParam();
-
         final JavaRDD<List<String>> nextStream = this.getInputData("data")
                 .groupBy(data -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel

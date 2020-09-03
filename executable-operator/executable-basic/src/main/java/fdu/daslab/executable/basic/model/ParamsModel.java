@@ -7,7 +7,6 @@ import java.io.Serializable;
 /**
  * 平台的参数模型
  *
- * @param <MODEL> 每个平台定义流转的数据模型，比如Stream、RDD
  *
  * @author 唐志伟
  * @since 2020/7/6 1:35 PM
