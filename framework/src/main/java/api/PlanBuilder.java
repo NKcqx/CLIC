@@ -138,11 +138,17 @@ public class PlanBuilder {
         // 先创建一个Sink
         Operator sinkOperator = OperatorFactory.createOperator("sink");
         sinkOperator.selectEntity(stage.getPlatform());
-        sinkOperator.setParamValue("output_path", filePath);
+        sinkOperator.setParamValue("outputPath", filePath);
         // 再链接两个opt
-        Channel channel = new Channel(stage.getTail(), sinkOperator);
-        stage.getTail().connectTo(channel);
-        sinkOperator.connectFrom(channel);
+        Operator tail = stage.getTail();
+        for (Channel channel : tail.getOutputChannel()){
+            // 为tail的每个下一跳 删除tail代表的上一跳
+            channel.getTargetOperator().disconnectFrom(tail);
+        }
+        tail.disconnectTo(); // 删除tail的所有下一跳
+
+        tail.connectTo(sinkOperator);
+        sinkOperator.connectFrom(tail);
         // 最后更新stage的首尾
         stage.setTail(sinkOperator);
     }
@@ -151,26 +157,41 @@ public class PlanBuilder {
         // 先创建一个Source
         Operator sourceOperator = OperatorFactory.createOperator("source");
         sourceOperator.selectEntity(stage.getPlatform());
-        sourceOperator.setParamValue("input_path", filePath);
+        sourceOperator.setParamValue("inputPath", filePath);
+
+        Operator head = stage.getHead();
+        for (Channel channel : head.getInputChannel()){
+            channel.getSourceOperator().disconnectTo(head);
+        }
+        head.disconnectFrom();
         // 再链接两个opt
-        Channel channel = new Channel(sourceOperator, stage.getHead());
-        sourceOperator.connectTo(channel);
-        stage.getHead().connectFrom(channel);
+        sourceOperator.connectTo(head);
+        head.connectFrom(sourceOperator);
         // 最后更新stage的首尾
         stage.setHead(sourceOperator);
     }
 
+    /**
+     * 不同的Stage会放到不同平台上处理，每个平台上的stage都需要独立的source和sink，
+     * 因为需要为拆分后的每个stage都添加一个SourceOperator作为头节点，SinkOperator作为尾节点
+     *
+     * @param stages 拆分后的所有Stage
+     * @throws Exception
+     */
     private void wrapStageWithHeadTail(List<Stage> stages) throws Exception {
         String filePath = null;
         for (int i = 0; i < stages.size(); ++i) {
             Stage stage = stages.get(i);
             if (i == 0) {
+                // 第一个Stage有原生的SourceOperator，不需要自动添加
                 // sink file path
                 filePath = String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
                 insertSink(stage, filePath);
             } else if (i == stages.size() - 1) {
+                // 同理，最后一个Stage有原生的SinkOperator，不需要自动添加
                 insertSource(stage, filePath);
             } else {
+                // 其余的Stage需要同时添加Source和Sink
                 insertSource(stage, filePath);
                 filePath = String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
                 insertSink(stage, filePath);

@@ -1,4 +1,3 @@
-
 package channel;
 
 import basic.operators.Operator;
@@ -24,6 +23,10 @@ public class Channel {
         this.keyPair = keyPair;
     }
 
+    public Channel(Operator source, Operator target, String sourceKey, String targetKey){
+        this(source, target, new Pair<>(sourceKey, targetKey));
+    }
+
     public Channel(Operator source, Operator target) throws Exception {
         if (source.getOutputDataList().size() != 1 || target.getInputDataList().size() != 1) {
             throw new Exception("source 或 target 具有多个输入输出，请指明要链接的Key Pair");
@@ -43,19 +46,6 @@ public class Channel {
     public Pair<String, String> getKeyPair() {
         return this.keyPair;
     }
-
-//    /**
-//     * 从起点Opt把key代表的数据发送到终点Opt的指定Key中
-//     */
-//    public void transferData(){
-//        for (Map.Entry entry : this.key_pair.entrySet()){
-//            String source_key = (String) entry.getKey();
-//            String target_key = (String) entry.getValue();
-//            String source_value = source_operator.getOutputData(source_key);
-//            target_operator.setInputData(target_key, source_value);
-//        }
-//    }
-
 
     public Operator getTargetOperator() {
         return this.targetOperator;

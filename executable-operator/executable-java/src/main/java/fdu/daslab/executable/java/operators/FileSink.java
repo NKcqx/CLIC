@@ -2,7 +2,8 @@ package fdu.daslab.executable.java.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.BasicOperator;
+import fdu.daslab.executable.basic.model.ExecutionOperator;
+import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 
@@ -10,6 +11,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -20,7 +22,7 @@ import java.util.stream.Stream;
  * @version 1.0
  */
 @Parameters(separators = "=")
-public class FileSink implements BasicOperator<Stream<List<String>>> {
+public class FileSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
     // 输入路径
     @Parameter(names = {"--output"}, required = true)
@@ -30,19 +32,24 @@ public class FileSink implements BasicOperator<Stream<List<String>>> {
     @Parameter(names = {"--separator"})
     String separateStr = ",";
 
+    public FileSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("FileSink", id, inputKeys, outputKeys, params);
+    }
+
     @Override
-    public void execute(ParamsModel<Stream<List<String>>> inputArgs,
+    public void execute(ParamsModel inputArgs,
                         ResultModel<Stream<List<String>>> result) {
-        FileSink fileSinkArgs = (FileSink) inputArgs.getOperatorParam();
+        // FileSink fileSinkArgs = (FileSink) inputArgs.getOperatorParam();
         try {
-            FileWriter fileWritter = new FileWriter(fileSinkArgs.outputFileName, true);
+            FileWriter fileWritter = new FileWriter(this.params.get("outputPath"), true);
             BufferedWriter out = new BufferedWriter(fileWritter);
-            result.getInnerResult()
+            this.getInputData("data")
+            // result.getInnerResult("data")
                     .forEach(record -> {
                         StringBuilder writeLine = new StringBuilder();
                         record.forEach(field -> {
                             writeLine.append(field);
-                            writeLine.append(fileSinkArgs.separateStr);
+                            writeLine.append(this.params.get("separator"));
                         });
                         writeLine.deleteCharAt(writeLine.length() - 1);
                         writeLine.append("\n");

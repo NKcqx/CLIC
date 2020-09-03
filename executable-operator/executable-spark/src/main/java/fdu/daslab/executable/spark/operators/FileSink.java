@@ -2,13 +2,15 @@ package fdu.daslab.executable.spark.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.BasicOperator;
+import fdu.daslab.executable.basic.model.ExecutionOperator;
+import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.api.java.JavaRDD;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 写入文件的算子
@@ -18,7 +20,7 @@ import java.util.List;
  * @version 1.0
  */
 @Parameters(separators = "=")
-public class FileSink implements BasicOperator<JavaRDD<List<String>>> {
+public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
     // 输入路径
     @Parameter(names = {"--output"}, required = true)
     String outputFileName;
@@ -27,13 +29,18 @@ public class FileSink implements BasicOperator<JavaRDD<List<String>>> {
     @Parameter(names = {"--sep"})
     String separateStr = ",";
 
+    public FileSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("SparkFileSink", id, inputKeys, outputKeys, params);
+    }
+
     @Override
-    public void execute(ParamsModel<JavaRDD<List<String>>> inputArgs,
+    public void execute(ParamsModel inputArgs,
                         ResultModel<JavaRDD<List<String>>> result) {
-        FileSink fileSinkArgs = (FileSink) inputArgs.getOperatorParam();
+        // FileSink fileSinkArgs = (FileSink) inputArgs.getOperatorParam();
         // 写入文件
-        result.getInnerResult()
-                .map(line -> StringUtils.join(line, fileSinkArgs.separateStr))
-                .saveAsTextFile(fileSinkArgs.outputFileName);
+
+        this.getInputData("data")
+                .map(line -> StringUtils.join(line, this.params.get("separator")))
+                .saveAsTextFile(this.params.get("outputPath"));
     }
 }

@@ -13,10 +13,10 @@ import java.io.Serializable;
  * @since 2020/7/6 1:35 PM
  * @version 1.0
  */
-public class ParamsModel<MODEL> implements Serializable {
+public class ParamsModel implements Serializable {
 
     // 该算子的参数
-    private final BasicOperator<MODEL> operatorParam;
+    // private final ExecutionOperator<MODEL> operatorParam;
     // 所有算子共同的参数，如函数参数
     private transient FunctionModel functionModel; // Method无法序列化
 
@@ -27,14 +27,14 @@ public class ParamsModel<MODEL> implements Serializable {
         this.functionClasspath = functionClasspath;
     }
 
-    public ParamsModel(BasicOperator<MODEL> operatorParam, FunctionModel functionModel) {
-        this.operatorParam = operatorParam;
+    public ParamsModel(FunctionModel functionModel) {
+        // this.operatorParam = operatorParam;
         this.functionModel = functionModel;
     }
 
-    public BasicOperator<MODEL> getOperatorParam() {
+    /*public ExecutionOperator<MODEL> getOperatorParam() {
         return operatorParam;
-    }
+    }*/
 
     public FunctionModel getFunctionModel() {
         // 针对无法序列化等情况下

@@ -35,44 +35,44 @@ public class ExecuteJavaJoin {
         final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(
                 args[0].substring(args[0].indexOf("=") + 1)
         );
-        StreamResult tableOneResult = new StreamResult();
+        /* tableOneResult = new StreamResult();
         StreamResult tableTwoResult = new StreamResult();
         StreamResult joinResult = new StreamResult();
 
-        BasicOperator<Stream<List<String>>> wayOne1 = new FileSource();
+        ExecutionOperator<Stream<List<String>>> wayOne1 = new FileSource();
         String[] wayOne1Args = {args[1]};
         ArgsUtil.parseArgs(wayOne1, wayOne1Args);
-        ParamsModel<Stream<List<String>>> wayOne1InputArgs = new ParamsModel<>(wayOne1, functionModel);
+        ParamsModel wayOne1InputArgs = new ParamsModel(wayOne1, functionModel);
         wayOne1.execute(wayOne1InputArgs, tableOneResult);
 
-        BasicOperator<Stream<List<String>>> wayOne2 = new FilterOperator();
+        ExecutionOperator<Stream<List<String>>> wayOne2 = new FilterOperator();
         String[] wayOne2Args = {args[2]};
         ArgsUtil.parseArgs(wayOne2, wayOne2Args);
         ParamsModel<Stream<List<String>>> wayOne2InputArgs = new ParamsModel<>(wayOne2, functionModel);
         wayOne2.execute(wayOne2InputArgs, tableOneResult);
 
-        BasicOperator<Stream<List<String>>> wayTwo1 = new FileSource();
+        ExecutionOperator<Stream<List<String>>> wayTwo1 = new FileSource();
         String[] wayTwo1Args = {args[3]};
         ArgsUtil.parseArgs(wayTwo1, wayTwo1Args);
         ParamsModel<Stream<List<String>>> wayTwo1InputArgs = new ParamsModel<>(wayTwo1, functionModel);
         wayTwo1.execute(wayTwo1InputArgs, tableTwoResult);
 
-        BasicOperator<Stream<List<String>>> wayTwo2 = new FilterOperator();
+        ExecutionOperator<Stream<List<String>>> wayTwo2 = new FilterOperator();
         String[] wayTwo2Args = {args[4]};
         ArgsUtil.parseArgs(wayTwo2, wayTwo2Args);
         ParamsModel<Stream<List<String>>> wayTwo2InputArgs = new ParamsModel<>(wayTwo2, functionModel);
         wayTwo2.execute(wayTwo2InputArgs, tableTwoResult);
 
-        BinaryBasicOperator<Stream<List<String>>> joinOpt = new JoinOperator();
+        BinaryExecutionOperator<Stream<List<String>>> joinOpt = new JoinOperator();
         String[] joinArgs = {args[5], args[6], args[7], args[8]};
         ArgsUtil.parseArgs(joinOpt, joinArgs);
         BiOptParamsModel<Stream<List<String>>> joinInputArgs = new BiOptParamsModel<>(joinOpt, functionModel);
         joinOpt.execute(joinInputArgs, tableOneResult, tableTwoResult, joinResult);
 
-        BasicOperator<Stream<List<String>>> joinSink = new FileSink();
+        ExecutionOperator<Stream<List<String>>> joinSink = new FileSink();
         String[] joinSinkArgs = {args[9]};
         ArgsUtil.parseArgs(joinSink, joinSinkArgs);
         ParamsModel<Stream<List<String>>> joinSinkInputArgs = new ParamsModel<>(joinSink, functionModel);
-        joinSink.execute(joinSinkInputArgs, joinResult);
+        joinSink.execute(joinSinkInputArgs, joinResult);*/
     }
 }

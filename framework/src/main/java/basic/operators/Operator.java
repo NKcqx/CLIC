@@ -71,14 +71,18 @@ public class Operator implements Visitable {
     }
 
     /**
-     * 根据传入的entity_id为当前opt设置其对应的要运行的平台
+     * 根据传入的entity_id为当前opt设置其对应的要运行的平台，并加载平台特有的参数
      *
      * @param entityId 特定平台的ID
-     * @throws FileNotFoundException
+     * @throws FileNotFoundException 表示当前opt就没有与entityId对应的entity（平台），即该opt还不支持 entityId代表的平台
      */
     public void selectEntity(String entityId) throws FileNotFoundException {
         if (this.entities.containsKey(entityId)) {
             this.selectedEntity = this.entities.get(entityId);
+            // 加载平台特有的参数
+            for (Param param : this.selectedEntity.params){
+                this.addParameter(param);
+            }
         } else {
             throw new FileNotFoundException("未找到与 %s 匹配的实体，请使用配置文件中platform的ID属性");
         }
@@ -89,7 +93,7 @@ public class Operator implements Visitable {
      *
      * @param entity 平台对象，OperatorEntity
      */
-    public void setEntity(OperatorEntity entity) {
+    public void addOperatorEntity(OperatorEntity entity) {
         this.entities.put(entity.entityID, entity);
     }
 
@@ -205,8 +209,49 @@ public class Operator implements Visitable {
         return this.outputChannels.size();
     }
 
+    public int connectTo(Operator targetOperator, String sourceKey, String targetKey){
+        Channel channel = new Channel(this,targetOperator, sourceKey, targetKey);
+        return this.connectTo(channel);
+    }
+
+    public int connectTo(Operator targetOperator) throws Exception {
+        Channel channel = new Channel(this, targetOperator);
+        return this.connectTo(channel);
+    }
+
     /**
-     * 同connectTO
+     * 和指定Opt断开链接，通过遍历Channel找到终点为指定opt的channel，删除它
+     *
+     * @param targetOpt 要断开的目标Opt
+     * @return 若成功找到时，返回删除后剩余下一跳Opt的个数；未找到时返回-1
+     */
+    public int disconnectTo(Operator targetOpt){
+        int idx = 0;
+        for (idx=0;idx<this.outputChannels.size();idx++){
+            if (this.outputChannels.get(idx).getTargetOperator() == targetOpt){
+                break;
+            }
+        }
+        if (idx != this.outputChannels.size()){
+            this.outputChannels.remove(idx);
+            return this.outputChannels.size();
+        }else {
+            return -1;
+        }
+    }
+
+    /**
+     * 删除所有下一跳
+     *
+     * @return 0 表示没有剩余，为了和重载函数保持统一
+     */
+    public int disconnectTo(){
+        this.outputChannels.clear();
+        return 0;
+    }
+
+    /**
+     * 同connectTo
      *
      * @param incomingChannel 和上一跳相连的边(channel)
      * @return 本次Channel的index
@@ -215,6 +260,47 @@ public class Operator implements Visitable {
         // 拿到下一个放数据的槽的index
         this.inputChannels.add(incomingChannel);
         return this.inputChannels.size();
+    }
+
+    public int connectFrom(Operator sourceOperator, String sourceKey, String targetKey){
+        Channel channel = new Channel(sourceOperator,this, sourceKey, targetKey);
+        return this.connectFrom(channel);
+    }
+
+    public int connectFrom(Operator sourceOperator) throws Exception {
+        Channel channel = new Channel(sourceOperator, this);
+        return this.connectFrom(channel);
+    }
+
+    /**
+     * 和指定Opt断开链接，通过遍历Channel找到起点点为指定opt的channel，删除它
+     *
+     * @param sourceOpt 要断开的目标Opt
+     * @return 若成功找到时，返回删除后剩余下一跳Opt的个数；未找到时返回-1
+     */
+    public int disconnectFrom(Operator sourceOpt){
+        int idx = 0;
+        for (idx=0;idx<this.inputChannels.size();idx++){
+            if (this.inputChannels.get(idx).getSourceOperator() == sourceOpt){
+                break;
+            }
+        }
+        if (idx != this.inputChannels.size()){
+            this.inputChannels.remove(idx);
+            return this.inputChannels.size();
+        }else {
+            return -1;
+        }
+    }
+
+    /**
+     * 删除所有上一跳
+     *
+     * @return 0 表示没有剩余，为了和重载函数保持统一
+     */
+    public int disconnectFrom(){
+        this.inputChannels.clear();
+        return 0;
     }
 
     public boolean isLoaded() {

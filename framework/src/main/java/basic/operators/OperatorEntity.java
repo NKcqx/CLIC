@@ -1,5 +1,10 @@
 package basic.operators;
 
+import basic.Param;
+
+import java.util.List;
+import java.util.Map;
+
 /**
  * @author 陈齐翔
  * @version 1.0
@@ -9,11 +14,12 @@ public class OperatorEntity {
     String entityID;
     String language;
     Double cost;
-
-    public OperatorEntity(String entityID, String language, Double cost) {
+    List<Param> params;
+    public OperatorEntity(String entityID, String language, Double cost, List<Param> params) {
         this.entityID = entityID;
         this.language = language;
         this.cost = cost;
+        this.params = params;
     }
 
     public String getEntityID() {

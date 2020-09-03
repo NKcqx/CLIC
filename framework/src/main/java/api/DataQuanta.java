@@ -1,6 +1,3 @@
-/**
- *
- */
 package api;
 
 import basic.operators.Operator;

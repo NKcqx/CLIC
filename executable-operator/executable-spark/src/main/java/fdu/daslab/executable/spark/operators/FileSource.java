@@ -2,7 +2,8 @@ package fdu.daslab.executable.spark.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.BasicOperator;
+import fdu.daslab.executable.basic.model.ExecutionOperator;
+import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import fdu.daslab.executable.spark.utils.SparkInitUtil;
@@ -11,6 +12,7 @@ import org.apache.spark.api.java.JavaSparkContext;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Spark平台的文件读取source
@@ -20,7 +22,7 @@ import java.util.List;
  * @version 1.0
  */
 @Parameters(separators = "=")
-public class FileSource implements BasicOperator<JavaRDD<List<String>>> {
+public class FileSource extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
 
     // 输入路径
     @Parameter(names = {"--input"}, required = true)
@@ -34,15 +36,20 @@ public class FileSource implements BasicOperator<JavaRDD<List<String>>> {
     @Parameter(names = {"--partitionNum"})
     Integer partitionNum = 5;
 
+    public FileSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("SparkFileSource", id, inputKeys, outputKeys, params);
+    }
+
     @Override
-    public void execute(ParamsModel<JavaRDD<List<String>>> inputArgs,
+    public void execute(ParamsModel inputArgs,
                         ResultModel<JavaRDD<List<String>>> result) {
         final JavaSparkContext javaSparkContext = SparkInitUtil.getDefaultSparkContext();
-        FileSource sourceArgs = (FileSource) inputArgs.getOperatorParam();
+        // FileSource sourceArgs = (FileSource) inputArgs.getOperatorParam();
         // 读取文件，并按照分割符分隔开来
         final JavaRDD<List<String>> listJavaRDD = javaSparkContext
-                .textFile(sourceArgs.inputFileName, sourceArgs.partitionNum)
-                .map(line -> Arrays.asList(line.split(sourceArgs.separateStr)));
-        result.setInnerResult(listJavaRDD);
+                .textFile(this.params.get("inputPath"), Integer.parseInt(this.params.get("partitionNum")))
+                .map(line -> Arrays.asList(line.split(this.params.get("separator"))));
+        // result.setInnerResult(listJavaRDD);
+        this.setOutputData("result", listJavaRDD);
     }
 }

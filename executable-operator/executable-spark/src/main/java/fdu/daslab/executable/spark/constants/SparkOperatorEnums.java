@@ -1,6 +1,6 @@
 package fdu.daslab.executable.spark.constants;
 
-import fdu.daslab.executable.basic.model.BasicOperator;
+import fdu.daslab.executable.basic.model.ExecutionOperator;
 import fdu.daslab.executable.spark.operators.*;
 import org.apache.spark.api.java.JavaRDD;
 
@@ -31,14 +31,15 @@ public final class SparkOperatorEnums {
     }
 
     // 所有支持的operator
-    public static Map<String, BasicOperator<JavaRDD<List<String>>>> getAllOperators() {
-        return new HashMap<String, BasicOperator<JavaRDD<List<String>>>>() {{
-            put(FILE_SOURCE, new FileSource());
-            put(FILE_SINK, new FileSink());
-            put(FILTER, new FilterOperator());
-            put(MAP, new MapOperator());
-            put(REDUCE_BY_KEY, new ReduceByKeyOperator());
-            put(SORT, new SortOperator());
-        }};
+    public static Map<String, ExecutionOperator<JavaRDD<List<String>>>> getAllOperators() {
+        return null;
+//        return new HashMap<String, ExecutionOperator<JavaRDD<List<String>>>>() {{
+//            put(FILE_SOURCE, new FileSource());
+//            put(FILE_SINK, new FileSink());
+//            put(FILTER, new FilterOperator());
+//            put(MAP, new MapOperator());
+//            put(REDUCE_BY_KEY, new ReduceByKeyOperator());
+//            put(SORT, new SortOperator());
+//        }};
     }
 }

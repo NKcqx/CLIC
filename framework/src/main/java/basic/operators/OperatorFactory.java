@@ -122,7 +122,7 @@ public final class OperatorFactory {
         // 5. 加载每个平台配置文件的信息
         List<OperatorEntity> platformEntity = getOptPlatforms(root);
         for (OperatorEntity entity : platformEntity) {
-            operator.setEntity(entity);
+            operator.addOperatorEntity(entity);
         }
 
         return operator;
@@ -158,8 +158,10 @@ public final class OperatorFactory {
             Optional<Element> pltEle = getElementByTag(pltRoot, "platform");
             String language = getElementContentByTag(pltEle, "language");
             Double cost = Double.valueOf(getElementContentByTag(pltEle, "cost"));
+            List<Param> pltParams = getParams(pltRoot, "parameters", "parameter");
+
             // String id = pltEle.map(element -> element.getAttribute("ID")).orElse(""); // 用根XML里得到的ID
-            operatorEntities.add(new OperatorEntity(platform, language, cost));
+            operatorEntities.add(new OperatorEntity(platform, language, cost, pltParams));
         }
         return operatorEntities;
     }

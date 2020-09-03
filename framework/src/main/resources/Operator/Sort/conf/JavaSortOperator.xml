@@ -6,17 +6,4 @@
         <cost>6.1095</cost>
     </platform>
 
-
-    <execute>
-        <target_platform>null</target_platform>
-        <params>
-            <!-- 一定要严格遵守 `command` 里变量的名字（和相对顺序？用正则可能就不需要了，param是matcher，command是str）！！ -->
-            <!-- <param ID="implementation"> </param> -->
-            <param ID="input_file_path">./resources/sort/data_list.txt</param>
-            <param ID="output_file_path">./resources/sort/output_list.txt</param>
-            <param ID="delimiter">,</param>
-            <param ID="is_reverse">true</param>
-        </params>
-    </execute>
-
 </Operator>

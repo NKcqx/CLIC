@@ -160,7 +160,12 @@ public class ArgoAdapter implements OperatorAdapter {
 //        return node;
 //    }
 
-
+    /**
+     * 把Stage的列表转换为多个ArgoNode的列表，用于生成YAML
+     *
+     * @param stages 所有的Stage
+     * @return 所有的ArgoNode
+     */
     public List<ArgoNode> setArgoNode(List<Stage> stages) {
         List<ArgoNode> argoNodeList = new ArrayList<>();
         // 1. 遍历stage里的dag，生成ArgoNode
@@ -168,9 +173,10 @@ public class ArgoAdapter implements OperatorAdapter {
             // todo id好好生成下, dependency是上一个ArgoNode
             ArgoNode argoNode = new ArgoNode(0, stage.getName(), stage.getPlatform(), null);
             // 遍历stage里的dag, 转成YAML字符串
-            List<Map<String, Object>> optMapList = new ArrayList<>(); // "objects"字段，是stage里所有opt的列表 YML列表
+            List<Map<String, Object>> optMapList = new ArrayList<>(); // "operators"字段，是stage里所有opt的列表 YML列表
             List<Map<String, Object>> dagList = new ArrayList<>(); // "dag"字段，各个边的列表
 
+            // 遍历 子DAG，把所有opt转为Map保存
             Operator stageRootOpt = stage.getHead();
             BfsTraversal bfsTraversal = new BfsTraversal(stageRootOpt);
             while (bfsTraversal.hasNextOpt()) {
@@ -191,6 +197,11 @@ public class ArgoAdapter implements OperatorAdapter {
         return argoNodeList;
     }
 
+    /**
+     * 把一个Operator中的各个属性转化为Map，用于最后将Opt生成YAML
+     * @param opt
+     * @return
+     */
     private Map<String, Object> operator2Map(Operator opt) {
         /*Map<String, String> paramsList = new ArrayList<>();
         for (Param param : opt.getInputDataList().values()){
@@ -212,9 +223,15 @@ public class ArgoAdapter implements OperatorAdapter {
         return optMap;
     }
 
+    /**
+     * 将Opt的各个Channel转为Map格式，用于创建YAML中的dag字段，该字段主要用于声明DAG节点间的依赖关系
+     * @param opt 当前要解析的Opt
+     * @param isHead 判断该Opt是否是DAG的头结点，若是则不用解析依赖（无依赖）
+     * @return 当前Opt 的 Map格式 的依赖关系, 其实就是将Opt的各个Channel
+     */
     private Map<String, Object> operatorDependency2Map(Operator opt, boolean isHead) {
         Map<String, Object> dependencyMap = new HashMap<>(); // 当前Opt的依赖对象
-        dependencyMap.put("name", opt.getOperatorName());
+        dependencyMap.put("id", opt.getOperatorID());
         if (!isHead) {
             List<Channel> inputChannels = opt.getInputChannel(); // todo 这该不该直接拿Channel呢
             List<Map<String, String>> dependencies = new ArrayList<>(); // denpendencies字段，是一个List<Map> 每个元素是其中一个依赖

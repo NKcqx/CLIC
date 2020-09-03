@@ -2,7 +2,7 @@ package fdu.daslab.executable.java.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.BasicOperator;
+import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 
@@ -12,6 +12,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
@@ -22,7 +23,7 @@ import java.util.stream.Stream;
  * @version 1.0
  */
 @Parameters(separators = "=")
-public class FileSource implements BasicOperator<Stream<List<String>>> {
+public class FileSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>>{
 
     // 输入路径
     @Parameter(names = {"--input"}, required = true)
@@ -32,23 +33,28 @@ public class FileSource implements BasicOperator<Stream<List<String>>> {
     @Parameter(names = {"--separator"})
     String separateStr = ",";
 
+    public FileSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("FileSource", id, inputKeys, outputKeys, params);
+    }
+
     @Override
-    public void execute(ParamsModel<Stream<List<String>>> inputArgs, ResultModel<Stream<List<String>>> result) {
-        FileSource sourceArgs = (FileSource) inputArgs.getOperatorParam();
+    public void execute(ParamsModel inputArgs, ResultModel<Stream<List<String>>> result) {
         try {
-            FileInputStream inputStream = new FileInputStream(sourceArgs.inputFileName);
+            FileInputStream inputStream = new FileInputStream(this.params.get("inputPath"));
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
 
             String line;
             List<List<String>> resultList = new ArrayList<>();
             while ((line = bufferedReader.readLine()) != null) {
-                resultList.add(Arrays.asList(line.split(sourceArgs.separateStr)));
+                resultList.add(Arrays.asList(line.split(this.params.get("separator"))));
             }
-            result.setInnerResult(resultList.stream()); // 设置最后的stream
+            this.setOutputData("result", resultList.stream());
+            // result.setInnerResult("result", resultList.stream()); // 设置最后的stream
             bufferedReader.close();
             inputStream.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
 }
