@@ -16,9 +16,9 @@ public class Demo {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
             // 设置udf路径
-            planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("java", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
             //供测试生成文件使用
-            planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("spark", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
 
             // 创建节点
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
@@ -43,7 +43,7 @@ public class Demo {
             }});
 
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
-                put("outputPath", "~/Desktop/output.csv"); // 具体resources的路径通过配置文件获得
+                put("outputPath", "/Users/jason/Desktop/output.csv"); // 具体resources的路径通过配置文件获得
             }});
 
             // 链接节点，即构建DAG

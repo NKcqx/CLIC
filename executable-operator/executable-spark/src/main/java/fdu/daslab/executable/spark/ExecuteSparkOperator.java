@@ -30,9 +30,6 @@ import java.util.stream.Stream;
  */
 @Parameters(separators = "=")
 public class ExecuteSparkOperator {
-//    master, deploy-mode 这类参数是Spark需要的
-//    @Parameter(names = {"--master", "k8s://https://10.141.221.219:6443"})
-//    String master;
 
     @Parameter(names = {"--udfPath", "-udf"})
     String udfPath;

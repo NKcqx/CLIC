@@ -185,7 +185,8 @@ public class PlanBuilder {
             if (i == 0) {
                 // 第一个Stage有原生的SourceOperator，不需要自动添加
                 // sink file path
-                filePath = String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
+                filePath = configuration.getProperty("yaml-output-path")
+                        + String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
                 insertSink(stage, filePath);
             } else if (i == stages.size() - 1) {
                 // 同理，最后一个Stage有原生的SinkOperator，不需要自动添加
@@ -193,7 +194,8 @@ public class PlanBuilder {
             } else {
                 // 其余的Stage需要同时添加Source和Sink
                 insertSource(stage, filePath);
-                filePath = String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
+                filePath = configuration.getProperty("yaml-output-path")
+                        + String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
                 insertSink(stage, filePath);
             }
 

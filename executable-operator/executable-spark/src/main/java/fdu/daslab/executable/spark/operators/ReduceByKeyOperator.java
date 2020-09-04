@@ -21,13 +21,13 @@ import java.util.stream.StreamSupport;
 @Parameters(separators = "=")
 public class ReduceByKeyOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
 
-    // 通过指定路径来获取代码的udf
-    @Parameter(names = {"--udfName"})
-    String reduceFunctionName;
-
-    // 获取key的function
-    @Parameter(names = {"--keyName"})
-    String keyExtractFunctionName;
+//    // 通过指定路径来获取代码的udf
+//    @Parameter(names = {"--udfName"})
+//    String reduceFunctionName;
+//
+//    // 获取key的function
+//    @Parameter(names = {"--keyName"})
+//    String keyExtractFunctionName;
 
     public ReduceByKeyOperator( String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
         super("SparkReduceByOperator", id, inputKeys, outputKeys, params);
