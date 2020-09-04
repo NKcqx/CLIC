@@ -3,7 +3,8 @@ package api;
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
 import channel.Channel;
-import javafx.util.Pair;
+import org.javatuples.Pair;
+
 
 import java.util.Map;
 
