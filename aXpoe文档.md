@@ -149,7 +149,9 @@ Physical DataType 则是 Logical DataType 对应到具体计算平台上的数�
 | string  | String        | char*           | str()   | String                 | string      |
 | Vector  | List<?>       | -               | list()  | JavaRDD<Vector>(mllib) | vector      |
 | Matrix  | List<List<?>> | int32_t\[\]\[\] |         | JavaRDD<Matrix>(mllib) | int\[\]\[\] |
-| Tuple   | Map<?,?>      | -               | tuple() | Map<?,?>               | tuple       |
+| Tuple   | javatuples     | -               | tuple() | javatuples               | tuple       |
+
+[javatuples](https://www.javatuples.org/index.html)
 
 **计算平台**
 系统所支持的平台以及计划支持的平台如下表所示：
