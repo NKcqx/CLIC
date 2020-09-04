@@ -23,7 +23,7 @@ public class Channel {
         this.keyPair = keyPair;
     }
 
-    public Channel(Operator source, Operator target, String sourceKey, String targetKey){
+    public Channel(Operator source, Operator target, String sourceKey, String targetKey) {
         this(source, target, new Pair<>(sourceKey, targetKey));
     }
 

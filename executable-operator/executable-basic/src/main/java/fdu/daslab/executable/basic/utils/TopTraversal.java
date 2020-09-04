@@ -17,36 +17,36 @@ import java.util.Queue;
 public class TopTraversal {
     Queue<OperatorBase> queue = new LinkedList<>();
 
-    public TopTraversal(OperatorBase root){
+    public TopTraversal(OperatorBase root) {
         // 从root开始遍历DAG，将所有入度为0的节点加入到队列中
         Queue<OperatorBase> bfsQueue = new LinkedList<>();
         bfsQueue.add(root);
-        while (!bfsQueue.isEmpty()){
+        while (!bfsQueue.isEmpty()) {
             OperatorBase curOpt = bfsQueue.poll();
-            if (curOpt.getInDegree() == 0){
+            if (curOpt.getInDegree() == 0) {
                 queue.add(curOpt);
             }
             List<Connection> allNextConnections = curOpt.getOutputConnections();
-            for (Connection connection : allNextConnections){
+            for (Connection connection : allNextConnections) {
                 bfsQueue.add(connection.getTargetOpt());
             }
         }
     }
 
-    public OperatorBase nextOpt(){
+    public OperatorBase nextOpt() {
         OperatorBase opt = queue.poll();
         List<Connection> allNextConnections = opt.getOutputConnections();
-        for (Connection connection : allNextConnections){
+        for (Connection connection : allNextConnections) {
             OperatorBase sonOpt = connection.getTargetOpt();
             sonOpt.updateInDegree(-1);
-            if(sonOpt.getInDegree() == 0){
+            if (sonOpt.getInDegree() == 0) {
                 queue.add(sonOpt);
             }
         }
         return opt;
     }
 
-    public boolean hasNextOpt(){
+    public boolean hasNextOpt() {
         return !queue.isEmpty();
     }
 }

@@ -5,28 +5,23 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
-import fdu.daslab.executable.basic.utils.ReflectUtil;
 import fdu.daslab.executable.basic.utils.TopTraversal;
-import fdu.daslab.executable.spark.constants.SparkOperatorEnums;
-import fdu.daslab.executable.spark.model.RddResult;
 import fdu.daslab.executable.spark.operators.SparkOperatorFactory;
 import org.apache.spark.api.java.JavaRDD;
 
-import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
 
 /**
  * spark平台的operator的具体实现，兼顾算子融合，因为是线性，只支持线性的合并，不支持 n - 1
  * ===> 依赖前面的pipeline同步，不依赖具体执行
- *
+ * <p>
  * 按照--udfPath指定用户定义的类的位置
  * 按照--master --appName --... 以及一些其他参数设置spark的配置信息
  * 按照--operator指定实际的算子，可以指定多个，多个在一个平台上，后台统一执行
+ *
  * @author 唐志伟
- * @since 2020/7/6 1:55 PM
  * @version 1.0
+ * @since 2020/7/6 1:55 PM
  */
 @Parameters(separators = "=")
 public class ExecuteSparkOperator {
@@ -53,12 +48,12 @@ public class ExecuteSparkOperator {
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
             TopTraversal topTraversal = new TopTraversal(headOperator);
 
-            while (topTraversal.hasNextOpt()){
+            while (topTraversal.hasNextOpt()) {
                 OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = topTraversal.nextOpt();
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
-                for (Connection connection : connections){
+                for (Connection connection : connections) {
                     OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> targetOpt = connection.getTargetOpt();
                     String sourceKey = connection.getSourceKey();
                     String targetKey = connection.getTargetKey();

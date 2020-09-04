@@ -1,10 +1,8 @@
 package fdu.daslab.executable.spark.constants;
 
 import fdu.daslab.executable.basic.model.ExecutionOperator;
-import fdu.daslab.executable.spark.operators.*;
 import org.apache.spark.api.java.JavaRDD;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,8 +11,8 @@ import java.util.Map;
  * spark平台支持的算子的枚举
  *
  * @author 唐志伟
- * @since 2020/7/6 1:51 PM
  * @version 1.0
+ * @since 2020/7/6 1:51 PM
  */
 public final class SparkOperatorEnums {
 

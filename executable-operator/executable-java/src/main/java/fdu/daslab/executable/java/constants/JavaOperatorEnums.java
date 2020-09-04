@@ -1,9 +1,7 @@
 package fdu.daslab.executable.java.constants;
 
 import fdu.daslab.executable.basic.model.ExecutionOperator;
-import fdu.daslab.executable.java.operators.*;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -12,8 +10,8 @@ import java.util.stream.Stream;
  * java平台支持的所有算子
  *
  * @author 唐志伟
- * @since 2020/7/6 1:40 PM
  * @version 1.0
+ * @since 2020/7/6 1:40 PM
  */
 public final class JavaOperatorEnums {
 

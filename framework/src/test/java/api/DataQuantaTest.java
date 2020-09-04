@@ -17,7 +17,7 @@ public class DataQuantaTest {
 //        OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
         PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
-            put("input_path", "fake path");
+            put("inputPath", "fake path");
         }});
         DataQuanta dataQuanta1 = DataQuanta.createInstance("map", new HashMap<String, String>() {{
             put("udfName", "udfNameValue");
@@ -35,7 +35,7 @@ public class DataQuantaTest {
         //OperatorFactory.initMapping("framework/resources/OperatorTemplates/OperatorMapping.xml");
         PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta dataQuanta = DataQuanta.createInstance("source", new HashMap<String, String>() {{
-            put("input_path", "fake path");
+            put("inputPath", "fake path");
         }});
         DataQuanta dataQuanta1 = DataQuanta.createInstance("map", new HashMap<String, String>() {{
             put("udfName", "udfNameValue");

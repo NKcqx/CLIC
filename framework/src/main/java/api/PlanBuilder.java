@@ -141,7 +141,7 @@ public class PlanBuilder {
         sinkOperator.setParamValue("outputPath", filePath);
         // 再链接两个opt
         Operator tail = stage.getTail();
-        for (Channel channel : tail.getOutputChannel()){
+        for (Channel channel : tail.getOutputChannel()) {
             // 为tail的每个下一跳 删除tail代表的上一跳
             channel.getTargetOperator().disconnectFrom(tail);
         }
@@ -160,7 +160,7 @@ public class PlanBuilder {
         sourceOperator.setParamValue("inputPath", filePath);
 
         Operator head = stage.getHead();
-        for (Channel channel : head.getInputChannel()){
+        for (Channel channel : head.getInputChannel()) {
             channel.getSourceOperator().disconnectTo(head);
         }
         head.disconnectFrom();

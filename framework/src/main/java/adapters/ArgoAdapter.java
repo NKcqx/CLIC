@@ -189,7 +189,7 @@ public class ArgoAdapter implements OperatorAdapter {
                     break;
                 }
             }
-            String path = YamlUtil.resPltDagPath + "physical-dag-" + argoNode.getId() + ".yml";
+            String path = YamlUtil.getResPltDagPath() + "physical-dag-" + argoNode.getId() + ".yml";
             YamlUtil.writeYaml(path, new HashMap<String, Object>() {{
                 put("operators", optMapList);
                 put("dag", dagList);

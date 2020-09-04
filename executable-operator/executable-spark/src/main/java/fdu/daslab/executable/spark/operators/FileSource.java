@@ -2,7 +2,6 @@ package fdu.daslab.executable.spark.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.ExecutionOperator;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;

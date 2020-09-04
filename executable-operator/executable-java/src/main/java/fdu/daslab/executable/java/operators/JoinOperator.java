@@ -12,8 +12,8 @@ import java.util.stream.Stream;
 
 /**
  * @author 唐志伟，刘丰艺，陈齐翔
- * @since 2020/7/6 14:05
  * @version 1.0
+ * @since 2020/7/6 14:05
  */
 @Parameters(separators = "=")
 public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
@@ -30,7 +30,10 @@ public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List
     @Parameter(names = {"--rightTableFuncName"})
     String rightTableFuncName;
 
-    public JoinOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+    public JoinOperator(String id,
+                        List<String> inputKeys,
+                        List<String> outputKeys,
+                        Map<String, String> params) {
         super("JoinOperator", id, inputKeys, outputKeys, params);
     }
 

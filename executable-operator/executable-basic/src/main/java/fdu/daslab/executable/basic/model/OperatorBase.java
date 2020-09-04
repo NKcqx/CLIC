@@ -1,7 +1,5 @@
 package fdu.daslab.executable.basic.model;
 
-import jdk.internal.util.xml.impl.Input;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +12,7 @@ import java.util.Map;
  * @version 1.0
  * @since 2020/8/17 3:52 下午
  */
-public abstract class OperatorBase<InputType, OutputType> implements ExecutionOperator<OutputType>{
+public abstract class OperatorBase<InputType, OutputType> implements ExecutionOperator<OutputType> {
     protected String name;
     protected String id;
     protected Map<String, InputType> inputData; // 输入数据
@@ -38,11 +36,11 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
         this.id = id;
 
         this.inputData = new HashMap<>();
-        for (String key : inputKeys){
+        for (String key : inputKeys) {
             this.inputData.put(key, null);
         }
         this.outputData = new HashMap<>();
-        for (String key : outputKeys){
+        for (String key : outputKeys) {
             this.outputData.put(key, null);
         }
         this.params = params;
@@ -50,29 +48,31 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
         inputConnections = new ArrayList<>();
     }
 
-    public void connectTo(String sourceKey, OperatorBase targetOpt, String targetKey){
+    public void connectTo(String sourceKey, OperatorBase targetOpt, String targetKey) {
         outputConnections.add(new Connection(this, sourceKey, targetOpt, targetKey));
     }
 
-    public void connectFrom(String targetKey, OperatorBase sourceOpt, String sourceKey){
+    public void connectFrom(String targetKey, OperatorBase sourceOpt, String sourceKey) {
         inputConnections.add(new Connection(sourceOpt, sourceKey, this, targetKey));
     }
 
-    public int getInDegree(){return inDegree;}
+    public int getInDegree() {
+        return inDegree;
+    }
 
-    public void setInputData(String key, InputType data){
+    public void setInputData(String key, InputType data) {
         this.inputData.put(key, data);
     }
 
-    public InputType getInputData(String key){
+    public InputType getInputData(String key) {
         return this.inputData.get(key);
     }
 
-    public OutputType getOutputData(String key){
+    public OutputType getOutputData(String key) {
         return this.outputData.get(key);
     }
 
-    public void setOutputData(String key, OutputType data){
+    public void setOutputData(String key, OutputType data) {
         this.outputData.put(key, data);
     }
 
@@ -82,10 +82,10 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
      * @param delta 入度的变化值，为 0 时表示初始化入度，为其他值时则直接更新
      * @return 当前节点的入度值
      */
-    public int updateInDegree(int delta){
-        if(delta == 0){ // 初始化
+    public int updateInDegree(int delta) {
+        if (delta == 0) { // 初始化
             this.inDegree = this.inputConnections.size();
-        }else {
+        } else {
             this.inDegree = this.inDegree + delta;
         }
         return this.inDegree;

@@ -1,6 +1,5 @@
 package fdu.daslab.executable.spark.operators;
 
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 import org.apache.spark.api.java.JavaRDD;
@@ -15,8 +14,8 @@ import java.util.stream.StreamSupport;
  * spark平台的reduceByKey算子，可执行
  *
  * @author 唐志伟
- * @since 2020/7/6 1:53 PM
  * @version 1.0
+ * @since 2020/7/6 1:53 PM
  */
 @Parameters(separators = "=")
 public class ReduceByKeyOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
@@ -29,7 +28,10 @@ public class ReduceByKeyOperator extends OperatorBase<JavaRDD<List<String>>, Jav
 //    @Parameter(names = {"--keyName"})
 //    String keyExtractFunctionName;
 
-    public ReduceByKeyOperator( String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+    public ReduceByKeyOperator(String id,
+                               List<String> inputKeys,
+                               List<String> outputKeys,
+                               Map<String, String> params) {
         super("SparkReduceByOperator", id, inputKeys, outputKeys, params);
     }
 
@@ -46,10 +48,10 @@ public class ReduceByKeyOperator extends OperatorBase<JavaRDD<List<String>>, Jav
                 .map(groupedData -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel
                     FunctionModel functionModel = inputArgs.getFunctionModel();
-                    @SuppressWarnings("unchecked")
-                    final Optional<List<String>> optionalList = StreamSupport.stream(groupedData._2.spliterator(), true)
-                            .reduce((record1, record2) -> (List<String>)
-                                    functionModel.invoke(this.params.get("udfName"), record1, record2));
+                    @SuppressWarnings("unchecked") final Optional<List<String>> optionalList =
+                            StreamSupport.stream(groupedData._2.spliterator(), true)
+                                    .reduce((record1, record2) -> (List<String>)
+                                            functionModel.invoke(this.params.get("udfName"), record1, record2));
                     List<String> lineResult = new ArrayList<>();
                     optionalList.ifPresent(lineResult::addAll);
                     return lineResult;

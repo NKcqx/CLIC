@@ -19,11 +19,11 @@ import java.util.stream.Stream;
  * 文件读取，返回一个二维数组，不指定类型
  *
  * @author 唐志伟
- * @since 2020/7/6 1:46 PM
  * @version 1.0
+ * @since 2020/7/6 1:46 PM
  */
 @Parameters(separators = "=")
-public class FileSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>>{
+public class FileSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
     // 输入路径
     @Parameter(names = {"--input"}, required = true)

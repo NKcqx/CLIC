@@ -80,7 +80,7 @@ public class Operator implements Visitable {
         if (this.entities.containsKey(entityId)) {
             this.selectedEntity = this.entities.get(entityId);
             // 加载平台特有的参数
-            for (Param param : this.selectedEntity.params){
+            for (Param param : this.selectedEntity.params) {
                 this.addParameter(param);
             }
         } else {
@@ -209,8 +209,8 @@ public class Operator implements Visitable {
         return this.outputChannels.size();
     }
 
-    public int connectTo(Operator targetOperator, String sourceKey, String targetKey){
-        Channel channel = new Channel(this,targetOperator, sourceKey, targetKey);
+    public int connectTo(Operator targetOperator, String sourceKey, String targetKey) {
+        Channel channel = new Channel(this, targetOperator, sourceKey, targetKey);
         return this.connectTo(channel);
     }
 
@@ -225,17 +225,17 @@ public class Operator implements Visitable {
      * @param targetOpt 要断开的目标Opt
      * @return 若成功找到时，返回删除后剩余下一跳Opt的个数；未找到时返回-1
      */
-    public int disconnectTo(Operator targetOpt){
+    public int disconnectTo(Operator targetOpt) {
         int idx = 0;
-        for (idx=0;idx<this.outputChannels.size();idx++){
-            if (this.outputChannels.get(idx).getTargetOperator() == targetOpt){
+        for (idx = 0; idx < this.outputChannels.size(); idx++) {
+            if (this.outputChannels.get(idx).getTargetOperator() == targetOpt) {
                 break;
             }
         }
-        if (idx != this.outputChannels.size()){
+        if (idx != this.outputChannels.size()) {
             this.outputChannels.remove(idx);
             return this.outputChannels.size();
-        }else {
+        } else {
             return -1;
         }
     }
@@ -245,7 +245,7 @@ public class Operator implements Visitable {
      *
      * @return 0 表示没有剩余，为了和重载函数保持统一
      */
-    public int disconnectTo(){
+    public int disconnectTo() {
         this.outputChannels.clear();
         return 0;
     }
@@ -262,8 +262,8 @@ public class Operator implements Visitable {
         return this.inputChannels.size();
     }
 
-    public int connectFrom(Operator sourceOperator, String sourceKey, String targetKey){
-        Channel channel = new Channel(sourceOperator,this, sourceKey, targetKey);
+    public int connectFrom(Operator sourceOperator, String sourceKey, String targetKey) {
+        Channel channel = new Channel(sourceOperator, this, sourceKey, targetKey);
         return this.connectFrom(channel);
     }
 
@@ -278,17 +278,17 @@ public class Operator implements Visitable {
      * @param sourceOpt 要断开的目标Opt
      * @return 若成功找到时，返回删除后剩余下一跳Opt的个数；未找到时返回-1
      */
-    public int disconnectFrom(Operator sourceOpt){
+    public int disconnectFrom(Operator sourceOpt) {
         int idx = 0;
-        for (idx=0;idx<this.inputChannels.size();idx++){
-            if (this.inputChannels.get(idx).getSourceOperator() == sourceOpt){
+        for (idx = 0; idx < this.inputChannels.size(); idx++) {
+            if (this.inputChannels.get(idx).getSourceOperator() == sourceOpt) {
                 break;
             }
         }
-        if (idx != this.inputChannels.size()){
+        if (idx != this.inputChannels.size()) {
             this.inputChannels.remove(idx);
             return this.inputChannels.size();
-        }else {
+        } else {
             return -1;
         }
     }
@@ -298,7 +298,7 @@ public class Operator implements Visitable {
      *
      * @return 0 表示没有剩余，为了和重载函数保持统一
      */
-    public int disconnectFrom(){
+    public int disconnectFrom() {
         this.inputChannels.clear();
         return 0;
     }

@@ -8,11 +8,13 @@ import fdu.daslab.executable.basic.utils.TopTraversal;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
 import fdu.daslab.executable.java.operators.JavaOperatorFactory;
+
 import java.util.*;
 import java.util.stream.Stream;
 
 /**
- * Java平台的operator的具体实现，兼顾算子融合，因为是线性，只支持线性的合并，不支持 n - 1 ===>
+ * Java平台的operator的具体实现，兼顾算子融合
+ * 因为是线性，只支持线性的合并，不支持 n - 1 ===>
  * 依赖前面的pipeline同步，不依赖具体执行
  * <p>
  * 按照--udfPath指定用户定义的类的位置
@@ -29,7 +31,7 @@ public class ExecuteJavaOperator {
     @Parameter(names = {"--dagPath", "-dag"})
     String dagPath;
 
-    public static void main(String[] args){
+    public static void main(String[] args) {
         // 解析命令行参数
         ExecuteJavaOperator entry = new ExecuteJavaOperator();
         JCommander.newBuilder()
@@ -52,12 +54,12 @@ public class ExecuteJavaOperator {
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
             TopTraversal topTraversal = new TopTraversal(headOperator);
 
-            while (topTraversal.hasNextOpt()){
+            while (topTraversal.hasNextOpt()) {
                 OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = topTraversal.nextOpt();
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
-                for (Connection connection : connections){
+                for (Connection connection : connections) {
                     OperatorBase<Stream<List<String>>, Stream<List<String>>> targetOpt = connection.getTargetOpt();
                     String sourceKey = connection.getSourceKey();
                     String targetKey = connection.getTargetKey();
@@ -70,8 +72,6 @@ public class ExecuteJavaOperator {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
 
 
         // 目前支持的算子

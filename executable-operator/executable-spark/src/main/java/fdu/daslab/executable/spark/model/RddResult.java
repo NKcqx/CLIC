@@ -4,7 +4,6 @@ import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.spark.api.java.JavaRDD;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

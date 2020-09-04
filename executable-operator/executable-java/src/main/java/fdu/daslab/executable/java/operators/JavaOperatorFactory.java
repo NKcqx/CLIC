@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class JavaOperatorFactory implements OperatorFactory {
 
-    private static Map<String, Class> operatorMap = new HashMap<String, Class>(){{
+    private static Map<String, Class> operatorMap = new HashMap<String, Class>() {{
         put("SourceOperator", FileSource.class);
         put("SinkOperator", FileSink.class);
         put("FilterOperator", FilterOperator.class);
@@ -28,7 +28,7 @@ public class JavaOperatorFactory implements OperatorFactory {
 
     @Override
     public OperatorBase createOperator(String name, String id, List<String> inputKeys,
-                                              List<String> outputKeys, Map<String, String> params)
+                                       List<String> outputKeys, Map<String, String> params)
             throws NoSuchMethodException,
             IllegalAccessException, InvocationTargetException, InstantiationException {
         Class<?> optCls = operatorMap.get(name);

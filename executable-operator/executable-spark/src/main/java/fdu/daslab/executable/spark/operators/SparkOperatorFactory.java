@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public class SparkOperatorFactory implements OperatorFactory {
 
-    private static Map<String, Class> operatorMap = new HashMap<String, Class>(){{
+    private static Map<String, Class> operatorMap = new HashMap<String, Class>() {{
         put("SourceOperator", FileSource.class);
         put("SinkOperator", FileSink.class);
         put("FilterOperator", FilterOperator.class);

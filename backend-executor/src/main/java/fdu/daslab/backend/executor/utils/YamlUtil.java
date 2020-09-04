@@ -22,7 +22,12 @@ public class YamlUtil {
             getResource("templates/argo-dag-simple.yaml")).getPath();
 
     private static String resJobPath;
-    public static String resPltDagPath;
+
+    public static String getResPltDagPath() {
+        return resPltDagPath;
+    }
+
+    private static String resPltDagPath;
 
     static {
         try {
