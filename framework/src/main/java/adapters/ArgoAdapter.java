@@ -243,8 +243,8 @@ public class ArgoAdapter implements OperatorAdapter {
             for (Channel channel : inputChannels) {
                 dependencies.add(new HashMap<String, String>() {{
                     put("id", channel.getSourceOperator().getOperatorID());
-                    put("sourceKey", channel.getKeyPair().getKey());
-                    put("targetKey", channel.getKeyPair().getValue());
+                    put("sourceKey", channel.getKeyPair().getValue0());
+                    put("targetKey", channel.getKeyPair().getValue1());
                 }});
             }
             dependencyMap.put("dependencies", dependencies);

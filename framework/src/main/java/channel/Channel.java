@@ -1,7 +1,7 @@
 package channel;
 
 import basic.operators.Operator;
-import javafx.util.Pair;
+import org.javatuples.Pair;
 
 import java.util.List;
 
@@ -14,13 +14,13 @@ public class Channel {
 
     private Operator sourceOperator; // 边的起始点
     private Operator targetOperator; // 边的终点
-
     private Pair<String, String> keyPair; // source输出数据的key - target输入数据的key, 即source输出的值 传给 target输入数据的值
 
     public Channel(Operator source, Operator target, Pair<String, String> keyPair) {
         this.sourceOperator = source;
         this.targetOperator = target;
         this.keyPair = keyPair;
+
     }
 
     public Channel(Operator source, Operator target, String sourceKey, String targetKey) {
