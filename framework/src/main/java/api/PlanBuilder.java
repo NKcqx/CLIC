@@ -3,6 +3,7 @@ package api;
 
 import adapters.ArgoAdapter;
 import basic.Configuration;
+import basic.Stage;
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
 import basic.platforms.PlatformFactory;
@@ -10,19 +11,17 @@ import basic.traversal.AbstractTraversal;
 import basic.traversal.BfsTraversal;
 import basic.traversal.TopTraversal;
 import basic.visitors.ExecutionGenerationVisitor;
-import basic.visitors.PipelineVisitor;
 import basic.visitors.PrintVisitor;
-import fdu.daslab.backend.executor.model.Pipeline;
+import basic.visitors.WorkflowVisitor;
+import channel.Channel;
+import fdu.daslab.backend.executor.model.Workflow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author 陈齐翔
@@ -78,7 +77,7 @@ public class PlanBuilder {
      * 2: Mapping operator to Executable, Platform depended Operator
      * 3. Run
      */
-    public void execute() throws InterruptedException {
+    public void execute() throws Exception {
         this.logging("===========【Stage 1】Get User Defined Plan ===========");
         this.printPlan();
         this.logging("   ");
@@ -98,37 +97,110 @@ public class PlanBuilder {
         AbstractTraversal planTraversal = new TopTraversal(this.getHeadDataQuanta().getOperator());
         PrintVisitor printVisitor = new PrintVisitor(planTraversal);
         printVisitor.startVisit();
-//        for (Visitable v : plan){
-//            v.acceptVisitor(printVisitor);
-//        }
     }
 
     public void optimizePlan() {
         AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
         ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor(planTraversal);
         executionGenerationVisitor.startVisit();
-        // this.getHeadDataQuanta().getOperator().acceptVisitor(executionGenerationVisitor);
-//        for (Operator operator : this.pipeline){
-//            operator.acceptVisitor(executionGenerationVisitor);
-//        }
     }
 
-    private void executePlan() {
+    private void executePlan() throws Exception {
 //        AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
 //        ExecuteVisitor executeVisitor = new ExecuteVisitor(planTraversal);
 //        executeVisitor.startVisit();
-        AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
-        PipelineVisitor executeVisitor = new PipelineVisitor(planTraversal);
-        executeVisitor.startVisit();
+        TopTraversal planTraversal = new TopTraversal(this.getHeadDataQuanta().getOperator());
+        // PipelineVisitor executeVisitor = new PipelineVisitor(planTraversal);
+        // executeVisitor.startVisit();
         // 获取所有的operator
-        List<Operator> allOperators = executeVisitor.getAllOperators();
+        // List<Operator> allOperators = executeVisitor.getAllOperators();
         // 调用argo平台运行
-        Pipeline argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
-        argoPipeline.execute();
+        // Pipeline argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
+        // argoPipeline.execute();
 
+        /**
+         * 1. 调用WorkflowVisitor 得到Stages
+         * 2. 创建Workflow 传入stages和ArgoAdapter（adapter使用新写的setArgoNode 接收List of Stage）
+         * 3. Workflow,execute()
+         */
+        WorkflowVisitor workflowVisitor = new WorkflowVisitor(planTraversal);
+        workflowVisitor.startVisit();
+        List<Stage> stages = workflowVisitor.getStages(); // 划分好的Stage
+        wrapStageWithHeadTail(stages); // 为每个Stage添加一个对应平台的SourceOpt 和 SinkOpt
+        Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
+        argoWorkflow.execute(); // 将workflow生成为YAML
 //        for (Operator opt : this.pipeline){
 //            opt.acceptVisitor(executeVisitor);
 //        }
+    }
+
+    private void insertSink(Stage stage, String filePath) throws Exception {
+        // 先创建一个Sink
+        Operator sinkOperator = OperatorFactory.createOperator("sink");
+        sinkOperator.selectEntity(stage.getPlatform());
+        sinkOperator.setParamValue("outputPath", filePath);
+        // 再链接两个opt
+        Operator tail = stage.getTail();
+        for (Channel channel : tail.getOutputChannel()) {
+            // 为tail的每个下一跳 删除tail代表的上一跳
+            channel.getTargetOperator().disconnectFrom(tail);
+        }
+        tail.disconnectTo(); // 删除tail的所有下一跳
+
+        tail.connectTo(sinkOperator);
+        sinkOperator.connectFrom(tail);
+        // 最后更新stage的首尾
+        stage.setTail(sinkOperator);
+    }
+
+    private void insertSource(Stage stage, String filePath) throws Exception {
+        // 先创建一个Source
+        Operator sourceOperator = OperatorFactory.createOperator("source");
+        sourceOperator.selectEntity(stage.getPlatform());
+        sourceOperator.setParamValue("inputPath", filePath);
+
+        Operator head = stage.getHead();
+        for (Channel channel : head.getInputChannel()) {
+            channel.getSourceOperator().disconnectTo(head);
+        }
+        head.disconnectFrom();
+        // 再链接两个opt
+        sourceOperator.connectTo(head);
+        head.connectFrom(sourceOperator);
+        // 最后更新stage的首尾
+        stage.setHead(sourceOperator);
+    }
+
+    /**
+     * 不同的Stage会放到不同平台上处理，每个平台上的stage都需要独立的source和sink，
+     * 因为需要为拆分后的每个stage都添加一个SourceOperator作为头节点，SinkOperator作为尾节点
+     *
+     * @param stages 拆分后的所有Stage
+     * @throws Exception
+     */
+    private void wrapStageWithHeadTail(List<Stage> stages) throws Exception {
+        String filePath = null;
+        for (int i = 0; i < stages.size(); ++i) {
+            Stage stage = stages.get(i);
+            if (i == 0) {
+                // 第一个Stage有原生的SourceOperator，不需要自动添加
+                // sink file path
+                filePath = configuration.getProperty("yaml-output-path")
+                        + String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
+                insertSink(stage, filePath);
+            } else if (i == stages.size() - 1) {
+                // 同理，最后一个Stage有原生的SinkOperator，不需要自动添加
+                insertSource(stage, filePath);
+            } else {
+                // 其余的Stage需要同时添加Source和Sink
+                insertSource(stage, filePath);
+                filePath = configuration.getProperty("yaml-output-path")
+                        + String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
+                insertSink(stage, filePath);
+            }
+
+
+        }
     }
 
     private LinkedList<Operator> optimizePipeline() {
@@ -167,7 +239,7 @@ public class PlanBuilder {
      * 设置平台的udf的路径
      *
      * @param platform 平台名称
-     * @param udfPath 路径
+     * @param udfPath  路径
      */
     public void setPlatformUdfPath(String platform, String udfPath) {
         PlatformFactory.setPlatformArgValue(platform, "--udfPath", udfPath);

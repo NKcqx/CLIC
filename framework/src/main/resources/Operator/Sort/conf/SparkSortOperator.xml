@@ -3,19 +3,13 @@
 
     <platform ID="spark">
         <language>java</language>
-<!--            此处先用jar做image测试-->
-        <implementation>/resources/Operator/Sort/SparkSort.jar</implementation>
-        <command>
-            java -jar ./resources/Operator/Sort/SparkSort.jar
-            -Dinput_data_path={$input_file_path}
-            -Doutput_data_path={$output_file_path}
-            -Ddelimiter={$delimiter}
-            -Dis_reverse={$is_reverse}
-        </command>
-<!--            cost是该operator的cost，此处先简单设定-->
         <cost>7.9928</cost>
     </platform>
 
+    <parameters>
+        <parameter name="ascending" data_type="boolean" default="true"> </parameter>
+        <parameter name="partitionNum" data_type="integer" default="5"> </parameter>
+    </parameters>
 
     <execute>
         <target_platform>null</target_platform>

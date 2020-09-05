@@ -42,20 +42,14 @@ public class SparkWorkflowTest {
         DataQuanta collectNode = DataQuanta.createInstance("collect", null);
 
         // 链接节点，即构建DAG
-        sourceNode1.outgoing(joinNode, null);
-        sourceNode2.outgoing(joinNode, null);
+        sourceNode1.outgoing(joinNode);
+        sourceNode2.outgoing(joinNode);
 
-        joinNode.outgoing(filterNode,
-                null//new HashMap<String, String>(){{ put("sorted_value", "data"); }}
-        );
+        joinNode.outgoing(filterNode);
 
-        filterNode.outgoing(projectNode,
-                null//new HashMap<String, String>(){{ put("sorted_value", "data"); }}
-        );
+        filterNode.outgoing(projectNode);
 
-        projectNode.outgoing(collectNode,
-                null//new HashMap<String, String>(){{ put("sorted_value", "data"); }}
-        );
+        projectNode.outgoing(collectNode);
 
         List<Row> object = (List<Row>) SparkPlatform.sparkRunner(planBuilder);
         int numRow = (int) (object.size() * 0.0001);

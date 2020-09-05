@@ -2,23 +2,21 @@ package fdu.daslab.executable.java.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.BiOptParamsModel;
-import fdu.daslab.executable.basic.model.BinaryBasicOperator;
-import fdu.daslab.executable.basic.model.FunctionModel;
-import fdu.daslab.executable.basic.model.ResultModel;
+import fdu.daslab.executable.basic.model.*;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- * @author 唐志伟，刘丰艺
- * @since 2020/7/6 14:05
+ * @author 唐志伟，刘丰艺，陈齐翔
  * @version 1.0
+ * @since 2020/7/6 14:05
  */
 @Parameters(separators = "=")
-public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>> {
+public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
     @Parameter(names = {"--leftTableKeyName"})
     String leftTableKeyExtractFunctionName;
@@ -32,12 +30,17 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>> {
     @Parameter(names = {"--rightTableFuncName"})
     String rightTableFuncName;
 
+    public JoinOperator(String id,
+                        List<String> inputKeys,
+                        List<String> outputKeys,
+                        Map<String, String> params) {
+        super("JoinOperator", id, inputKeys, outputKeys, params);
+    }
+
     @Override
-    public void execute(BiOptParamsModel<Stream<List<String>>> inputArgs,
-                        ResultModel<Stream<List<String>>> input1,
-                        ResultModel<Stream<List<String>>> input2,
+    public void execute(ParamsModel inputArgs,
                         ResultModel<Stream<List<String>>> result) {
-        JoinOperator joinArgs = (JoinOperator) inputArgs.getOperatorParam();
+        // JoinOperator joinArgs = (JoinOperator) inputArgs.getOperatorParam();
         FunctionModel joinFunction = inputArgs.getFunctionModel();
         assert joinFunction != null;
 
@@ -46,18 +49,30 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>> {
         List<List<String>> leftTable = new ArrayList();
         List<List<String>> rightTable = new ArrayList();
 
-        input1.getInnerResult().forEach(item -> {
+        this.getInputData("leftTable").forEach(item -> {
             // 用户指定key
-            leftKeys.add((String) joinFunction.invoke(joinArgs.leftTableKeyExtractFunctionName, item));
+            leftKeys.add((String) joinFunction.invoke(this.params.get("leftTableKeyName"), item));
             // 用户指定join时左表要select哪几列
-            leftTable.add((List<String>) joinFunction.invoke(joinArgs.leftTableFuncName, item));
+            leftTable.add((List<String>) joinFunction.invoke(this.params.get("leftTableFuncName"), item));
         });
-        input2.getInnerResult().forEach(item -> {
+        this.getInputData("rightTable").forEach(item -> {
             // 用户指定key
-            rightKeys.add((String) joinFunction.invoke(joinArgs.rightTableKeyExtractFunctionName, item));
+            rightKeys.add((String) joinFunction.invoke(this.params.get("rightTableKeyName"), item));
             // 用户指定join时右表要select哪几列
-            rightTable.add((List<String>) joinFunction.invoke(joinArgs.rightTableFuncName, item));
+            rightTable.add((List<String>) joinFunction.invoke(this.params.get("rightTableFuncName"), item));
         });
+        /*result.getInnerResult("leftTable").forEach(item -> {
+            // 用户指定key
+            leftKeys.add((String) joinFunction.invoke(this.params.get("leftTableKeyName"), item));
+            // 用户指定join时左表要select哪几列
+            leftTable.add((List<String>) joinFunction.invoke(this.params.get("leftTableFuncName"), item));
+        });
+        result.getInnerResult("rightTable").forEach(item -> {
+            // 用户指定key
+            rightKeys.add((String) joinFunction.invoke(this.params.get("rightTableKeyName"), item));
+            // 用户指定join时右表要select哪几列
+            rightTable.add((List<String>) joinFunction.invoke(this.params.get("rightTableFuncName"), item));
+        });*/
 
         List<String> resultLine = new ArrayList<>();
         List<List<String>> resultList = new ArrayList<>();
@@ -75,6 +90,7 @@ public class JoinOperator implements BinaryBasicOperator<Stream<List<String>>> {
         }
 
         Stream<List<String>> nextStream = resultList.stream();
-        result.setInnerResult(nextStream);
+        // result.setInnerResult("result", nextStream);
+        this.setOutputData("result", nextStream);
     }
 }

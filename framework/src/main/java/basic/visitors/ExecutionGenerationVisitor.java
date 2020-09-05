@@ -2,6 +2,7 @@
 package basic.visitors;
 
 import basic.operators.Operator;
+import basic.operators.OperatorEntity;
 import basic.traversal.AbstractTraversal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,27 +40,21 @@ public class ExecutionGenerationVisitor extends Visitor {
     public void visit(Operator opt) {
         if (!isVisited(opt)) {
             visited.add(opt);
-            // 比较所有Entity，找到cost最小的
-            if (!opt.isLoaded()) {
-                try {
-                    opt.getPlatformOptConf();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
             // 拿到所有的entities并遍历找到cost最小的
-            Operator.OperatorEntity bestOperatorEntity = Collections.min(
-                    opt.getEntities().values(), new Comparator<Operator.OperatorEntity>() {
-                @Override
-                public int compare(Operator.OperatorEntity o1, Operator.OperatorEntity o2) {
-                    return o1.getCost().compareTo(o2.getCost());
-                }
-            });
+            OperatorEntity bestOperatorEntity = Collections.min(
+                    opt.getEntities().values(), new Comparator<OperatorEntity>() {
+                        @Override
+                        public int compare(OperatorEntity o1, OperatorEntity o2) {
+                            return o1.getCost().compareTo(o2.getCost());
+                        }
+                    });
             try {
-                this.logging(String.format("> Pick %s 's `%s[%f]` implement as best Operator\n",
-                        opt.getOperatorID(), bestOperatorEntity.getEntityID(), bestOperatorEntity.getCost()));
                 // 为opt选择最佳的entity
                 opt.selectEntity(bestOperatorEntity.getEntityID());
+                this.logging(String.format("> Pick %s 's `%s[%f]` implement as best Operator\n",
+                        opt.getOperatorID(),
+                        opt.getSelectedEntities().getEntityID(),
+                        opt.getSelectedEntities().getCost()));
 
             } catch (FileNotFoundException e) {
                 // 即使出了问题也不要来这找...这只是调用对象内部的ID，错也是别人往里传错了

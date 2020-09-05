@@ -16,13 +16,13 @@ public class Demo {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
             // 设置udf路径
-            planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("java", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
             //供测试生成文件使用
             planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWebCaseFunc.class");
 
             // 创建节点
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("input", "data/test.csv");
+                put("inputPath", "/Users/jason/Desktop/test.csv");
             }});
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
@@ -39,25 +39,23 @@ public class Demo {
             }});
 
             DataQuanta sortNode = DataQuanta.createInstance("sort", new HashMap<String, String>() {{
-
-                //put("is_reverse", "false");
                 put("udfName", "sortFunc");
             }});
 
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
-                put("output", "data/output.csv"); // 具体resources的路径通过配置文件获得
+                put("outputPath", "/Users/jason/Desktop/output.csv"); // 具体resources的路径通过配置文件获得
             }});
 
             // 链接节点，即构建DAG
-            sourceNode.outgoing(filterNode, null);
+            sourceNode.outgoing(filterNode);
 
-            filterNode.outgoing(mapNode, null);
+            filterNode.outgoing(mapNode);
 
-            mapNode.outgoing(reduceNode, null);
+            mapNode.outgoing(reduceNode);
 
-            reduceNode.outgoing(sortNode, null);
+            reduceNode.outgoing(sortNode);
 
-            sortNode.outgoing(sinkNode, null);
+            sortNode.outgoing(sinkNode);
 
             planBuilder.execute();
         } catch (Exception e) {

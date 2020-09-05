@@ -39,6 +39,12 @@ public class Param {
             case "string":
                 this.type = ParamKind.STRING;
                 break;
+            case "integer":
+                this.type = ParamKind.INTEGER;
+                break;
+            case "boolean":
+                this.type = ParamKind.BOOLEAN;
+                break;
             default:
                 this.type = ParamKind.STRING;
                 break;
@@ -70,7 +76,7 @@ public class Param {
     }
 
     public enum ParamKind {
-        LIST, FUNCTION, STRING
+        LIST, FUNCTION, STRING, INTEGER, BOOLEAN
     }
 
 }

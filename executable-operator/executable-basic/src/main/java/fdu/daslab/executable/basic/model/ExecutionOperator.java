@@ -12,7 +12,7 @@ import java.io.Serializable;
  * @since 2020/7/6 12:26 PM
  * @version 1.0
  */
-public interface BasicOperator<MODEL> extends Serializable {
+public interface ExecutionOperator<MODEL> extends Serializable {
 
     /**
      * 算子的执行
@@ -20,5 +20,5 @@ public interface BasicOperator<MODEL> extends Serializable {
      * @param inputArgs 参数列表
      * @param result 返回的结果
      */
-    void execute(ParamsModel<MODEL> inputArgs, ResultModel<MODEL> result);
+    void execute(ParamsModel inputArgs, ResultModel<MODEL> result);
 }

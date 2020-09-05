@@ -16,12 +16,12 @@ public interface ResultModel<MODEL> {
      *
      * @param result 运行的结果
      */
-    void setInnerResult(MODEL result);
+    void setInnerResult(String key, MODEL result);
 
     /**
      * 获取运行的结果
      *
      * @return 结果
      */
-    MODEL getInnerResult();
+    MODEL getInnerResult(String key);
 }
