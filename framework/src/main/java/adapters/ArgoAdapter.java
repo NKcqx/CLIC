@@ -169,11 +169,20 @@ public class ArgoAdapter implements OperatorAdapter {
      */
     public List<ArgoNode> setArgoNode(List<Stage> stages) {
         List<ArgoNode> argoNodeList = new ArrayList<>();
+        ArgoNode dependecyNode = null;
         // 1. 遍历stage里的dag，生成ArgoNode
         for (Stage stage : stages) {
             // todo id好好生成下, dependency是上一个ArgoNode
             int id = new Date().hashCode();
-            ArgoNode argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(), null);
+            ArgoNode argoNode = null;
+            if (dependecyNode != null){
+                ArrayList<ArgoNode> dependencies = new ArrayList<>();
+                dependencies.add(dependecyNode); // todo 之后会有不止一个dependency
+                argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(),  dependencies);
+            }else {
+                argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(),  null);
+            }
+
             // 遍历stage里的dag, 转成YAML字符串
             List<Map<String, Object>> optMapList = new ArrayList<>(); // "operators"字段，是stage里所有opt的列表 YML列表
             List<Map<String, Object>> dagList = new ArrayList<>(); // "dag"字段，各个边的列表
@@ -198,6 +207,7 @@ public class ArgoAdapter implements OperatorAdapter {
                 put("--dagPath", path);
             }});
             argoNodeList.add(argoNode);
+            dependecyNode = argoNode;
         }
         return argoNodeList;
     }
