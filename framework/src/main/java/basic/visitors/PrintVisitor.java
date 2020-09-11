@@ -2,7 +2,6 @@
 package basic.visitors;
 
 import basic.operators.Operator;
-import basic.traversal.AbstractTraversal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,8 +17,8 @@ public class PrintVisitor extends Visitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(PrintVisitor.class);
     private List<Operator> visited = new ArrayList<>();
 
-    public PrintVisitor(AbstractTraversal planTraversal) {
-        super(planTraversal);
+    public PrintVisitor() {
+        super();
     }
 
     @Override
@@ -28,10 +27,10 @@ public class PrintVisitor extends Visitor {
             this.logging(opt.toString());
             this.visited.add(opt);
         }
-
-        if (planTraversal.hasNextOpt()) {
-            planTraversal.nextOpt().acceptVisitor(this);
-        }
+//
+//        if (planTraversal.hasNextOpt()) {
+//            planTraversal.nextOpt().acceptVisitor(this);
+//        }
     }
 
     private boolean isVisited(Operator opt) {

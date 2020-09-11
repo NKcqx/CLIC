@@ -4,13 +4,15 @@ import basic.Param;
 import basic.Stage;
 import basic.operators.Operator;
 import basic.platforms.PlatformFactory;
-import basic.traversal.BfsTraversal;
 import channel.Channel;
 import fdu.daslab.backend.executor.model.ArgoNode;
 import fdu.daslab.backend.executor.model.ImageTemplate;
 import fdu.daslab.backend.executor.model.OperatorAdapter;
 import fdu.daslab.backend.executor.utils.YamlUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsSubgraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 import java.util.*;
 
@@ -101,65 +103,6 @@ public class ArgoAdapter implements OperatorAdapter {
         }
         return templates;
     }
-//
-//    /**
-//     * 对每个分组设置相应的Argo node
-//     *
-//     * @param operators    分组平台下的所有operator
-//     * @param id           该分组node在该job下的id
-//     * @param dependencies 该分组node所依赖的其他node关系（无循环）
-//     * @return argoNode
-//     */
-//    public ArgoNode setArgoNode(List<Operator> operators, int id, List<ArgoNode> dependencies) {
-//        List<ArgoNode.Parameter> params = new ArrayList<>();
-//        int randomNumber = (int) Math.round(Math.random() * 1000); //取[0,1000]的随机整数
-//        String platform = null;
-//        List<String> optName = new ArrayList<>();
-//        for (Operator operator : operators) {
-//            if (platform == null) {
-//                platform = operator.getSelectedEntities().getEntityID();
-//            }
-//            optName.add(operator.getOperatorName());
-//        }
-//        String nameSub = "";
-//        //设置argo node的name
-//        if (optName.size() > 3) {
-//            int i = 0;
-//            for (String n : optName) {
-//                i++;
-//                nameSub = nameSub + n.substring(0, 2);
-//                if (i > 5) {
-//                    break; // 最多取前六个name
-//                }
-//            }
-//        } else {
-//            for (String n : optName) {
-//                nameSub = nameSub + n.replace("Operator", "");
-//            }
-//        }
-//        String name = "Job-" + platform + "-" + nameSub + randomNumber + "-" + id;
-//        ArgoNode node = new ArgoNode(id, name, platform, dependencies, null);
-//        // 前期串行，分组内所有的参数放到一起为了按照steps串行，以及各个node之间的数据传递(通过文件传递)，在每个node中加上source
-//        // 和 sink 算子，分别用于读取和保存各个node的输入和输出。如果operator的开始算子不是source，则添加
-//        if (!operators.get(0).getOperatorName().equals("SourceOperator")) {
-//            params.add(new ArgoNode.Parameter("--operator", "SourceOperator"));
-//            params.add(new ArgoNode.Parameter("--input", "data/" + (id - 1) + ".csv"));
-//            params.add(new ArgoNode.Parameter("--separator", ","));
-//        }
-//        operators.forEach(operator -> {
-//            params.add(new ArgoNode.Parameter("--operator", operator.getOperatorName()));
-//            operator.getInputDataList().forEach((paramName, paramVal) -> {
-//                params.add(new ArgoNode.Parameter("--" + paramName, paramVal.getData()));
-//            });
-//        });
-//        if (!operators.get(operators.size() - 1).getOperatorName().equals("SinkOperator")) {
-//            params.add(new ArgoNode.Parameter("--operator", "SinkOperator"));
-//            params.add(new ArgoNode.Parameter("--output", "data/" + id + ".csv"));
-//            params.add(new ArgoNode.Parameter("--separator", ","));
-//        }
-//        node.setParameters(params);
-//        return node;
-//    }
 
     /**
      * 把Stage的列表转换为多个ArgoNode的列表，用于生成YAML
@@ -169,15 +112,15 @@ public class ArgoAdapter implements OperatorAdapter {
      */
     public List<ArgoNode> setArgoNode(List<Stage> stages) {
         List<ArgoNode> argoNodeList = new ArrayList<>();
-        ArgoNode dependecyNode = null;
+        ArgoNode dependencyNode = null;
         // 1. 遍历stage里的dag，生成ArgoNode
         for (Stage stage : stages) {
-            // todo id好好生成下, dependency是上一个ArgoNode
+            // todo id好好生成下(ID Supplier), dependency是上一个ArgoNode
             int id = new Date().hashCode();
             ArgoNode argoNode = null;
-            if (dependecyNode != null){
+            if (dependencyNode != null){
                 ArrayList<ArgoNode> dependencies = new ArrayList<>();
-                dependencies.add(dependecyNode); // todo 之后会有不止一个dependency
+                dependencies.add(dependencyNode); // todo 之后会有不止一个dependency
                 argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(),  dependencies);
             }else {
                 argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(),  null);
@@ -188,15 +131,15 @@ public class ArgoAdapter implements OperatorAdapter {
             List<Map<String, Object>> dagList = new ArrayList<>(); // "dag"字段，各个边的列表
 
             // 遍历 子DAG，把所有opt转为Map保存
-            Operator stageRootOpt = stage.getHead();
-            BfsTraversal bfsTraversal = new BfsTraversal(stageRootOpt);
-            while (bfsTraversal.hasNextOpt()) {
-                Operator curOpt = bfsTraversal.nextOpt();
+            AsSubgraph<Operator, Channel> subGraph = stage.getGraph();
+            // 其实没必要按序添加，只要边的方向搞对后端就能重构出来
+            BreadthFirstIterator<Operator, Channel> breadthFirstIterator = new BreadthFirstIterator<>(subGraph);
+
+            while (breadthFirstIterator.hasNext()) {
+                Operator curOpt = breadthFirstIterator.next();
                 optMapList.add(operator2Map(curOpt)); // 先把 opt -> map 为了生成yaml
-                dagList.add(operatorDependency2Map(curOpt, curOpt == stageRootOpt)); // channel -> map
-                if (curOpt == stage.getTail()) {
-                    break;
-                }
+                dagList.add(operatorDependency2Map(subGraph, curOpt)); // channel -> map
+
             }
             String path = YamlUtil.getResPltDagPath() + "physical-dag-" + argoNode.getId() + ".yml";
             YamlUtil.writeYaml(path, new HashMap<String, Object>() {{
@@ -207,21 +150,17 @@ public class ArgoAdapter implements OperatorAdapter {
                 put("--dagPath", path);
             }});
             argoNodeList.add(argoNode);
-            dependecyNode = argoNode;
+            dependencyNode = argoNode;
         }
         return argoNodeList;
     }
 
     /**
      * 把一个Operator中的各个属性转化为Map，用于最后将Opt生成YAML
-     * @param opt
-     * @return
+     * @param opt 要转换的Operator
+     * @return Key-Value格式的Map, 其中 Key为参数名，Value为参数值
      */
     private Map<String, Object> operator2Map(Operator opt) {
-        /*Map<String, String> paramsList = new ArrayList<>();
-        for (Param param : opt.getInputDataList().values()){
-            paramsList.add(param.getKVData());
-        }*/
         Map<String, Param> paramsList = opt.getInputParamList();
         Map<String, Param> inputDataList = opt.getInputDataList();
         Map<String, Param> outputDataList = opt.getOutputDataList();
@@ -240,19 +179,20 @@ public class ArgoAdapter implements OperatorAdapter {
 
     /**
      * 将Opt的各个Channel转为Map格式，用于创建YAML中的dag字段，该字段主要用于声明DAG节点间的依赖关系
+     * @param graph 基础Graph，用于
      * @param opt 当前要解析的Opt
-     * @param isHead 判断该Opt是否是DAG的头结点，若是则不用解析依赖（无依赖）
      * @return 当前Opt 的 Map格式 的依赖关系, 其实就是将Opt的各个Channel
      */
-    private Map<String, Object> operatorDependency2Map(Operator opt, boolean isHead) {
+    private Map<String, Object> operatorDependency2Map(Graph graph, Operator opt) {
         Map<String, Object> dependencyMap = new HashMap<>(); // 当前Opt的依赖对象
         dependencyMap.put("id", opt.getOperatorID());
-        if (!isHead) {
-            List<Channel> inputChannels = opt.getInputChannel(); // todo 这该不该直接拿Channel呢
+
+        if(graph.inDegreeOf(opt) != 0){ // head Operator
+            Set<Channel> inputChannels = graph.incomingEdgesOf(opt); // dependency channels
             List<Map<String, String>> dependencies = new ArrayList<>(); // denpendencies字段，是一个List<Map> 每个元素是其中一个依赖
-            for (Channel channel : inputChannels) {
+            for (Channel channel : inputChannels){
                 dependencies.add(new HashMap<String, String>() {{
-                    put("id", channel.getSourceOperator().getOperatorID());
+                    put("id", ((Operator)graph.getEdgeSource(channel)).getOperatorID());
                     put("sourceKey", channel.getKeyPair().getValue0());
                     put("targetKey", channel.getKeyPair().getValue1());
                 }});

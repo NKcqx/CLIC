@@ -1,8 +1,12 @@
 package basic;
 
 import basic.operators.Operator;
+import channel.Channel;
+import org.jgrapht.Graph;
+import org.jgrapht.graph.AsSubgraph;
 
 import java.io.Serializable;
+import java.util.Set;
 
 /**
  * sub-plan，保存Logical/Physical Plan的片段，用于Assign到不同平台。
@@ -12,16 +16,50 @@ import java.io.Serializable;
  * @since 2020/7/20 3:27 下午
  */
 public class Stage implements Serializable {
-    private Operator headOpt; // 现在只能支持以一个opt开头 一个opt结尾的 sub-plan
-    private Operator tailOpt;
+    private AsSubgraph<Operator, Channel> graph = null;
+    private Graph<Operator, Channel> baseGraph = null;
     private String id;
     private String name;
     private String platform;
+    private Set<Operator> vertexSet;
+    private Set<Channel> edgeSet;
 
-    public Stage(String id, String name, String platform) {
+    public Stage(String id, String name, String platform, Graph<Operator, Channel> baseGraph) {
         this.id = id;
         this.name = name;
         this.platform = platform;
+        this.baseGraph = baseGraph;
+    }
+
+    public AsSubgraph<Operator, Channel> getGraph(){
+        if (graph == null){
+            graph = new AsSubgraph<>(baseGraph, vertexSet, edgeSet);
+        }
+        return graph;
+    }
+
+    public void setVertexSet(Set<Operator> vertexSet) {
+        this.vertexSet = vertexSet;
+    }
+
+    public void setEdgeSet(Set<Channel> edgeSet) {
+        this.edgeSet = edgeSet;
+    }
+
+    public boolean addVertex(Operator vertex){
+        return this.vertexSet.add(vertex);
+    }
+
+    public boolean addVertexs(Set<Operator> vertexes){
+        return this.vertexSet.addAll(vertexes);
+    }
+
+    public boolean addEdge(Channel channel){
+        return this.edgeSet.add(channel);
+    }
+
+    public boolean addEdges(Set<Channel> channels){
+        return this.edgeSet.addAll(channels);
     }
 
     public String getName() {
@@ -40,21 +78,21 @@ public class Stage implements Serializable {
         this.id = id;
     }
 
-    public Operator getTail() {
-        return tailOpt;
-    }
-
-    public void setTail(Operator tail) {
-        this.tailOpt = tail;
-    }
-
-    public void setHead(Operator head) {
-        this.headOpt = head;
-    }
-
-    public Operator getHead() {
-        return headOpt;
-    }
+//    public Operator getTail() {
+//        return tailOpt;
+//    }
+//
+//    public void setTail(Operator tail) {
+//        this.tailOpt = tail;
+//    }
+//
+//    public void setHead(Operator head) {
+//        this.headOpt = head;
+//    }
+//
+//    public Operator getHead() {
+//        return headOpt;
+//    }
 
     public void setPlatform(String platform) {
         this.platform = platform;
@@ -64,7 +102,7 @@ public class Stage implements Serializable {
         return platform;
     }
 
-    public boolean isEnd(Operator opt) {
-        return tailOpt == opt;
-    }
+//    public boolean isEnd(Operator opt) {
+//        return tailOpt == opt;
+//    }
 }

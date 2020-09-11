@@ -3,10 +3,13 @@ package basic.visitors;
 import basic.Stage;
 import basic.operators.Operator;
 import basic.operators.OperatorEntity;
-import basic.traversal.TopTraversal;
+import channel.Channel;
+import org.jgrapht.Graph;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * StageVisitor
@@ -22,13 +25,12 @@ public class WorkflowVisitor extends Visitor {
     private List<Stage> stages = new ArrayList<>(); // stage列表
     private Stage curStage = null;
     private OperatorEntity curOptPlatform = null;
-    private Operator stageHeadOpt = null;
-    private TopTraversal planTraversal;
     private Integer jobID = 1;
+    private Graph<Operator, Channel> graph;
 
-    public WorkflowVisitor(TopTraversal planTraversal) {
-        super(planTraversal);
-        this.planTraversal = planTraversal;
+    public WorkflowVisitor(Graph graph) {
+        super();
+        this.graph = graph;
     }
 
     public List<Stage> getStages() {
@@ -40,14 +42,30 @@ public class WorkflowVisitor extends Visitor {
         // 拓扑排序不会出现重复访问同一元素的情况，无需判断visited
         if (curOptPlatform == null) {
             curOptPlatform = opt.getSelectedEntities();
-            curStage = new Stage(String.valueOf(jobID), "Stage-" + opt.getOperatorName(), curOptPlatform.getEntityID());
-            curStage.setHead(opt);
+            curStage = new Stage(String.valueOf(jobID),
+                    "Stage-" + opt.getOperatorName(),
+                    curOptPlatform.getEntityID(),
+                    this.graph);
+            // curStage.setHead(opt);
+            curStage.addVertex(opt);
         }
+        // 找到所有运算平台 和 自己运算平台相同的 下一跳Opt
+        Set<Channel> outgoingChannels = graph.outgoingEdgesOf(opt).stream().filter(channel ->
+                graph.getEdgeTarget(channel)
+                        .getSelectedEntities()
+                        .getEntityID()
+                        .equals(curOptPlatform.getEntityID())).collect(Collectors.toSet());
+        if (outgoingChannels.isEmpty()){
+            // 没有相同平台的Opt了，将当前opt设为stage 的 tail 然后开始组装下一个stage
+            stages.add(curStage);
+            ++this.jobID;
+            curOptPlatform = null;
 
+        }else {
+            curStage.addEdges(outgoingChannels); // todo 其实有问题：还没有添加下一跳节点的时候就把相连的边添加进来了
+        }
         if (planTraversal.hasNextOpt()) {
-            Operator nextOpt = planTraversal.nextOptWithFilter(
-                    operator -> operator.getSelectedEntities().getEntityID().equals(curOptPlatform.getEntityID())
-            );
+
             if (nextOpt == null) {
                 // 没有相同平台的Opt了，将当前opt设为stage 的 tail 然后开始组装下一个stage
                 curStage.setTail(opt);

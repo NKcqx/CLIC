@@ -3,7 +3,6 @@ package basic.visitors;
 
 import basic.operators.Operator;
 import basic.operators.OperatorEntity;
-import basic.traversal.AbstractTraversal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +25,8 @@ public class ExecutionGenerationVisitor extends Visitor {
     private static final Logger LOGGER = LoggerFactory.getLogger(ExecutionGenerationVisitor.class);
     private List<Operator> visited = new ArrayList<>();
 
-    public ExecutionGenerationVisitor(AbstractTraversal planTraversal) {
-        super(planTraversal);
+    public ExecutionGenerationVisitor() {
+        super();
     }
 
 
@@ -61,11 +60,11 @@ public class ExecutionGenerationVisitor extends Visitor {
                 e.printStackTrace();
             }
         }
-        if (planTraversal.hasNextOpt()) {
-            Operator nextOpt = planTraversal.nextOpt();
-            planTraversal.addSuccessor(nextOpt);
-            nextOpt.acceptVisitor(this);
-        }
+//        if (planTraversal.hasNextOpt()) {
+//            Operator nextOpt = planTraversal.nextOpt();
+//            planTraversal.addSuccessor(nextOpt);
+//            nextOpt.acceptVisitor(this);
+//        }
     }
 
     private boolean isVisited(Operator opt) {
