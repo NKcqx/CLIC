@@ -4,10 +4,13 @@ import basic.Param;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 /**
@@ -25,12 +28,13 @@ public class OperatorTest {
     @Before
     public void before() throws Exception {
         configFilePath = "Operator/Filter/conf/FilterOperator.xml";
-        spyOpt = spy(new Operator(configFilePath));
+        spyOpt = spy(OperatorFactory.createOperatorFromFile(configFilePath));
+        spyOpt.setParamValue("udfName", "a name");
     }
 
     @Test
     public void simpleConstructorTest() throws Exception {
-        Operator opt = new Operator("Operator/Filter/conf/FilterOperator.xml");
+        Operator opt = OperatorFactory.createOperatorFromFile("Operator/Filter/conf/FilterOperator.xml");
     }
 
     @Test
@@ -41,14 +45,14 @@ public class OperatorTest {
         String defaultValue = null;
         Boolean isRequired = false;
         Param param = new Param(name, dataType, isRequired, defaultValue);
-        Map<String, Param> inputDataList = spyOpt.getInputDataList();
+        Map<String, Param> inputDataList = spyOpt.getInputParamList();
         inputDataList.put(name, param);
 
         String[] expectedKeys = {"udfName", "udfName2"};
         String[] actualKeys = new String[2];
 
         int i = 0;
-        for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
+        for (Map.Entry<String, Param> entry : spyOpt.getInputParamList().entrySet()) {
             actualKeys[i] = entry.getKey();
             i += 1;
         }
@@ -58,9 +62,6 @@ public class OperatorTest {
 
     @Test
     public void getPlatformOptConfTest() throws Exception {
-        spyOpt.getPlatformOptConf();
-        verify(spyOpt, times(1)).getPlatformOptConf();
-
         assert (spyOpt.getEntities().containsKey("java"));
         assert (spyOpt.getEntities().containsKey("spark"));
     }
@@ -82,79 +83,48 @@ public class OperatorTest {
         verify(spyOpt, times(3)).evaluate();
     }
 
-    @Test
-    public void tempPrepareDataTest() {
-        spyOpt.tempPrepareData();
-        verify(spyOpt, times(1)).tempPrepareData();
-
-        spyOpt.getInputDataList().forEach((k, v) -> {
-            assertEquals(k + "'s temp value", v.getData());
-        });
-    }
-
-    @Test
-    public void tempDoEvaluateTest() {
-        spyOpt.tempDoEvaluate();
-        verify(spyOpt, times(1)).tempDoEvaluate();
-    }
 
     @Test
     public void inputDataTest() {
+        Param param = new Param("inputKey", "string", false, null);
+        spyOpt.addInputData(param);
+        param = new Param("inputKey2", "string", true, null);
+        spyOpt.addInputData(param);
 
-        String name = "inputKey";
-        String dataType = "string";
-        String defaultValue = null;
-        Boolean isRequired = false;
-        Param param = new Param(name, dataType, isRequired, defaultValue);
-        Map<String, Param> inputDataList = spyOpt.getInputDataList();
-        inputDataList.put(name, param);
-
-        spyOpt.setData("inputKey", "inputData");
-
-        String[] expectedNames = {"inputKey", "udfName"};
-        String[] expectedDatas = {"inputData", null};
-        String[] actualNames = new String[2];
-        String[] actualDatas = new String[2];
-
-        int i = 0;
+        List<String> expectedInputKeys = new ArrayList<>(Arrays.asList("data", "inputKey", "inputKey2"));
         for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
-            actualNames[i] = entry.getValue().getName();
-            actualDatas[i] = entry.getValue().getData();
-            i += 1;
+           assertTrue(expectedInputKeys.contains(entry.getValue().getName()));
         }
-
-        assertArrayEquals(expectedNames, actualNames);
-        assertArrayEquals(expectedDatas, actualDatas);
-        verify(spyOpt, times(1)).setData("inputKey", "inputData");
     }
 
     @Test
     public void outputDataTest() {
+        Param param = new Param("result1", "string", false, null);
+        spyOpt.addOutputData(param);
+        param = new Param("result2", "string", true, null);
+        spyOpt.addOutputData(param);
 
-        String name = "outputKey";
-        String dataType = "string";
-        String defaultValue = null;
-        Boolean isRequired = false;
-        Param param = new Param(name, dataType, isRequired, defaultValue);
-        Map<String, Param> outputDataList = spyOpt.getOutputDataList();
-        outputDataList.put(name, param);
-
-        spyOpt.setData("outputKey", "outputData");
-
-        String[] expectedNames = {"result", "outputKey"};
-        String[] expectedDatas = {null, "outputData"};
-        String[] actualNames = new String[2];
-        String[] actualDatas = new String[2];
-
-        int i = 0;
+        List<String> expectedOutputKeys = new ArrayList<>(Arrays.asList("result", "result1", "result2"));
         for (Map.Entry<String, Param> entry : spyOpt.getOutputDataList().entrySet()) {
-            actualNames[i] = entry.getValue().getName();
-            actualDatas[i] = entry.getValue().getData();
-            i += 1;
+            assertTrue(expectedOutputKeys.contains(entry.getValue().getName()));
         }
+    }
 
-        assertArrayEquals(expectedNames, actualNames);
-        assertArrayEquals(expectedDatas, actualDatas);
-        verify(spyOpt, times(1)).setData("outputKey", "outputData");
+    @Test
+    public void inputParamTest() {
+        Param param = new Param("result1", "string", false, null);
+        spyOpt.addParameter(param);
+        spyOpt.setParamValue("result1", "value1");
+
+        param = new Param("result2", "string", true, null);
+        spyOpt.addParameter(param);
+        spyOpt.setParamValue("result2", "value2");
+
+        List<String> expectedParamKeys = new ArrayList<>(Arrays.asList("udfName", "result1", "result2"));
+        List<String> expectedValues = new ArrayList<>(Arrays.asList("a name", "value1", "value2"));
+        for (Map.Entry<String, Param> entry : spyOpt.getInputParamList().entrySet()) {
+            assertTrue(expectedParamKeys.contains(entry.getValue().getName()));
+            assertTrue(expectedValues.contains(entry.getValue().getData()));
+        }
     }
 }

@@ -2,7 +2,7 @@
 package basic.visitors;
 
 import basic.operators.Operator;
-import basic.traversal.AbstractTraversal;
+import org.jgrapht.Graph;
 
 /**
  * @author 陈齐翔
@@ -10,20 +10,9 @@ import basic.traversal.AbstractTraversal;
  * @since 2020/7/6 1:40 下午
  */
 public abstract class Visitor {
-    protected AbstractTraversal planTraversal;
 
-    public Visitor(AbstractTraversal planTraversal) {
-        this.planTraversal = planTraversal;
-    }
+    public Visitor(){ }
 
     public abstract void visit(Operator opt);
-
-    public void startVisit() {
-        if (planTraversal.hasNextOpt()) {
-            Operator opt = planTraversal.nextOpt();
-            opt.acceptVisitor(this);
-        }
-
-    }
 
 }

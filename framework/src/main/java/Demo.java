@@ -15,14 +15,14 @@ public class Demo {
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
-            // 设置udf路径
-            planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
-            //供测试生成文件使用
+            // 设置udf路径   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
+            planBuilder.setPlatformUdfPath("java", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
+            //供测试生成文件使用   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
             planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWebCaseFunc.class");
 
-            // 创建节点
+            // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("input", "data/test.csv");
+                put("inputPath", "/Users/jason/Desktop/test.csv");
             }});
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
@@ -39,25 +39,27 @@ public class Demo {
             }});
 
             DataQuanta sortNode = DataQuanta.createInstance("sort", new HashMap<String, String>() {{
-
-                //put("is_reverse", "false");
                 put("udfName", "sortFunc");
             }});
 
+            // 最终结果的输出路径   例如该map的value值是本项目output.csv的绝对路径
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
-                put("output", "data/output.csv"); // 具体resources的路径通过配置文件获得
+                put("outputPath", "/Users/jason/Desktop/output.csv"); // 具体resources的路径通过配置文件获得
             }});
 
+            planBuilder.addVertex(sourceNode);
+            planBuilder.addVertex(filterNode);
+            planBuilder.addVertex(mapNode);
+            planBuilder.addVertex(reduceNode);
+            planBuilder.addVertex(sortNode);
+            planBuilder.addVertex(sinkNode);
+
             // 链接节点，即构建DAG
-            sourceNode.outgoing(filterNode, null);
-
-            filterNode.outgoing(mapNode, null);
-
-            mapNode.outgoing(reduceNode, null);
-
-            reduceNode.outgoing(sortNode, null);
-
-            sortNode.outgoing(sinkNode, null);
+            planBuilder.addEdge(sourceNode, filterNode, null);
+            planBuilder.addEdge(filterNode, mapNode, null);
+            planBuilder.addEdge(mapNode, reduceNode, null);
+            planBuilder.addEdge(reduceNode, sortNode, null);
+            planBuilder.addEdge(sortNode, sinkNode, null);
 
             planBuilder.execute();
         } catch (Exception e) {

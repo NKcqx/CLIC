@@ -1,13 +1,13 @@
-/**
-
- */
 package api;
 
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
 import channel.Channel;
+import org.javatuples.Pair;
+
 
 import java.util.Map;
+import java.util.Objects;
 
 
 /**
@@ -43,7 +43,7 @@ public final class DataQuanta {
                 for (Map.Entry entry : params.entrySet()) {
                     String key = (String) entry.getKey();
                     String value = (String) entry.getValue();
-                    opt.setData(key, value);
+                    opt.setParamValue(key, value);
                 }
             }
             DataQuanta dq = new DataQuanta(opt);
@@ -65,45 +65,58 @@ public final class DataQuanta {
         return opt;
     }
 
-    /**
-     * 给this的opt添加一个新的上一跳opt
-     *
-     * @param incoming    上一跳opt
-     * @param paramsPair 指定和上一跳Opt的输出的哪个数据的key链接，格式为 <incoming.output_key, this.input_key>；为null时默认拿到其所有的输出
-     * @return 当前已链接的incoming channel的数量，即代表有多少个上一跳了
-     */
-    public int incoming(DataQuanta incoming, Map<String, String> paramsPair) {
-        assert incoming != null : "上一跳不能为空";
-        Channel channel = new Channel(
-                incoming.getOperator(),
-                this.getOperator(),
-                paramsPair
-        );
-        // 双向绑定
-        incoming.operator.connectTo(channel);
-        int numIncoming = this.operator.connectFrom(channel); // 返回下一个input_idx，不知道能干什么用
-        return numIncoming;
-    }
-
-    /**
-     * 给this的opt添加新的输出opt
-     *
-     * @param outgoing    下一跳opt
-     * @param paramsPair 指定和下一跳Opt所需输入的哪个数据的key链接，格式为 <this.output_key, outgoing.input_key>；为null时默认传出所有数据
-     * @return 当前已链接的outgoing channel的数量，即代表有多少个下一跳了
-     */
-    public int outgoing(DataQuanta outgoing, Map<String, String> paramsPair) {
-        assert outgoing != null : "下一跳不能为空";
-        Channel channel = new Channel(
-                this.getOperator(),
-                outgoing.getOperator(),
-                paramsPair
-        );
-        // 双向绑定
-        outgoing.operator.connectFrom(channel);
-        int numIncoming = this.operator.connectTo(channel); // 返回下一个input_idx，不知道能干什么用
-        return numIncoming;
-    }
+//    /**
+//     * 给this的opt添加一个新的上一跳opt
+//     *
+//     * @param incoming   上一跳opt
+//     * @param sourceKey  指定上一跳的哪个输出将传到当前opt
+//     * @param targetKey  指定上一跳的数据要传到当前opt的哪个输入key
+//     * @return 当前已链接的incoming channel的数量，即代表有多少个上一跳了
+//     */
+//    public int incoming(DataQuanta incoming, String sourceKey, String targetKey) {
+//        assert incoming != null : "上一跳不能为空";
+//        Channel channel = new Channel(
+//                new Pair<>(sourceKey, targetKey)
+//        );
+//        // 双向绑定
+//        incoming.operator.connectTo(channel);
+//        int numIncoming = this.operator.connectFrom(channel); // 返回下一个input_idx，不知道能干什么用
+//        return numIncoming;
+//    }
+//
+//    public int incoming(DataQuanta incoming) throws Exception {
+//        assert incoming != null : "上一跳不能为空";
+//        Channel channel = new Channel();
+//        // 双向绑定
+//        incoming.operator.connectTo(channel);
+//        int numIncoming = this.operator.connectFrom(channel); // 返回下一个input_idx，不知道能干什么用
+//        return numIncoming;
+//    }
+//
+//    /**
+//     * 给this的opt添加新的输出opt
+//     *
+//     * @param outgoing    下一跳opt
+//     * @param sourceKey  指定哪个输出将传输到下一跳Opt作为其输入
+//     * @param targetKey  指定数据要传到下一跳opt的哪个输入key
+//     * @return 当前已链接的outgoing channel的数量，即代表有多少个下一跳了
+//     */
+//    public int outgoing(DataQuanta outgoing, String sourceKey, String targetKey) {
+//        assert outgoing != null : "下一跳不能为空";
+//        Channel channel = new Channel(
+//                this.getOperator(),
+//                outgoing.getOperator(),
+//                new Pair<>(sourceKey, targetKey)
+//        );
+//        // 双向绑定
+//        outgoing.operator.connectFrom(channel);
+//        int numIncoming = this.operator.connectTo(channel); // 返回下一个input_idx，不知道能干什么用
+//        return numIncoming;
+//    }
+//
+//    public int outgoing(DataQuanta outgoing) {
+//        return outgoing(outgoing, "result", "data"); // todo  应该从opt的属性里找?
+//    }
 
     /**
      * 拿到DataQuanta所代表的Operator
@@ -112,6 +125,19 @@ public final class DataQuanta {
      */
     public Operator getOperator() {
         return operator;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        DataQuanta that = (DataQuanta) o;
+        return getOperator().equals(that.getOperator());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getOperator());
     }
 
 }

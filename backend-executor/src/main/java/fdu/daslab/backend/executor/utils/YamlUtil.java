@@ -1,36 +1,39 @@
 package fdu.daslab.backend.executor.utils;
+
 import fdu.daslab.backend.executor.model.ArgoNode;
 import fdu.daslab.backend.executor.model.ImageTemplate;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStreamWriter;
+import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * 写入yaml的工具类
  *
- *  @author 杜清华
- *  @since  2020/7/6 11:39
- *  @version 1.0
+ * @author 杜清华，陈齐翔
+ * @version 1.0
+ * @since 2020/7/6 11:39
  */
 public class YamlUtil {
 
     private static String argoDag = Objects.requireNonNull(YamlUtil.class.getClassLoader().
             getResource("templates/argo-dag-simple.yaml")).getPath();
 
-    // private static String resPath = System.getProperty("user.dir") + "/backend-executor/src/main/resources/result/job-";
-    // private static String resPath = YamlUtil.class.getClassLoader().getResource("result/").toString() + "job-";
-    private static String resPath;
+    private static String resJobPath;
+
+    public static String getResPltDagPath() {
+        return resPltDagPath;
+    }
+
+    private static String resPltDagPath;
 
     static {
         try {
             Configuration configuration = new Configuration();
-            resPath = configuration.getProperty("yaml-output-path") + configuration.getProperty("yaml-prefix");
+            resJobPath = configuration.getProperty("yaml-output-path") + configuration.getProperty("yaml-prefix");
+            resPltDagPath = configuration.getProperty("yaml-output-path");
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -39,31 +42,28 @@ public class YamlUtil {
     /**
      * 根据pipeline生成yaml，并保存，返回保存的路径
      *
-     * @param tasks argoNodes
+     * @param tasks          argoNodes
      * @param imageTemplates image列表
      * @return 生成路径
      */
     public String createArgoYaml(List<ArgoNode> tasks, List<ImageTemplate> imageTemplates) {
-
-        String resultPath = joinYaml(tasks, imageTemplates);
-
-        return resultPath;
+        return joinYaml(tasks, imageTemplates);
     }
 
     /**
      * 读取dag模板以及template并进行拼接
      *
-     * @param nodes argonodes
+     * @param nodes          argonodes
      * @param imageTemplates image列表
      * @return 拼接完成的yaml路径
      */
-    public String joinYaml(List<ArgoNode> nodes, List<ImageTemplate> imageTemplates) {
+    private String joinYaml(List<ArgoNode> nodes, List<ImageTemplate> imageTemplates) {
         List<Object> tasks = new LinkedList<>();
         List<String> tpl = new ArrayList<>();
 
         Map<String, Object> argoDagMap = readYaml(argoDag);
         @SuppressWarnings("unchecked")
-        Map<Object, Object> spec =  (Map<Object, Object>) argoDagMap.get("spec");
+        Map<Object, Object> spec = (Map<Object, Object>) argoDagMap.get("spec");
         @SuppressWarnings("unchecked")
         List<Object> templates = (List<Object>) spec.get("templates");
         @SuppressWarnings("unchecked")
@@ -77,9 +77,9 @@ public class YamlUtil {
                     .filter(template -> template.getPlatform().equals(node.getPlatform()))
                     .collect(Collectors.toList())
                     .get(0);
-           if (!tpl.contains(node.getPlatform())) {
-               tpl.add(node.getPlatform());
-           }
+            if (!tpl.contains(node.getPlatform())) {
+                tpl.add(node.getPlatform());
+            }
 
             tasks.add(joinTask(node, imageTemplate));
 
@@ -90,7 +90,7 @@ public class YamlUtil {
             templates.add(readYaml(TemplateUtil.getTemplatePathByPlatform(platform)));
         }
         long n = System.nanoTime();
-        String storePath = resPath + n + ".yaml";
+        String storePath = resJobPath + n + ".yaml";
         //存入指定路径
         writeYaml(storePath, argoDagMap);
 
@@ -100,12 +100,11 @@ public class YamlUtil {
     /**
      * 拼接task部分
      *
-     * @param node argo节点
+     * @param node          argo节点
      * @param imageTemplate 模版
      * @return task map
      */
-    public Map joinTask(ArgoNode node, ImageTemplate imageTemplate) {
-        //List<Map> tasks=new LinkedList<>();
+    private Map joinTask(ArgoNode node, ImageTemplate imageTemplate) {
         Map<String, Object> taskName = new HashMap<>();
         Map<String, Object> taskTem = new HashMap<>();
         Map<String, Object> taskArgu = new HashMap<>();
@@ -120,9 +119,16 @@ public class YamlUtil {
         paraName.put("name", node.getPlatform() + "Args");
 
         String parameterStr = imageTemplate.getParamPrefix() + " "; // 运行字符串前缀
-        for (ArgoNode.Parameter parameter : node.getParameters()) {
-            parameterStr += parameter.getName() + "=" + parameter.getValue() + " ";
-        }
+        Map<String, String> params = node.getParameters(); // yml格式的字典型参数对象
+        /*// map -> yaml string
+        Yaml yaml = new Yaml();
+        StringWriter stringWriter = new StringWriter();
+        yaml.dump(params, stringWriter);*/
+        StringBuilder stringBuilder = new StringBuilder();
+        params.forEach((key, value) -> {
+            stringBuilder.append(key).append("=").append(value);
+        });
+        parameterStr += stringBuilder.toString();
         paraValue.put("value", parameterStr);
 
         paraMap.putAll(paraName);
@@ -139,7 +145,7 @@ public class YamlUtil {
         List<ArgoNode> deps = node.getDependencies();
         List<String> depsName = new ArrayList<>();
 
-        if (deps.get(0) != null) { //存在依赖，则添加dependencies
+        if (deps != null && !deps.isEmpty() && deps.get(0) != null) { //存在依赖，则添加dependencies
             deps.forEach(dep -> {
                 depsName.add(dep.getName());
             });
@@ -149,8 +155,6 @@ public class YamlUtil {
         taskMap.putAll(taskName);
         taskMap.putAll(taskTem);
         taskMap.putAll(taskArgu);
-        // tasks.add(taskMap);
-
         return taskMap;
     }
 
@@ -160,7 +164,7 @@ public class YamlUtil {
      * @param path 需要读取的文件路径
      * @return 读取结果
      */
-    public Map<String, Object> readYaml(String path) {
+    private Map<String, Object> readYaml(String path) {
         Map<String, Object> m = null;
         try {
             //设置yaml文件格式
@@ -181,7 +185,7 @@ public class YamlUtil {
      * @param path 需要写入的文件路径
      * @param res  需要写入yaml的内容
      */
-    public void writeYaml(String path, Map<String, Object> res) {
+    public static void writeYaml(String path, Map<String, Object> res) {
         try {
             //设置yaml文件格式
             DumperOptions dumperOptions = new DumperOptions();

@@ -12,23 +12,23 @@ import java.io.Serializable;
 public class BiOptParamsModel<MODEL> implements Serializable {
 
     // 该算子参数
-    private final BinaryBasicOperator<MODEL> operatorParam;
+    private final BinaryExecutionOperator<MODEL> operatorParam;
     // 所有算子共同的参数
     private transient FunctionModel functionModel;
 
-    // 对于spark等而言，无法序列化内部反射类，因此只记录class文件路径（目前需要将udf发送给各个workder端）
+    // 对于spark等而言，无法序列化内部反射类，因此只记录class文件路径（目前需要将udf发送给各个worker端）
     private String functionClasspath;
 
     public void setFunctionClasspath(String functionClasspath) {
         this.functionClasspath = functionClasspath;
     }
 
-    public BiOptParamsModel(BinaryBasicOperator<MODEL> operatorParam, FunctionModel functionModel) {
+    public BiOptParamsModel(BinaryExecutionOperator<MODEL> operatorParam, FunctionModel functionModel) {
         this.operatorParam = operatorParam;
         this.functionModel = functionModel;
     }
 
-    public BinaryBasicOperator<MODEL> getOperatorParam() {
+    public BinaryExecutionOperator<MODEL> getOperatorParam() {
         return operatorParam;
     }
 

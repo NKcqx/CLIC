@@ -1,9 +1,7 @@
 package fdu.daslab.executable.java.constants;
 
-import fdu.daslab.executable.basic.model.BasicOperator;
-import fdu.daslab.executable.java.operators.*;
+import fdu.daslab.executable.basic.model.ExecutionOperator;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
@@ -12,8 +10,8 @@ import java.util.stream.Stream;
  * java平台支持的所有算子
  *
  * @author 唐志伟
- * @since 2020/7/6 1:40 PM
  * @version 1.0
+ * @since 2020/7/6 1:40 PM
  */
 public final class JavaOperatorEnums {
 
@@ -27,12 +25,9 @@ public final class JavaOperatorEnums {
     public static final String JOIN = "JoinOperator";
 //    public static final String TOP = "top";
 
-    private JavaOperatorEnums() {
-    }
-
     // 所有支持的operator
-    public static Map<String, BasicOperator<Stream<List<String>>>> getAllOperators() {
-        return new HashMap<String, BasicOperator<Stream<List<String>>>>() {{
+    public static Map<String, ExecutionOperator<Stream<List<String>>>> getAllOperators() {
+        /*return new HashMap<String, ExecutionOperator<Stream<List<String>>>>() {{
             put(FILE_SOURCE, new FileSource());
             put(FILE_SINK, new FileSink());
             put(FILTER, new FilterOperator());
@@ -40,6 +35,8 @@ public final class JavaOperatorEnums {
             put(REDUCE_BY_KEY, new ReduceByKeyOperator());
             put(SORT, new SortOperator());
             //put(JOIN, new JoinOperator());
-        }};
+        }};*/
+        return null;
     }
+
 }

@@ -2,10 +2,7 @@ package fdu.daslab.executable.java.operators;
 
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.BasicOperator;
-import fdu.daslab.executable.basic.model.FunctionModel;
-import fdu.daslab.executable.basic.model.ParamsModel;
-import fdu.daslab.executable.basic.model.ResultModel;
+import fdu.daslab.executable.basic.model.*;
 
 import java.util.*;
 import java.util.function.BiConsumer;
@@ -19,12 +16,12 @@ import java.util.stream.Stream;
 /**
  * Java平台的reduce函数
  *
- * @author 唐志伟
+ * @author 唐志伟，陈齐翔
  * @since 2020/7/6 1:47 PM
  * @version 1.0
  */
 @Parameters(separators = "=")
-public class ReduceByKeyOperator implements BasicOperator<Stream<List<String>>> {
+public class ReduceByKeyOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
     // 通过指定路径来获取代码的udf
     @Parameter(names = {"--udfName"})
@@ -34,19 +31,30 @@ public class ReduceByKeyOperator implements BasicOperator<Stream<List<String>>> 
     @Parameter(names = {"--keyName"})
     String keyExtractFunctionName;
 
+    public ReduceByKeyOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("ReduceByKeyOperator", id, inputKeys, outputKeys, params);
+    }
+
     @Override
-    public void execute(ParamsModel<Stream<List<String>>> inputArgs,
+    public void execute(ParamsModel inputArgs,
                         ResultModel<Stream<List<String>>> result) {
-        ReduceByKeyOperator reduceArgs = (ReduceByKeyOperator) inputArgs.getOperatorParam();
+        // ReduceByKeyOperator reduceArgs = (ReduceByKeyOperator) inputArgs.getOperatorParam();
         FunctionModel functionModel = inputArgs.getFunctionModel();
         assert functionModel != null;
-        @SuppressWarnings("unchecked")
-        Map<String, List<String>> reduceMap = result.getInnerResult()
+        /*@SuppressWarnings("unchecked")
+        Map<String, List<String>> reduceMap = result.getInnerResult("data")
                 .collect(Collectors.groupingBy(data -> (String) functionModel.invoke(
-                        reduceArgs.keyExtractFunctionName, data),
+                        this.params.get("keyName"), data),
                         new ReducingCollector<>((data1, data2) ->
-                                (List<String>) functionModel.invoke(reduceArgs.reduceFunctionName, data1, data2))));
-        result.setInnerResult(reduceMap.values().stream());
+                                (List<String>) functionModel.invoke(this.params.get("udfName"), data1, data2))));*/
+        @SuppressWarnings("unchecked")
+        Map<String, List<String>> reduceMap = this.getInputData("data")
+                .collect(Collectors.groupingBy(data -> (String) functionModel.invoke(
+                        this.params.get("keyName"), data),
+                        new ReducingCollector<>((data1, data2) ->
+                                (List<String>) functionModel.invoke(this.params.get("udfName"), data1, data2))));
+        // result.setInnerResult("result", reduceMap.values().stream());
+        this.setOutputData("result", reduceMap.values().stream());
     }
 
     /**
