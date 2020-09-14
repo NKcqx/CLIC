@@ -112,10 +112,10 @@ public class ArgsUtil {
                     targetOperator.connectFrom(targetKey, sourceOperator, sourceKey);
                 }
             }
-            if (i == 0) { // todo 不一定第一个定义的就是头节点，边的定义可以是无序的
-                headOpt = targetOperator;
-            }
         }
+        headOpt = operatorPool.values().stream()
+                .filter(operatorBase -> operatorBase.getInputConnections().size() == 0)
+                .findAny().get();
         return headOpt;
     }
 
