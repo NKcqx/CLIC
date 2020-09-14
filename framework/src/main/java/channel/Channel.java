@@ -13,9 +13,6 @@ import java.util.List;
  * @since 2020/7/6 1:40 下午
  */
 public class Channel extends DefaultWeightedEdge {
-
-//    private Operator sourceOperator; // 边的起始点
-//    private Operator targetOperator; // 边的终点
     private List<Pair<String, String>> keyPairs; // source输出数据的key - target输入数据的key, 即source输出的值 传给 target输入数据的值
 
     public Channel(){

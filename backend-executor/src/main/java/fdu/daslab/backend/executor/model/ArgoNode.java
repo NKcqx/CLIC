@@ -2,6 +2,7 @@ package fdu.daslab.backend.executor.model;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * 定义argo的DAG上的一个node
@@ -36,7 +37,7 @@ public class ArgoNode {
     String name;
 
     //节点编号，在每个job中，id是依次的
-    int id;
+    String id;
 
     // 该节点所使用的平台platform
     String platform;
@@ -48,7 +49,7 @@ public class ArgoNode {
     // List<Parameter> parameters;
     Map<String, String> parameters;
 
-    public ArgoNode(int id, String name, String platform, List<ArgoNode> dependencies,
+    public ArgoNode(String id, String name, String platform, List<ArgoNode> dependencies,
                     Map<String, String> parameters) {
         this.id = id;
         this.name = name;
@@ -57,7 +58,7 @@ public class ArgoNode {
         this.parameters = parameters;
     }
 
-    public ArgoNode(int id, String name, String platform, List<ArgoNode> dependencies) {
+    public ArgoNode(String id, String name, String platform, List<ArgoNode> dependencies) {
         this(id, name, platform, dependencies, null);
     }
 
@@ -81,7 +82,7 @@ public class ArgoNode {
         return parameters;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 }

@@ -2,6 +2,7 @@ package adapters;
 
 import basic.Param;
 import basic.Stage;
+import basic.Util;
 import basic.operators.Operator;
 import basic.platforms.PlatformFactory;
 import channel.Channel;
@@ -115,8 +116,8 @@ public class ArgoAdapter implements OperatorAdapter {
         ArgoNode dependencyNode = null;
         // 1. 遍历stage里的dag，生成ArgoNode
         for (Stage stage : stages) {
-            // todo id好好生成下(ID Supplier), dependency是上一个ArgoNode
-            int id = new Date().hashCode();
+            // todo dependency是上一个ArgoNode
+            String id = Util.IDSupplier.get();
             ArgoNode argoNode = null;
             if (dependencyNode != null){
                 ArrayList<ArgoNode> dependencies = new ArrayList<>();

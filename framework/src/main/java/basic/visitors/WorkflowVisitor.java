@@ -3,12 +3,17 @@ package basic.visitors;
 import basic.Stage;
 import basic.operators.Operator;
 import basic.operators.OperatorEntity;
+import basic.operators.OperatorFactory;
 import channel.Channel;
 import org.jgrapht.Graph;
+import org.jgrapht.Graphs;
+import org.jgrapht.graph.AbstractBaseGraph;
+import org.jgrapht.graph.DefaultListenableGraph;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -26,11 +31,13 @@ public class WorkflowVisitor extends Visitor {
     private Stage curStage = null;
     private OperatorEntity curOptPlatform = null;
     private Integer jobID = 1;
-    private Graph<Operator, Channel> graph;
+    private DefaultListenableGraph<Operator, Channel> graph;
+    private String filePath;
 
-    public WorkflowVisitor(Graph graph) {
+    public WorkflowVisitor(DefaultListenableGraph<Operator, Channel> graph, String filePath) {
         super();
         this.graph = graph;
+        this.filePath = filePath;
     }
 
     public List<Stage> getStages() {
@@ -46,10 +53,10 @@ public class WorkflowVisitor extends Visitor {
                     "Stage-" + opt.getOperatorName(),
                     curOptPlatform.getEntityID(),
                     this.graph);
-            // curStage.setHead(opt);
-            curStage.addVertex(opt);
         }
-        // 找到所有运算平台 和 自己运算平台相同的 下一跳Opt
+        curStage.addVertex(opt);
+        // 找到所有运算平台和自己的相同的 下一跳Opt
+
         Set<Channel> outgoingChannels = graph.outgoingEdgesOf(opt).stream().filter(channel ->
                 graph.getEdgeTarget(channel)
                         .getSelectedEntities()
@@ -64,26 +71,10 @@ public class WorkflowVisitor extends Visitor {
         }else {
             curStage.addEdges(outgoingChannels); // todo 其实有问题：还没有添加下一跳节点的时候就把相连的边添加进来了
         }
-        if (planTraversal.hasNextOpt()) {
+    }
 
-            if (nextOpt == null) {
-                // 没有相同平台的Opt了，将当前opt设为stage 的 tail 然后开始组装下一个stage
-                curStage.setTail(opt);
-                stages.add(curStage);
-                this.jobID++;
-                curOptPlatform = null;
-                // 重新随便找一个下一跳
-                nextOpt = planTraversal.nextOpt();
-                // 遍历下一跳
-                nextOpt.acceptVisitor(this);
-            } else {
-                // 遍历下一跳
-                nextOpt.acceptVisitor(this);
-            }
-        } else {
-            curStage.setTail(opt);
-            stages.add(curStage);
-        }
+    private void wrapWithSourceSink(Stage stage){
+
     }
 
 }

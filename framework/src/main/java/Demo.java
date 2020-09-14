@@ -46,16 +46,19 @@ public class Demo {
                 put("outputPath", "/Users/jason/Desktop/output.csv"); // 具体resources的路径通过配置文件获得
             }});
 
+            planBuilder.addVertex(sourceNode);
+            planBuilder.addVertex(filterNode);
+            planBuilder.addVertex(mapNode);
+            planBuilder.addVertex(reduceNode);
+            planBuilder.addVertex(sortNode);
+            planBuilder.addVertex(sinkNode);
+
             // 链接节点，即构建DAG
-            sourceNode.outgoing(filterNode);
-
-            filterNode.outgoing(mapNode);
-
-            mapNode.outgoing(reduceNode);
-
-            reduceNode.outgoing(sortNode);
-
-            sortNode.outgoing(sinkNode);
+            planBuilder.addEdge(sourceNode, filterNode, null);
+            planBuilder.addEdge(filterNode, mapNode, null);
+            planBuilder.addEdge(mapNode, reduceNode, null);
+            planBuilder.addEdge(reduceNode, sortNode, null);
+            planBuilder.addEdge(sortNode, sinkNode, null);
 
             planBuilder.execute();
         } catch (Exception e) {

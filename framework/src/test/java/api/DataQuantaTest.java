@@ -1,5 +1,7 @@
 package api;
 
+import org.javatuples.Pair;
+import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.HashMap;
@@ -25,8 +27,11 @@ public class DataQuantaTest {
 //        assert dataQuanta1.incoming(dataQuanta, new HashMap<String, String>() {{
 //            put("incoming.output_key", "this.input_key");
 //        }})==1;
-        dataQuanta1.incoming(dataQuanta, "output_key", "input_key");
-        assert dataQuanta1.getOperator().getInputChannel().get(0) == dataQuanta.getOperator().getOutputChannel().get(0);
+        planBuilder.addEdge(dataQuanta, dataQuanta1, new Pair<>("input_key", "output_key"));
+        // 有向图，上面只构建了 dq -> dq1的边
+        Assert.assertNull(planBuilder.getGraph().getEdge(dataQuanta1.getOperator(), dataQuanta.getOperator()));
+        Assert.assertNotNull(planBuilder.getGraph().getEdge(dataQuanta.getOperator(), dataQuanta1.getOperator()));
+       // assert dataQuanta1.getOperator().getInputChannel().get(0) == dataQuanta.getOperator().getOutputChannel().get(0);
 
     }
 
@@ -40,9 +45,9 @@ public class DataQuantaTest {
         DataQuanta dataQuanta1 = DataQuanta.createInstance("map", new HashMap<String, String>() {{
             put("udfName", "udfNameValue");
         }});
-
-        dataQuanta.outgoing(dataQuanta1,"output_key", "input_key");
-        assert dataQuanta.getOperator().getOutputChannel().get(0) == dataQuanta1.getOperator().getInputChannel().get(0);
+        planBuilder.addEdge(dataQuanta1, dataQuanta,  new Pair<>("output_key", "input_key"));
+        Assert.assertNull(planBuilder.getGraph().getEdge(dataQuanta.getOperator(), dataQuanta1.getOperator()));
+        Assert.assertNotNull(planBuilder.getGraph().getEdge(dataQuanta1.getOperator(), dataQuanta.getOperator()));
     }
 
 

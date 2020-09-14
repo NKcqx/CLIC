@@ -4,6 +4,7 @@ package api;
 import adapters.ArgoAdapter;
 import basic.Configuration;
 import basic.Stage;
+import basic.Util;
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
 import basic.platforms.PlatformFactory;
@@ -13,7 +14,13 @@ import basic.visitors.WorkflowVisitor;
 import channel.Channel;
 import fdu.daslab.backend.executor.model.Workflow;
 import org.javatuples.Pair;
-import org.jgrapht.graph.DirectedWeightedMultigraph;
+import org.jgrapht.Graphs;
+import org.jgrapht.event.GraphEdgeChangeEvent;
+import org.jgrapht.event.GraphListener;
+import org.jgrapht.event.GraphVertexChangeEvent;
+import org.jgrapht.event.VertexSetListener;
+import org.jgrapht.graph.AsSubgraph;
+import org.jgrapht.graph.DefaultListenableGraph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
 import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
@@ -24,6 +31,7 @@ import org.xml.sax.SAXException;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 陈齐翔
@@ -34,11 +42,8 @@ public class PlanBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlanBuilder.class);
     private LinkedList<Operator> pipeline;
     private DataQuanta headDataQuanta = null; // 其实可以有多个head
-    // 现在最简单粗暴的方法是将图存储在PlanBuilder中
-    private List<DataQuanta> dataQuantaList = new ArrayList<>();
-    private DataQuanta presentDataQuanta = null; // head永远是present的上一个节点
-    private SimpleDirectedWeightedGraph<Operator, Channel> graph = null;
-
+    // private SimpleDirectedWeightedGraph<Operator, Channel> graph = null;
+    private DefaultListenableGraph<Operator, Channel> graph = null;
     private Configuration configuration;
 
     /**
@@ -54,30 +59,33 @@ public class PlanBuilder {
         this.configuration = configuration;
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
         PlatformFactory.initMapping(configuration.getProperty("platform-mapping-file"));
-        this.graph = new SimpleDirectedWeightedGraph<>(Channel.class);
+        this.graph = new DefaultListenableGraph<>(new SimpleDirectedWeightedGraph<>(Channel.class));
     }
 
     public PlanBuilder() throws ParserConfigurationException, SAXException, IOException {
         this(new Configuration());
     }
 
-    public boolean addVertex(DataQuanta dataQuanta){
+    public boolean addVertex(DataQuanta dataQuanta) {
         return this.addVertex(dataQuanta.getOperator());
     }
 
-    public boolean addVertex(Operator operator){
+    public boolean addVertex(Operator operator) {
         return graph.addVertex(operator);
     }
 
-    public boolean addEdge(DataQuanta sourceDataQuanta, DataQuanta targetDataQuanta, List<Pair<String, String>> keyPairs){
+    public boolean addEdges(DataQuanta sourceDataQuanta, DataQuanta targetDataQuanta, List<Pair<String, String>> keyPairs) {
         Channel channel = new Channel(keyPairs);
         return graph.addEdge(sourceDataQuanta.getOperator(), targetDataQuanta.getOperator(), channel);
     }
 
-    public boolean addEdge(DataQuanta sourceDataQuanta, DataQuanta targetDataQuanta, Pair<String, String> keyPair){
+    public boolean addEdge(DataQuanta sourceDataQuanta, DataQuanta targetDataQuanta, Pair<String, String> keyPair) {
         List<Pair<String, String>> keyPairs = new ArrayList<>();
+        if (keyPair == null){
+            keyPair = new Pair<>("result", "data");
+        }
         keyPairs.add(keyPair);
-        return this.addEdge(sourceDataQuanta, targetDataQuanta, keyPairs);
+        return this.addEdges(sourceDataQuanta, targetDataQuanta, keyPairs);
     }
 
     public DataQuanta readDataFrom(Map<String, String> params) throws Exception {
@@ -94,6 +102,10 @@ public class PlanBuilder {
         this.headDataQuanta = headDataQuanta;
     }
 
+    public DefaultListenableGraph<Operator, Channel> getGraph() {
+        return graph;
+    }
+
     /**
      * 把 headOperator 交给各类Visitor
      * 1: Optimize the pipeline structure
@@ -101,6 +113,7 @@ public class PlanBuilder {
      * 3. Run
      */
     public void execute() throws Exception {
+        // 在这 add 各种Listener
         this.logging("===========【Stage 1】Get User Defined Plan ===========");
         this.printPlan();
         this.logging("   ");
@@ -119,52 +132,43 @@ public class PlanBuilder {
         this.logging("Current Plan:");
         TopologicalOrderIterator<Operator, Channel> topologicalOrderIterator = new TopologicalOrderIterator<>(graph);
         PrintVisitor printVisitor = new PrintVisitor();
-        while (topologicalOrderIterator.hasNext()){
+        while (topologicalOrderIterator.hasNext()) {
             topologicalOrderIterator.next().acceptVisitor(printVisitor);
         }
     }
 
     public void optimizePlan() {
-        BreadthFirstIterator<Operator, Channel> breadthFirstIterator = new BreadthFirstIterator<>(graph);
+        Operator start = graph.vertexSet()
+                .stream()
+                .filter(operator -> graph.inDegreeOf(operator)==0)
+                .findAny()
+                .get();
+        BreadthFirstIterator<Operator, Channel> breadthFirstIterator = new BreadthFirstIterator<>(graph, start);
         ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor();
-        while (breadthFirstIterator.hasNext()){
+        while (breadthFirstIterator.hasNext()) {
             breadthFirstIterator.next().acceptVisitor(executionGenerationVisitor);
         }
     }
 
     private void executePlan() throws Exception {
-//        AbstractTraversal planTraversal = new BfsTraversal(this.getHeadDataQuanta().getOperator());
-//        ExecuteVisitor executeVisitor = new ExecuteVisitor(planTraversal);
-//        executeVisitor.startVisit();
-
-        // PipelineVisitor executeVisitor = new PipelineVisitor(planTraversal);
-        // executeVisitor.startVisit();
-        // 获取所有的operator
-        // List<Operator> allOperators = executeVisitor.getAllOperators();
-        // 调用argo平台运行
-        // Pipeline argoPipeline = new Pipeline(new ArgoAdapter(), allOperators);
-        // argoPipeline.execute();
-        
         /**
          * 1. 调用WorkflowVisitor 得到Stages
          * 2. 创建Workflow 传入stages和ArgoAdapter（adapter使用新写的setArgoNode 接收List of Stage）
          * 3. Workflow.execute()
          */
         TopologicalOrderIterator<Operator, Channel> topologicalOrderIterator = new TopologicalOrderIterator<>(graph);
-        WorkflowVisitor workflowVisitor = new WorkflowVisitor(graph);
-        while (topologicalOrderIterator.hasNext()){
+        WorkflowVisitor workflowVisitor = new WorkflowVisitor(graph, configuration.getProperty("yaml-output-path"));
+        while (topologicalOrderIterator.hasNext()) {
             Operator opt = topologicalOrderIterator.next();
             opt.acceptVisitor(workflowVisitor);
         }
         List<Stage> stages = workflowVisitor.getStages(); // 划分好的Stage
-
-
+        StageEdgeListener listener = new StageEdgeListener(stages);
+        graph.addGraphListener(listener);
         wrapStageWithHeadTail(stages); // 为每个Stage添加一个对应平台的SourceOpt 和 SinkOpt
+        graph.removeGraphListener(listener);
         Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
         argoWorkflow.execute(); // 将workflow生成为YAML
-//        for (Operator opt : this.pipeline){
-//            opt.acceptVisitor(executeVisitor);
-//        }
     }
 
     /**
@@ -176,65 +180,74 @@ public class PlanBuilder {
      */
     private void wrapStageWithHeadTail(List<Stage> stages) throws Exception {
         String filePath = null;
-        for (int i = 0; i < stages.size(); ++i) {
+        for (int i = 0; i < stages.size(); i++) {
             Stage stage = stages.get(i);
-            if (i == 0) {
-                // 第一个Stage有原生的SourceOperator，不需要自动添加
-                // sink file path
+            if (i == 0) { // 现在默认所有Stage是线性的 而且 第一个Stage是入口
                 filePath = configuration.getProperty("yaml-output-path")
-                        + String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
-                insertSink(stage, filePath);
+                        + String.format("stage-%s-output@%s", stage.getId(), Util.IDSupplier.get());
+                checkAndAddSink(stages.get(i), filePath);
             } else if (i == stages.size() - 1) {
-                // 同理，最后一个Stage有原生的SinkOperator，不需要自动添加
-                insertSource(stage, filePath);
+                checkAndAddSource(stage, filePath);
             } else {
-                // 其余的Stage需要同时添加Source和Sink
-                insertSource(stage, filePath);
+                checkAndAddSource(stage, filePath);
                 filePath = configuration.getProperty("yaml-output-path")
-                        + String.format("stage-%s-output@%s", stage.getId(), String.valueOf(new Date().hashCode()));
-                insertSink(stage, filePath);
+                        + String.format("stage-%s-output@%s", stage.getId(), Util.IDSupplier.get());
+                checkAndAddSink(stage, filePath);
             }
-
-
         }
     }
 
-    private void insertSink(Stage stage, String filePath) throws Exception {
+    private void checkAndAddSource(Stage stage, String filePath) {
+        // 检查下是不是都是FileSource?
+        // heads.stream().allMatch(operator -> operator.getOperatorID().equals("Source"));
+        // 先创建一个Source（一般一个Stage内就不会有多个起点了 吧？）
+        try {
+            Operator sourceOperator = OperatorFactory.createOperator("source");
+            sourceOperator.selectEntity(stage.getPlatform());
+            sourceOperator.setParamValue("inputPath", filePath);
+            AsSubgraph<Operator, Channel> subGraph = stage.getGraph();
+
+            graph.addVertex(sourceOperator);
+            List<Operator> headOperators = subGraph.vertexSet().stream()
+                    .filter(operator -> !Graphs.vertexHasPredecessors(subGraph, operator)).collect(Collectors.toList());
+            // 拿到Stage的所有头节点; 从大图里找 当前Stage的Head的 所有上一跳， 删除他们之间的边( 会用新的SourceOpt链接二者
+            for (Operator headOperator : headOperators) {
+                List<Operator> predecessors = Graphs.predecessorListOf(graph, headOperator);
+                for (Operator predecessor : predecessors){
+                    graph.removeEdge(predecessor, headOperator);
+                }
+                graph.addEdge(sourceOperator, headOperator);
+            }
+        } catch (Exception e) {
+            logging("这硬编码创建了Source、Sink Operator，更新其他代码可能会使此处无法创建Source、Sink Operator");
+            e.printStackTrace();
+        }
+    }
+
+    private void checkAndAddSink(Stage stage, String filePath) throws Exception {
         // 先创建一个Sink
         Operator sinkOperator = OperatorFactory.createOperator("sink");
         sinkOperator.selectEntity(stage.getPlatform());
         sinkOperator.setParamValue("outputPath", filePath);
-        // 再链接两个opt
-        Operator tail = stage.getTail();
-        for (Channel channel : tail.getOutputChannel()) {
-            // 为tail的每个下一跳 删除tail代表的上一跳
-            channel.getTargetOperator().disconnectFrom(tail);
-        }
-        tail.disconnectTo(); // 删除tail的所有下一跳
 
-        tail.connectTo(sinkOperator);
-        sinkOperator.connectFrom(tail);
-        // 最后更新stage的首尾
-        stage.setTail(sinkOperator);
+        AsSubgraph<Operator, Channel> subGraph = stage.getGraph();
+
+        graph.addVertex(sinkOperator);
+        List<Operator> tailOperators = subGraph.vertexSet()
+                .stream()
+                .filter(operator -> !Graphs.vertexHasSuccessors(subGraph, operator)).collect(Collectors.toList());
+        // 拿到Stage的所有尾节点; 从大图里找 当前Stage的Tail的 所有下一跳， 删除他们之间的边( 会用新的SinkOpt链接二者
+        for (Operator tailOperator : tailOperators) { // 这不能用Stream 或者 forEach 的(传入Consumer的)写法，出于某种原因会跳过Event的发射
+            List<Operator> successors = Graphs.successorListOf(graph, tailOperator);
+            for (Operator successor : successors){
+                graph.removeEdge(tailOperator, successor);
+            }
+            // successors.forEach(targetOpt -> graph.removeEdge(tailOperator, targetOpt));
+            graph.addEdge(tailOperator, sinkOperator);
+        }
+
     }
 
-    private void insertSource(Stage stage, String filePath) throws Exception {
-        // 先创建一个Source
-        Operator sourceOperator = OperatorFactory.createOperator("source");
-        sourceOperator.selectEntity(stage.getPlatform());
-        sourceOperator.setParamValue("inputPath", filePath);
-
-        Operator head = stage.getHead();
-        for (Channel channel : head.getInputChannel()) {
-            channel.getSourceOperator().disconnectTo(head);
-        }
-        head.disconnectFrom();
-        // 再链接两个opt
-        sourceOperator.connectTo(head);
-        head.connectFrom(sourceOperator);
-        // 最后更新stage的首尾
-        stage.setHead(sourceOperator);
-    }
 
     private LinkedList<Operator> optimizePipeline() {
         this.switchOperator(1, 2);
@@ -276,6 +289,44 @@ public class PlanBuilder {
      */
     public void setPlatformUdfPath(String platform, String udfPath) {
         PlatformFactory.setPlatformArgValue(platform, "--udfPath", udfPath);
+    }
+
+    class StageEdgeListener implements GraphListener<Operator, Channel> {
+        private List<Stage> stages;
+
+        public StageEdgeListener(List<Stage> stages) {
+            this.stages = stages;
+        }
+
+        @Override
+        public void edgeAdded(GraphEdgeChangeEvent<Operator, Channel> graphEdgeChangeEvent) {
+            Operator sourceOpt = graphEdgeChangeEvent.getEdgeSource();
+            Operator targetOpt = graphEdgeChangeEvent.getEdgeTarget();
+            Channel theEdge = graphEdgeChangeEvent.getEdge();
+
+            if(sourceOpt.getOperatorID().contains("Source")){
+                // 添加Source的时候，其Opposite一定在某个Stage里
+                Stage stage = stages.stream().filter(stage1 -> stage1.getGraph().containsVertex(targetOpt)).findAny().get();
+                stage.getGraph().addVertex(sourceOpt);
+                stage.getGraph().addEdge(sourceOpt, targetOpt, theEdge);
+            }else if(targetOpt.getOperatorID().contains("Sink")){
+                Stage stage = stages.stream().filter(stage1 -> stage1.getGraph().containsVertex(sourceOpt)).findAny().get();
+                stage.getGraph().addVertex(targetOpt);
+                stage.getGraph().addEdge(sourceOpt, targetOpt, theEdge);
+            }
+        }
+
+        @Override
+        public void edgeRemoved(GraphEdgeChangeEvent<Operator, Channel> graphEdgeChangeEvent) {
+        }
+
+        @Override
+        public void vertexAdded(GraphVertexChangeEvent<Operator> graphVertexChangeEvent) {
+        }
+
+        @Override
+        public void vertexRemoved(GraphVertexChangeEvent<Operator> graphVertexChangeEvent) {
+        }
     }
 
 }

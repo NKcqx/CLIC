@@ -19,7 +19,7 @@ import java.util.*;
  */
 public class Operator implements Visitable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Operator.class);
-
+    private UUID uuid;
     private String operatorID; // Operator ID
     private String operatorName; // Operator Name
     private OperatorKind operatorKind; // Operator Kind
@@ -42,6 +42,7 @@ public class Operator implements Visitable {
      * @param kind
      */
     public Operator(String id, String name, String kind) {
+        this.uuid = UUID.randomUUID();
         this.operatorID = id;
         this.operatorName = name;
         switch (kind) {
@@ -197,112 +198,6 @@ public class Operator implements Visitable {
         return this.outputDataList;
     }
 
-//    /**
-//     * 即 outgoing_opt的setter
-//     *
-//     * @param outgoingChannel 和下一跳相连的边
-//     * @return 本次Channel的index
-//     */
-//    public int connectTo(Channel outgoingChannel) {
-//        // 拿到下一个放数据的槽的index
-//        this.outputChannels.add(outgoingChannel);
-//        return this.outputChannels.size();
-//    }
-//
-//    public int connectTo(Operator targetOperator, String sourceKey, String targetKey) {
-//        Channel channel = new Channel(this, targetOperator, sourceKey, targetKey);
-//        return this.connectTo(channel);
-//    }
-//
-//    public int connectTo(Operator targetOperator) throws Exception {
-//        Channel channel = new Channel(this, targetOperator);
-//        return this.connectTo(channel);
-//    }
-//
-//    /**
-//     * 和指定Opt断开链接，通过遍历Channel找到终点为指定opt的channel，删除它
-//     *
-//     * @param targetOpt 要断开的目标Opt
-//     * @return 若成功找到时，返回删除后剩余下一跳Opt的个数；未找到时返回-1
-//     */
-//    public int disconnectTo(Operator targetOpt) {
-//        int idx = 0;
-//        for (idx = 0; idx < this.outputChannels.size(); idx++) {
-//            if (this.outputChannels.get(idx).getTargetOperator() == targetOpt) {
-//                break;
-//            }
-//        }
-//        if (idx != this.outputChannels.size()) {
-//            this.outputChannels.remove(idx);
-//            return this.outputChannels.size();
-//        } else {
-//            return -1;
-//        }
-//    }
-//
-//    /**
-//     * 删除所有下一跳
-//     *
-//     * @return 0 表示没有剩余，为了和重载函数保持统一
-//     */
-//    public int disconnectTo() {
-//        this.outputChannels.clear();
-//        return 0;
-//    }
-//
-//    /**
-//     * 同connectTo
-//     *
-//     * @param incomingChannel 和上一跳相连的边(channel)
-//     * @return 本次Channel的index
-//     */
-//    public int connectFrom(Channel incomingChannel) {
-//        // 拿到下一个放数据的槽的index
-//        this.inputChannels.add(incomingChannel);
-//        return this.inputChannels.size();
-//    }
-//
-//    public int connectFrom(Operator sourceOperator, String sourceKey, String targetKey) {
-//        Channel channel = new Channel(sourceOperator, this, sourceKey, targetKey);
-//        return this.connectFrom(channel);
-//    }
-//
-//    public int connectFrom(Operator sourceOperator) throws Exception {
-//        Channel channel = new Channel(sourceOperator, this);
-//        return this.connectFrom(channel);
-//    }
-//
-//    /**
-//     * 和指定Opt断开链接，通过遍历Channel找到起点点为指定opt的channel，删除它
-//     *
-//     * @param sourceOpt 要断开的目标Opt
-//     * @return 若成功找到时，返回删除后剩余下一跳Opt的个数；未找到时返回-1
-//     */
-//    public int disconnectFrom(Operator sourceOpt) {
-//        int idx = 0;
-//        for (idx = 0; idx < this.inputChannels.size(); idx++) {
-//            if (this.inputChannels.get(idx).getSourceOperator() == sourceOpt) {
-//                break;
-//            }
-//        }
-//        if (idx != this.inputChannels.size()) {
-//            this.inputChannels.remove(idx);
-//            return this.inputChannels.size();
-//        } else {
-//            return -1;
-//        }
-//    }
-//
-//    /**
-//     * 删除所有上一跳
-//     *
-//     * @return 0 表示没有剩余，为了和重载函数保持统一
-//     */
-//    public int disconnectFrom() {
-//        this.inputChannels.clear();
-//        return 0;
-//    }
-
     public boolean isLoaded() {
         return !this.entities.isEmpty(); // 用这个判断可能不太好，也许可以试试判断有没有configFile
     }
@@ -342,18 +237,18 @@ public class Operator implements Visitable {
                 + '}';
     }
 
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Operator operator = (Operator) o;
-        return getOperatorID().equals(operator.getOperatorID()) &&
-                Objects.equals(selectedEntity, operator.selectedEntity);
+        return uuid.equals(operator.uuid);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(getOperatorID(), selectedEntity);
+        return Objects.hash(uuid);
     }
 
     public enum OperatorKind {

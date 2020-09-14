@@ -16,14 +16,12 @@ import static org.junit.Assert.*;
  * @since 2020/7/14 16:42
  */
 public class ArgoNodeTest {
-
-
     private ArgoNode argoNode;
 
     @Before
     public void setUp() {
-        int id = new Date().hashCode();
-        argoNode = new ArgoNode(id, "Stage-" + "FilterOperator", "java", null);
+        UUID id = UUID.randomUUID();
+        argoNode = new ArgoNode(String.valueOf(id), "Stage-" + "FilterOperator", "java", null);
         // 遍历stage里的dag, 转成YAML字符串
 
         String path = YamlUtil.getResPltDagPath() + "physical-dag-" + argoNode.getId() + ".yml";
