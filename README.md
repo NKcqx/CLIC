@@ -1,4 +1,6 @@
-# IRDEMO：简易Workflow动态优化系统
+# CLIC: Cross Platform Intelligent Computing System
+旨在提供一个跨平台计算框架来统一异构软件系统，使一个工作流（Workflow）可以无差别的运行在多个不同的计算引擎上，
+每个计算引擎执行Workflow的一部分。
 
 ## Usage
 ### **一、导入项目 & 加载依赖**
@@ -23,7 +25,7 @@ Demo程序位于framework/src/main/java目录下，导入项目后运行其中�
 * Platform的抽象：对所有底层平台的抽象，目前仅包括一个MappingOperator接口，用于各平台将抽象Operator映射到平台实现的Operator上
 
 ### **platforms**
-IRDemo底层支持的各种平台，以SparkPlatform为例，主要包括：
+CLIC底层支持的各种平台，以SparkPlatform为例，主要包括：
 * Operators：内部是Spark支持的各种运算符的实现
 * SparkPlatform：继承自basic中提供的Platform，提供抽象Operator到Spark Operator的映射接口
 
