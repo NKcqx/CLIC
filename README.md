@@ -5,17 +5,14 @@
 使用IDEA的 “Import Project” ，在打开的目录中选择 “pom.xml”即可导入项目并自动下载依赖【Eclipse同理】
 
 ### **二、运行Demo程序**
-demo程序位于src/main/java目录下，导入项目后运行其中的main函数即可
+Demo程序位于framework/src/main/java目录下，导入项目后运行其中的main函数即可
 
 ### **三、使用API构建Workflow**
-可参考 api.PlanBuilder中的（私有）函数接口，目前支持的运算有 map, sort, filter, collect。
-由于该系统仅做流程演示使用，故上述运算操作并无太多实际作用。
-
-首先生成PlanBuilder对象，使用Stream的形式构建workflow，构建完成后调用PlanBuilder的execute函数开始运行。
-
+可参考 *CLIC文档*
 -------
 
 ## Documentation
+详情参考 *CLIC文档*
 ### **API**
 为用户提供统一的构建Workflow的接口，使用户无需关心如何创建Operator（例如如何传Data Channel、ID等复杂结构）即可构建Workflow
 

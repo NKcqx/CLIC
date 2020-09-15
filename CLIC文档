@@ -1,7 +1,5 @@
-# AxPoe文档
-*Automated Cross Platform Optimizaiton Engine*
+# CLIC: Cross Platform Intelligent Computing System
 
-#### 目录
 * [1. 导言](#1)
 * [2. 系统设计和组成](#2)
   * [2.1 系统主要流程](#2.1)
@@ -13,23 +11,25 @@
   * [3.3 Channel的实现和用法](#3.3)
   * [3.4 Visitor以及优化策略](#3.4)
   * [3.5 引入新的计算框架](#3.5)
-  * [3.6 AxPoe中的任务部署](#3.6)
+  * [3.6 CLIC中的任务部署](#3.6)
 
 ## 1、导言
-近年来，大数据和人工智能相关技术被广泛应用于新一代数据处理任务中，大数据、人工智能已经成为推动创新和社会进步的基石。在大数据、人工智能领域存在着许多种不同的计算平台，每个平台都有其各自的优势，例如，*Flink* 能更好的支持流计算、*Graphchi* 在图计算方面效率很高、*Spark* 作为一个经典的大数据处理引擎也在业界得到广泛应用，*MPI* 适合运行高性能计算任务，*Tensorflow*用于处理深度学习任务。每个平台都有其专长，因此一个特定的计算任务需要为其选择合适的处理平台才能达到理想的效率。这要求相关人员不仅需要熟悉各个平台的特点、所擅长的场景，还需要掌握不同平台的用法，包括语法、API等，其中带来的学习成本很高。
+
+近年来，大数据和人工智能相关技术被广泛应用于新一代数据处理任务中，大数据、人工智能已经成为推动创新和社会进步的基石。在大数据、人工智能领域存在着许多种不同的计算平台，每个平台都有其各自的优势，例如，*Flink* 能更好的支持流计算、*Graphchi* 在图计算方面效率很高、*Spark* 作为一个经典的大数据处理引擎也在业界得到广泛应用，*MPI* 适合运行高性能计算任务，*Tensorflow*用于处理深度学习任务。每个平台都有其专长，因此一个特点的计算任务需要为其选择合适的处理平台才能达到理想的效率。这要求相关人员不仅需要熟悉各个平台的特点、所擅长的场景，还需要掌握不同平台的用法，包括语法、API等，其中带来的学习成本很高。
 
 同时，当前应用所处理的数据多样，任务复杂，常常需要基于一个或多个大数据及人工智能的计算平台。例如，一个广告点击预测的任务，对大量数据的清洗和整理的任务使用Spark平台，为访存密集型任务；同时，回归模型训练为计算密集型任务，适合使用MPI加速。这就常需要多平台相互合作，共同构建一个工作流（`Workflow`），来完成指定的任务。多计算平台的协同处理需要涉及到大量数据传输、格式转换等高开销的操作，且任务之间的执行顺序能够影响整体性能。然而在实际场景中，一般用户很难为计算任务选择最优的平台，人工设定的工作流往往难以达到最优性能，这其中可能存在着大量的性能提升空间。
 
-如以下例子，回归模型预测广告点击中，分别进行1）数据清洗、编码，2）数据整理、连接列数据，3）生成矩阵，4）规则化，5）训练回归模型，5个基本算子组成工作流依次运行。然而，因为广告数据中所有广告和所有用户所生成的矩阵为稀疏矩阵，如果对其中数据做规则化操作，则需要访问大量为0的元素，因此一个更优的工作流实现是将规则化放在第一步之后执行，工作流变为1）数据清洗、编码，2）规则化，3）数据整理、连接列数据，4）生成矩阵，5）训练回归模型。重新调度算子后的工作流能够使得规则化的开销成数量级的减小，从而有效提升整体性能。
+如以下例子，回归模型预测广告点击中，分别进行1）数据清洗、编码，2）数据整理、连接列数据，3）生成矩阵，4）规则化，5）训练回归模型，5个基本算子组成工作流依次运行。然而，因为广告数据中所有广告和所有用户所生成的矩阵为稀疏矩阵，如果对其中数据做规则化操作，则需要访问大量为0的元素，因此一个更优的工作流实现是将规则化放在第一步之后执行，工作流变为1）数据清洗、编码，2）规则化，3）数据整理、连接列数据，4）生成矩阵，5）训练回归模型。重新调度算子后的工作流能够使得规则化的开销成数量级的见效，从而有效提升整体性能。
 
-我们设计和实现了`AxPoe`，一个跨平台的处理框架，旨在解决上述问题。它会针对一个特定的工作流任务，自动化地为其选择最优的一个甚至多个平台来协同处理。对于组成一个工作流的多个算子，`AxPoe`会根据算子之间的关系，寻找优化机会，动态对算子进行调度、融合，选择合适的执行平台，并部署在`k8s`上运行。`AxPoe`被设计为具有着高可扩展性，能够非常方便地添加更多的算子和新的计算平台，并且能够灵活添加优化策略，用户只需要使用`AxPoe`提供的（和具体平台无关的）API来构建执行计划即可。
+我们设计和实现了`CLIC`，一个跨平台的处理框架，旨在解决上述问题。它会针对一个的工作流任务，自动化地为其选择最优的一个甚至多个平台来协同处理。对于组成一个工作流的多个算子，`CLIC`会根据算子之间的关系，寻找优化机会，动态对算子进行调度、融合，选择合适的执行平台，并部署在`k8s`上运行。`CLIC`被设计为具有着高可扩展性，能够非常方便地添加更多的算子和新的计算平台，并且能够灵活添加优化策略，用户只需要使用`CLIC`提供的（和具体平台无关的）API来构建执行计划即可。
 
 ## 2、系统设计和组成
 
 ### 2.1 系统主要流程
+
 <img src="https://s1.ax1x.com/2020/07/16/Urh2Yd.png" style="zoom:30%;" />
 
-`AxPoe`系统提供一个中间语言描述/可视化界面的抽象，用户可利用系统中已实现的算子，用其构建执行特定任务的工作流。系统分为三个主要模块，分别是逻辑方案生成层，物理方案生成层，以及平台部署层。
+`CLIC`系统提供一个中间语言描述/可视化界面的抽象，用户可利用系统中已实现的算子，用其构建执行特定任务的工作流。系统分为三个主要模块，分别是逻辑方案生成层，物理方案生成层，以及平台部署层。
 
 具体来说，整个系统的执行流程具体由如下六步组成。
 
@@ -40,15 +40,15 @@
 5. **系统将Physical Plan输出为Argo Workflow**：系统通过加载各个平台的描述文件将平台转化为Argo Workflow文件中的`template`字段，之后传入要在该平台下计算的Physical Plan作为Argo Workflow文件中的`Parameter`字段，最终得到YAML格式的*Argo Workflow*文件。
 6. **系统将Workflow提交至K8S进行运算**
 
-[![AxPoe执行流程](https://s1.ax1x.com/2020/07/14/UUQPIg.md.png)](https://imgchr.com/i/UUQPIg)
+[![CLIC执行流程](https://s1.ax1x.com/2020/07/14/UUQPIg.md.png)](https://imgchr.com/i/UUQPIg)
 
 ### 2.2 系统架构
 
-AxPoe的结构主要包括以下4部分
+CLIC的结构主要包括以下5部分
 
 **Core**
 
-Core是AxPoe的核心模块，其中定义了Operator和Channel这两个构成Workflow的重要部件。它的主要功能为：
+Core是CLIC的核心模块，其中定义了Operator和Channel这两个构成Workflow的重要部件。它的主要功能为：
 
 1. 提供Operator，通过读取配置文件来生成具有不同计算功能的Operator
 2. 提供Channel，用于Operator间的数据传输、异质数据格式转换
@@ -68,8 +68,8 @@ Core是AxPoe的核心模块，其中定义了Operator和Channel这两个构成Wo
 
 该模块包含了所有独立的计算平台，属于底层模块，每个平台主要包含两部分：
 
-1. Docker Image：每个计算平台都将被封装为Docker Image，在实际运行时被部署到K8S集群中，并由AxPoe将要运行的Physical Plan传入对应平台的Docker Image中
-2. 平台的配置文件：AxPoe对不同计算平台的使用方法是通过读取平台对应的配置文件获得的，例如平台的计算性能、运行Docker Image所需的输入输出参数、环境变量等
+1. Docker Image：每个计算平台都将被封装为Docker Image，在实际运行时被部署到K8S集群中，并由CLIC将要运行的Physical Plan传入对应平台的Docker Image中
+2. 平台的配置文件：CLIC对不同计算平台的使用方法是通过读取平台对应的配置文件获得的，例如平台的计算性能、运行Docker Image所需的输入输出参数、环境变量等
 
 **GUI / API**
 
@@ -77,7 +77,7 @@ Core是AxPoe的核心模块，其中定义了Operator和Channel这两个构成Wo
 
 
 
-下图为AxPoe系统结构的主要模块：
+下图为CLIC系统结构的主要模块：
 
 <img src="https://s1.ax1x.com/2020/07/23/UqBoFA.md.png" alt="UqBoFA.md.png" style="zoom:67%;" />
 
@@ -89,69 +89,41 @@ Core是AxPoe的核心模块，其中定义了Operator和Channel这两个构成Wo
 
 **Logical Data Type**
 
-Logical DataType是AxPoe对所有计算平台上的数据类型做的统一抽象。因为不同计算平台上对数据类型的描述有所不同，例如32位 *int* 型数据在 *Java* 中为 "int" ；而在 C 中为 "int32_t"。因此为了在构建Workflow时能统一描述数据，AxPoe将常见的数据类型做了抽象，称为Logical DataType。
+Logical DataType是CLIC对所有计算平台上的数据类型做的统一抽象。因为不同计算平台上对数据类型的描述有所不同，例如32位 *int* 型数据在 *Java* 中为 "int" ；而在 C 中为 "int32_t"。因此为了在构建Workflow时能统一描述数据，CLIC将常见的数据类型做了抽象，称为Logical DataType。
 
-AxPoe目前所支持的逻辑数据类型如下表所示。这些数据类型都为抽象说明，使用于Logical Operator中，每个Logical Operator的输入输出类型都必须为以下抽象数据类型，系统按照名字进行识别。针对于每一个Physical Operator来说，均有所实现语言中与简单类型一一对应的数据类型，如INT64对应C语言中的int64_t，对应Java语言中的long。
+CLIC目前所支持的逻辑数据类型如下表所示。这些数据类型都为抽象说明，使用于Logical Operator中，每个Logical Operator的输入输出类型都必须为以下抽象数据类型，系统按照名字进行识别。针对于每一个Physical Operator来说，均有所实现语言中与简单类型一一对应的数据类型，如INT64对应C语言中的int64_t，对应Java语言中的long。
 
 | 简单类型 |
-| ----  |
-| INT  |
-| FLOAT  |
-| CHAR  |
+| -------- |
+| INT      |
+| LONG     |
+| DOUBLE   |
+| BOOLEAN  |
+| STRING   |
 
 
 | 复杂类型 |
-| ----  |
-| Matrix  |
-| Array  |
+| -------- |
+| Matrix   |
+| Array    |
 | KeyValue |
 | Relation |
-| ...  |
-
-
-
-|      |      |      |      |      |      |
-| :--- | :--- | ---- | ---- | ---- | ---- |
-|      |      |      |      |      |      |
-|      |      |      |      |      |      |
-|      |      |      |      |      |      |
-|      |      |      |      |      |      |
-|      |      |      |      |      |      |
-|      |      |      |      |      |      |
-|      |      |      |      |      |      |
-|      |      |      |      |      |      |
+| ...      |
 
 **Physical Data Type**
 
-Physical DataType 则是 Logical DataType 对应到具体计算平台上的数据类型。该表列出了AxPoe在各平台上的Physical Data Type，以及他们所支持的相应的Logical Data Type。需要指出的是一个Physical Data Type可以对应着多个Logical Data Type，比如RDD可以用来实现Matrix、Array、KeyValue、Relation等复杂数据类型。在系统实现中，如果一个Physical Operator的输入输出数据类型能够对应于其Logical Operator中相应的类型，那么该Physical Operator就可以用来Materialize该Logical Operator。AxPoe会存储不同Physical DataType间的转换函数，在进行跨平台数据传输时，AxPoe会在上述对照表中查找两个不同的平台上的数据类型，并对数据使用对应的转换函数，以此完成数据格式转换。
-
-
-|  平台/语言   | Physical Data Type  | Logical Data Type(s)  |
-|  ----  | ----  | ----  |
-| Spark/Java  |  long  |   INT  |
-| Spark/Java  |  double |  FLOAT  |
-| Spark/Java  |  char  |   CHAR   |
-| Spark/Java  |  JavaRDD<Matrix/Vector/Map>  |   Matrix/Array/KeyValue/Relation   |
-| MPI/C |  int64_t  | INT |
-| MPI/C |  double  | FLOAT |
-| MPI/C |  char  |  CHAR |
-| MPI/C |  void *  |  Matrix/Array/KeyValue/Relation |
-| ...  |  ... | ... |
-
-系统为了实现跨平台数据格式转换，定义了一个由Logical Datatype 转换为 Physical Datatype时的 “数据类型对照表”，如下所示：
+Physical DataType 则是 Logical DataType 对应到具体计算平台上的数据类型。该表列出了CLIC在各平台上的Physical Data Type，以及他们所支持的相应的Logical Data Type。需要指出的是一个Physical Data Type可以对应着多个Logical Data Type，比如RDD可以用来实现Matrix、Array、KeyValue、Relation等复杂数据类型。在系统实现中，如果一个Physical Operator的输入输出数据类型能够对应于其Logical Operator中相应的类型，那么该Physical Operator就可以用来Materialize该Logical Operator。CLIC会存储不同Physical DataType间的转换函数，在进行跨平台数据传输时，CLIC会在上述对照表中查找两个不同的平台上的数据类型，并对数据使用对应的转换函数，以此完成数据格式转换。
 
 | Logical | Java          | MPI             | Python  | Spark (in Java)        | C++11       |
 | :------ | :------------ | --------------- | ------- | ---------------------- | ----------- |
-| int     | int           | int32_t         | int()   | int                    | int         |
-| long    | long          | int64_t         | -       | long                   | long        |
-| double  | double        | float           | float() | Float                  | double      |
-| boolean | Boolean       | uint8_t         | bool()  | Boolean                | bool        |
-| string  | String        | char*           | str()   | String                 | string      |
-| Vector  | List<?>       | -               | list()  | JavaRDD<Vector>(mllib) | vector      |
-| Matrix  | List<List<?>> | int32_t\[\]\[\] |         | JavaRDD<Matrix>(mllib) | int\[\]\[\] |
-| Tuple   | javatuples     | -               | tuple() | javatuples               | tuple       |
-
-[javatuples](https://www.javatuples.org/index.html)
+| INT     | int           | int32_t         | int()   | int                    | int         |
+| LONG    | long          | int64_t         | -       | long                   | long        |
+| DOUBLE  | double        | float           | float() | Float                  | double      |
+| BOOLEAN | Boolean       | uint8_t         | bool()  | Boolean                | bool        |
+| STRING  | String        | char*           | str()   | String                 | string      |
+| VECTOR  | List<?>       | -               | list()  | JavaRDD<Vector>(mllib) | vector      |
+| MATRIX  | List<List<?>> | int32_t\[\]\[\] |         | JavaRDD<Matrix>(mllib) | int\[\]\[\] |
+| TUPLE   | Map<?,?>      | -               | tuple() | Map<?,?>               | tuple       |
 
 **计算平台**
 系统所支持的平台以及计划支持的平台如下表所示：
@@ -193,13 +165,18 @@ Physical Operator是Logical Operator在特定平台上的实现，即Logical Ope
 对于一个特定的Physical Operator，它主要包含以下属性：
 
 1. **Operator Name**：运算符名称
+
 2. **Platform Name**：所处平台的名称
+
 3. **Language**：编程语言，如Platform同为Spark，语言可以为Java、Python、Scala等
+
 4. **输入参数列表**：Physical Operator计算所需的所有输入参数类型，其类型必须为Physical Data Type中的一个。
+
 5. **输出参数列表**：Physical Operator的所有运算结果类型，其类型必须为Physical Data Type中的一个。
+
 6. **优化参数**：Physical Operator在当前平台中运行时所需的额外参数，例如`sort`在 *Spark* 平台中需要指定 *PartationNum*，可用于Workflow的调度、性能优化。
 
-   
+    
 
 #### 2.3.3 Logical Channel & Physical Channel
 
@@ -214,23 +191,26 @@ Logical Channel用于表达Logical Operator之间的关系，它包括：
 1. **Source / Target Operator**：Channel连接的两个Logical Operator
 2. **Source Logical Data Type**：Channel的输入Logical Data Type
 3. **Target Logical Data Type**：Channel的输出Logical Data Type
-2. **输入-输出数据的 Key Pair**：当Source - Target Operator存在依赖关系，即Target Operator所需的输入数据是Source Operator的输出数据时，需要使用一个Key Pair声明上述关系。Key Pair的第一个Key为Source Operator输出数据的Key，第二个Key 为Target Operator输入数据的Key
+4. **输入-输出数据的 Key Pair**：当Source - Target Operator存在依赖关系，即Target Operator所需的输入数据是Source Operator的输出数据时，需要使用一个Key Pair声明上述关系。Key Pair的第一个Key为Source Operator输出数据的Key，第二个Key 为Target Operator输入数据的Key
 
 因为用于链接的Logical Operator和平台无关，所以Logical Channel也和平台无关。这意味着Logical Channel无需关注两端Operator的数据是否是异质的（即无需关注数据格式转换的问题）也无需关注数据文件将如何在两个Operator之间传输。对于用户来说，上述链接Operator的过程和函数间的相互调用很类似： Source函数调用Target函数并把Source的计算结果作为参数传给Target，而函数内部只需要关注如何对传入的数据进行计算并将结果放入指定位置。
 
 **Physical Channel**
 
-Logical Channel仅描述了Operator间的链接关系和两端Operator要传输的数据，并不涉及两端Operator的数据格式、数据传输所使用的协议（例如UDP, RDMA）。除此之外，当Logical Operator被一一映射到不同平台上成为Physical Operator后，相邻的两个Physical Operator很有可能处在不同的计算平台，而不同平台所使用的数据类型也是不同的，此时称两个Operator所使用的数据是异质的，而异质数据的传输需要额外进行格式转换。因此，对于Physical Operator间的链接需要使用Physical Channel。
+Logical Channel仅描述了Operator间的链接关系和两端Operator要传输的数据，并不涉及两端Operator的数据格式、数据传输所使用的协议（例如UDP, RDMA）。除此之外，当Logical Operator被一一映射到不同平台上成为Physical Operator后，相邻的两个Physical Operator很有可能处在不同的计算平台，而不同平台所使用的数据类型、存储方式也是不同的，此时称两个Operator所使用的数据是异质的，而异质数据的传输需要额外进行格式转换。因此，对于Physical Operator间的链接需要使用Physical Channel。
 
-Physical Channel用于表达Physical Operator之间的关系，它在Logical Channel的基础上还包括了：对异质数据进行格式转换、选择数据传输方式、生成相关参数等功能。
+Physical Channel用于表达Physical Operator之间的关系，它在Logical Channel的基础上还包括了：对异质数据进行格式转换、切换不同的数据传输方式、生成相关参数等功能。这些功能实际上是由不同 （physical）Operator完成的，例如 *Datatype Conversion Operator* 负责转换不同的数据类型、*Storage Conversion Operator* 负责转换数据的存储格式（row-wise / col-wise）、*Transmission Operator*负责选择不同的数据传输方式，如使用文件I/O、Socket传输、RDMA等。Physical Channel通过组合以上三类不同功能的Operator来处理各类异质数据的传输和读写问题。
 
 给定一个Physical Channel，主要包含以下属性：
 
 1. **Channel ID**：该Channel的唯一标识符
 2. **Source Physical Data Type**：Channel的输入Physical Operator所使用的数据类型
 3. **Target Physical Data Type**：Channel两端Physical Operator所使用的数据类型
-3. **数据传输方式**：RDMA、Socket、HDFS、内存
-4. **相关参数**：传输所需的控制信息
+4. **Transmission Operator**：RDMA、Socket、HDFS、内存
+5. **Datatype Conversion Operator**：负责数据类型转换的Operator
+6. **Storage Conversion Operator**：负责数据存储格式转换的Operator
+7. **Transmission Operator**：负责对使用数据使用不同传输方式的Operator
+8. **相关参数**：传输所需的控制信息
 
 
 
@@ -240,7 +220,7 @@ Physical Channel用于表达Physical Operator之间的关系，它在Logical Cha
 
 以上图中的DAG为例，数据共经过了以下几个阶段的传输
 
-1. **Spark平台** 读取数据并传输到 **Spark平台** 的 Sort Operator中。该阶段为**同一平台内同质数据的传输**，因此不需要进行数据格式转换；并且同一平台内的数据可直接在内存间传输，故此时使用 **RDMA Channel**进行连接。
+1. **Spark平台** 读取数据并传输到 **Spark平台** 的 Sort Operator中。该阶段为**同一平台内同质数据的传输**，因此不需要进行数据格式转换；并且同一平台内的数据可直接在内存间传输，故此时使用 **RDMA Channel**进行连接
 2. 将**Spark平台**排序后的数据传输到 **MPI平台**上的 Filter Operator 和 Map Operator。该阶段涉及 **两种平台间异质数据的传输**，平台间的数据无法直接传输并使用。假设数据量较大，系统使用 **Socket Channel**进行连接。此时，Socket Channel不仅需包含维护 *Socket* 连接所需的两端进程的IP地址、端口；还需要将Spark平台中RDD形式的数据转换为 字节流，并且传输后再将字节流转换为MPI中的数据结构。
 3. **MPI**平台将Filter 和 Map的结构传输到 **MPI平台**的Collect Operator，该阶段为**同一平台内同质数据的传输**，过程同Spark -> Spark间的传输，不再赘述。
 
@@ -255,26 +235,26 @@ Workflow整体结构是一个有向无环图（以下简称DAG）。
 
 DAG中的节点表示（子）运算任务，由 *Operator* 和其参数组成，其内部负责对接收的数据做相应计算，在2.3.2节中已对*Operator*的功能做了阐述。
 
-DAG中的边表示运算任务之间的依赖关系，不同的计算任务会有先后顺序或依赖关系，依赖关系又包括一对一、一对多等，而这些是在DAG中通过 *Channel* 链接两个或多个存在上述关系的计算任务来实现，*Channel* 提供了数据类型转换、存储格式转换等功能。在2.3.4节中已对 *Channel* 的功能做了阐述。
+DAG中的边表示运算任务之间的依赖关系，不同的计算任务会有先后顺序或依赖关系，依赖关系又包括一对一、一对多等，而这些是在DAG中通过 *Channel* 链接两个或多个存在上述关系的计算任务来实现，*Channel* 提供了数据类型转换、存储格式转换等功能。在2.3.4节中已对 *Channel* 的功能做了阐述
 
 
 #### 2.3.5 Workflow的优化重构策略
 
-由用户编写的Workflow其结构不一定是最优的，因此在实际运行前AxPoe首先需要对Workflow进行优化重构。AxPoe主要使用了以下几种优化策略。
+由用户编写的Workflow其结构不一定是最优的，因此在实际运行前CLIC首先需要对Workflow进行优化重构。CLIC主要使用了以下几种优化策略。
 
 **Operator Fusion**
 
 Operator fusion基于的设想是，通过融合两个或多个`Operator`来减少`Operator`之间数据传输、封装带来的性能损失。
 
-以 `map` fusion为例：两个相邻的 `map ` Operator 分别执行了不同的`UDF`，但由于是两个`Operator`，不仅在优化时需要AxPoe分别计算代价并选择平台，而且在运行时需要进行两次封装、解封。因此我们合并两个`map` Operator，即将两段`UDF`合并放到一个`map` Operator中来省去上述多余的操作。如下图所示：
+以 `map` fusion为例：两个相邻的 `map ` Operator 分别执行了不同的`UDF`，但由于是两个`Operator`，不仅在优化时需要CLIC分别计算代价并选择平台，而且在运行时需要进行两次封装、解封。因此我们合并两个`map` Operator，即将两段`UDF`合并放到一个`map` Operator中来省去上述多余的操作。如下图所示：
 
 <img src="https://s1.ax1x.com/2020/07/16/UB0vb6.png" alt="map operator fusion.png" style="zoom: 67%;" />
 
-**Operator Pushdown**
+**Operator Pushdown / pullup**
 
 不同的`Operator`对数据元素的处理、性能消耗上有各自的特点，例如 `filter`不改变元素的值仅改变集合中元素的数量、`join`改变元素的值、数量且计算代价高昂、`sort`仅改变元素的相当位置，计算代价取决于数据量。
 
-因此一个朴素的想法就是，在Logical Plan中将诸如`filter`的运算符进行pushdown（更早计算），将`sort`、`join`运算符进行pullup（更晚运算），这样可做的在不影响计算结果的前提下尽量减少运算时间。如下图所示：
+因此一个朴素的想法就是，在Logical Plan中将诸如`filter`的运算符进行pullup（更早计算），将`sort`、`join`运算符进行pushdown（更晚运算），这样可做的在不影响计算结果的前提下尽量减少运算时间。如下图所示：
 
 <img src="https://s1.ax1x.com/2020/07/16/UD5vB8.md.png" alt="UD5vB8.png" style="zoom: 50%;" />
 
@@ -290,7 +270,7 @@ Operator fusion基于的设想是，通过融合两个或多个`Operator`来减�
 
 ![U4L5Af.md.png](https://s1.ax1x.com/2020/07/20/U4L5Af.md.png)
 
-而AxPoe会针对当前任务，为每个Logical Operator从所有平台的实现中选择最优实现。以上图中经过平台映射后的Workflow为例，为其选择了最优平台后将得到类似下图的结构：
+而CLIC会针对当前任务，为每个Logical Operator从所有平台的实现中选择最优实现。以上图中经过平台映射后的Workflow为例，为其选择了最优平台后将得到类似下图的结构：
 
 <img src="https://s1.ax1x.com/2020/07/21/U5MhqA.md.png" alt="U5MhqA.md.png" style="zoom:50%;" />
 
@@ -358,7 +338,7 @@ public DataQuanta readDataFrom(Map<String, String> params)
 * `optimizePlan()`接口负责调用`OptimizeVisitor`实现对DAG结构的优化重组
 * `executePlan()`接口负责调用`WorkflowVisitor`将Physical Plan转化为 Argo Workflow
 
-本节介绍了Workflow的概念及如何使用API构建Workflow，需要指出的是，**<u>Workflow的概念是完全面向用户的，即它的定义是为了让用户能够使用系统，和AxPoe的具体实现没有关系</u>**。
+本节介绍了Workflow的概念及如何使用API构建Workflow，需要指出的是，**<u>Workflow的概念是完全面向用户的，即它的定义是为了让用户能够使用系统，和CLIC的具体实现没有关系</u>**。
 
 **Logical Plan**
 
@@ -366,13 +346,13 @@ public DataQuanta readDataFrom(Map<String, String> params)
 
 ### 3.2 实现并引入新的Operator
 
-本章以实现一个`MapOperator`为例，从Logical 到Physical 来介绍如何为AxPoe引入一个新的Operator。
+本章以实现一个`MapOperator`为例，从Logical 到Physical 来介绍如何为CLIC引入一个新的Operator。
 
-我们已知Operator分为Logical Operator和Physical Operator。Logical Operator是系统对运算符的抽象，用于提供给用户统一的描述；Physical Operator则是Logical Operator在各个平台上的具体实现（Implementation）。因此，为AxPoe创建一个新的Operator时首先需要创建Logical Operator并向系统注册，然后再在某一平台上具体实现它。
+我们已知Operator分为Logical Operator和Physical Operator。Logical Operator是系统对运算符的抽象，用于提供给用户统一的描述；Physical Operator则是Logical Operator在各个平台上的具体实现（Implementation）。因此，为CLIC创建一个新的Operator时首先需要创建Logical Operator并向系统注册，然后再在某一平台上具体实现它。
 
 #### 3.2.1 创建Logical Operator
 
-AxPoe中所有的Operator均是通过加载描述文件中的属性来创建的，因此区分不同的Operator仅通过在描述文件中提供不同的信息。创建Logical Operator主要需要以下几步：
+CLIC中所有的Operator均是通过加载描述文件中的属性来创建的，因此区分不同的Operator仅通过在描述文件中提供不同的信息。创建Logical Operator主要需要以下几步：
 
 **1. 为Logical Operator编写描述文件**
 
@@ -392,10 +372,16 @@ AxPoe中所有的Operator均是通过加载描述文件中的属性来创建的�
     </platforms>
     
     <parameters>
-        <parameter kind="input" name="udfName"  data_type="string" required="true"> </parameter>
-        <parameter kind="output" name="result" data_type="string"> </parameter>
+        <parameter name="udfName"  data_type="string" required="true"> </parameter>
     </parameters>
-    
+
+    <inputs>  <!-- 输入数据 -->
+        <input name="data" data_type="string" required="true"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
 </Operator>
 ```
 
@@ -411,12 +397,14 @@ AxPoe中所有的Operator均是通过加载描述文件中的属性来创建的�
   * Parameter.data_type：参数值的数据类型，取值范围：[尚未使用，可随意]
   * Parameter.required：是否必须（由用户）传入，取值范围：["true", "false"]
   * Paramter.default：参数的默认值
+* **Inputs**：`Operator`的输入数据列表，定义了输入数据的键名、数据类型等必要信息
+* **Outputs**：`Operator`的输出参数列表，同理。
 
 系统中的`Operator`类会解析上述XML文件，加载各个属性到当前创建的`Operator`实例中，此时便通过描述文件构造了一个有实际含义的Logical Operator。
 
-**2. 向AxPoe注册该Operator**
+**2. 向CLIC注册该Operator**
 
-在提供了Map Operator的描述文件后，还需要向AxPoe注册该Operator使其能够被系统调度使用。而系统是通过加载一个名为 *OperatorMapping.xml* 的配置文件来取得所有可用的Operator。所以，向AxPoe注册新的Operator只需要在配置文件中添加对应信息即可， 在*OperatorMapping.xml* 中添加的内容如下：
+在提供了Map Operator的描述文件后，还需要向CLIC注册该Operator使其能够被系统调度使用。而系统是通过加载一个名为 *OperatorMapping.xml* 的配置文件来取得所有可用的Operator。所以，向CLIC注册新的Operator只需要在配置文件中添加对应信息即可， 在*OperatorMapping.xml* 中添加的内容如下：
 
 ```xml
 <mappings>
@@ -437,7 +425,7 @@ AxPoe中所有的Operator均是通过加载描述文件中的属性来创建的�
 
 系统中的`OperatorFactory`类会解析上述XML文件，加载所有 *pair* 到内存中用于根据指定 *Key* 创建 Operator的时候使用。
 
-**3. 使用AxPoe的API创建Logical Operator**
+**3. 使用CLIC的API创建Logical Operator**
 
 下面的代码片段展示了用户使用API来创建我们刚刚声明的 Map Operator：
 
@@ -451,7 +439,7 @@ DataQuanta mapNode = DataQuanta.createInstance("map", new HashMap<String, String
 
 1.  "Map" ，即为我们在 *OperatorMapping.xml* 中添加的 "ability"字段里的值；
 
-2.  HashMap，要传入Map Operator的参数列表，AxPoe在找到 "map"对应的Operator后会加载其描述文件并找到对应的参数列表；HashMap中传入的 "udfName"即为在*MapOperator.xml*中添加的  "parameter"字段
+2.  HashMap，要传入Map Operator的参数列表，CLIC在找到 "map"对应的Operator后会加载其描述文件并找到对应的参数列表；HashMap中传入的 "udfName"即为在*MapOperator.xml*中添加的  "parameter"字段
 
 #### 3.2.2 创建Physical Operator
 
@@ -469,15 +457,15 @@ public class MapOperator implements BasicOperator<JavaRDD<List<String>>> {
     String mapFunctionName;
 
     @Override
-    public void execute(ParamsModel<JavaRDD<List<String>>> inputArgs, ResultModel<JavaRDD<List<String>>> result) {
-        MapOperator mapArgs = (MapOperator) inputArgs.getOperatorParam();
-        @SuppressWarnings("unchecked") final JavaRDD<List<String>> nextStream = result.getInnerResult()
+    public void execute(ParamsModel inputArgs, ResultModel<JavaRDD<List<String>>> result) {
+        // MapOperator mapArgs = (MapOperator) inputArgs.getOperatorParam();
+        @SuppressWarnings("unchecked") final JavaRDD<List<String>> nextStream = this.getInputData("data")
                 .map(data -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel
                     FunctionModel functionModel = inputArgs.getFunctionModel();
-                    return (List<String>) functionModel.invoke(mapArgs.mapFunctionName, data);
+                    return (List<String>) functionModel.invoke(this.params.get("udfName"), data);
                 });
-        result.setInnerResult(nextStream);
+        this.setOutputData("result", nextStream);
     }
 }
 ```
@@ -496,15 +484,15 @@ public class MapOperator implements BasicOperator<JavaRDD<List<String>>> {
   * `getInnerResult()`：获取内部数据，即获取上一跳Opt的输出结果
   * `setInnerResult()`：设置内部数据，即设置当前Opt的计算结果
 
-* 参数成员变量：Operator的参数需要定义为成员变量并使用 `@Parameter`注解声明其为参数；其中的`name={xxx}`表示在命令行参数中对应的名称，详情可参考 [JCommander Parameter](https://jcommander.org)。
+* 参数成员变量：Operator的参数需要定义为成员变量并使用 `@Parameter`注解声明其为参数；其中的`name={xxx}`表示在命令行参数中对应的名称，详情可参考 [JCommander Parameter](
 
-> 需要指出的是，具体平台上的代码实现和AxPoe是完全解耦的。AxPoe实际并不关心Map在Spark上是如何实现的，例如其中的`execute`接口如何调用、`ParamsModel`是什么等。这里贴出代码仅是为了以Spark平台的实现为例展示整体开发流程。
+> 需要指出的是，具体平台上的代码实现和CLIC是完全解耦的。CLIC实际并不关心Map在Spark上是如何实现的，例如其中的`execute`接口如何调用、`ParamsModel`是什么等。这里贴出代码仅是为了以Spark平台的实现为例展示整体开发流程。
 
 
 
 **2. 编写Physical Operator的描述文件**
 
-**AxPoe对Physical Operator使用仅限于根据其描述文件中的属性来生成对应参数**，因此在Spark平台上实现了Physical的Map Operator后还需要向系统提供Physical Operator的描述文件。**该描述文件对应于Logical Operator的配置文件中的 `platforms.platform.path`字段**。上述代码片段对应的 *SparkMapOperator.xml* 文件的内容如下：
+**CLIC对Physical Operator使用仅限于根据其描述文件中的属性来生成对应参数**，因此在Spark平台上实现了Physical的Map Operator后还需要向系统提供Physical Operator的描述文件。**该描述文件对应于Logical Operator的配置文件中的 `platforms.platform.path`字段**。上述代码片段对应的 *SparkMapOperator.xml* 文件的内容如下：
 
 ```xml
 <Operator ID="MapOperator" name="MapOperator" kind="shuffler">
@@ -516,7 +504,7 @@ public class MapOperator implements BasicOperator<JavaRDD<List<String>>> {
 </Operator>
 ```
 
-文件中的 `cost` 字段描述了MapOperator在Spark平台上的性能，AxPoe会比较MapOperator在各个平台上的cost来选择是否将将 Map Operator映射到Spark平台。 
+文件中的 `cost` 字段描述了MapOperator在Spark平台上的性能，CLIC会比较MapOperator在各个平台上的cost来选择是否将将 Map Operator映射到Spark平台。
 
 
 
@@ -524,7 +512,7 @@ public class MapOperator implements BasicOperator<JavaRDD<List<String>>> {
 
 #### 3.3.1 Logical Channel的创建和使用
 
-Operator间的链接是有向的，用户在API中使用 `outgoing`接口链接下一跳，使用`incoming`接口链接上一跳。此外，在2.3.3节的Logical Channel中提到，创建Channel时还需要提供两端Operator参数的 Key Pair。下面的代码片段是使用`outgoing`为`MapOperator`添加下一跳：
+Operator间的链接是有向的，用户在API中使用 `outgoing`接口链接下一跳，使用`incoming`接口链接上一跳。此外，在2.3.5节的Logical Channel中提到，创建Channel时还需要提供两端Operator参数的 Key Pair。下面的代码片段是使用`outgoing`为`MapOperator`添加下一跳：
 
 ```java
  mapNode.outgoing(reduceNode, new HashMap<String, String>(){{
@@ -554,11 +542,11 @@ Physical Channel是实现Operator之间数据传输、格式转换的重要一�
 
 Visitor是一种设计模式，其主要优点是：“它可在不改变数据结构的情况下为其定义新的Operation”。关于Visitor设计模式的具体概念可参考[Wikipedia](https://en.wikipedia.org/wiki/Visitor_pattern)，在此不再赘述。
 
-在AxPoe中，Visitor的使用主要是为了在DAG上进行多种操作的同时保持与DAG的解耦，例如平台选择、优化、转译等操作均可在不修改DAG（即Operator）的前提下完成。
+在CLIC中，Visitor的使用主要是为了在DAG上进行多种操作的同时保持与DAG的解耦，例如平台选择、优化、转译等操作均可在不修改DAG（即Operator）的前提下完成。
 
 #### 3.4.2 遍历DAG
 
-AxPoe提供了多种对DAG的遍历方式，包括：DFS、BFS、Topological，分别由不同的类来实现。以BFS遍历为例，它对应于 `BFSTraversal`，核心代码如下：
+CLIC提供了多种对DAG的遍历方式，包括：DFS、BFS、Topological，分别由不同的类来实现。以BFS遍历为例，它对应于 `BFSTraversal`，核心代码如下：
 
 ```java
 public Operator nextOpt() {
@@ -594,6 +582,7 @@ public void visit(Operator opt) {
   }
 }
 ```
+
 其中：
 
 * `public void visit`是对 `Visitor `基类中抽象接口的实现，它接收一个`Operator`并在内部由不同的`Visitor`子类定义对它的处理方法。
@@ -605,7 +594,7 @@ public void visit(Operator opt) {
 #### 3.4.4 对Logical Plan进行优化
 
 Visitor的一个主要任务是对Logical Plan的优化，自动化地根据不同平台的特点和运算量为不同运算任务选择最佳平台。优化重构了Logical Plan之后，需要为每个`Operator`选择最佳运算平台。在选择了运算平台后，每个`Operator`便可以被实际执行，此时的Logical Plan就转化为了**Physical Plan**。
-不同的 `Operator` 所执行的计算任务不同，对应的最佳平台也不同。**AxPoe基于cost model综合考虑、计算任务的*selectivity*、平台配置等参数来选择最佳平台**。
+不同的 `Operator` 所执行的计算任务不同，对应的最佳平台也不同。**CLIC基于cost model综合考虑、计算任务的*selectivity*、平台配置等参数来选择最佳平台**。
 
 **Selectivity**
 
@@ -626,7 +615,7 @@ Selectivity of index = cardinality/(number of rows) * 100%
 
 **Cost Model**
 
-AxPoe从运行日志中学习cost model各个输入的权重参数，训练完成后便可用于平台选择。
+CLIC从运行日志中学习cost model各个输入的权重参数，训练完成后便可用于平台选择。
 
 > 以上对选择平台的讨论也只是为了实现方案的初步设想，当前阶段我们只是在各个平台的Operator的配置文件中指定了一个固定的cost，在为Operator选择平台时直接选择具有最小cost的平台。
 
@@ -722,27 +711,27 @@ AxPoe从运行日志中学习cost model各个输入的权重参数，训练完�
 
 
 
-### 3.6 AxPoe中的任务部署
+### 3.6 CLIC中的任务部署
 
-#### 3.6.1 AxPoe中的计算平台
+#### 3.6.1 CLIC中的计算平台
 
-在当前的实现中，一个计算平台（如Spark, MPI）在AxPoe中是一个完整的、可独立运行的docker image；Image中不仅包含计算平台的运行环境，更重要的是还包含该平台实现的所有 (Physical) Operator。
+在当前的视线中，一个计算平台（如Spark, MPI）在CLIC中是一个完整的、可独立运行的docker image；Image中不仅包含计算平台的运行环境，更重要的是还包含该平台实现的所有 (Physical) Operator。
 
 因为所有的计算任务最终都会部署在k8s中运行，而k8s是基于容器的，所以每个计算任务最终都会被封装到Docker Image（以下简称Image）内。
 
 一个简单的设想是，我们可以把每个Operator在不同平台上的实现都独立的封装为一个Image，每个Image内包含平台的运行环境，并且需要定义输入输出以及对输入输出进行解析、封装。这种做法下，无论两个相邻的`Operator`是否在同一个平台上运行，都会被封装为两个独立的Image。而同一个平台上`Operator`之间的数据传输原本可以在内存进行，此时却变为了Image之间的传输，带来了额外的延迟。
 
-因此AxPoe的做法是：提前将一个平台上所有的`Operator`封装成为一个运算库，同平台环境一起封装到Image内，运算库由image内的 *Composer* 程序来调度。
+因此CLIC的做法是：提前将一个平台上所有的`Operator`封装成为一个运算库，同平台环境一起封装到Image内，运算库由image内的 *Composer* 程序来调度。
 
-TODO: 具体如何将Operator设计为运算库，AxPoe如何通过命令行参数使用Operator，Composer如何接受参数并调度相应的Operator等，可参考[附录](#appendix)。
+TODO: 具体如何将Operator设计为运算库，CLIC如何通过命令行参数使用Operator，Composer如何接受参数并调度相应的Operator等，可参考[附录](#appendix)。
 
-#### 3.6.2 AxPoe中对不同平台的调用
+#### 3.6.2 CLIC中对不同平台的调用
 
-在2.2和3.5节中均有提到，AxPoe通过Image的描述文件来获知其对应平台的相关信息，如：平台名称、Image（在repository中）的地址、Image的入口命令、Image的系统参数等。
+在2.2和3.5节中均有提到，CLIC通过Image的描述文件来获知其对应平台的相关信息，如：平台名称、Image（在repository中）的地址、Image的入口命令、Image的系统参数等。
 
-在AxPoe生成了Physical Plan后，每个Physical Operator都被指派了具体的计算平台。此时，AxPoe会根据描述文件，为相邻的、在同一计算平台上的Operator所组成的sub-plan添加一些必要的运行参数；该参数将连通sub-plan一起作为参数传入平台的Image中。
+在CLIC生成了Physical Plan后，每个Physical Operator都被指派了具体的计算平台。此时，CLIC会根据描述文件，为相邻的、在同一计算平台上的Operator所组成的sub-plan添加一些必要的运行参数；该参数将连通sub-plan一起作为参数传入平台的Image中。
 
-而平台的实际运行是基于Argo Workflow的，因此AxPoe在为平台的Image生成了参数后，下一步就是将平台属性和参数一起，生成Argo Workflow所需的YAML文件以便部署到k8s。
+而平台的实际运行是基于Argo Workflow的，因此CLIC在为平台的Image生成了参数后，下一步就是将平台属性和参数一起，生成Argo Workflow所需的YAML文件以便部署到k8s。
 
 下图为Sub-plan的示意图，其中虚线框内即为某一平台上的sub-plan：
 
@@ -750,7 +739,7 @@ TODO: 具体如何将Operator设计为运算库，AxPoe如何通过命令行参�
 
 #### 3.6.3 由Physical Plan生成Argo Workflow并部署到k8s
 
-AxPoe基于[Argo Workflow](https://argoproj.github.io/argo/)来将所有计算任务部署到k8s，计算任务在Argo中被称为Workflow，而Workflow最终又以YAML文件的形式被提交到k8s。**因此，AxPoe需要将Physical Plan数据结构转译为Workflow的形式，并输出为YAML文件，这通过`ArgoVisitor`来完成。**
+CLIC基于[Argo Workflow](https://argoproj.github.io/argo/)来将所有计算任务部署到k8s，计算任务在Argo中被称为Workflow，而Workflow最终又以YAML文件的形式被提交到k8s。**因此，CLIC需要将Physical Plan数据结构转译为Workflow的形式，并输出为YAML文件，这通过`ArgoVisitor`来完成。**
 
 Argo 中支持DAG形式的Workflow，DAG中的节点是一个 `template`代表一个docker image；节点之间通过`dependencies`字段链接，每个`dependencies`中声明上下游节点。
 
@@ -771,7 +760,7 @@ container:
       name: job-volume
 ```
 
-因此AxPoe在转译时仅需要完成两件事：
+因此CLIC在转译时仅需要完成两件事：
 
 1. 向`template`传入参数
 
@@ -789,42 +778,46 @@ metadata:
 spec:
   entrypoint: my-flow
   volumes:
-  - name: job-volume
-    hostPath:
-      path: /home/dqh/codes/k8s_basics/executable-java/data
-      type: Directory
+  - name: nfs-volume
+    persistentVolumeClaim:
+      claimName: pvc-nfs
   templates:
   - name: my-flow
     dag:
       tasks:
-      - name: Job-java-SourceFilter573-1
+      - name: Stage-SourceOperator
         template: java-template
         arguments:
           parameters:
           - name: javaArgs
-            value: 'java -jar executable-java.jar --udfPath=/data/TestSmallWebCaseFunc.class --operator=SourceOperator --input=data/test.csv --separator=, --operator=FilterOperator --udfName=filterFunc --operator=SinkOperator --output=data/1.csv --separator=, '
-      - name: Job-spark-Map588-2
+            value: java -jar executable-java.jar --udfPath=/Users/jason/Desktop/TestSmallWebCaseFunc.class
+              --dagPath=/tmp/irdemo_output/physical-dag-1370161291.yml
+      - name: Stage-MapOperator
         template: spark-template
         arguments:
           parameters:
           - name: sparkArgs
-            value: 'spark submit executable-spark.jar --udfPath=/data/TestSmallWebCaseFuncSpark.class --operator=SourceOperator --input=data/1.csv --separator=, --operator=MapOperator --udfName=mapFunc --operator=SinkOperator --output=data/2.csv --separator=, '
+            value: /spark-runner/bin/spark-submit --master=k8s://https://10.176.25.102:6443
+              --deploy-mode=client --name=spark-running --class=fdu.daslab.executable.spark.ExecuteSparkOperator
+              --conf=spark.executor.instance=5 --conf=spark.kubernetes.container.image=spark:v0
+              executable-spark.jar --udfPath=/data/TestSmallWebCaseFunc.class --dagPath=/tmp/irdemo_output/physical-dag--1581354762.yml
         dependencies:
-        - Job-java-SourceFilter573-1
-      - name: Job-java-ReduceByKeySortSink434-3
+        - Stage-SourceOperator
+      - name: Stage-ReduceByKeyOperator
         template: java-template
         arguments:
           parameters:
           - name: javaArgs
-            value: 'java -jar executable-java.jar --udfPath=/data/TestSmallWebCaseFunc.class --operator=SourceOperator --input=data/2.csv --separator=, --operator=ReduceByKeyOperator --keyName=reduceKey --udfName=reduceFunc --operator=SortOperator --udfName=sortFunc --operator=SinkOperator --output=data/output.csv --separator=, '
+            value: java -jar executable-java.jar --udfPath=/Users/jason/Desktop/TestSmallWebCaseFunc.class
+              --dagPath=/tmp/irdemo_output/physical-dag-1567013202.yml
         dependencies:
-        - Job-spark-Map588-2
+        - Stage-MapOperator
   - name: java-template
     inputs:
       parameters:
       - name: javaArgs
     container:
-      image: executable-java:v1
+      image: executable-java:v2
       imagePullPolicy: IfNotPresent
       command:
       - /bin/sh
@@ -833,7 +826,7 @@ spec:
       - '{{inputs.parameters.javaArgs}}'
       volumeMounts:
       - mountPath: /data
-        name: job-volume
+        name: nfs-volume
   - name: spark-template
     inputs:
       parameters:
