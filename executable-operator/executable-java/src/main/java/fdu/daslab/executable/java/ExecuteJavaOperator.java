@@ -51,7 +51,7 @@ public class ExecuteJavaOperator {
 //                Arrays.copyOfRange(args, 1, args.length), "--operator");
         //记录时间
         long start = System.currentTimeMillis();   //获取开始时间
-
+        logger.info("Stage(java) ———— Start");
         // 解析YAML文件，构造DAG
         try {
             OperatorBase headOperator = ArgsUtil.parseArgs(entry.dagPath, new JavaOperatorFactory());
@@ -60,9 +60,9 @@ public class ExecuteJavaOperator {
                 String inputFile = (String) headOperator.getParams().get("inputPath");
                 File f = new File(inputFile);
                 if (f.exists() && f.isFile()) {
-                    logger.info("input file size :" + f.length());
+                    logger.info("Stage(java) ———— Input file size:  " + f.length());
                 } else {
-                    logger.info("file doesn't exist or is not a file");
+                    logger.info("Stage(java) ———— File doesn't exist or it is not a file");
                 }
             }
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
@@ -87,15 +87,16 @@ public class ExecuteJavaOperator {
                 tailOperator = curOpt;
             }
             long end = System.currentTimeMillis(); //获取结束时间
-            logger.info("程序运行时间： " + (end - start) + "ms");
+            logger.info("Stage(java) ———— End");
+            logger.info("Stage(java) ———— Running hold time:： " + (end - start) + "ms");
 
             if (tailOperator != null && tailOperator.getParams().containsKey("outputPath")) {
                 String outputPath = (String) tailOperator.getParams().get("outputPath");
                 File f = new File(outputPath);
                 if (f.exists() && f.isFile()) {
-                    logger.info("output file size :" + f.length());
+                    logger.info("Stage(java) ———— Output file size :" + f.length());
                 } else {
-                    logger.info("file doesn't exist or is not a file");
+                    logger.info("Stage(java) ———— File doesn't exist or it is not a file");
                 }
             }
 
