@@ -8,6 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.FileNotFoundException;
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -17,7 +18,7 @@ import java.util.*;
  * @version 1.0
  * @since 2020/7/6 11:39
  */
-public class Operator implements Visitable {
+public class Operator implements Visitable, Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(Operator.class);
     private UUID uuid;
     private String operatorID; // Operator ID
@@ -229,12 +230,13 @@ public class Operator implements Visitable {
 
     @Override
     public String toString() {
-        return "Operator{"
-                + ", ID='" + operatorID + '\''
-                + ", name='" + operatorName + '\''
-                + ", kind=" + operatorKind
-                + ", entities=" + entities
-                + '}';
+        return operatorID;
+//        return "Operator{"
+//                + ", ID='" + operatorID + '\''
+//                + ", name='" + operatorName + '\''
+//                + ", kind=" + operatorKind
+//                + ", entities=" + entities
+//                + '}';
     }
 
 
