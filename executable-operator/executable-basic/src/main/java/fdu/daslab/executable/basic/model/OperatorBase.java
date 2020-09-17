@@ -60,7 +60,15 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
         return inDegree;
     }
 
-    public Map<String, String> getParams() { return params;}
+    public Map<String, String> getParams() {
+        return params;
+    }
+
+
+    public String getName() {
+        return name;
+    }
+
 
 
     public void setInputData(String key, InputType data) {

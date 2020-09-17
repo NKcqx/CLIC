@@ -35,13 +35,13 @@ public class ExecuteJavaOperator {
     String dagPath;
 
     public static void main(String[] args) {
+        Logger logger = LoggerFactory.getLogger(ExecuteJavaOperator.class);
         // 解析命令行参数
         ExecuteJavaOperator entry = new ExecuteJavaOperator();
         JCommander.newBuilder()
                 .addObject(entry)
                 .build()
                 .parse(args);
-        Logger logger = LoggerFactory.getLogger(ExecuteJavaOperator.class);
         // 用户定义的函数放在一个文件里面
         //final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(
         //       args[0].substring(args[0].indexOf("=") + 1)); // 默认先传入 --udfPath !?
@@ -51,7 +51,7 @@ public class ExecuteJavaOperator {
 //                Arrays.copyOfRange(args, 1, args.length), "--operator");
         //记录时间
         long start = System.currentTimeMillis();   //获取开始时间
-        logger.info("Stage(java) ———— Start");
+        logger.info("Stage(java) ———— Start A New Java Stage");
         // 解析YAML文件，构造DAG
         try {
             OperatorBase headOperator = ArgsUtil.parseArgs(entry.dagPath, new JavaOperatorFactory());
@@ -84,10 +84,10 @@ public class ExecuteJavaOperator {
                     // 将当前opt的输出结果传入下一跳的输入数据
                     targetOpt.setInputData(targetKey, sourceResult);
                 }
+                logger.info("Stage(java) ———— Current Java Operator is " + curOpt.getName());
                 tailOperator = curOpt;
             }
             long end = System.currentTimeMillis(); //获取结束时间
-            logger.info("Stage(java) ———— End");
             logger.info("Stage(java) ———— Running hold time:： " + (end - start) + "ms");
 
             if (tailOperator != null && tailOperator.getParams().containsKey("outputPath")) {
@@ -99,7 +99,7 @@ public class ExecuteJavaOperator {
                     logger.info("Stage(java) ———— File doesn't exist or it is not a file");
                 }
             }
-
+            logger.info("Stage(java) ———— End The Current Java Stage");
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -90,7 +90,7 @@ public class YamlUtil {
             templates.add(readYaml(TemplateUtil.getTemplatePathByPlatform(platform)));
         }
         long n = System.nanoTime();
-        String storePath = resJobPath + n + ".yaml";
+        String storePath = resJobPath + n + ".yml";
         //存入指定路径
         writeYaml(storePath, argoDagMap);
 

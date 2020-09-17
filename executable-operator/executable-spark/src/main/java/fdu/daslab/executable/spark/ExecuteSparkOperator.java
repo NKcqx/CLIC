@@ -35,17 +35,17 @@ public class ExecuteSparkOperator {
     String dagPath;
 
     public static void main(String[] args) {
+        Logger logger = LoggerFactory.getLogger(ExecuteSparkOperator.class);
         ExecuteSparkOperator entry = new ExecuteSparkOperator();
         JCommander.newBuilder()
                 .addObject(entry)
                 .build()
                 .parse(args);
-        Logger logger = LoggerFactory.getLogger(ExecuteSparkOperator.class);
         // String functionPath =  entry.udfPath;
         // final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(entry.udfPath);
         //记录时间
         long start = System.currentTimeMillis();   //获取开始时间
-        logger.info("Stage(spark) ———— Start");
+        logger.info("Stage(spark) ———— Start A New Spark Stage");
         try {
             OperatorBase headOperator = ArgsUtil.parseArgs(entry.dagPath, new SparkOperatorFactory());
             //记录输入文件的大小
@@ -77,10 +77,10 @@ public class ExecuteSparkOperator {
                     // 将当前opt的输出结果传入下一跳的输入数据
                     targetOpt.setInputData(targetKey, sourceResult);
                 }
+                logger.info("Stage(java) ———— Current Spark Operator is " + curOpt.getName());
                 tailOperator = curOpt;
             }
             long end = System.currentTimeMillis(); //获取结束时间
-            logger.info("Stage(spark) ———— End ");
             logger.info("Stage(spark) ———— Running hold time:  " + (end - start) + "ms");
 
             if (tailOperator != null && tailOperator.getParams().containsKey("outputPath")) {
@@ -92,7 +92,7 @@ public class ExecuteSparkOperator {
                     logger.info("Stage(spark) ———— File doesn't exist or it is not a file");
                 }
             }
-
+            logger.info("Stage(spark) ———— End The Current Spark Stage");
         } catch (Exception e) {
             e.printStackTrace();
         }

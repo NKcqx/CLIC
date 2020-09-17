@@ -1,6 +1,6 @@
 <configuration>
-    <property name="LOG_HOME" value="./log"/>
-    <property name="LOG_PREFIX" value="java"/>
+    <property name="LOG_HOME" value="/data/spark-log/"/>
+    <property name="LOG_PREFIX" value="spark"/>
     <!--追加，输出到命令行 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
