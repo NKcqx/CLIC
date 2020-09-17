@@ -62,18 +62,18 @@ public class WorkflowVisitor extends Visitor {
                         .getSelectedEntities()
                         .getEntityID()
                         .equals(curOptPlatform.getEntityID())).collect(Collectors.toSet());
-        if (outgoingChannels.isEmpty()){
+        if (outgoingChannels.isEmpty()) {
             // 没有相同平台的Opt了，将当前opt设为stage 的 tail 然后开始组装下一个stage
             stages.add(curStage);
             ++this.jobID;
             curOptPlatform = null;
 
-        }else {
+        } else {
             curStage.addEdges(outgoingChannels); // todo 其实有问题：还没有添加下一跳节点的时候就把相连的边添加进来了
         }
     }
 
-    private void wrapWithSourceSink(Stage stage){
+    private void wrapWithSourceSink(Stage stage) {
 
     }
 

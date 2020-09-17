@@ -1,0 +1,33 @@
+<configuration>
+    <property name="LOG_HOME" value="/data/spark-log/"/>
+    <property name="LOG_PREFIX" value="spark"/>
+    <!--追加，输出到命令行 -->
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <!--追加，文件大小到达指定尺寸或日期改变的时候产生一个新文件-->
+    <appender name="RollingFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${LOG_HOME}/${LOG_PREFIX}_%d{yyyy-MM-dd_HH}.log</fileNamePattern>
+            <!-- 保留60天的历史记录，但最多应为10GB-->
+            <maxHistory>60</maxHistory>
+            <totalSizeCap>10GB</totalSizeCap>
+        </rollingPolicy>
+<!--        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">-->
+<!--            &lt;!&ndash;保存文件的大小，超过该大小自动创建新文件。&ndash;&gt;-->
+<!--            <maxFileSize>100MB</maxFileSize>-->
+<!--        </triggeringPolicy>-->
+        <encoder>
+            <pattern>%date [%thread] %-5level %logger{35} - %msg %n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="info">
+        <appender-ref ref="STDOUT"/>
+        <appender-ref ref="RollingFileAppender"/>
+    </root>
+</configuration>

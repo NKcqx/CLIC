@@ -8,6 +8,9 @@ import fdu.daslab.executable.basic.utils.TopTraversal;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
 import fdu.daslab.executable.java.operators.JavaOperatorFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.io.File;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -32,6 +35,7 @@ public class ExecuteJavaOperator {
     String dagPath;
 
     public static void main(String[] args) {
+        Logger logger = LoggerFactory.getLogger(ExecuteJavaOperator.class);
         // 解析命令行参数
         ExecuteJavaOperator entry = new ExecuteJavaOperator();
         JCommander.newBuilder()
@@ -45,14 +49,27 @@ public class ExecuteJavaOperator {
         // 这个Map是有序的
 //        Map<String, String[]> standaloneArgs = ArgsUtil.separateArgsByKey(
 //                Arrays.copyOfRange(args, 1, args.length), "--operator");
-
+        //记录时间
+        long start = System.currentTimeMillis();   //获取开始时间
+        logger.info("Stage(java) ———— Start A New Java Stage");
         // 解析YAML文件，构造DAG
         try {
             OperatorBase headOperator = ArgsUtil.parseArgs(entry.dagPath, new JavaOperatorFactory());
+            //记录输入文件的大小
+            if (headOperator.getParams().containsKey("inputPath")) {
+                String inputFile = (String) headOperator.getParams().get("inputPath");
+                File f = new File(inputFile);
+                if (f.exists() && f.isFile()) {
+                    logger.info("Stage(java) ———— Input file size:  " + f.length());
+                } else {
+                    logger.info("Stage(java) ———— File doesn't exist or it is not a file");
+                }
+            }
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
             ParamsModel inputArgs = new ParamsModel(functionModel);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
             TopTraversal topTraversal = new TopTraversal(headOperator);
+            OperatorBase tailOperator = null;
 
             while (topTraversal.hasNextOpt()) {
                 OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = topTraversal.nextOpt();
@@ -67,25 +84,24 @@ public class ExecuteJavaOperator {
                     // 将当前opt的输出结果传入下一跳的输入数据
                     targetOpt.setInputData(targetKey, sourceResult);
                 }
+                logger.info("Stage(java) ———— Current Java Operator is " + curOpt.getName());
+                tailOperator = curOpt;
             }
+            long end = System.currentTimeMillis(); //获取结束时间
+            logger.info("Stage(java) ———— Running hold time:： " + (end - start) + "ms");
 
+            if (tailOperator != null && tailOperator.getParams().containsKey("outputPath")) {
+                String outputPath = (String) tailOperator.getParams().get("outputPath");
+                File f = new File(outputPath);
+                if (f.exists() && f.isFile()) {
+                    logger.info("Stage(java) ———— Output file size :" + f.length());
+                } else {
+                    logger.info("Stage(java) ———— File doesn't exist or it is not a file");
+                }
+            }
+            logger.info("Stage(java) ———— End The Current Java Stage");
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        // 目前支持的算子
-        /*Map<String, ExecutionOperator<Stream<List<String>>>> allOperators = JavaOperatorEnums.getAllOperators();
-        // java平台的每个算子（除了sink），均返回一个Stream
-        StreamResult<List<String>> result = new StreamResult<>();
-        standaloneArgs.forEach((operator, operatorArgs) -> {
-            // 目前执行的算子
-            ExecutionOperator<Stream<List<String>>> curOperator = allOperators.get(operator);
-            // 解析参数
-            ArgsUtil.parseArgs(curOperator, operatorArgs);
-            ParamsModel<Stream<List<String>>> inputArgs = new ParamsModel<>(curOperator, functionModel);
-            // 实际的运行
-            curOperator.execute(inputArgs, result);
-        });*/
     }
 }

@@ -119,11 +119,11 @@ public class ArgoAdapter implements OperatorAdapter {
             // todo dependency是上一个ArgoNode
             String id = Util.IDSupplier.get();
             ArgoNode argoNode = null;
-            if (dependencyNode != null){
+            if (dependencyNode != null) {
                 ArrayList<ArgoNode> dependencies = new ArrayList<>();
                 dependencies.add(dependencyNode); // todo 之后会有不止一个dependency
                 argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(),  dependencies);
-            }else {
+            } else {
                 argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(),  null);
             }
 
@@ -188,12 +188,12 @@ public class ArgoAdapter implements OperatorAdapter {
         Map<String, Object> dependencyMap = new HashMap<>(); // 当前Opt的依赖对象
         dependencyMap.put("id", opt.getOperatorID());
 
-        if(graph.inDegreeOf(opt) != 0){ // head Operator
+        if (graph.inDegreeOf(opt) != 0) { // head Operator
             Set<Channel> inputChannels = graph.incomingEdgesOf(opt); // dependency channels
             List<Map<String, String>> dependencies = new ArrayList<>(); // denpendencies字段，是一个List<Map> 每个元素是其中一个依赖
-            for (Channel channel : inputChannels){
+            for (Channel channel : inputChannels) {
                 dependencies.add(new HashMap<String, String>() {{
-                    put("id", ((Operator)graph.getEdgeSource(channel)).getOperatorID());
+                    put("id", ((Operator) graph.getEdgeSource(channel)).getOperatorID());
                     put("sourceKey", channel.getKeyPair().getValue0());
                     put("targetKey", channel.getKeyPair().getValue1());
                 }});
