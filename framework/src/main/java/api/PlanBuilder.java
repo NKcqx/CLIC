@@ -131,9 +131,9 @@ public class PlanBuilder {
         this.printPlan();
         LOGGER.info("   ");
 
-        LOGGER.info("===========【Stage 3】Visualization ===========");
-        this.visualizePlan();
-        LOGGER.info("   ");
+//        LOGGER.info("===========【Stage 3】Visualization ===========");
+//        this.visualizePlan();
+//        LOGGER.info("   ");
 
         LOGGER.info("===========【Stage 4】execute plan ==========");
         this.executePlan();
