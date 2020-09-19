@@ -16,13 +16,13 @@ public class Demo {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
             // 设置udf路径   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
-            planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseUDFs.class");
+            planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
             //供测试生成文件使用   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
-            planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWebCaseUDFs.class");
+            planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWebCaseFunc.class");
 
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("inputPath", "/Users/jason/Desktop/test.csv");
+                put("inputPath", "/data/test.csv");
             }});
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
