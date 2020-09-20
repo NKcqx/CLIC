@@ -3,17 +3,12 @@ package basic.visitors;
 import basic.Stage;
 import basic.operators.Operator;
 import basic.operators.OperatorEntity;
-import basic.operators.OperatorFactory;
 import channel.Channel;
-import org.jgrapht.Graph;
-import org.jgrapht.Graphs;
-import org.jgrapht.graph.AbstractBaseGraph;
 import org.jgrapht.graph.DefaultListenableGraph;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**

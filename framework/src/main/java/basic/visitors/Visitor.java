@@ -2,7 +2,6 @@
 package basic.visitors;
 
 import basic.operators.Operator;
-import org.jgrapht.Graph;
 
 /**
  * @author 陈齐翔
@@ -11,7 +10,9 @@ import org.jgrapht.Graph;
  */
 public abstract class Visitor {
 
-    public Visitor(){ }
+    public Visitor() {
+
+    }
 
     public abstract void visit(Operator opt);
 

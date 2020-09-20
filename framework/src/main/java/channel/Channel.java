@@ -1,6 +1,5 @@
 package channel;
 
-import basic.operators.Operator;
 import org.javatuples.Pair;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
@@ -15,7 +14,7 @@ import java.util.List;
 public class Channel extends DefaultWeightedEdge {
     private List<Pair<String, String>> keyPairs; // source输出数据的key - target输入数据的key, 即source输出的值 传给 target输入数据的值
 
-    public Channel(){
+    public Channel() {
         this(new Pair<>("result", "data"));
     }
 
@@ -24,7 +23,7 @@ public class Channel extends DefaultWeightedEdge {
         this.keyPairs.add(keyPairs);
     }
 
-    public Channel(List<Pair<String, String>> keyPairs){
+    public Channel(List<Pair<String, String>> keyPairs) {
         this.keyPairs = keyPairs;
     }
 
@@ -43,12 +42,12 @@ public class Channel extends DefaultWeightedEdge {
 //        this.keyPairs.add(new Pair<>(sourceOutputKey, targetInputKey));
 //    }
 
-    public  Pair<String, String> getKeyPair() {
+    public Pair<String, String> getKeyPair() {
         assert this.keyPairs.size() > 0 : "未添加任何 keyPair";
         return this.keyPairs.get(0);
     }
 
-    public  List<Pair<String, String>> getKeyPairs() {
+    public List<Pair<String, String>> getKeyPairs() {
         return this.keyPairs;
     }
 

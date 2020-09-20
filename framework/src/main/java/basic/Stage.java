@@ -37,21 +37,21 @@ public class Stage implements Serializable {
     }
 
     private void checkAndGenerateGraphView() {
-        if (this.graph == null){
+        if (this.graph == null) {
             graph = new AsSubgraph<>(baseGraph, vertexSet, edgeSet);
         }
     }
 
-    public AsSubgraph<Operator, Channel> getGraph(){
+    public AsSubgraph<Operator, Channel> getGraph() {
         checkAndGenerateGraphView();
         return graph;
     }
 
-    public boolean addVertex(Operator vertex){
+    public boolean addVertex(Operator vertex) {
         return this.vertexSet.add(vertex);
     }
 
-    public boolean addEdges(Set<Channel> channels){
+    public boolean addEdges(Set<Channel> channels) {
         return this.edgeSet.addAll(channels);
     }
 

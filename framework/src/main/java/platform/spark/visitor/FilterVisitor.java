@@ -1,10 +1,10 @@
 package platform.spark.visitor;
-
-import basic.operators.Operator;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
-import platform.spark.SparkPlatform;
+//
+//import basic.operators.Operator;
+//import org.apache.spark.sql.Dataset;
+//import org.apache.spark.sql.Row;
+//import org.apache.spark.sql.SparkSession;
+//import platform.spark.SparkPlatform;
 //
 //public class FilterVisitor implements SparkVisitor {
 //    private Operator child;
@@ -23,7 +23,8 @@ import platform.spark.SparkPlatform;
 //
 //    @Override
 //    public Dataset<Row> execute(SparkSession sparkSession) {
-//        Dataset<Row> src = (Dataset<Row>) SparkPlatform.convertOperator2SparkVisitor(this.child).execute(sparkSession);
+//        Dataset<Row> src = (Dataset<Row>) SparkPlatform.convertOperator2SparkVisitor(this.child)
+//        .execute(sparkSession);
 //
 //        return src.filter(this.predicate);
 //    }
