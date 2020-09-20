@@ -3,7 +3,7 @@
     <pair>
         <name>spark</name>
         <platform>
-            <docker-image>executable-spark:v2</docker-image>
+            <docker-image>executable/spark:v1</docker-image>
 
             <execution>
                 <environment>/bin/sh -c</environment> <!--  -c: 从string中读取命令  -->
@@ -34,7 +34,7 @@
     <pair>
         <name>java</name>
         <platform>
-            <docker-image>executable-java:v2</docker-image>
+            <docker-image>executable/java:v1</docker-image>
 
             <execution>
                 <environment>/bin/sh -c</environment>
@@ -53,7 +53,7 @@
         <!-- 可以是随便一个C++的平台，以CMake构建的MPI工程为例 -->
         <name>alchemist</name>
         <platform>
-            <docker-image>executable-alchemist:v1</docker-image>
+            <docker-image>executable/alchemist:v1</docker-image>
 
             <execution>
                 <environment>/bin/sh -c</environment>

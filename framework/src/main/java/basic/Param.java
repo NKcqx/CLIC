@@ -1,6 +1,7 @@
 
 package basic;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -9,7 +10,7 @@ import java.util.Map;
  * @version 1.0
  * @since 2020/7/6 1:40 下午
  */
-public class Param {
+public class Param implements Serializable {
     private String name;
     private ParamKind type;
     private String value = null; // 暂定String类型，之后用Object？总觉得不是这么做泛化的(或者就是Obj，反正每个Opt知道自己想用什么格式的数据)

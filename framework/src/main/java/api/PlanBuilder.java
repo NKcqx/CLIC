@@ -12,6 +12,9 @@ import basic.visitors.ExecutionGenerationVisitor;
 import basic.visitors.PrintVisitor;
 import basic.visitors.WorkflowVisitor;
 import channel.Channel;
+import com.mxgraph.layout.mxCircleLayout;
+import com.mxgraph.layout.mxIGraphLayout;
+import com.mxgraph.swing.mxGraphComponent;
 import fdu.daslab.backend.executor.model.Workflow;
 import org.javatuples.Pair;
 import org.jgrapht.Graphs;
@@ -19,6 +22,7 @@ import org.jgrapht.event.GraphEdgeChangeEvent;
 import org.jgrapht.event.GraphListener;
 import org.jgrapht.event.GraphVertexChangeEvent;
 import org.jgrapht.event.VertexSetListener;
+import org.jgrapht.ext.JGraphXAdapter;
 import org.jgrapht.graph.AsSubgraph;
 import org.jgrapht.graph.DefaultListenableGraph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
@@ -28,7 +32,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -114,22 +122,26 @@ public class PlanBuilder {
      */
     public void execute() throws Exception {
         // 在这 add 各种Listener
-        this.logging("===========【Stage 1】Get User Defined Plan ===========");
+        LOGGER.info("===========【Stage 1】Get User Defined Plan ===========");
         this.printPlan();
-        this.logging("   ");
+        LOGGER.info("   ");
 
-        this.logging("===========【Stage 2】Choose best Operator implementation ===========");
+        LOGGER.info("===========【Stage 2】Choose best Operator implementation ===========");
         this.optimizePlan();
         this.printPlan();
-        this.logging("   ");
+        LOGGER.info("   ");
 
-        this.logging("===========【Stage 3】execute plan ==========");
+//        LOGGER.info("===========【Stage 3】Visualization ===========");
+//        this.visualizePlan();
+//        LOGGER.info("   ");
+
+        LOGGER.info("===========【Stage 4】execute plan ==========");
         this.executePlan();
 
     }
 
     public void printPlan() {
-        this.logging("Current Plan:");
+        LOGGER.info("Current Plan:");
         TopologicalOrderIterator<Operator, Channel> topologicalOrderIterator = new TopologicalOrderIterator<>(graph);
         PrintVisitor printVisitor = new PrintVisitor();
         while (topologicalOrderIterator.hasNext()) {
@@ -148,6 +160,10 @@ public class PlanBuilder {
         while (breadthFirstIterator.hasNext()) {
             breadthFirstIterator.next().acceptVisitor(executionGenerationVisitor);
         }
+    }
+
+    public void visualizePlan() {
+        Util.visualize(graph);
     }
 
     private void executePlan() throws Exception {
@@ -219,7 +235,7 @@ public class PlanBuilder {
                 graph.addEdge(sourceOperator, headOperator);
             }
         } catch (Exception e) {
-            logging("这硬编码创建了Source、Sink Operator，更新其他代码可能会使此处无法创建Source、Sink Operator");
+            LOGGER.info("这硬编码创建了Source、Sink Operator，更新其他代码可能会使此处无法创建Source、Sink Operator");
             e.printStackTrace();
         }
     }
@@ -246,39 +262,6 @@ public class PlanBuilder {
             graph.addEdge(tailOperator, sinkOperator);
         }
 
-    }
-
-
-    private LinkedList<Operator> optimizePipeline() {
-        this.switchOperator(1, 2);
-        return this.pipeline;
-    }
-
-    /**
-     * 交换pipeline中任意两opt的位置，用于算子重组
-     *
-     * @param idx1 第一个opt的idx
-     * @param idx2 第二个opt的idx
-     */
-    private void switchOperator(int idx1, int idx2) {
-        this.logging(String.format("->    Switching Opt %s @%d with %s @%d",
-                this.pipeline.get(idx1).getOperatorID(), idx1,
-                this.pipeline.get(idx2).getOperatorID(), idx2
-        ));
-        assert idx1 < this.pipeline.size() : "idx1是无效的索引";
-        assert idx2 < this.pipeline.size() : "idx2是无效的索引";
-        Operator opt1 = this.pipeline.get(idx1);
-        Operator opt2 = this.pipeline.get(idx2);
-
-        this.pipeline.add(idx1, opt2);
-        this.pipeline.remove(idx1 + 1); // 删除原来的opt1
-
-        this.pipeline.add(idx2, opt1);
-        this.pipeline.remove(idx2 + 1);
-    }
-
-    private void logging(String s) {
-        LOGGER.info(s);
     }
 
     /**

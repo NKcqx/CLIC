@@ -2,6 +2,7 @@ package basic.operators;
 
 import basic.Param;
 
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -9,7 +10,7 @@ import java.util.List;
  * @version 1.0
  * @since 2020/7/29 2:59 下午
  */
-public class OperatorEntity {
+public class OperatorEntity implements Serializable {
     String entityID;
     String language;
     Double cost;
