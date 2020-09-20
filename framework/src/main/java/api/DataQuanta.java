@@ -2,8 +2,6 @@ package api;
 
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
-import channel.Channel;
-import org.javatuples.Pair;
 
 
 import java.util.Map;
@@ -129,8 +127,12 @@ public final class DataQuanta {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         DataQuanta that = (DataQuanta) o;
         return getOperator().equals(that.getOperator());
     }

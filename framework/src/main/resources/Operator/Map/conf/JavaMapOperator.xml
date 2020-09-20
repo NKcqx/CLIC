@@ -15,7 +15,7 @@
 
 
         <!--            cost是该operator的cost，此处先简单设定-->
-        <cost>23.1174</cost>
+        <cost>1.1174</cost>
     </platform>
 
 

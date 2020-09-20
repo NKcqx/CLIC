@@ -18,9 +18,14 @@ import java.util.function.Supplier;
  * @since 2020/9/14 9:59 上午
  */
 public class Util {
-    public static Supplier<String> IDSupplier = () -> String.valueOf(UUID.randomUUID().hashCode());
+    private static Supplier<String> idSupplier = () -> String.valueOf(UUID.randomUUID().hashCode());
 
-    public static void visualize(ListenableGraph<Operator, Channel> graph){
+    public static String generateID() {
+        return Util.idSupplier.get();
+    }
+
+
+    public static void visualize(ListenableGraph<Operator, Channel> graph) {
         Visualizer applet = new Visualizer(graph);
         applet.init();
 
@@ -32,13 +37,13 @@ public class Util {
         frame.setVisible(true);
     }
 
-    private static class Visualizer extends JApplet {
+    private static final class Visualizer extends JApplet {
         private static final long serialVersionUID = UUID.randomUUID().hashCode();
         private static final Dimension DEFAULT_SIZE = new Dimension(530, 320);
         private JGraphXAdapter<Operator, Channel> jgxAdapter;
         private ListenableGraph<Operator, Channel> graph;
 
-        private Visualizer(ListenableGraph<Operator, Channel> graph){
+        private Visualizer(ListenableGraph<Operator, Channel> graph) {
             this.graph = graph;
         }
 

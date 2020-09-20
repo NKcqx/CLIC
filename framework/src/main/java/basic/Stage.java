@@ -7,7 +7,9 @@ import org.jgrapht.graph.AsSubgraph;
 
 import java.io.Serializable;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * sub-plan，保存Logical/Physical Plan的片段，用于Assign到不同平台。
@@ -34,21 +36,24 @@ public class Stage implements Serializable {
         this.edgeSet = new HashSet<>();
     }
 
-    public AsSubgraph<Operator, Channel> getGraph(){
-        if (graph == null){
+    private void checkAndGenerateGraphView() {
+        if (this.graph == null) {
             graph = new AsSubgraph<>(baseGraph, vertexSet, edgeSet);
         }
+    }
+
+    public AsSubgraph<Operator, Channel> getGraph() {
+        checkAndGenerateGraphView();
         return graph;
     }
 
-    public boolean addVertex(Operator vertex){
+    public boolean addVertex(Operator vertex) {
         return this.vertexSet.add(vertex);
     }
 
-    public boolean addEdges(Set<Channel> channels){
+    public boolean addEdges(Set<Channel> channels) {
         return this.edgeSet.addAll(channels);
     }
-
 
     public String getName() {
         return name;
@@ -66,21 +71,19 @@ public class Stage implements Serializable {
         this.id = id;
     }
 
-//    public Operator getTail() {
-//        return tailOpt;
-//    }
-//
-//    public void setTail(Operator tail) {
-//        this.tailOpt = tail;
-//    }
-//
-//    public void setHead(Operator head) {
-//        this.headOpt = head;
-//    }
-//
-//    public Operator getHead() {
-//        return headOpt;
-//    }
+    public List<Operator> getTails() {
+        checkAndGenerateGraphView();
+        return this.graph.vertexSet().stream()
+                .filter(operator -> graph.outDegreeOf(operator) == 0)
+                .collect(Collectors.toList());
+    }
+
+    public List<Operator> getHeads() {
+        checkAndGenerateGraphView();
+        return this.graph.vertexSet().stream()
+                .filter(operator -> graph.inDegreeOf(operator) == 0)
+                .collect(Collectors.toList());
+    }
 
     public void setPlatform(String platform) {
         this.platform = platform;

@@ -3,7 +3,6 @@ package basic.operators;
 
 import basic.Param;
 import basic.visitors.Visitor;
-import channel.Channel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -242,8 +241,12 @@ public class Operator implements Visitable, Serializable {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         Operator operator = (Operator) o;
         return uuid.equals(operator.uuid);
     }

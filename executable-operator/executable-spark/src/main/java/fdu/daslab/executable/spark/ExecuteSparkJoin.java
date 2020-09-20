@@ -1,16 +1,16 @@
 package fdu.daslab.executable.spark;
 
-import fdu.daslab.executable.basic.model.BiOptParamsModel;
-import fdu.daslab.executable.basic.model.ParamsModel;
-import fdu.daslab.executable.basic.utils.ArgsUtil;
-import fdu.daslab.executable.spark.model.RddResult;
-import fdu.daslab.executable.spark.operators.FileSink;
-import fdu.daslab.executable.spark.operators.FileSource;
-import fdu.daslab.executable.spark.operators.FilterOperator;
-import fdu.daslab.executable.spark.operators.JoinOperator;
-import org.apache.spark.api.java.JavaRDD;
-
-import java.util.List;
+//import fdu.daslab.executable.basic.model.BiOptParamsModel;
+//import fdu.daslab.executable.basic.model.ParamsModel;
+//import fdu.daslab.executable.basic.utils.ArgsUtil;
+//import fdu.daslab.executable.spark.model.RddResult;
+//import fdu.daslab.executable.spark.operators.FileSink;
+//import fdu.daslab.executable.spark.operators.FileSource;
+//import fdu.daslab.executable.spark.operators.FilterOperator;
+//import fdu.daslab.executable.spark.operators.JoinOperator;
+//import org.apache.spark.api.java.JavaRDD;
+//
+//import java.util.List;
 
 /**
  * 这个可执行类是用来测试spark平台的join算子是否可用
