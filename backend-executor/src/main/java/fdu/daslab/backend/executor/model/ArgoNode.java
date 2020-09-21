@@ -2,7 +2,6 @@ package fdu.daslab.backend.executor.model;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * 定义argo的DAG上的一个node

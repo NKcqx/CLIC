@@ -117,7 +117,7 @@ public class ArgoAdapter implements OperatorAdapter {
         // 1. 遍历stage里的dag，生成ArgoNode
         for (Stage stage : stages) {
             // todo dependency是上一个ArgoNode
-            String id = Util.IDSupplier.get();
+            String id = Util.generateID();
             ArgoNode argoNode = null;
             if (dependencyNode != null) {
                 ArrayList<ArgoNode> dependencies = new ArrayList<>();
