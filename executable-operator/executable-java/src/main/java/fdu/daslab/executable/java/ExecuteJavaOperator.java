@@ -79,16 +79,6 @@ public class ExecuteJavaOperator {
             }
             long end = System.currentTimeMillis(); //获取结束时间
             logger.info("Stage(java) ———— Running hold time:： " + (end - start) + "ms");
-
-            if (tailOperator != null && tailOperator.getParams().containsKey("outputPath")) {
-                String outputPath = (String) tailOperator.getParams().get("outputPath");
-                File f = new File(outputPath);
-                if (f.exists() && f.isFile()) {
-                    logger.info("Stage(java) ———— Output file size :" + f.length());
-                } else {
-                    logger.info("Stage(java) ———— File doesn't exist or it is not a file");
-                }
-            }
             logger.info("Stage(java) ———— End The Current Java Stage");
         } catch (Exception e) {
             e.printStackTrace();
