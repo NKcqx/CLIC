@@ -55,16 +55,6 @@ public class ExecuteJavaOperator {
         // 解析YAML文件，构造DAG
         try {
             OperatorBase headOperator = ArgsUtil.parseArgs(entry.dagPath, new JavaOperatorFactory());
-            //记录输入文件的大小
-            if (headOperator.getParams().containsKey("inputPath")) {
-                String inputFile = (String) headOperator.getParams().get("inputPath");
-                File f = new File(inputFile);
-                if (f.exists() && f.isFile()) {
-                    logger.info("Stage(java) ———— Input file size:  " + f.length());
-                } else {
-                    logger.info("Stage(java) ———— File doesn't exist or it is not a file");
-                }
-            }
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
             ParamsModel inputArgs = new ParamsModel(functionModel);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
