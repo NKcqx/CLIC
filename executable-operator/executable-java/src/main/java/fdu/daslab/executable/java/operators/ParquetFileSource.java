@@ -1,6 +1,5 @@
 package fdu.daslab.executable.java.operators;
 
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
@@ -27,14 +26,6 @@ import java.util.stream.Stream;
 @Parameters(separators = "=")
 public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    // 输入路径
-    @Parameter(names = {"--input"}, required = true)
-    String inputFileName;
-
-    // 输入的分隔符
-    @Parameter(names = {"--separator"})
-    String separateStr = ",";
-
     public ParquetFileSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
         super("FileSource", id, inputKeys, outputKeys, params);
     }
@@ -53,9 +44,7 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
             ParquetReader.Builder<Group> builder = ParquetReader.builder(new GroupReadSupport(), filePath);
             Group group;
             ParquetReader<Group> reader = builder.build();
-            //将schema的信息作为list的头元素传递下去。
-            resultList.add(Arrays.asList(schemas.toString()));
-            this.setOutputData("result", resultList.stream());
+
             while ((group = reader.read()) != null) {
 
                 List<String> list = new LinkedList<>();
@@ -64,6 +53,9 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
 
                 resultList.add(list);
             }
+            //存储schema信息。将schema放到baseOperator的信息中。
+            this.setSchema("schema", schemas.toString());
+            this.setOutputData("result", resultList.stream());
             reader.close();
 
         } catch (Exception e) {

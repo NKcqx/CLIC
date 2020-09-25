@@ -1,6 +1,5 @@
 package fdu.daslab.executable.java.operators;
 
-import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
@@ -30,14 +29,6 @@ import java.util.stream.Stream;
 @Parameters(separators = "=")
 public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    // 输入路径
-    @Parameter(names = {"--output"}, required = true)
-    String outputFileName;
-
-    // 输出的分隔符
-    @Parameter(names = {"--separator"})
-    String separateStr = ",";
-
     public ParquetFileSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
         super("FileSink", id, inputKeys, outputKeys, params);
     }
@@ -47,10 +38,9 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
                         ResultModel<Stream<List<String>>> result) {
 
         try {
-            //获取list中第一个元素，即schema元素，后续对于schema的获取会进行修改
-            MessageType schema;
-            String schemaStr = this.getInputData("data").findFirst().get().get(0);
-            schema = MessageTypeParser.parseMessageType(schemaStr);
+            //从baseoperator获取schema信息
+            String schemaStr = this.getSchema("schema");
+            MessageType schema = MessageTypeParser.parseMessageType(schemaStr);
 
             Configuration configuration = new Configuration();
             Path outPath = new Path(this.params.get("outputPath"));
@@ -74,7 +64,8 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
 
                 for (int i = 0; i < size; i++) {
                     Type type = schema.getFields().get(i);
-                    if (record.get(i) == null && !type.toString().contains("required")) { //如果当前值为空值的话，且不是required，跳过不写入该field
+                    //如果当前值为空值的话，且不是required，跳过不写入该field
+                    if (record.get(i) == null && !type.toString().contains("required")) {
                         continue;
                     } //如果类型是required但是值为null的话，在添加field的时，会空指针报错
 
