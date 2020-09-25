@@ -14,27 +14,27 @@ import service.client.ExecuteServiceClient;
  */
 public class ExecuteServiceTest {
 
-    @Test
-    public void executeStage1() throws TException {
-        ExecuteServiceClient client = new ExecuteServiceClient("127.0.0.1", 1234);
-        client.executeStage(new TransParams());
-    }
-
-    @Test
-    public void executeStage2() throws TException {
-        ExecuteServiceClient client = new ExecuteServiceClient("127.0.0.1", 1235);
-        client.executeStage(new TransParams());
-    }
-
-    @Test
-    public void executeStage3() throws TException {
-        ExecuteServiceClient client = new ExecuteServiceClient("127.0.0.1", 1236);
-        client.executeStage(new TransParams());
-    }
-
-    @Test
-    public void executeStage4() throws TException {
-        ExecuteServiceClient client = new ExecuteServiceClient("127.0.0.1", 1237);
-        client.executeStage(new TransParams());
-    }
+//    @Test
+//    public void executeStage1() throws TException {
+//        ExecuteServiceClient client = new ExecuteServiceClient("127.0.0.1", 1234);
+//        client.executeStage(new TransParams());
+//    }
+//
+//    @Test
+//    public void executeStage2() throws TException {
+//        ExecuteServiceClient client = new ExecuteServiceClient("127.0.0.1", 1235);
+//        client.executeStage(new TransParams());
+//    }
+//
+//    @Test
+//    public void executeStage3() throws TException {
+//        ExecuteServiceClient client = new ExecuteServiceClient("127.0.0.1", 1236);
+//        client.executeStage(new TransParams());
+//    }
+//
+//    @Test
+//    public void executeStage4() throws TException {
+//        ExecuteServiceClient client = new ExecuteServiceClient("127.0.0.1", 1237);
+//        client.executeStage(new TransParams());
+//    }
 }
