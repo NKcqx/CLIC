@@ -1,60 +1,70 @@
-package fdu.daslab.executable.java;
+package fdu.daslab.executable.service.impl;
 
-import com.beust.jcommander.JCommander;
-import com.beust.jcommander.Parameter;
-import com.beust.jcommander.Parameters;
-import fdu.daslab.executable.basic.model.*;
-import fdu.daslab.executable.basic.utils.TopTraversal;
+import base.ResultCode;
+import base.ServiceBaseResult;
+import base.TransParams;
+import fdu.daslab.executable.basic.model.Connection;
+import fdu.daslab.executable.basic.model.FunctionModel;
+import fdu.daslab.executable.basic.model.OperatorBase;
+import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
+import fdu.daslab.executable.basic.utils.TopTraversal;
 import fdu.daslab.executable.java.operators.JavaOperatorFactory;
+import fdu.daslab.executable.service.ExecuteService;
+import fdu.daslab.executable.service.client.SchedulerServiceClient;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.File;
 
-import java.util.*;
+import java.io.File;
+import java.util.List;
 import java.util.stream.Stream;
 
 /**
- * Java平台的operator的具体实现，兼顾算子融合
- * 因为是线性，只支持线性的合并，不支持 n - 1 ===>
- * 依赖前面的pipeline同步，不依赖具体执行
- * <p>
- * 按照--udfPath指定用户定义的类的位置
- * 按照--operator指定实际的算子，可以指定多个，多个在一个平台上，后台统一执行
- *
- * @author 唐志伟，陈齐翔
+ * @author 唐志伟
  * @version 1.0
- * @since 2020/7/6 1:48 PM
+ * @since 2020/9/23 7:27 PM
  */
-@Parameters(separators = "=")
-public class ExecuteJavaOperator {
-    @Parameter(names = {"--udfPath", "-udf"})
-    String udfPath;
-    @Parameter(names = {"--dagPath", "-dag"})
-    String dagPath;
+public class ExecuteJavaServiceImpl implements ExecuteService.Iface {
 
-    public static void main(String[] args) {
-        Logger logger = LoggerFactory.getLogger(ExecuteJavaOperator.class);
-        // 解析命令行参数
-        ExecuteJavaOperator entry = new ExecuteJavaOperator();
-        JCommander.newBuilder()
-                .addObject(entry)
-                .build()
-                .parse(args);
-        // 用户定义的函数放在一个文件里面
-        //final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(
-        //       args[0].substring(args[0].indexOf("=") + 1)); // 默认先传入 --udfPath !?
-        final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(entry.udfPath);
-        // 这个Map是有序的
-//        Map<String, String[]> standaloneArgs = ArgsUtil.separateArgsByKey(
-//                Arrays.copyOfRange(args, 1, args.length), "--operator");
+    private Integer stageId;
+    private String udfPath;
+    private String dagPath;
+    private String driverHost; // driver的thrift地址
+    private Integer driverPort; // driver的thrift端口
+
+    private static Logger logger = LoggerFactory.getLogger(ExecuteJavaServiceImpl.class);
+
+    public ExecuteJavaServiceImpl(Integer stageId, String udfPath, String dagPath,
+                                  String driverHost, Integer driverPort) {
+        this.stageId = stageId;
+        this.udfPath = udfPath;
+        this.dagPath = dagPath;
+        this.driverHost = driverHost;
+        this.driverPort = driverPort;
+    }
+
+    @Override
+    public ServiceBaseResult execute(TransParams transParams) throws TException {
+        SchedulerServiceClient driverClient = new SchedulerServiceClient(stageId, driverHost, driverPort);
+        // TODO: 后期可以把数据的大小 / 时间上报收敛到开始结束的rpc调用上
+        driverClient.postStarted();
+        onExecute(driverClient);
+        driverClient.postCompleted();
+        return new ServiceBaseResult(ResultCode.SUCCESS, "java execute success!");
+    }
+
+
+    private void onExecute(SchedulerServiceClient driverClient) {
+
+        final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(udfPath);
         //记录时间
         long start = System.currentTimeMillis();   //获取开始时间
         logger.info("Stage(java) ———— Start A New Java Stage");
         // 解析YAML文件，构造DAG
         try {
-            OperatorBase headOperator = ArgsUtil.parseArgs(entry.dagPath, new JavaOperatorFactory());
+            OperatorBase headOperator = ArgsUtil.parseArgs(dagPath, new JavaOperatorFactory());
             //记录输入文件的大小
             if (headOperator.getParams().containsKey("inputPath")) {
                 String inputFile = (String) headOperator.getParams().get("inputPath");
@@ -73,7 +83,9 @@ public class ExecuteJavaOperator {
 
             while (topTraversal.hasNextOpt()) {
                 OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = topTraversal.nextOpt();
+                curOpt.setDriverClient(driverClient);
                 curOpt.execute(inputArgs, null);
+
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
@@ -103,5 +115,6 @@ public class ExecuteJavaOperator {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
     }
 }

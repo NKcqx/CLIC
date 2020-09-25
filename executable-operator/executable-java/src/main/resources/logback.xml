@@ -1,5 +1,5 @@
 <configuration>
-    <property name="LOG_HOME" value="/data/java-log/"/>
+    <property name="LOG_HOME" value="/Users/edward/Code/Lab/data/java-log/"/>
     <property name="LOG_PREFIX" value="java"/>
     <!--追加，输出到命令行 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

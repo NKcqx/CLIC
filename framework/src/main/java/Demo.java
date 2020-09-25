@@ -16,13 +16,13 @@ public class Demo {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
             // 设置udf路径   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
-            planBuilder.setPlatformUdfPath("java", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("java", "/Users/edward/Code/Lab/data/TestSmallWebCaseFunc.class");
             //供测试生成文件使用   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
-            planBuilder.setPlatformUdfPath("spark", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("spark", "/Users/edward/Code/Lab/data/TestSmallWebCaseFunc.class");
 
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("inputPath", "/Users/jason/Desktop/test.csv");
+                put("inputPath", "/Users/edward/Code/Lab/data/test.csv");
             }});
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
@@ -44,7 +44,7 @@ public class Demo {
 
             // 最终结果的输出路径   例如该map的value值是本项目output.csv的绝对路径
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
-                put("outputPath", "/tmp/clic_output/output.csv"); // 具体resources的路径通过配置文件获得
+                put("outputPath", "/Users/edward/Code/Lab/data/output.csv"); // 具体resources的路径通过配置文件获得
             }});
 
             planBuilder.addVertex(sourceNode);

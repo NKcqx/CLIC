@@ -24,6 +24,8 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("JoinOperator", JoinOperator.class);
         put("ReduceByKeyOperator", ReduceByKeyOperator.class);
         put("SortOperator", SortOperator.class);
+        put("SocketSourceOperator", SocketSource.class);
+        put("SocketSinkOperator", SocketSink.class);
     }};
 
     @Override

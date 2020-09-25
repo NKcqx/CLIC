@@ -1,5 +1,7 @@
 package fdu.daslab.executable.basic.model;
 
+import fdu.daslab.executable.service.client.SchedulerServiceClient;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,17 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
     protected List<Connection> outputConnections; // 所有的下一跳
     protected List<Connection> inputConnections; // 所有的上一跳
     protected int inDegree = 0; // 入度，用于拓扑排序
+
+    // 添加driver client，方便各个operator和driver交互
+    private transient SchedulerServiceClient driverClient;
+
+    public SchedulerServiceClient getDriverClient() {
+        return driverClient;
+    }
+
+    public void setDriverClient(SchedulerServiceClient driverClient) {
+        this.driverClient = driverClient;
+    }
 
     public List<Connection> getOutputConnections() {
         return outputConnections;
@@ -68,7 +81,6 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
     public String getName() {
         return name;
     }
-
 
 
     public void setInputData(String key, InputType data) {

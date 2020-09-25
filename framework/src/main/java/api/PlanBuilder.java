@@ -12,7 +12,14 @@ import basic.visitors.ExecutionGenerationVisitor;
 import basic.visitors.PrintVisitor;
 import basic.visitors.WorkflowVisitor;
 import channel.Channel;
+import driver.CLICScheduler;
 import fdu.daslab.backend.executor.model.Workflow;
+import org.apache.thrift.TProcessor;
+import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.server.TServer;
+import org.apache.thrift.server.TThreadPoolServer;
+import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.transport.TTransportException;
 import org.javatuples.Pair;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultListenableGraph;
@@ -22,6 +29,8 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import service.SchedulerService;
+import service.impl.SchedulerServiceImpl;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -38,6 +47,9 @@ public class PlanBuilder {
     // private SimpleDirectedWeightedGraph<Operator, Channel> graph = null;
     private DefaultListenableGraph<Operator, Channel> graph = null;
     private Configuration configuration;
+
+    // 调度器，一直会在后台轮询，直到结束
+    private CLICScheduler clicScheduler = new CLICScheduler();
 
     /**
      * @param configuration 配置文件，从中加载系统运行时必要的参数，即系统运行时的上下文
@@ -171,6 +183,37 @@ public class PlanBuilder {
 //        graph.removeGraphListener(listener);
         Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
         argoWorkflow.execute(); // 将workflow生成为YAML
+
+        // 不在是直接提交给argo，而是:
+        /*
+            1.先根据yaml，创建若干平台的server并启动 ===> 需要纪录下ip, port由系统生成
+            2.纪录各个stage和对应ip / port的对应关系 (类似于zk的名称存储)，以及每个stage的下一个stage
+            3.启动driver的server
+            4.后台启动调度器的线程，负责处理实际的调度请求
+            5.当收到所有stage的完成消息后，可以退出server / 错误可以需要重试
+         */
+        // 启动后台调度器
+        clicScheduler.start();
+        // 启动程序
+        serve();
+
+
+        // 调用yaml生成数据
+
+    }
+
+    // 启动driver常驻的服务
+    private void serve() throws TTransportException {
+        LOGGER.info("Driver thrift server start...");
+        TProcessor tprocessor = new SchedulerService.Processor<>(
+                new SchedulerServiceImpl(clicScheduler));
+        TServerSocket tServerSocket = new TServerSocket(
+                Integer.parseInt(configuration.getProperty("driver_port")));
+        TThreadPoolServer.Args ttpsArgs = new TThreadPoolServer.Args(tServerSocket);
+        ttpsArgs.processor(tprocessor);
+        ttpsArgs.protocolFactory(new TBinaryProtocol.Factory());
+        TServer server = new TThreadPoolServer(ttpsArgs);
+        server.serve();
     }
 
     /**
