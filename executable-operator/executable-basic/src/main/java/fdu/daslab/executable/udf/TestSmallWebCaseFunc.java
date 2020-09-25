@@ -30,6 +30,14 @@ public class TestSmallWebCaseFunc {
         return m.find();
     }
 
+    public boolean loopCondition(List<String> loopVar){
+        return Integer.parseInt(loopVar.get(0)) < 1000;
+    }
+
+    public int increment(List<String> i){
+        return Integer.parseInt(i.get(0));
+    }
+
     // map
     public List<String> mapFunc(List<String> record) {
         String url = record.get(1); // 合法网址

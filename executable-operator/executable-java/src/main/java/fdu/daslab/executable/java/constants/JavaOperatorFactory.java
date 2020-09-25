@@ -1,7 +1,8 @@
-package fdu.daslab.executable.java.operators;
+package fdu.daslab.executable.java.constants;
 
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
+import fdu.daslab.executable.java.operators.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -24,6 +25,8 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("JoinOperator", JoinOperator.class);
         put("ReduceByKeyOperator", ReduceByKeyOperator.class);
         put("SortOperator", SortOperator.class);
+        put("LoopOperator", LoopOperator.class);
+        put("NextIteration", NextIteration.class);
     }};
 
     @Override

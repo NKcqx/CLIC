@@ -71,8 +71,8 @@ public class ExecuteSparkOperator {
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
                     OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> targetOpt = connection.getTargetOpt();
-                    String sourceKey = connection.getSourceKey();
-                    String targetKey = connection.getTargetKey();
+                    String sourceKey = connection.getSourceKeys();
+                    String targetKey = connection.getTargetKeys();
                     JavaRDD<List<String>> sourceResult = curOpt.getOutputData(sourceKey);
                     // 将当前opt的输出结果传入下一跳的输入数据
                     targetOpt.setInputData(targetKey, sourceResult);

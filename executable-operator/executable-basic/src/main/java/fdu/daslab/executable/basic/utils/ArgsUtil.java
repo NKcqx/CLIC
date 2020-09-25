@@ -19,6 +19,10 @@ import java.util.*;
  */
 public class ArgsUtil {
 
+    public static UUID randomUUID(){
+        return UUID.randomUUID();
+    }
+
     /**
      * 通过某个key参数分割参数集合，并按顺序返回
      *

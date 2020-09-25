@@ -37,4 +37,8 @@
         <ability>reducebykey</ability>
         <template>Operator/ReduceByKey/conf/ReduceByKeyOperator.xml</template>
     </pair>
+    <pair>
+        <ability>loop</ability>
+        <template>Operator/Loop/conf/LoopOperator.xml</template>
+    </pair>
 </mappings>

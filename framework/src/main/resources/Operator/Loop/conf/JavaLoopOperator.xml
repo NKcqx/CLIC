@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="LoopOperator" name="LoopOperator" kind="calculator">
+
+    <platform ID="java">
+        <language>java</language>
+        <cost>1.1174</cost>
+    </platform>
+
+</Operator>

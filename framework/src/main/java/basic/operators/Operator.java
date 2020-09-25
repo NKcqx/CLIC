@@ -37,9 +37,9 @@ public class Operator implements Visitable, Serializable {
     /**
      * 应避免直接创建Operator，而是使用OperatorFactory的 createOperator 或 createOperatorFromFile
      *
-     * @param id
-     * @param name
-     * @param kind
+     * @param id UUID( unique key )
+     * @param name Operator 的名字，和实例无关
+     * @param kind Operator 的类型
      */
     public Operator(String id, String name, String kind) {
         this.uuid = UUID.randomUUID();
@@ -101,7 +101,7 @@ public class Operator implements Visitable, Serializable {
     /**
      * 由用户直接为Opt指定具体计算平台，而不用系统择优选择
      *
-     * @param entityId
+     * @param entityId 平台Entity的ID
      * @throws FileNotFoundException
      */
     public void withTargetPlatform(String entityId) throws FileNotFoundException {
@@ -124,6 +124,10 @@ public class Operator implements Visitable, Serializable {
         return true;
     }
 
+    /**
+     *  这里的Operator只是Logical的，理论上不会存在 evaluate 方法
+     *  这里只是临时加的Evaluate函数，用于在Logical中打印Operator的信息
+     */
     public void tempDoEvaluate() {
         this.logging(this.getOperatorID() + " evaluate: {\n   inputs: ");
         for (String key : this.inputParamList.keySet()) {
@@ -178,14 +182,6 @@ public class Operator implements Visitable, Serializable {
         this.outputDataList.put(param.getName(), param);
     }
 
-//    public List<Channel> getOutputChannel() {
-//        return outputChannels;
-//    }
-//
-//    public List<Channel> getInputChannel() {
-//        return inputChannels;
-//    }
-
     public Map<String, Param> getInputParamList() {
         return this.inputParamList;
     }
@@ -196,10 +192,6 @@ public class Operator implements Visitable, Serializable {
 
     public Map<String, Param> getOutputDataList() {
         return this.outputDataList;
-    }
-
-    public boolean isLoaded() {
-        return !this.entities.isEmpty(); // 用这个判断可能不太好，也许可以试试判断有没有configFile
     }
 
     public String getOperatorName() {

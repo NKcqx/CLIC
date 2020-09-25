@@ -7,10 +7,10 @@ import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.TopTraversal;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
-import fdu.daslab.executable.java.operators.JavaOperatorFactory;
+import fdu.daslab.executable.java.constants.JavaOperatorFactory;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.io.File;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -59,7 +59,6 @@ public class ExecuteJavaOperator {
             ParamsModel inputArgs = new ParamsModel(functionModel);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
             TopTraversal topTraversal = new TopTraversal(headOperator);
-            OperatorBase tailOperator = null;
 
             while (topTraversal.hasNextOpt()) {
                 OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = topTraversal.nextOpt();
@@ -68,14 +67,14 @@ public class ExecuteJavaOperator {
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
                     OperatorBase<Stream<List<String>>, Stream<List<String>>> targetOpt = connection.getTargetOpt();
-                    String sourceKey = connection.getSourceKey();
-                    String targetKey = connection.getTargetKey();
-                    Stream<List<String>> sourceResult = curOpt.getOutputData(sourceKey);
-                    // 将当前opt的输出结果传入下一跳的输入数据
-                    targetOpt.setInputData(targetKey, sourceResult);
+                    List<Pair<String, String>> keyPairs = connection.getKeys();
+                    for (Pair<String, String> keyPair : keyPairs){
+                        Stream<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
+                        // 将当前opt的输出结果传入下一跳的输入数据
+                        targetOpt.setInputData(keyPair.getValue1(), sourceResult);
+                    }
                 }
                 logger.info("Stage(java) ———— Current Java Operator is " + curOpt.getName());
-                tailOperator = curOpt;
             }
             long end = System.currentTimeMillis(); //获取结束时间
             logger.info("Stage(java) ———— Running hold time:： " + (end - start) + "ms");

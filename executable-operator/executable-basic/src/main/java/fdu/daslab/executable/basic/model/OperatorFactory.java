@@ -9,6 +9,6 @@ import java.util.Map;
  * @since 2020/8/19 11:52 上午
  */
 public interface OperatorFactory {
-     OperatorBase createOperator(String name, String id, List<String> inputKeys,
+       OperatorBase createOperator(String name, String id, List<String> inputKeys,
                                               List<String> outputKeys, Map<String, String> params) throws  Exception;
 }
