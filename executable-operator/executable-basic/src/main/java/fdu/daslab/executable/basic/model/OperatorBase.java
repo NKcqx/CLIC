@@ -15,10 +15,10 @@ import java.util.Map;
 public abstract class OperatorBase<InputType, OutputType> implements ExecutionOperator<OutputType> {
     protected String name;
     protected String id;
+    protected String schema;
     protected Map<String, InputType> inputData; // 输入数据
     protected Map<String, OutputType> outputData; // 输出数据
     protected Map<String, String> params; // （输入）参数值
-    protected Map<String, String> schema;
     protected List<Connection> outputConnections; // 所有的下一跳
     protected List<Connection> inputConnections; // 所有的上一跳
     protected int inDegree = 0; // 入度，用于拓扑排序
@@ -35,7 +35,6 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
                         List<String> outputKeys, Map<String, String> params) {
         this.name = name;
         this.id = id;
-        this.schema = new HashMap<String, String>();
         this.inputData = new HashMap<>();
         for (String key : inputKeys) {
             this.inputData.put(key, null);
@@ -88,11 +87,11 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
         this.outputData.put(key, data);
     }
 
-    public String getSchema(String key) {
-        return this.schema.get(key);
+    public String getSchema() {
+        return schema;
     }
-    public void setSchema(String key, String schema) {
-        this.schema.put(key, schema);
+    public void setSchema(String schema) {
+        this.schema = schema;
     }
 
     /**

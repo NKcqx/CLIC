@@ -39,7 +39,7 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
 
         try {
             //从baseoperator获取schema信息
-            String schemaStr = this.getSchema("schema");
+            String schemaStr = this.getSchema();
             MessageType schema = MessageTypeParser.parseMessageType(schemaStr);
 
             Configuration configuration = new Configuration();

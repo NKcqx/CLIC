@@ -8,14 +8,21 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
 
+import static org.junit.Assert.assertEquals;
+
 /**
  * @author Du Qinghua
  * @version 1.0
  * @since 2020/09/25 18:45
  */
 public class ParquetFileSinkTest {
-    String filePath1="C:\\Users\\huawei\\Downloads\\myusers.parquet";//读取
-    String filePath2="C:\\Users\\huawei\\Downloads\\myusers2.parquet";//写入
+
+    String filePath1= ParquetFileSinkTest.class.getClassLoader().
+            getResource("myusers.parquet").getPath();//读取
+    String filePath2= ParquetFileSinkTest.class.getClassLoader().
+            getResource("").getPath()+"myusers2.parquet";//写入
+
+           //写入
     @Test
     public void  writeParquetFileTest() throws Exception {
         //从已有文件中读取，获得Stream
@@ -33,16 +40,23 @@ public class ParquetFileSinkTest {
         List<String> out = new LinkedList<String>();
         ParquetFileSink parquetFileSink=new ParquetFileSink("id",in,out, params);
         parquetFileSink.setInputData("data",data);
-        parquetFileSink.setSchema("schema",schemaStr);
+        parquetFileSink.setSchema(schemaStr);
 
         //执行
         parquetFileSink.execute(null,null);
 
         //再读写入的文件，并打印
         Stream<List<String>> res=fileRead(filePath2);
+
+        List<String> k = new LinkedList<String>();
         res.forEach(r -> {
-            System.out.println(r.toString());
+            k.add(r.toString());
         });
+
+        assertEquals(k.get(0), "[bob0, blue, 2]");
+        assertEquals(k.get(1), "[bob1, blue, 2]");
+        assertEquals(k.get(2), "[bob2, blue, 2]");
+        assertEquals(k.get(3), "[bob3, null, 2]");
         /*
            [bob0, blue, 2]
            [bob1, blue, 2]

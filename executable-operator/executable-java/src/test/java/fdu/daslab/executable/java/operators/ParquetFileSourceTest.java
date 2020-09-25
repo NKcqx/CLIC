@@ -1,12 +1,26 @@
 package fdu.daslab.executable.java.operators;
 
-import org.junit.Test;
 
+
+import org.apache.parquet.schema.MessageTypeParser;
+import org.junit.Test;
+import org.apache.hadoop.conf.Configuration;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Stream;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
+import org.apache.parquet.example.data.Group;
+import org.apache.parquet.format.converter.ParquetMetadataConverter;
+import org.apache.parquet.hadoop.ParquetFileReader;
+import org.apache.parquet.hadoop.ParquetReader;
+import org.apache.parquet.hadoop.example.GroupReadSupport;
+import org.apache.parquet.hadoop.metadata.ParquetMetadata;
+import org.apache.parquet.schema.GroupType;
+import org.apache.parquet.schema.MessageType;
+import static org.junit.Assert.assertEquals;
 
 /**
  * @author Du Qinghua
@@ -15,9 +29,20 @@ import java.util.stream.Stream;
  */
 public class ParquetFileSourceTest {
 
-    String filePath="C:\\Users\\huawei\\Downloads\\myusers.parquet";
+    String filePath= ParquetFileSourceTest.class.getClassLoader().
+            getResource("myusers.parquet").toString();
     @Test
     public void  readParquetFileTest() throws Exception {
+        Configuration configuration = new Configuration();
+//            configuration.set(FileSystem.FS_DEFAULT_NAME_KEY, "hdfs://192.168.8.206:9000");
+        String schemaStr ="message example.avro.User {"+
+                "required binary name (UTF8);"+
+                "optional binary favorite_color (UTF8);"+
+                "optional int32 favorite_number;"+
+                "}";
+
+        MessageType schema = MessageTypeParser.parseMessageType(schemaStr);
+
         Map<String,String> params = new HashMap<String, String>();
         params.put("inputPath", filePath);//parquet文件路径
         List<String> in = new LinkedList<String>();
@@ -28,12 +53,17 @@ public class ParquetFileSourceTest {
 
         //输出读入的结果
         Stream<List<String>> s = parquetFileSource.getOutputData("result");
+        List<String> k = new LinkedList<String>();
         s.forEach(r -> {
-            System.out.println(r.toString());
+            k.add(r.toString());
         });
 
-        //打印schema信息
-        System.out.println(parquetFileSource.getSchema("schema"));
+        assertEquals(k.get(0), "[bob0, blue, 2]");
+        assertEquals(k.get(1), "[bob1, blue, 2]");
+        assertEquals(k.get(2), "[bob2, blue, 2]");
+        assertEquals(k.get(3), "[bob3, null, 2]");
+
+        assertEquals(parquetFileSource.getSchema(), schema.toString());
         /*
         [bob0, blue, 2]
         [bob1, blue, 2]

@@ -54,7 +54,7 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
                 resultList.add(list);
             }
             //存储schema信息。将schema放到baseOperator的信息中。
-            this.setSchema("schema", schemas.toString());
+            this.setSchema(schemas.toString());
             this.setOutputData("result", resultList.stream());
             reader.close();
 
