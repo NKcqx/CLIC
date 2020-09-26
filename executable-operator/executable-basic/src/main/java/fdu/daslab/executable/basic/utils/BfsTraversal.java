@@ -15,7 +15,7 @@ import java.util.Queue;
  * @since 2020/8/19 10:26 下午
  */
 public class BfsTraversal {
-    Queue<OperatorBase> queue = new LinkedList<>();
+    Queue<OperatorBase> queue;
 
     public BfsTraversal(OperatorBase root) {
         // 从root开始遍历DAG，将所有入度为0的节点加入到队列中

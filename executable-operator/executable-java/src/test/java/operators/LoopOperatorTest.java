@@ -14,6 +14,10 @@ import org.javatuples.Pair;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -85,15 +89,17 @@ public class LoopOperatorTest {
         try {
             final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("/Users/jason/Desktop/TestLoopFunc.class");
             ParamsModel inputArgs = new ParamsModel(functionModel);
-
-            BfsTraversal bfsTraversal = new BfsTraversal(this.loopOperator);
-            while (bfsTraversal.hasNextOpt()) {
-                OperatorBase<Stream<List<String>>, Stream<List<String>>>  curOpt = bfsTraversal.nextOpt();
+            Queue<OperatorBase<Stream<List<String>>, Stream<List<String>>>> bfsQueue = new LinkedList<>();
+            bfsQueue.add(this.loopOperator);
+            while (!bfsQueue.isEmpty()) {
+                OperatorBase<Stream<List<String>>, Stream<List<String>>>  curOpt = bfsQueue.poll();
                 curOpt.execute(inputArgs, null);
 
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
                     OperatorBase<Stream<List<String>>, Stream<List<String>>> targetOpt = connection.getTargetOpt();
+                    bfsQueue.add(targetOpt);
+
                     List<Pair<String, String>> keyPairs = connection.getKeys();
                     for (Pair<String, String> keyPair : keyPairs){
                         Stream<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
@@ -102,11 +108,19 @@ public class LoopOperatorTest {
                     }
                 }
             }
-            Stream<List<String>> streamResult = this.fileSink.getOutputData("result");
-            List<String> result = streamResult.collect(Collectors.toList()).get(0);
 
-            List<String> groundTruth = Arrays.asList("5", "6", "7", "8", "9");
-            assertEquals(result, groundTruth);
+            File file = new File("/tmp/clic_output/loopTest.txt");
+            assertTrue(file.exists());
+            assertTrue(file.isFile());
+            FileInputStream inputStream = new FileInputStream(file);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line = bufferedReader.readLine();
+            assertEquals(line, "5 6 7 8 9");
+//            Stream<List<String>> streamResult = this.fileSink.getOutputData("result");
+//            List<String> result = streamResult.collect(Collectors.toList()).get(0);
+//
+//            List<String> groundTruth = Arrays.asList("5", "6", "7", "8", "9");
+//            assertEquals(result, groundTruth);
         }catch (Exception ignored){
         }
 
