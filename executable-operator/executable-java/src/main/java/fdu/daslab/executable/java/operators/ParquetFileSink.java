@@ -46,7 +46,7 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
             Path outPath = new Path(this.params.get("outputPath"));
             ExampleParquetWriter.Builder builder = ExampleParquetWriter
                     .builder(outPath).withWriteMode(ParquetFileWriter.Mode.OVERWRITE)
-                    .withWriterVersion(ParquetProperties.WriterVersion.PARQUET_1_0)
+                    .withWriterVersion(ParquetProperties.WriterVersion.PARQUET_2_0)
                     .withCompressionCodec(CompressionCodecName.SNAPPY) //压缩
                     .withConf(configuration)
                     .withType(schema);
