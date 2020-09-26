@@ -4,7 +4,7 @@ import com.beust.jcommander.JCommander;
 import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
-import fdu.daslab.executable.basic.utils.TopTraversal;
+import fdu.daslab.executable.basic.utils.BfsTraversal;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
 import fdu.daslab.executable.java.constants.JavaOperatorFactory;
@@ -58,10 +58,10 @@ public class ExecuteJavaOperator {
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
             ParamsModel inputArgs = new ParamsModel(functionModel);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
-            TopTraversal topTraversal = new TopTraversal(headOperator);
+            BfsTraversal bfsTraversal = new BfsTraversal(headOperator);
 
-            while (topTraversal.hasNextOpt()) {
-                OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = topTraversal.nextOpt();
+            while (bfsTraversal.hasNextOpt()) {
+                OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = bfsTraversal.nextOpt();
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型

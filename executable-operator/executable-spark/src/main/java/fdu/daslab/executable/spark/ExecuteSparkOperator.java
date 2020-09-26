@@ -5,7 +5,7 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
-import fdu.daslab.executable.basic.utils.TopTraversal;
+import fdu.daslab.executable.basic.utils.BfsTraversal;
 import fdu.daslab.executable.spark.operators.SparkOperatorFactory;
 import org.apache.spark.api.java.JavaRDD;
 import org.slf4j.Logger;
@@ -62,10 +62,10 @@ public class ExecuteSparkOperator {
             ParamsModel inputArgs = new ParamsModel(null);
             inputArgs.setFunctionClasspath(entry.udfPath);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
-            TopTraversal topTraversal = new TopTraversal(headOperator);
+            BfsTraversal bfsTraversal = new BfsTraversal(headOperator);
             OperatorBase tailOperator = null;
-            while (topTraversal.hasNextOpt()) {
-                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = topTraversal.nextOpt();
+            while (bfsTraversal.hasNextOpt()) {
+                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = bfsTraversal.nextOpt();
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型

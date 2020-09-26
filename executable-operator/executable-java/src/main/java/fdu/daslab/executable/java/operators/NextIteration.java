@@ -2,10 +2,7 @@ package fdu.daslab.executable.java.operators;
 
 import fdu.daslab.executable.basic.model.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -33,15 +30,19 @@ public class NextIteration extends OperatorBase<Stream<List<String>>, Stream<Lis
     public void execute(ParamsModel inputArgs, ResultModel<Stream<List<String>>> result) {
         FunctionModel functionModel = inputArgs.getFunctionModel();
         assert functionModel != null;
-        List<String> loopVar = this.getInputData("loopVar").findAny().orElseThrow(NoSuchElementException::new);
-        // 只更新 loopVar
-        int nextLoopVar = (int) functionModel.invoke( // 按理说是不是应该结束的时候再更新呢，即放到nextIteration里面
-                this.params.get("loopVarUpdateName"),
-                loopVar);
-        loopVar.set(0, String.valueOf(nextLoopVar));
-        List<List<String>> wrappedLoopVar = new ArrayList<>();
-        wrappedLoopVar.add(loopVar);
-        this.setOutputData("loopVar", wrappedLoopVar.stream());
-        this.setOutputData("result", this.getInputData("data"));
+        try {
+            List<String> loopVar = this.getInputData("loopVar").findAny().orElseThrow(NoSuchElementException::new);
+            // 只更新 loopVar
+            int nextLoopVar = (int) functionModel.invoke( // 按理说是不是应该结束的时候再更新呢，即放到nextIteration里面
+                    this.params.get("loopVarUpdateName"),
+                    loopVar);
+            loopVar = Collections.singletonList(String.valueOf(nextLoopVar));
+            List<List<String>> wrappedLoopVar = Collections.singletonList(loopVar);
+            this.setOutputData("loopVar", wrappedLoopVar.stream());
+            this.setOutputData("result", this.getInputData("data"));
+        }catch (NoSuchElementException e){
+            e.printStackTrace();
+        }
+
     }
 }

@@ -2,14 +2,9 @@ package fdu.daslab.executable.java.operators;
 
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
-import fdu.daslab.executable.basic.utils.TopTraversal;
 import fdu.daslab.executable.java.constants.JavaOperatorFactory;
 
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.stream.Stream;
 
 /**
@@ -22,7 +17,6 @@ import java.util.stream.Stream;
 public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
     private List<Connection> realConnections;
     private NextIteration myNextIteration;
-    private OperatorBase loopEnd;
     private List<Connection> triggerConnections; // trigger 的应该是 Loop -> loopHead 这条边 todo 那谁把loopVar 交给nextIteration？
     // 这应该有个自己的Executor
 
@@ -33,15 +27,21 @@ public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List
         super("LoopOperator", id, inputKeys, outputKeys, params);
         realConnections = new ArrayList<>();
         try {
+            HashMap<String, String> nextIterationParams = new HashMap<>();
+            nextIterationParams.put("loopVarUpdateName", this.params.get("loopVarUpdateName"));
             this.myNextIteration = (NextIteration) new JavaOperatorFactory().createOperator(
                     "NextIteration",
                     ArgsUtil.randomUUID().toString(),
                     new ArrayList<>(this.inputData.keySet()), // 只是为了 set -> list
                     new ArrayList<>(this.outputData.keySet()),
-                    null
+                    nextIterationParams
             );
             this.myNextIteration.setParams("predicateName", this.params.get("predicateName"));
+            this.myNextIteration.connectTo("loopVar", this, "loopVar");
+            this.myNextIteration.connectTo("result", this, "data");
+
         } catch (Exception e) {
+            e.printStackTrace();
             throw new Exception("这创建 NextIteration 的时候出错了，可能是这里的硬编码没有和配置文件的修改同步");
         }
         triggerConnections = new ArrayList<>();
@@ -83,18 +83,19 @@ public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List
         assert functionModel != null;
         try {
             List<String> loopVar = this.getInputData("loopVar").findAny().orElseThrow(NoSuchElementException::new);
-            boolean endLoop = (boolean) functionModel.invoke(
+            boolean continueLoop = (boolean) functionModel.invoke(
                     this.params.get("predicateName"),
                     loopVar);
             // 直接把数据forward到output
             this.setOutputData("result", this.getInputData("data"));
-            this.setOutputData("loopVar", this.getOutputData("loopVar"));
-            if (endLoop) {
+            this.setOutputData("loopVar", this.getInputData("loopVar"));
+            if (!continueLoop) {
                 this.setOperatorState(OperatorState.Finished);
             } else {
                 this.setOperatorState(OperatorState.Running);
                 // 然后dump给nextIteration
-                this.myNextIteration.setInputData("loopVar", this.getOutputData("loopVar"));
+                List<List<String>> nextLoopVar = Collections.singletonList(loopVar);
+                this.myNextIteration.setInputData("loopVar", nextLoopVar.stream());
             }
         } catch (NoSuchElementException e) {
             e.printStackTrace();

@@ -1,9 +1,12 @@
 package fdu.daslab.executable.udf;
 
+import org.apache.spark.sql.sources.In;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author 唐志伟，刘丰艺
@@ -28,14 +31,6 @@ public class TestSmallWebCaseFunc {
         Pattern r = Pattern.compile(pattern);
         Matcher m = r.matcher(record.get(1));
         return m.find();
-    }
-
-    public boolean loopCondition(List<String> loopVar){
-        return Integer.parseInt(loopVar.get(0)) < 1000;
-    }
-
-    public int increment(List<String> i){
-        return Integer.parseInt(i.get(0));
     }
 
     // map
