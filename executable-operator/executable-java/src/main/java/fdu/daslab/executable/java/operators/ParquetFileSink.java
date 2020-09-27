@@ -55,10 +55,7 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
             SimpleGroupFactory groupFactory = new SimpleGroupFactory(schema);
 
             this.getInputData("data").forEach(record -> {
-                //若是包含schema的list，直接跳过
-                if (record.get(0).contains("message")) {
-                    return;
-                }
+
                 Group group = groupFactory.newGroup();
                 int size = record.size();
 
