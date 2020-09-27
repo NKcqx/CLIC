@@ -61,7 +61,7 @@ public class ParquetFileSourceTest {
         s.forEach(r -> {
             k.add(r.toString());
         });
-System.out.println(k);
+
         assertEquals(k.get(0), "[bob0, blue, 2]");
         assertEquals(k.get(1), "[bob1, blue, 2]");
         assertEquals(k.get(2), "[bob2, blue, 2]");

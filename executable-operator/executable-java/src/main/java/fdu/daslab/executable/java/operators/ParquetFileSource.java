@@ -69,15 +69,13 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
     private List<String>  parseGroup(Group group, GroupType groupType) {
         List<String> res = new LinkedList<String>();
         int fieldSize = groupType.getFieldCount();
-        int j = 0;
-        while (j < fieldSize) {
+        for (int j = 0; j < fieldSize; j++) {
             //如果是当前的field是group的话
             if (!groupType.getType(j).isPrimitive()) {
                 Group subgroup = group.getGroup(j, 0);
                 String tmp = parseGroup(subgroup, subgroup.getType()).toString();
                 //将读出的group数据放在指定位置
                 res.add(j, tmp);
-                j++;
             } else {
                 int repetition = group.getFieldRepetitionCount(j);
                 //根据该field重复repetition去读
@@ -89,7 +87,6 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
                 if (repetition == 0) {
                     res.add(null);
                 }
-                j++;
             }
         }
         return res;
