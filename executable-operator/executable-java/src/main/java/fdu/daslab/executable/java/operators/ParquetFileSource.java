@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
     public ParquetFileSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("FileSource", id, inputKeys, outputKeys, params);
+        super("ParquetFileSource", id, inputKeys, outputKeys, params);
     }
 
     @Override
@@ -36,7 +36,6 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
         try {
             Path filePath = new Path(this.params.get("inputPath"));
             Configuration configuration = new Configuration();
-//            configuration.set(FileSystem.FS_DEFAULT_NAME_KEY, "hdfs://192.168.8.206:9000");
             ParquetMetadata readFooter = ParquetFileReader.readFooter(configuration,
                     filePath, ParquetMetadataConverter.NO_FILTER);
             //获取文件的schema
@@ -63,9 +62,9 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
         }
     }
     /**
-     * 迭代解析每一个group
-     * 读取parquet文件成list时需要解析group： [[bob0, blue, [3, 2]], [bob1, blue, [3, 2]]]
-     * 其中 [3, 2]是一个整体string，不是list
+     * @param group group数据
+     * @param groupType  类型信息
+     * @return 将group行取后转化的list
      */
     private List<String>  parseGroup(Group group, GroupType groupType) {
         List<String> res = new LinkedList<String>();

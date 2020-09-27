@@ -2,6 +2,7 @@ package fdu.daslab.executable.java.operators;
 
 
 
+import fdu.daslab.executable.basic.model.OperatorBase;
 import org.apache.parquet.schema.MessageTypeParser;
 import org.junit.Test;
 import org.apache.hadoop.conf.Configuration;
@@ -31,6 +32,7 @@ public class ParquetFileSourceTest {
 
     String filePath= ParquetFileSourceTest.class.getClassLoader().
             getResource("myusers.parquet").toString();
+//    String filePath="hdfs://10.176.24.160:9000/myusers.parquet"; //hdfs测试
     @Test
     public void  readParquetFileTest() throws Exception {
         Configuration configuration = new Configuration();
@@ -46,8 +48,11 @@ public class ParquetFileSourceTest {
         Map<String,String> params = new HashMap<String, String>();
         params.put("inputPath", filePath);//parquet文件路径
         List<String> in = new LinkedList<String>();
+        in.add("data");
         List<String> out = new LinkedList<String>();
-        ParquetFileSource parquetFileSource=new ParquetFileSource("id",in,out, params);
+        out.add("result");
+
+        ParquetFileSource parquetFileSource=new ParquetFileSource("1",in,out, params);
 
         parquetFileSource.execute(null,null);
 
@@ -57,7 +62,7 @@ public class ParquetFileSourceTest {
         s.forEach(r -> {
             k.add(r.toString());
         });
-
+System.out.println(k);
         assertEquals(k.get(0), "[bob0, blue, 2]");
         assertEquals(k.get(1), "[bob1, blue, 2]");
         assertEquals(k.get(2), "[bob2, blue, 2]");

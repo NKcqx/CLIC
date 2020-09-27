@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
     public ParquetFileSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("FileSink", id, inputKeys, outputKeys, params);
+        super("ParquetFileSink", id, inputKeys, outputKeys, params);
     }
 
     @Override
@@ -42,13 +42,11 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
             String schemaStr = this.getSchema();
             MessageType schema = MessageTypeParser.parseMessageType(schemaStr);
 
-            Configuration configuration = new Configuration();
             Path outPath = new Path(this.params.get("outputPath"));
             ExampleParquetWriter.Builder builder = ExampleParquetWriter
                     .builder(outPath).withWriteMode(ParquetFileWriter.Mode.OVERWRITE)
                     .withWriterVersion(ParquetProperties.WriterVersion.PARQUET_2_0)
                     .withCompressionCodec(CompressionCodecName.SNAPPY) //压缩
-                    .withConf(configuration)
                     .withType(schema);
 
             ParquetWriter<Group> writer = builder.build();
@@ -88,6 +86,10 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
 
     /**
      * 根据schema的类型进行写入
+     * @param group group数据
+     * @param type  类型信息
+     * @param fieldValue 需要存储的field值
+     * @return 返回写入后的group
      */
     private Group addField(Group group, Type type, String fieldValue) {
         //获取name

@@ -21,8 +21,9 @@ public class ParquetFileSinkTest {
             getResource("myusers.parquet").getPath();//读取
     String filePath2= ParquetFileSinkTest.class.getClassLoader().
             getResource("").getPath()+"myusers2.parquet";//写入
+//    String filePath1="hdfs://10.176.24.160:9000/myusers.parquet";   //hdfs测试
+//    String filePath2="hdfs://10.176.24.160:9000/myusers.parquet2";
 
-           //写入
     @Test
     public void  writeParquetFileTest() throws Exception {
         //从已有文件中读取，获得Stream
@@ -37,8 +38,10 @@ public class ParquetFileSinkTest {
         params.put("outputPath",filePath2);//parquet文件路径
 
         List<String> in = new LinkedList<String>();
+        in.add("data");
         List<String> out = new LinkedList<String>();
-        ParquetFileSink parquetFileSink=new ParquetFileSink("id",in,out, params);
+        out.add("result");
+        ParquetFileSink parquetFileSink=new ParquetFileSink("1",in,out, params);
         parquetFileSink.setInputData("data",data);
         parquetFileSink.setSchema(schemaStr);
 
@@ -69,7 +72,9 @@ public class ParquetFileSinkTest {
         Map<String,String> params = new HashMap<String, String>();
         params.put("inputPath", path);//parquet文件路径
         List<String> in = new LinkedList<String>();
+        in.add("data");
         List<String> out = new LinkedList<String>();
+        out.add("result");
         ParquetFileSource parquetFileSource=new ParquetFileSource("id",in,out, params);
 
         parquetFileSource.execute(null,null);
