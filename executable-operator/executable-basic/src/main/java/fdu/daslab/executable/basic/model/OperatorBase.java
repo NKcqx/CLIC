@@ -15,6 +15,7 @@ import java.util.Map;
 public abstract class OperatorBase<InputType, OutputType> implements ExecutionOperator<OutputType> {
     protected String name;
     protected String id;
+    protected String schema;
     protected Map<String, InputType> inputData; // 输入数据
     protected Map<String, OutputType> outputData; // 输出数据
     protected Map<String, String> params; // （输入）参数值
@@ -34,7 +35,6 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
                         List<String> outputKeys, Map<String, String> params) {
         this.name = name;
         this.id = id;
-
         this.inputData = new HashMap<>();
         for (String key : inputKeys) {
             this.inputData.put(key, null);
@@ -85,6 +85,13 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
 
     public void setOutputData(String key, OutputType data) {
         this.outputData.put(key, data);
+    }
+
+    public String getSchema() {
+        return schema;
+    }
+    public void setSchema(String schema) {
+        this.schema = schema;
     }
 
     /**
