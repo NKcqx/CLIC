@@ -71,20 +71,22 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
         int fieldSize = groupType.getFieldCount();
         int j = 0;
         while (j < fieldSize) {
-            if (!groupType.getType(j).isPrimitive()) { //如果是当前的field是group的话
+            //如果是当前的field是group的话
+            if (!groupType.getType(j).isPrimitive()) {
                 Group subgroup = group.getGroup(j, 0);
                 String tmp = parseGroup(subgroup, subgroup.getType()).toString();
-                res.add(j, tmp); //将读出的group数据放在指定位置
+                //将读出的group数据放在指定位置
+                res.add(j, tmp);
                 j++;
             } else {
                 int repetition = group.getFieldRepetitionCount(j);
                 //根据该field重复repetition去读
-                int k = 0;
-                while (k < repetition) { //repetition>=1,因此一定会进入循环
-                    res.add(group.getValueToString(j, k)); //k读取循环部分
-                    k++;
+                for (int k = 0; k < repetition; k++) {
+                    //k读取循环部分
+                    res.add(group.getValueToString(j, k));
                 }
-                if (repetition == 0) { //存在空值的情况
+                //存在空值的情况
+                if (repetition == 0) {
                     res.add(null);
                 }
                 j++;

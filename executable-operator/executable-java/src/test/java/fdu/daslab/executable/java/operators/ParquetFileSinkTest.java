@@ -21,8 +21,8 @@ public class ParquetFileSinkTest {
             getResource("myusers.parquet").getPath();//读取
     String filePath2= ParquetFileSinkTest.class.getClassLoader().
             getResource("").getPath()+"myusers2.parquet";//写入
-//    String filePath1="hdfs://10.176.24.160:9000/myusers.parquet";   //hdfs测试
-//    String filePath2="hdfs://10.176.24.160:9000/myusers.parquet2";
+//    String filePath1="hdfs://ip:9000/myusers.parquet";   //hdfs测试
+//    String filePath2="hdfs://ip:9000/myusers.parquet2";
 
     @Test
     public void  writeParquetFileTest() throws Exception {

@@ -32,11 +32,10 @@ public class ParquetFileSourceTest {
 
     String filePath= ParquetFileSourceTest.class.getClassLoader().
             getResource("myusers.parquet").toString();
-//    String filePath="hdfs://10.176.24.160:9000/myusers.parquet"; //hdfs测试
+//    String filePath="hdfs://ip:9000/myusers.parquet"; //hdfs测试
     @Test
     public void  readParquetFileTest() throws Exception {
-        Configuration configuration = new Configuration();
-//            configuration.set(FileSystem.FS_DEFAULT_NAME_KEY, "hdfs://192.168.8.206:9000");
+
         String schemaStr ="message example.avro.User {"+
                 "required binary name (UTF8);"+
                 "optional binary favorite_color (UTF8);"+
