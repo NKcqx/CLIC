@@ -26,6 +26,10 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("SortOperator", SortOperator.class);
         put("ParquetFileSourceOperator", ParquetFileSource.class);
         put("ParquetFileSinkOperator", ParquetFileSink.class);
+        put("CountOperator", CountOperator.class);
+        put("DistinctOperator", DistinctOperator.class);
+        put("MaxOperator", MaxOperator.class);
+        put("MinOperator", MinOperator.class);
     }};
 
     @Override
