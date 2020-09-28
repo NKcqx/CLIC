@@ -3,7 +3,7 @@
 
     <platforms>
         <platform ID="java">
-            <path>Operator/Source/conf/JavaLoopOperator.xml</path>
+            <path>Operator/Loop/conf/JavaLoopOperator.xml</path>
         </platform>
     </platforms>
 

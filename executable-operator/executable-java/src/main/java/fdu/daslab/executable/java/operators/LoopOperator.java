@@ -3,6 +3,7 @@ package fdu.daslab.executable.java.operators;
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.java.constants.JavaOperatorFactory;
+import org.javatuples.Pair;
 
 import java.util.*;
 import java.util.stream.Stream;
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
     private List<Connection> realConnections;
     private NextIteration myNextIteration;
-    private List<Connection> triggerConnections; // trigger 的应该是 Loop -> loopHead 这条边 todo 那谁把loopVar 交给nextIteration？
+    private List<Connection> triggerConnections; // trigger 的应该是 Loop -> loopHead 这条边
     // 这应该有个自己的Executor
 
     public LoopOperator(String id,
@@ -40,34 +41,50 @@ public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List
             this.myNextIteration.connectTo("loopVar", this, "loopVar");
             this.myNextIteration.connectTo("result", this, "data");
 
+
+            String bodyYaml = this.params.get("loopBody");
+            // todo 这默认LoopBody里只有一个起点与Loop本身相连
+            Pair<List<OperatorBase>, List<OperatorBase>> loopHeadsAndEnds = ArgsUtil.parseArgs(bodyYaml, new JavaOperatorFactory());
+            this.triggerConnections = new ArrayList<>();
+            this.startLoopBody(loopHeadsAndEnds.getValue0().get(0));
+            this.endLoopBody(loopHeadsAndEnds.getValue1().get(0));
+
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("这创建 NextIteration 的时候出错了，可能是这里的硬编码没有和配置文件的修改同步");
         }
-        triggerConnections = new ArrayList<>();
+
         // myNextIteration.setTheLoopOperator(this);
     }
 
-    public void startLoopBody(OperatorBase loopHead, String targetKey) { // loopVar怎么传给body里的Opt ?
+    /**
+     * 设置loopBody的起点Operator，并将LoopOperator 与其相连
+     *
+     * @param loopHead 起点Operator
+     */
+    public void startLoopBody(OperatorBase loopHead) { // loopVar怎么传给body里的Opt ?
         // 因为 loop 的 connectTo被重写了，这里只能直接操作Connection
-        Connection triggerConnection = new Connection(this, "result", loopHead, targetKey);
+        Connection triggerConnection = new Connection(this, "result", loopHead, "data");
         this.triggerConnections.add(triggerConnection);
+        try {
+            loopHead.connectFrom(triggerConnection);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
-    public void endLoopBody(OperatorBase loopEnd, String sourceKey) {
+    public void endLoopBody(OperatorBase loopEnd) {
         // 设置双指针
-        loopEnd.connectTo(sourceKey, myNextIteration, "data");
-        myNextIteration.connectFrom("data", loopEnd, sourceKey);
+        loopEnd.connectTo("result", myNextIteration, "data");
+        myNextIteration.connectFrom("data", loopEnd, "result");
     }
 
     @Override
     public List<Connection> getOutputConnections() { // 起到Switch的作用
-        if  (this.operatorState == OperatorState.Finished){
+        if (this.operatorState == OperatorState.Finished) {
             return realConnections;
-        }else if (this.operatorState == OperatorState.Running || this.operatorState == OperatorState.Ready){
+        } else {
             return triggerConnections;
-        }else {
-            return null; // Wait
         }
     }
 

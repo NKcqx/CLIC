@@ -55,11 +55,11 @@ public class Demo {
             planBuilder.addVertex(sinkNode);
 
             // 链接节点，即构建DAG
-            planBuilder.addEdge(sourceNode, filterNode, null);
-            planBuilder.addEdge(filterNode, mapNode, null);
-            planBuilder.addEdge(mapNode, reduceNode, null);
-            planBuilder.addEdge(reduceNode, sortNode, null);
-            planBuilder.addEdge(sortNode, sinkNode, null);
+            planBuilder.addEdge(sourceNode, filterNode);
+            planBuilder.addEdge(filterNode, mapNode);
+            planBuilder.addEdge(mapNode, reduceNode);
+            planBuilder.addEdge(reduceNode, sortNode);
+            planBuilder.addEdge(sortNode, sinkNode);
 
             planBuilder.execute();
         } catch (Exception e) {

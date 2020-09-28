@@ -34,11 +34,15 @@
         <template>Operator/Join/conf/JoinOperator.xml</template>
     </pair>
     <pair>
-        <ability>reducebykey</ability>
+        <ability>reduce-by-key</ability>
         <template>Operator/ReduceByKey/conf/ReduceByKeyOperator.xml</template>
     </pair>
     <pair>
         <ability>loop</ability>
         <template>Operator/Loop/conf/LoopOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>collection-source</ability>
+        <template>Operator/CollectionSource/conf/CollectionSourceOperator.xml</template>
     </pair>
 </mappings>

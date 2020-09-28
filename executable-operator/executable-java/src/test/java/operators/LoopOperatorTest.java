@@ -5,7 +5,6 @@ import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
-import fdu.daslab.executable.basic.utils.BfsTraversal;
 import fdu.daslab.executable.java.constants.JavaOperatorFactory;
 import fdu.daslab.executable.java.operators.FileSink;
 import fdu.daslab.executable.java.operators.LoopOperator;
@@ -19,7 +18,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.Assert.*;
@@ -50,7 +48,7 @@ public class LoopOperatorTest {
 
         Map<String, String> params = new HashMap<>();
         params.put("predicateName", "loopCondition");
-        params.put("loopBody", "LoopHeadOperator's id");
+        params.put("loopBody", "A dag described by yaml");
         params.put("loopVarUpdateName", "increment");
 
         List<String> sinkInputKeys = Collections.singletonList("data");
@@ -75,8 +73,8 @@ public class LoopOperatorTest {
             this.loopOperator.setInputData("data", inputValueBox.stream());
             this.loopOperator.setInputData("loopVar", loopVarBox.stream());
 
-            this.loopOperator.startLoopBody(this.loopBody, "data"); // 把 loop自己的结果给到 loopBody 的 'data'
-            this.loopOperator.endLoopBody(this.loopBody, "result");
+            this.loopOperator.startLoopBody(this.loopBody); // 把 loop自己的结果给到 loopBody 的 'data'
+            this.loopOperator.endLoopBody(this.loopBody);
             this.loopOperator.connectTo("result", fileSink, "data");
         } catch (Exception e) {
             e.printStackTrace();
@@ -89,6 +87,7 @@ public class LoopOperatorTest {
         try {
             final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("/Users/jason/Desktop/TestLoopFunc.class");
             ParamsModel inputArgs = new ParamsModel(functionModel);
+            // 不能使用之前的BFSTraversal
             Queue<OperatorBase<Stream<List<String>>, Stream<List<String>>>> bfsQueue = new LinkedList<>();
             bfsQueue.add(this.loopOperator);
             while (!bfsQueue.isEmpty()) {
@@ -116,11 +115,6 @@ public class LoopOperatorTest {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line = bufferedReader.readLine();
             assertEquals(line, "5 6 7 8 9");
-//            Stream<List<String>> streamResult = this.fileSink.getOutputData("result");
-//            List<String> result = streamResult.collect(Collectors.toList()).get(0);
-//
-//            List<String> groundTruth = Arrays.asList("5", "6", "7", "8", "9");
-//            assertEquals(result, groundTruth);
         }catch (Exception ignored){
         }
 

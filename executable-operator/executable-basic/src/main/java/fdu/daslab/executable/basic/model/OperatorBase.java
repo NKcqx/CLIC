@@ -97,12 +97,14 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
                 return;
             }
         }
+        this.updateInDegree(1);
         inputConnections.add(new Connection(sourceOpt, sourceKey, this, targetKey));
     }
 
     public void connectFrom(Connection connection) throws Exception {
         if (connection.getSourceOpt() == this || connection.getTargetOpt() == this){
             inputConnections.add(connection);
+            this.updateInDegree(1);
         }else {
             throw new Exception("Connection 的两端未包含当前Opt, Connection：" +
                     connection.getSourceOpt().toString() +
@@ -116,6 +118,7 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
     public void disconnectFrom(Connection connection) {
         if (this.inputConnections.contains(connection)){
             this.inputConnections.add(connection);
+            this.updateInDegree(-1);
         }
     }
 
@@ -135,7 +138,7 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
         return name;
     }
 
-    public void setInputData(String key, InputType data) {
+    public void setInputData(String key, InputType data) { // todo 检查key是否存在！
         this.inputData.put(key, data);
         // 查找是否还有没有传入的输入数据
         boolean hasEmptyInputData = this.inputData.values().stream().anyMatch(Objects::isNull);
@@ -153,21 +156,18 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
     }
 
     public void setOutputData(String key, OutputType data) {
+        // todo 检查key是否存在！
         this.outputData.put(key, data);
     }
 
     /**
      * 更新节点的入度
      *
-     * @param delta 入度的变化值，为 0 时表示初始化入度，为其他值时则直接更新
+     * @param delta 入度的变化值
      * @return 当前节点的入度值
      */
     public int updateInDegree(int delta) {
-        if (delta == 0) { // 初始化
-            this.inDegree = this.inputConnections.size();
-        } else {
-            this.inDegree = this.inDegree + delta;
-        }
+        this.inDegree = this.inDegree + delta;
         return this.inDegree;
     }
 

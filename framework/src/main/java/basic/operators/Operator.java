@@ -29,15 +29,12 @@ public class Operator implements Visitable, Serializable {
     // private List<Channel> inputChannels;
     private Map<String, Param> inputParamList; // 输入参数列表
     private Map<String, Param> inputDataList; // 输入数据列表
-
-    // 记录下一跳Opt.
-    // private List<Channel> outputChannels; // 这里Channel的index应该没什么用
     private Map<String, Param> outputDataList; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
 
     /**
      * 应避免直接创建Operator，而是使用OperatorFactory的 createOperator 或 createOperatorFromFile
      *
-     * @param id UUID( unique key )
+     * @param id   UUID( unique key )
      * @param name Operator 的名字，和实例无关
      * @param kind Operator 的类型
      */
@@ -125,8 +122,8 @@ public class Operator implements Visitable, Serializable {
     }
 
     /**
-     *  这里的Operator只是Logical的，理论上不会存在 evaluate 方法
-     *  这里只是临时加的Evaluate函数，用于在Logical中打印Operator的信息
+     * 这里的Operator只是Logical的，理论上不会存在 evaluate 方法
+     * 这里只是临时加的Evaluate函数，用于在Logical中打印Operator的信息
      */
     public void tempDoEvaluate() {
         this.logging(this.getOperatorID() + " evaluate: {\n   inputs: ");
@@ -160,7 +157,8 @@ public class Operator implements Visitable, Serializable {
         if (this.inputParamList.containsKey(key)) {
             this.inputParamList.get(key).setValue(value);
         } else {
-            throw new NoSuchElementException(String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
+            throw new NoSuchElementException(
+                    String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
         }
     }
 
