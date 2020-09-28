@@ -23,16 +23,13 @@ public class MinMaxCountDistOptTest {
     List<String> d = Arrays.asList("www.cctv.com,8".split(","));
     List<String> e = Arrays.asList("www.cctv.com,8".split(","));
     Stream<List<String>> data = Arrays.asList(a,b,c,d,e).stream();
-    Stream<List<String>> minData=Arrays.asList(b).stream();
-    Stream<List<String>> maxData=Arrays.asList(c).stream();
-    Stream<List<String>> distData = Arrays.asList(a,b,c,d).stream();
-    Stream<Long> myCount = Stream.of((long)5);
 
     FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(udfPath);
     ParamsModel inputArgs = new ParamsModel(functionModel);
 
     @Test
-    public void minOperatorTest(){
+    public void minOperatorTest() {
+        Stream<List<String>> minData=Arrays.asList(b).stream();
         Map<String,String> params = new HashMap<String, String>();
         params.put("udfName","minFunc");
 
@@ -48,7 +45,8 @@ public class MinMaxCountDistOptTest {
         Assert.assertArrayEquals(res.toArray(), minData.toArray());
     }
     @Test
-    public void maxOperatorTest(){
+    public void maxOperatorTest() {
+        Stream<List<String>> maxData=Arrays.asList(c).stream();
         Map<String,String> params = new HashMap<String, String>();
         params.put("udfName","maxFunc");
 
@@ -65,7 +63,8 @@ public class MinMaxCountDistOptTest {
 
     }
     @Test
-    public void countOperatorTest(){
+    public void countOperatorTest() {
+        Stream<Long> myCount = Stream.of((long)5);
         Map<String,String> params = new HashMap<String, String>();
 
         List<String> in = new LinkedList<String>();
@@ -81,7 +80,8 @@ public class MinMaxCountDistOptTest {
 
     }
     @Test
-    public void distinctOperatorTest(){
+    public void distinctOperatorTest() {
+        Stream<List<String>> distData = Arrays.asList(a,b,c,d).stream();
         Map<String,String> params = new HashMap<String, String>();
 
         List<String> in = new LinkedList<String>();
