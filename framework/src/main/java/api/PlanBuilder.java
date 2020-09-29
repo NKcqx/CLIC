@@ -13,6 +13,7 @@ import basic.visitors.PrintVisitor;
 import basic.visitors.WorkflowVisitor;
 import channel.Channel;
 import driver.CLICScheduler;
+import fdu.daslab.backend.executor.model.KubernetesStage;
 import fdu.daslab.backend.executor.model.Workflow;
 import org.apache.thrift.TProcessor;
 import org.apache.thrift.protocol.TBinaryProtocol;
@@ -182,27 +183,36 @@ public class PlanBuilder {
         wrapStageWithHeadTail(stages); // 为每个Stage添加一个对应平台的SourceOpt 和 SinkOpt
 //        graph.removeGraphListener(listener);
         Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
-        argoWorkflow.execute(); // 将workflow生成为YAML
-
-        // 不在是直接提交给argo，而是:
-        /*
-            1.先根据yaml，创建若干平台的server并启动 ===> 需要纪录下ip, port由系统生成
-            2.纪录各个stage和对应ip / port的对应关系 (类似于zk的名称存储)，以及每个stage的下一个stage
-            3.启动driver的server
-            4.后台启动调度器的线程，负责处理实际的调度请求
-            5.当收到所有stage的完成消息后，可以退出server / 错误可以需要重试
-         */
-        // 启动后台调度器
-        clicScheduler.start();
-        // 启动程序
-        serve();
-
-
-        // 调用yaml生成数据
+        Map<Integer, KubernetesStage> stageInfos = argoWorkflow.execute(); // 将workflow生成为YAML
+        // driver的调度
+        driverSchedule(stageInfos);
 
     }
 
-    // 启动driver常驻的服务
+    /**
+     * driver实际的调度过程：
+     *  1.先根据yaml，创建若干平台的server并启动 ===> 需要纪录下ip, port由系统生成
+     *  2.纪录各个stage和对应ip / port的对应关系 (类似于zk的名称存储)，以及每个stage的下一个stage
+     *  3.启动driver的server
+     *  4.后台启动调度器的线程，负责处理实际的调度请求
+     *  5.当收到所有stage的完成消息后，可以退出server / 错误可以需要重试
+     *
+     * @param stageInfos 每一个stage对应的信息
+     * @throws TTransportException
+     */
+    private void driverSchedule(Map<Integer, KubernetesStage> stageInfos) throws TTransportException {
+        // 将对应stage的信息保存到scheduler中，这些信息至少在workflow过程中不会停止
+        // 初始化stage
+        clicScheduler.initStages(stageInfos);
+        // 启动后台调度器
+        clicScheduler.start();
+        // 调度初始的那一些节点
+        clicScheduler.handlerSourceStages();
+        // 启动主程序 TODO：结束时如何关闭主程序
+        serve();
+    }
+
+    // 启动driver常驻的服务，和各个平台进行交互
     private void serve() throws TTransportException {
         LOGGER.info("Driver thrift server start...");
         TProcessor tprocessor = new SchedulerService.Processor<>(

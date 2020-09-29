@@ -74,4 +74,6 @@ public class SchedulerServiceImpl implements SchedulerService.Iface {
         serviceResult.setResultCode(ResultCode.SUCCESS);
         return serviceResult;
     }
+
+    /*======  除了和driver进行交互之外，还可以提供一些额外的接口，方便用户来访问集群的运行状态  ======*/
 }

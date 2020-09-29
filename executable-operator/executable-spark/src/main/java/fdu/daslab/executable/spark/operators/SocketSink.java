@@ -43,7 +43,7 @@ public class SocketSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List
             Socket socket = server.accept();
             // 需要依次将数据序列化为字节数组，然后一个partition一个partition地发送数据
             logger.info("Start to send data to: " + socket.getRemoteSocketAddress().toString());
-            // 由于socket无法被序列化，因此直接collect到一起，然后发送 TODO: 其他数据发送的选择
+            // 由于socket无法被序列化，因此直接collect到一起，然后发送 TODO: 其他数据发送的选择，数据需要分批
 //            List<List<String>> records = this.getInputData("data").collect();
             // 使用arrayList，而不是scala的list
             ArrayList<List<String>> records = new ArrayList<>();
