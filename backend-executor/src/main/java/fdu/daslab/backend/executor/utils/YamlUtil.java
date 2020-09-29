@@ -91,10 +91,10 @@ public class YamlUtil {
         }
         long n = System.nanoTime();
         String storePath = resJobPath + n + ".yml";
-        try{
+        try {
             //存入指定路径
             writeYaml(new OutputStreamWriter((new FileOutputStream(storePath))), argoDagMap);
-        }catch (FileNotFoundException e){
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
             // todo 生成文件重新写入？
         }
@@ -189,7 +189,7 @@ public class YamlUtil {
 
     /**
      * @param writer 生成的YAML格式数据 的载体
-     * @param res  需要写入yaml的内容
+     * @param res    需要写入yaml的内容
      */
     public static void writeYaml(Writer writer, Map<String, Object> res) {
         try {

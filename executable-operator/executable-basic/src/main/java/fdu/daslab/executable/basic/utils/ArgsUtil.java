@@ -4,11 +4,8 @@ import com.beust.jcommander.JCommander;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
 import org.javatuples.Pair;
-import org.javatuples.Tuple;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,7 +19,7 @@ import java.util.stream.Collectors;
  */
 public class ArgsUtil {
 
-    public static UUID randomUUID(){
+    public static UUID randomUUID() {
         return UUID.randomUUID();
     }
 
@@ -58,7 +55,9 @@ public class ArgsUtil {
      * @param yamlStr yaml文件的路径
      * @return DAG的头节点(返回头节点还是尾节点呢 ? ）
      */
-    public static Pair<List<OperatorBase>, List<OperatorBase>> parseArgs(String yamlStr, OperatorFactory factory) throws Exception {
+    public static Pair<List<OperatorBase>, List<OperatorBase>> parseArgs(
+            String yamlStr,
+            OperatorFactory factory) throws Exception {
         Yaml yaml = new Yaml();
         Map<String, Object> yamlArgs = yaml.load(yamlStr);
         Map<String, OperatorBase> operatorPool =
@@ -68,7 +67,9 @@ public class ArgsUtil {
         return headsAndEnds;
     }
 
-    public static Pair<List<OperatorBase>, List<OperatorBase>> parseArgs(InputStream yamlStream, OperatorFactory factory) throws Exception {
+    public static Pair<List<OperatorBase>, List<OperatorBase>> parseArgs(
+            InputStream yamlStream,
+            OperatorFactory factory) throws Exception {
         Yaml yaml = new Yaml();
         Map<String, Object> yamlArgs = yaml.load(yamlStream);
         Map<String, OperatorBase> operatorPool =
@@ -110,8 +111,9 @@ public class ArgsUtil {
      * @param operatorPool 所有的Operator
      * @return 头节点
      */
-    private static Pair<List<OperatorBase>, List<OperatorBase>> parseDependency(List<Map<String, Object>> dagArgs,
-                                                                                Map<String, OperatorBase> operatorPool) {
+    private static Pair<List<OperatorBase>, List<OperatorBase>> parseDependency(
+            List<Map<String, Object>> dagArgs,
+            Map<String, OperatorBase> operatorPool) {
         for (int i = 0; i < dagArgs.size(); ++i) {
             Map<String, Object> arg = dagArgs.get(i);
             // 当前Opt，因为dag里的依赖关系是自底向上构建的，所以当前Opt即为targetOpt

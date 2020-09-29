@@ -1,6 +1,5 @@
 package fdu.daslab.backend.executor.model;
 
-import fdu.daslab.backend.executor.utils.HttpUtil;
 import fdu.daslab.backend.executor.utils.YamlUtil;
 
 import java.util.List;

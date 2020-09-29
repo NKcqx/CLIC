@@ -29,15 +29,15 @@ public class Connection implements Serializable {
         this.targetKeys.add(targetKey);
     }
 
-    public void addKey(String sourceKey, String targetKey){
-        sourceKeys.add(sourceKey) ;
+    public void addKey(String sourceKey, String targetKey) {
+        sourceKeys.add(sourceKey);
         targetKeys.add(targetKey);
     }
 
-    public List<Pair<String , String >> getKeys(){
-        List<Pair<String , String >> res = new ArrayList<>();
-        for (int i=0;i<sourceKeys.size(); i++){
-            res.add( new Pair<>(sourceKeys.get(i), targetKeys.get(i)) );
+    public List<Pair<String, String>> getKeys() {
+        List<Pair<String, String>> res = new ArrayList<>();
+        for (int i = 0; i < sourceKeys.size(); i++) {
+            res.add(new Pair<>(sourceKeys.get(i), targetKeys.get(i)));
         }
         return res;
     }

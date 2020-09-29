@@ -87,7 +87,7 @@ public class TemplateUtil {
             YamlUtil yamlUtil = new YamlUtil();
             try {
                 yamlUtil.writeYaml(new OutputStreamWriter((new FileOutputStream(templatePath))), templateMap);
-            } catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
 

@@ -10,16 +10,16 @@ import java.util.stream.Collectors;
  */
 public class TestLoopFunc {
 
-    public boolean loopCondition(List<String> loopVar){
+    public boolean loopCondition(List<String> loopVar) {
         return Integer.parseInt(loopVar.get(0)) < 5;
     }
 
-    public int increment(List<String> i){
+    public int increment(List<String> i) {
         String value = i.get(0);
         return Integer.parseInt(value) + 1;
     }
 
-    public List<String> loopBodyMapFunc(List<String> list){
+    public List<String> loopBodyMapFunc(List<String> list) {
         list = list.stream().map(s -> String.valueOf(Integer.parseInt(s) + 1)).collect(Collectors.toList());
         return list;
     }

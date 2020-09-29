@@ -1,7 +1,5 @@
 package fdu.daslab.executable.basic.model;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
@@ -23,6 +21,7 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
     protected List<Connection> inputConnections; // 所有的上一跳
     protected int inDegree = 0; // 入度，用于拓扑排序
     protected OperatorState operatorState = OperatorState.Waiting; // 需要加锁
+
     public enum OperatorState {
         Waiting, Ready, Running, Finished
     }
@@ -72,20 +71,20 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
     }
 
     public void connectTo(Connection connection) throws Exception {
-        if (connection.getSourceOpt() == this || connection.getTargetOpt() == this){
+        if (connection.getSourceOpt() == this || connection.getTargetOpt() == this) {
             outputConnections.add(connection);
-        }else {
-            throw new Exception("Connection 的两端未包含当前Opt, Connection：" +
-                    connection.getSourceOpt().toString() +
-                    " -> " +
-                    connection.getTargetOpt().toString() +
-                    "。当前Operator" +
-                    this.toString());
+        } else {
+            throw new Exception("Connection 的两端未包含当前Opt, Connection："
+                    + connection.getSourceOpt().toString()
+                    + " -> "
+                    + connection.getTargetOpt().toString()
+                    + "。当前Operator"
+                    + this.toString());
         }
     }
 
-    public void disconnectTo(Connection connection){
-        if (this.outputConnections.contains(connection)){
+    public void disconnectTo(Connection connection) {
+        if (this.outputConnections.contains(connection)) {
             this.outputConnections.remove(connection);
         }
     }
@@ -102,21 +101,21 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
     }
 
     public void connectFrom(Connection connection) throws Exception {
-        if (connection.getSourceOpt() == this || connection.getTargetOpt() == this){
+        if (connection.getSourceOpt() == this || connection.getTargetOpt() == this) {
             inputConnections.add(connection);
             this.updateInDegree(1);
-        }else {
-            throw new Exception("Connection 的两端未包含当前Opt, Connection：" +
-                    connection.getSourceOpt().toString() +
-                    " -> " +
-                    connection.getTargetOpt().toString() +
-                    "。当前Operator" +
-                    this.toString());
+        } else {
+            throw new Exception("Connection 的两端未包含当前Opt, Connection："
+                    + connection.getSourceOpt().toString()
+                    + " -> "
+                    + connection.getTargetOpt().toString()
+                    + "。当前Operator"
+                    + this.toString());
         }
     }
 
     public void disconnectFrom(Connection connection) {
-        if (this.inputConnections.contains(connection)){
+        if (this.inputConnections.contains(connection)) {
             this.inputConnections.add(connection);
             this.updateInDegree(-1);
         }
@@ -130,7 +129,7 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
         return params;
     }
 
-    public void setParams(String key, String value){
+    public void setParams(String key, String value) {
         this.params.put(key, value);
     }
 
@@ -142,7 +141,7 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
         this.inputData.put(key, data);
         // 查找是否还有没有传入的输入数据
         boolean hasEmptyInputData = this.inputData.values().stream().anyMatch(Objects::isNull);
-        if (! hasEmptyInputData){
+        if (!hasEmptyInputData) {
             this.setOperatorState(OperatorState.Ready);
         }
     }
@@ -163,6 +162,7 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
     public String getSchema() {
         return schema;
     }
+
     public void setSchema(String schema) {
         this.schema = schema;
     }

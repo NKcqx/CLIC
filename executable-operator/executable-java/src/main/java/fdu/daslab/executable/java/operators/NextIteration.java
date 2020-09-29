@@ -33,7 +33,8 @@ public class NextIteration extends OperatorBase<Stream<List<String>>, Stream<Lis
         try {
             List<String> loopVar = this.getInputData("loopVar").findAny().orElseThrow(NoSuchElementException::new);
             // 只更新 loopVar
-            int nextLoopVar = (int) functionModel.invoke( // 按理说是不是应该结束的时候再更新呢，即放到nextIteration里面
+            // 按理说是不是应该结束的时候再更新呢，即放到nextIteration里面
+            int nextLoopVar = (int) functionModel.invoke(
                     this.params.get("loopVarUpdateName"),
                     loopVar);
             loopVar = Collections.singletonList(String.valueOf(nextLoopVar));

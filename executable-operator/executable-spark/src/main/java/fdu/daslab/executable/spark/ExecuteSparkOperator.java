@@ -51,7 +51,8 @@ public class ExecuteSparkOperator {
         logger.info("Stage(spark) ———— Start A New Spark Stage");
         try {
             InputStream yamlStream = new FileInputStream(new File(entry.dagPath));
-            Pair<List<OperatorBase> , List<OperatorBase> > headAndEndOperators = ArgsUtil.parseArgs(yamlStream, new SparkOperatorFactory());
+            Pair<List<OperatorBase>, List<OperatorBase>> headAndEndOperators =
+                    ArgsUtil.parseArgs(yamlStream, new SparkOperatorFactory());
 
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
             ParamsModel inputArgs = new ParamsModel(null);
@@ -67,7 +68,7 @@ public class ExecuteSparkOperator {
                     OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> targetOpt = connection.getTargetOpt();
                     topoTraversal.updateInDegree(targetOpt, -1);
                     List<Pair<String, String>> keyPairs = connection.getKeys();
-                    for (Pair<String, String> keyPair : keyPairs){
+                    for (Pair<String, String> keyPair : keyPairs) {
                         JavaRDD<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
