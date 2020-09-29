@@ -1,7 +1,8 @@
-package fdu.daslab.executable.java.operators;
+package fdu.daslab.executable.java.constants;
 
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
+import fdu.daslab.executable.java.operators.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -26,6 +27,9 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("SortOperator", SortOperator.class);
         put("ParquetFileSourceOperator", ParquetFileSource.class);
         put("ParquetFileSinkOperator", ParquetFileSink.class);
+        put("LoopOperator", LoopOperator.class);
+        put("NextIteration", NextIteration.class);
+        put("CollectionSourceOperator", CollectionSource.class);
     }};
 
     @Override

@@ -1,9 +1,12 @@
 package fdu.daslab.executable.udf;
 
+import org.apache.spark.sql.sources.In;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * @author 唐志伟，刘丰艺
