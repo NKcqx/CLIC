@@ -54,7 +54,8 @@ public class ExecuteJavaOperator {
         // 解析YAML文件，构造DAG
         try {
             InputStream yamlStream = new FileInputStream(new File(entry.dagPath));
-            Pair<List<OperatorBase>,List<OperatorBase>> headAndEndsOperators = ArgsUtil.parseArgs(yamlStream, new JavaOperatorFactory());
+            Pair<List<OperatorBase>, List<OperatorBase>> headAndEndsOperators =
+                    ArgsUtil.parseArgs(yamlStream, new JavaOperatorFactory());
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
             ParamsModel inputArgs = new ParamsModel(functionModel);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
@@ -69,7 +70,7 @@ public class ExecuteJavaOperator {
                     topoTraversal.updateInDegree(targetOpt, -1);
 
                     List<Pair<String, String>> keyPairs = connection.getKeys();
-                    for (Pair<String, String> keyPair : keyPairs){
+                    for (Pair<String, String> keyPair : keyPairs) {
                         Stream<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);

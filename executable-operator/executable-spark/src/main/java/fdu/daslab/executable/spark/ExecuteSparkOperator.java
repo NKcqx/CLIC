@@ -51,13 +51,13 @@ public class ExecuteSparkOperator {
         logger.info("Stage(spark) ———— Start A New Spark Stage");
         try {
             InputStream yamlStream = new FileInputStream(new File(entry.dagPath));
-            List<OperatorBase> headOperators = ArgsUtil.parseArgs(yamlStream, new SparkOperatorFactory());
+            Pair<List<OperatorBase> , List<OperatorBase> > headAndEndOperators = ArgsUtil.parseArgs(yamlStream, new SparkOperatorFactory());
 
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
             ParamsModel inputArgs = new ParamsModel(null);
             inputArgs.setFunctionClasspath(entry.udfPath);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
-            TopoTraversal topoTraversal = new TopoTraversal(headOperators);
+            TopoTraversal topoTraversal = new TopoTraversal(headAndEndOperators.getValue0());
             while (topoTraversal.hasNextOpt()) {
                 OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = topoTraversal.nextOpt();
                 curOpt.execute(inputArgs, null);

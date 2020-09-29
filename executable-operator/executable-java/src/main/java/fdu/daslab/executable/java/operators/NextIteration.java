@@ -22,7 +22,7 @@ public class NextIteration extends OperatorBase<Stream<List<String>>, Stream<Lis
         this.outputData.put("loopVar", null);
     }
 
-    public void setTheLoopOperator(LoopOperator loopOperator){
+    public void setTheLoopOperator(LoopOperator loopOperator) {
         this.theLoopOperator = loopOperator;
     }
 
@@ -40,7 +40,7 @@ public class NextIteration extends OperatorBase<Stream<List<String>>, Stream<Lis
             List<List<String>> wrappedLoopVar = Collections.singletonList(loopVar);
             this.setOutputData("loopVar", wrappedLoopVar.stream());
             this.setOutputData("result", this.getInputData("data"));
-        }catch (NoSuchElementException e){
+        } catch (NoSuchElementException e) {
             e.printStackTrace();
         }
 

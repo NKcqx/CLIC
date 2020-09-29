@@ -44,7 +44,8 @@ public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List
 
             String bodyYaml = this.params.get("loopBody");
             // todo 这默认LoopBody里只有一个起点与Loop本身相连
-            Pair<List<OperatorBase>, List<OperatorBase>> loopHeadsAndEnds = ArgsUtil.parseArgs(bodyYaml, new JavaOperatorFactory());
+            Pair<List<OperatorBase>, List<OperatorBase>> loopHeadsAndEnds =
+                    ArgsUtil.parseArgs(bodyYaml, new JavaOperatorFactory());
             this.triggerConnections = new ArrayList<>();
             this.startLoopBody(loopHeadsAndEnds.getValue0().get(0));
             this.endLoopBody(loopHeadsAndEnds.getValue1().get(0));

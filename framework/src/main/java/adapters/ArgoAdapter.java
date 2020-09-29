@@ -66,7 +66,7 @@ public class ArgoAdapter implements OperatorAdapter {
      * @param stages 所有的Stage
      * @return 所有的ArgoNode
      */
-    public static List<ArgoNode> setArgoNode(List<Stage> stages){
+    public static List<ArgoNode> setArgoNode(List<Stage> stages) {
         List<ArgoNode> argoNodeList = new ArrayList<>();
         ArgoNode dependencyNode = null;
         // 1. 遍历stage里的dag，生成ArgoNode
@@ -77,9 +77,9 @@ public class ArgoAdapter implements OperatorAdapter {
             if (dependencyNode != null) {
                 ArrayList<ArgoNode> dependencies = new ArrayList<>();
                 dependencies.add(dependencyNode); // todo 之后会有不止一个dependency
-                argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(),  dependencies);
+                argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(), dependencies);
             } else {
-                argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(),  null);
+                argoNode = new ArgoNode(id, stage.getName(), stage.getPlatform(), null);
             }
 
             // 遍历 子DAG，把所有opt转为Map保存
@@ -93,7 +93,7 @@ public class ArgoAdapter implements OperatorAdapter {
                 }});
                 argoNodeList.add(argoNode);
                 dependencyNode = argoNode;
-            } catch (FileNotFoundException e){
+            } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
 
@@ -101,7 +101,7 @@ public class ArgoAdapter implements OperatorAdapter {
         return argoNodeList;
     }
 
-    public static Map<String, Object> graph2Yaml(Graph<Operator, Channel> graph){
+    public static Map<String, Object> graph2Yaml(Graph<Operator, Channel> graph) {
         // 遍历stage里的dag, 转成YAML字符串
         List<Map<String, Object>> optMapList = new ArrayList<>(); // "operators"字段，是stage里所有opt的列表 YML列表
         List<Map<String, Object>> dagList = new ArrayList<>(); // "dag"字段，各个边的列表
@@ -116,7 +116,7 @@ public class ArgoAdapter implements OperatorAdapter {
             dagList.add(ArgoAdapter.operatorDependency2Map(graph, curOpt)); // channel -> map
 
         }
-        return new HashMap<String, Object>(){{
+        return new HashMap<String, Object>() {{
             put("operators", optMapList);
             put("dag", dagList);
         }};
@@ -124,6 +124,7 @@ public class ArgoAdapter implements OperatorAdapter {
 
     /**
      * 把一个Operator中的各个属性转化为Map，用于最后将Opt生成YAML
+     *
      * @param opt 要转换的Operator
      * @return Key-Value格式的Map, 其中 Key为参数名，Value为参数值
      */
@@ -146,8 +147,9 @@ public class ArgoAdapter implements OperatorAdapter {
 
     /**
      * 将Opt的各个Channel转为Map格式，用于创建YAML中的dag字段，该字段主要用于声明DAG节点间的依赖关系
+     *
      * @param graph 基础Graph，用于
-     * @param opt 当前要解析的Opt
+     * @param opt   当前要解析的Opt
      * @return 当前Opt 的 Map格式 的依赖关系, 其实就是将Opt的各个Channel
      */
     private static Map<String, Object> operatorDependency2Map(Graph graph, Operator opt) {

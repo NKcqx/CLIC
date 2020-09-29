@@ -20,8 +20,8 @@ import java.util.stream.Stream;
  * 文件写入的算子
  *
  * @author 唐志伟
- * @since 2020/7/6 1:41 PM
  * @version 1.0
+ * @since 2020/7/6 1:41 PM
  */
 @Parameters(separators = "=")
 public class FileSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
@@ -44,15 +44,15 @@ public class FileSink extends OperatorBase<Stream<List<String>>, Stream<List<Str
         // FileSink fileSinkArgs = (FileSink) inputArgs.getOperatorParam();
         try {
             File file = new File(this.params.get("outputPath"));
-            if (file.exists() && file.isFile()){
+            if (file.exists() && file.isFile()) {
                 logger.info("Stage(java) ———— Output file size :" + file.length());
-            }else {
+            } else {
                 logger.info("Stage(java) ———— File doesn't exist or it is not a file");
             }
             FileWriter fileWritter = new FileWriter(file, true);
             BufferedWriter out = new BufferedWriter(fileWritter);
             this.getInputData("data")
-            // result.getInnerResult("data")
+                    // result.getInnerResult("data")
                     .forEach(record -> {
                         StringBuilder writeLine = new StringBuilder();
                         record.forEach(field -> {

@@ -45,9 +45,9 @@ public class FileSource extends OperatorBase<Stream<List<String>>, Stream<List<S
         try {
             File file = new File(this.params.get("inputPath"));
             FileInputStream inputStream = new FileInputStream(file);
-            if (file.exists() && file.isFile()){
+            if (file.exists() && file.isFile()) {
                 logger.info("Stage(java) ———— Input file size:  " + file.length());
-            }else {
+            } else {
                 logger.info("Stage(java) ———— File doesn't exist or it is not a file");
             }
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));

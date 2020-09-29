@@ -26,7 +26,6 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.Writer;
 import java.util.*;
 
@@ -271,7 +270,7 @@ public class PlanBuilder {
     /**
      * 把PlanBuilder代表的Graph转为Yaml格式的字符串
      */
-    public void toYaml(Writer writer){ // 或许放到YamlUtil里更好？
+    public void toYaml(Writer writer) { // 或许放到YamlUtil里更好？
         Map<String, Object> yamlMap = ArgoAdapter.graph2Yaml(graph);
         YamlUtil.writeYaml(writer, yamlMap);
     }
