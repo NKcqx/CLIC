@@ -146,7 +146,7 @@ public final class OperatorFactory {
         List<OperatorEntity> operatorEntities = new ArrayList<>();
         ArrayList<Element> eleList = getElementListByTag(Optional.ofNullable(root), "platforms", "platform");
         for (Element ele : eleList) {
-            String platform = ele.getAttribute("ID");
+            //String platform = ele.getAttribute("ID");
             String path = getElementContentByTag(Optional.of(ele), "path");
             InputStream pltConfigStream = OperatorFactory.class.getClassLoader().getResourceAsStream(path);
             assert pltConfigStream != null;
@@ -156,6 +156,7 @@ public final class OperatorFactory {
             config.getDocumentElement().normalize();
             Element pltRoot = config.getDocumentElement();
             Optional<Element> pltEle = getElementByTag(pltRoot, "platform");
+            String platform = getElementByTag(pltRoot, "platform").get().getAttribute("ID");
             String language = getElementContentByTag(pltEle, "language");
             Double cost = Double.valueOf(getElementContentByTag(pltEle, "cost"));
             List<Param> pltParams = getParams(pltRoot, "parameters", "parameter");

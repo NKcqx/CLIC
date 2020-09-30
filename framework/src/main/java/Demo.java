@@ -16,13 +16,16 @@ public class Demo {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
             // 设置udf路径   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
-            planBuilder.setPlatformUdfPath("java", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
+            //planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("java", "/Users/zhuxingpo/Downloads/Due/TestSmallWebCaseFunc.class");
             //供测试生成文件使用   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
-            planBuilder.setPlatformUdfPath("spark", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
+            //planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWoebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("spark", "/Users/zhuxingpo/Downloads/Due/TestSmallWoebCaseFunc.class");
 
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("inputPath", "/Users/jason/Desktop/test.csv");
+                //put("inputPath", "hdfs://hdfs-namenode:8020/zxpDir/test.csv");
+                put("inputPath", "hdfs:///localhost:8020/input/test.csv");
             }});
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
@@ -44,7 +47,8 @@ public class Demo {
 
             // 最终结果的输出路径   例如该map的value值是本项目output.csv的绝对路径
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
-                put("outputPath", "/tmp/clic_output/output.csv"); // 具体resources的路径通过配置文件获得
+                //put("outputPath", "hdfs://hdfs-namenode:8020/zxpDir/output.csv"); // 具体resources的路径通过配置文件获得
+                put("outputPath", "hdfs:///localhost:8020/output/output.csv"); // 具体resources的路径通过配置文件获得
             }});
 
             planBuilder.addVertex(sourceNode);

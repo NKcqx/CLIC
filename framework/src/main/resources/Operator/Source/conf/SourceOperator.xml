@@ -6,6 +6,10 @@
             <path>Operator/Source/conf/JavaSourceOperator.xml</path>
         </platform>
 
+        <platform ID="java">
+            <path>Operator/Source/conf/HdfsSourceOperator.xml</path>
+        </platform>
+
         <platform ID="spark">
             <path>Operator/Source/conf/SparkSourceOperator.xml</path>
         </platform>
@@ -19,6 +23,5 @@
     <outputs> <!-- 计算结果 -->
         <output name="result" data_type="string"> </output>
     </outputs>
-
 
 </Operator>

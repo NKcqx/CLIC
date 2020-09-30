@@ -17,13 +17,15 @@ import java.util.Map;
 public class JavaOperatorFactory implements OperatorFactory {
 
     private static Map<String, Class> operatorMap = new HashMap<String, Class>() {{
-        put("SourceOperator", FileSource.class);
-        put("SinkOperator", FileSink.class);
+        put("SourceOperator", HDFSSource.class); //直接将SourceOperator反射到HDFSSource，后续需要修改选择HDFS还是file
+        put("SinkOperator", HDFSSink.class);
         put("FilterOperator", FilterOperator.class);
         put("MapOperator", MapOperator.class);
         put("JoinOperator", JoinOperator.class);
         put("ReduceByKeyOperator", ReduceByKeyOperator.class);
         put("SortOperator", SortOperator.class);
+        // put("HDFSSinkOperator", HDFSSink.class);
+        //put("HDFSSourceOperator", HDFSSource.class);
     }};
 
     @Override

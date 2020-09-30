@@ -13,8 +13,12 @@ import org.apache.spark.api.java.JavaSparkContext;
 public class SparkInitUtil {
 
     // SparkContext，这里的配置实际上没有意义，配置通过参数传递
+//    private static JavaSparkContext sparkContext =
+//            new JavaSparkContext(new SparkConf());
     private static JavaSparkContext sparkContext =
-            new JavaSparkContext(new SparkConf());
+            new JavaSparkContext(new SparkConf()
+                    .setAppName("Test")
+                    .setMaster("local"));
 
     /**
      *  初始化JavaSparkContext
