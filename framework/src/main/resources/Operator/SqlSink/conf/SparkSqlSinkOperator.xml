@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="SqlSinkOperator" name="SqlSinkOperator" kind="consumer">
+
+    <platform ID="sparkSql">
+        <language>scala</language>
+        <cost>22.1174</cost>
+    </platform>
+    <parameters> <!-- 计算参数 -->
+        <parameter name="isCombined" data_type="boolean" default="true"> </parameter>
+    </parameters>
+</Operator>

@@ -88,6 +88,18 @@ public class PlanBuilder {
         return this.headDataQuanta; // 不需要connectTo
     }
 
+    /**
+     * 读取用户提供的数据源，可以是csv, json, txt等格式
+     * @param
+     * @return
+     * @throws Exception
+     */
+    public DataQuanta readTableFrom(Map<String, String> params) throws Exception {
+        DataQuanta dataQuanta = DataQuanta.createInstance("sqlSource", params);
+        this.headDataQuanta = dataQuanta;
+        return this.headDataQuanta;
+    }
+
     public DataQuanta getHeadDataQuanta() {
         return headDataQuanta;
     }

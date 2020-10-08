@@ -37,4 +37,16 @@
         <ability>reducebykey</ability>
         <template>Operator/ReduceByKey/conf/ReduceByKeyOperator.xml</template>
     </pair>
+    <pair>
+        <ability>sqlSource</ability>
+        <template>Operator/SqlSource/conf/SqlSourceOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>sqlExe</ability>
+        <template>Operator/SqlExe/conf/SqlExeOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>sqlSink</ability>
+        <template>Operator/SqlSink/conf/SqlSinkOperator.xml</template>
+    </pair>
 </mappings>
