@@ -1,5 +1,7 @@
 package fdu.daslab.backend.executor.model;
 
+import io.kubernetes.client.openapi.models.V1Pod;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -16,10 +18,23 @@ public class KubernetesStage {
     //        String dagPath;
 //        String udfPath;
     String host;    // 运行的host，需要生成后在才会存在
-    Integer port;
+    Integer port; // 运行的port，指的是thrift的port，用于不同服务交互 TODO: port是否需要在k8s中开放
     Integer retryCounts; // 重试次数，重试最多三次
     Set<Integer> parentStageIds = new HashSet<>();    // 所依赖的父stage
     Set<Integer> childStageIds = new HashSet<>();     // 依赖本stage的child stage
+    V1Pod podInfo; // 实际的pod的定义信息
+
+    public KubernetesStage(Integer stageId) {
+        this.stageId = stageId;
+    }
+
+    public V1Pod getPodInfo() {
+        return podInfo;
+    }
+
+    public void setPodInfo(V1Pod podInfo) {
+        this.podInfo = podInfo;
+    }
 
     public Integer getStageId() {
         return stageId;

@@ -183,10 +183,11 @@ public class PlanBuilder {
         wrapStageWithHeadTail(stages); // 为每个Stage添加一个对应平台的SourceOpt 和 SinkOpt
 //        graph.removeGraphListener(listener);
         Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
+        // 生成argo的yaml，然后适配到kubernetes上生成相应的pod，并返回相应的物理地址信息
         Map<Integer, KubernetesStage> stageInfos = argoWorkflow.execute(); // 将workflow生成为YAML
         // driver的调度
         driverSchedule(stageInfos);
-
+        // 删除所有pod
     }
 
     /**
@@ -206,9 +207,9 @@ public class PlanBuilder {
         clicScheduler.initStages(stageInfos);
         // 启动后台调度器
         clicScheduler.start();
-        // 调度初始的那一些节点
+        // 调度初始的那一些节点，存在的问题是，先调用rpc启动过程中，有可能服务还没启动
         clicScheduler.handlerSourceStages();
-        // 启动主程序 TODO：结束时如何关闭主程序
+        // 启动主程序
         serve();
     }
 
@@ -223,6 +224,7 @@ public class PlanBuilder {
         ttpsArgs.processor(tprocessor);
         ttpsArgs.protocolFactory(new TBinaryProtocol.Factory());
         TServer server = new TThreadPoolServer(ttpsArgs);
+        clicScheduler.settServer(server);
         server.serve();
     }
 

@@ -6,6 +6,8 @@ import driver.event.StageCompletedEvent;
 import driver.event.StageDataPreparedEvent;
 import driver.event.StageStartedEvent;
 import fdu.daslab.backend.executor.model.KubernetesStage;
+import fdu.daslab.backend.executor.utils.KubernetesUtil;
+import org.apache.thrift.server.TServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import service.client.ExecuteServiceClient;
@@ -34,6 +36,8 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
     private Set<Integer> dataPreparedStages = new HashSet<>();
     // 所有stage运行需要的信息
     private Map<Integer, Stage> stageIdToStage = new HashMap<>();
+    // thrift的server，为了能够关闭，或许有其他办法
+    TServer tServer;
 
     public CLICScheduler() {
         super("CLICScheduler");
@@ -79,9 +83,14 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
         for (Integer runningId : runningStages) {
             logger.info("Stage " + runningId + " is still running!");
         }
-        // 所有的stage都运行成功，结束事件循环
+        // 所有的stage都运行成功，结束事件循环，并删除所有的pod
         if (completedStages.size() == stageIdToStage.size()) {
             logger.info("All stages have completed!");
+            // 删除完成的pod
+            KubernetesUtil.deleteCompletedPods(completedStages);
+            // 结束driver
+            tServer.stop();
+            // 结束事件循环
             stop();
         }
     }
@@ -148,17 +157,16 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
 
     // 启动初始的节点
     public void handlerSourceStages() {
-        // 所有stage中没有parent依赖的stage
-        stageIdToStage.forEach((stageId, stage) -> {
-            if (stage.parentStageIds.isEmpty()) {
-                // 提交这些初始的stage
-                try {
-                    post(new StageDataPreparedEvent(stageId));
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        // 所有stage中没有parent依赖的stage，使用parentId=0标识
+        try {
+            post(new StageDataPreparedEvent(0));
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void settServer(TServer tServer) {
+        this.tServer = tServer;
     }
 
 }
