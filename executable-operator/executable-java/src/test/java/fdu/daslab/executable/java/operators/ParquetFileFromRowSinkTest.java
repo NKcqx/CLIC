@@ -15,11 +15,11 @@ import static org.junit.Assert.assertEquals;
  * @version 1.0
  * @since 2020/09/25 18:45
  */
-public class ParquetFileSinkTest {
+public class ParquetFileFromRowSinkTest {
 
-    String filePath1= ParquetFileSinkTest.class.getClassLoader().
+    String filePath1= ParquetFileFromRowSinkTest.class.getClassLoader().
             getResource("myusers.parquet").getPath();//读取
-    String filePath2= ParquetFileSinkTest.class.getClassLoader().
+    String filePath2= ParquetFileFromRowSinkTest.class.getClassLoader().
             getResource("").getPath()+"myusers2.parquet";//写入
 //    String filePath1="hdfs://ip:9000/myusers.parquet";   //hdfs测试
 //    String filePath2="hdfs://ip:9000/myusers.parquet2";
@@ -41,12 +41,12 @@ public class ParquetFileSinkTest {
         in.add("data");
         List<String> out = new LinkedList<String>();
         out.add("result");
-        ParquetFileSink parquetFileSink=new ParquetFileSink("1",in,out, params);
-        parquetFileSink.setInputData("data",data);
-        parquetFileSink.setSchema(schemaStr);
+        ParquetFileFromRowSink parquetFileFromRowSink=new ParquetFileFromRowSink("1",in,out, params);
+        parquetFileFromRowSink.setInputData("data",data);
+        parquetFileFromRowSink.setSchema(schemaStr);
 
         //执行
-        parquetFileSink.execute(null,null);
+        parquetFileFromRowSink.execute(null,null);
 
         //再读写入的文件，并打印
         Stream<List<String>> res=fileRead(filePath2);
@@ -75,12 +75,12 @@ public class ParquetFileSinkTest {
         in.add("data");
         List<String> out = new LinkedList<String>();
         out.add("result");
-        ParquetFileSource parquetFileSource=new ParquetFileSource("id",in,out, params);
+        ParquetFileToRowSource parquetFileToRowSource=new ParquetFileToRowSource("id",in,out, params);
 
-        parquetFileSource.execute(null,null);
+        parquetFileToRowSource.execute(null,null);
 
         //获得读入的结果
-        Stream<List<String>> s = parquetFileSource.getOutputData("result");
+        Stream<List<String>> s = parquetFileToRowSource.getOutputData("result");
         return  s;
     }
 }

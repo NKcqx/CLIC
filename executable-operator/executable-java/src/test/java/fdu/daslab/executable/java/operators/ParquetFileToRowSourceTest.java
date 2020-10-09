@@ -28,9 +28,9 @@ import static org.junit.Assert.assertEquals;
  * @version 1.0
  * @since 2020/09/25 16:23
  */
-public class ParquetFileSourceTest {
+public class ParquetFileToRowSourceTest {
 
-    String filePath= ParquetFileSourceTest.class.getClassLoader().
+    String filePath=ParquetFileToRowSourceTest.class.getClassLoader().
             getResource("myusers.parquet").toString();
 //    String filePath="hdfs://ip:9000/myusers.parquet"; //hdfs测试
     @Test
@@ -51,12 +51,12 @@ public class ParquetFileSourceTest {
         List<String> out = new LinkedList<String>();
         out.add("result");
 
-        ParquetFileSource parquetFileSource=new ParquetFileSource("1",in,out, params);
+        ParquetFileToRowSource parquetFileToRowSource=new ParquetFileToRowSource("1",in,out, params);
 
-        parquetFileSource.execute(null,null);
+        parquetFileToRowSource.execute(null,null);
 
         //输出读入的结果
-        Stream<List<String>> s = parquetFileSource.getOutputData("result");
+        Stream<List<String>> s = parquetFileToRowSource.getOutputData("result");
         List<String> k = new LinkedList<String>();
         s.forEach(r -> {
             k.add(r.toString());
@@ -67,7 +67,7 @@ public class ParquetFileSourceTest {
         assertEquals(k.get(2), "[bob2, blue, 2]");
         assertEquals(k.get(3), "[bob3, null, 2]");
 
-        assertEquals(parquetFileSource.getSchema(), schema.toString());
+        assertEquals(parquetFileToRowSource.getSchema(), schema.toString());
         /*
         [bob0, blue, 2]
         [bob1, blue, 2]

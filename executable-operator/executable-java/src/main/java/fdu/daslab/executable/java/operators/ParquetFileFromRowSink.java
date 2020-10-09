@@ -27,10 +27,10 @@ import java.util.stream.Stream;
  */
 
 @Parameters(separators = "=")
-public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
+public class ParquetFileFromRowSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    public ParquetFileSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("ParquetFileSink", id, inputKeys, outputKeys, params);
+    public ParquetFileFromRowSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("ParquetFileFromRowSink", id, inputKeys, outputKeys, params);
     }
 
     @Override
