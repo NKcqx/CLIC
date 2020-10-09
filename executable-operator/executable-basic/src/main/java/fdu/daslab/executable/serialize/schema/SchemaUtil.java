@@ -4,6 +4,8 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+
+
 /**
  * Created by Nathan on 2020/9/24.
  */
@@ -12,6 +14,7 @@ public class SchemaUtil {
         String[] s = elementClazz.getName().split("\\.");
         String type = s[s.length - 1];
         StringBuffer template = new StringBuffer("{" + "\"type\":\"" + jdkType2AvroType.get(type) + "\"" + "}");
+
         return template;
     }
 
@@ -25,6 +28,7 @@ public class SchemaUtil {
             return buildAvroNumberMatrixSchema(jdkType2AvroType.get(type));
         } else {
             //自定义类
+
             return buildAvroObjectMatrixSchema(elementClazz);
         }
     }
@@ -48,6 +52,7 @@ public class SchemaUtil {
     public static StringBuffer buildAvroNumberMatrixSchema(String numberString) {
         StringBuffer template = new StringBuffer("{" + "\"type\":\"array\"," + "\"items\":\"" + numberString
                 + "\"," + "\"default\":0" + "}");
+
         return template;
     }
 
@@ -59,6 +64,7 @@ public class SchemaUtil {
         for (int i = 0; i < fields.length; i++) {
             fields[i].setAccessible(true);
         }
+
         HashMap<String, FieldType> fieldTypeHashMap = getFields(fields);
 
 
@@ -67,6 +73,7 @@ public class SchemaUtil {
         }
         //delete last coma
         templateHeader.deleteCharAt(templateHeader.length() - 1);
+
 
 
         String templateFooter = "  ]\n" + "}";
@@ -79,6 +86,7 @@ public class SchemaUtil {
         StringBuffer templateHeader = new StringBuffer(
                 "{ \"type\":\"array\"," + "  \"items\":{" + "     \"type\": \"record\","
                         + "     \"name\": \"TableObject\",\n" + "     \"fields\":[ \n");
+
         StringBuffer templateFooter = new StringBuffer(
                 "      ]" + "    }" + "}");
 
@@ -86,6 +94,7 @@ public class SchemaUtil {
         for (int i = 0; i < fields.length; i++) {
             fields[i].setAccessible(true);
         }
+
         HashMap<String, FieldType> fieldTypeHashMap = getFields(fields);
 
 
@@ -94,6 +103,7 @@ public class SchemaUtil {
         }
         //delete last coma
         templateHeader.deleteCharAt(templateHeader.length() - 1);
+
         StringBuffer template = templateHeader.append(templateFooter);
         template.toString();
         return template;
@@ -109,6 +119,7 @@ public class SchemaUtil {
             if (column != null) {
                 res.put(column.fieldName(), column.fieldType());
             }
+
         }
         return res;
     }
