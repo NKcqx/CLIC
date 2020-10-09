@@ -1,12 +1,13 @@
-package fdu.daslab.executable.java.operators;
+package fdu.daslab.executable.spark.operators;
 
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
-import fdu.daslab.executable.java.constants.JavaOperatorFactory;
+import fdu.daslab.executable.spark.utils.SparkInitUtil;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.javatuples.Pair;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 /**
  * 实际上功能是 Repeat
@@ -15,7 +16,7 @@ import java.util.stream.Stream;
  * @version 1.0
  * @since 2020/9/24 2:13 下午
  */
-public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
+public class LoopOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
     private List<Connection> realConnections;
     private NextIteration myNextIteration;
     private List<Connection> triggerConnections; // trigger 的应该是 Loop -> loopHead 这条边
@@ -30,7 +31,7 @@ public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List
         try {
             HashMap<String, String> nextIterationParams = new HashMap<>();
             nextIterationParams.put("loopVarUpdateName", this.params.get("loopVarUpdateName"));
-            this.myNextIteration = (NextIteration) new JavaOperatorFactory().createOperator(
+            this.myNextIteration = (NextIteration) new SparkOperatorFactory().createOperator(
                     "NextIteration",
                     ArgsUtil.randomUUID().toString(),
                     new ArrayList<>(this.inputData.keySet()), // 只是为了 set -> list
@@ -45,7 +46,7 @@ public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List
             String bodyYaml = this.params.get("loopBody");
             // todo 这默认LoopBody里只有一个起点与Loop本身相连
             Pair<List<OperatorBase>, List<OperatorBase>> loopHeadsAndEnds =
-                    ArgsUtil.parseArgs(bodyYaml, new JavaOperatorFactory());
+                    ArgsUtil.parseArgs(bodyYaml, new SparkOperatorFactory());
             this.triggerConnections = new ArrayList<>();
             this.startLoopBody(loopHeadsAndEnds.getValue0().get(0));
             this.endLoopBody(loopHeadsAndEnds.getValue1().get(0));
@@ -96,11 +97,12 @@ public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List
     }
 
     @Override
-    public void execute(ParamsModel inputArgs, ResultModel<Stream<List<String>>> result) {
+    public void execute(ParamsModel inputArgs, ResultModel<JavaRDD<List<String>>> result) {
+        final JavaSparkContext javaSparkContext = SparkInitUtil.getDefaultSparkContext();
         FunctionModel functionModel = inputArgs.getFunctionModel();
         assert functionModel != null;
         try {
-            List<String> loopVar = this.getInputData("loopVar").findAny().orElseThrow(NoSuchElementException::new);
+            List<String> loopVar = this.getInputData("loopVar").first();
             boolean continueLoop = (boolean) functionModel.invoke(
                     this.params.get("predicateName"),
                     loopVar);
@@ -112,7 +114,8 @@ public class LoopOperator extends OperatorBase<Stream<List<String>>, Stream<List
             } else {
                 this.setOperatorState(OperatorState.Running);
                 // 然后dump给nextIteration
-                this.myNextIteration.setInputData("loopVar", Stream.of(loopVar));
+                List<List<String>> nextLoopVar = Collections.singletonList(loopVar);
+                this.myNextIteration.setInputData("loopVar", javaSparkContext.parallelize(nextLoopVar));
             }
         } catch (NoSuchElementException e) {
             e.printStackTrace();

@@ -1,8 +1,17 @@
-package fdu.daslab.executable.java.operators;
+package fdu.daslab.executable.spark.operators;
 
-import fdu.daslab.executable.basic.model.*;
+import fdu.daslab.executable.basic.model.FunctionModel;
+import fdu.daslab.executable.basic.model.OperatorBase;
+import fdu.daslab.executable.basic.model.ParamsModel;
+import fdu.daslab.executable.basic.model.ResultModel;
+import fdu.daslab.executable.spark.utils.SparkInitUtil;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.stream.Stream;
 
 /**
@@ -10,7 +19,7 @@ import java.util.stream.Stream;
  * @version 1.0
  * @since 2020/9/24 11:42 下午
  */
-public class NextIteration extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
+public class NextIteration extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
     private LoopOperator theLoopOperator;
 
     public NextIteration(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
@@ -27,18 +36,21 @@ public class NextIteration extends OperatorBase<Stream<List<String>>, Stream<Lis
     }
 
     @Override
-    public void execute(ParamsModel inputArgs, ResultModel<Stream<List<String>>> result) {
+    public void execute(ParamsModel inputArgs, ResultModel<JavaRDD<List<String>>> result) {
+        final JavaSparkContext javaSparkContext = SparkInitUtil.getDefaultSparkContext();
+
         FunctionModel functionModel = inputArgs.getFunctionModel();
         assert functionModel != null;
         try {
-            List<String> loopVar = this.getInputData("loopVar").findAny().orElseThrow(NoSuchElementException::new);
+            List<String> loopVar = this.getInputData("loopVar").first();
             // 只更新 loopVar
             // 按理说是不是应该结束的时候再更新呢，即放到nextIteration里面
             int nextLoopVar = (int) functionModel.invoke(
                     this.params.get("loopVarUpdateName"),
                     loopVar);
             loopVar = Collections.singletonList(String.valueOf(nextLoopVar));
-            this.setOutputData("loopVar", Stream.of(loopVar));
+            List<List<String>> wrappedLoopVar = Collections.singletonList(loopVar);
+            this.setOutputData("loopVar", javaSparkContext.<List<String>>parallelize(wrappedLoopVar));
             this.setOutputData("result", this.getInputData("data"));
         } catch (NoSuchElementException e) {
             e.printStackTrace();
