@@ -3,12 +3,12 @@ package fdu.daslab.executable.basic.utils;
 import com.beust.jcommander.JCommander;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
+import org.javatuples.Pair;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 参数解析的工具类
@@ -18,6 +18,10 @@ import java.util.*;
  * @since 2020/7/6 1:36 PM
  */
 public class ArgsUtil {
+
+    public static UUID randomUUID() {
+        return UUID.randomUUID();
+    }
 
     /**
      * 通过某个key参数分割参数集合，并按顺序返回
@@ -48,18 +52,31 @@ public class ArgsUtil {
      * 2. 根据'opt'字段创建所有Opt，赋值后放到Map<ID, Opt>里
      * 3. 根据'dag'字段从Map（根据ID）拿到两端的Opt并相连, 最后返回头节点
      *
-     * @param yamlPath yaml文件的路径
+     * @param yamlStr yaml文件的路径
      * @return DAG的头节点(返回头节点还是尾节点呢 ? ）
      */
-    public static OperatorBase parseArgs(String yamlPath, OperatorFactory factory) throws Exception {
-        InputStream yamlStream = new FileInputStream(new File(yamlPath));
+    public static Pair<List<OperatorBase>, List<OperatorBase>> parseArgs(
+            String yamlStr,
+            OperatorFactory factory) throws Exception {
+        Yaml yaml = new Yaml();
+        Map<String, Object> yamlArgs = yaml.load(yamlStr);
+        Map<String, OperatorBase> operatorPool =
+                parseOpt((List<Map<String, Object>>) yamlArgs.get("operators"), factory);
+        Pair<List<OperatorBase>, List<OperatorBase>> headsAndEnds =
+                parseDependency((List<Map<String, Object>>) yamlArgs.get("dag"), operatorPool);
+        return headsAndEnds;
+    }
+
+    public static Pair<List<OperatorBase>, List<OperatorBase>> parseArgs(
+            InputStream yamlStream,
+            OperatorFactory factory) throws Exception {
         Yaml yaml = new Yaml();
         Map<String, Object> yamlArgs = yaml.load(yamlStream);
         Map<String, OperatorBase> operatorPool =
                 parseOpt((List<Map<String, Object>>) yamlArgs.get("operators"), factory);
-        OperatorBase headOperator =
+        Pair<List<OperatorBase>, List<OperatorBase>> headsAndEnds =
                 parseDependency((List<Map<String, Object>>) yamlArgs.get("dag"), operatorPool);
-        return headOperator;
+        return headsAndEnds;
     }
 
     /**
@@ -94,9 +111,9 @@ public class ArgsUtil {
      * @param operatorPool 所有的Operator
      * @return 头节点
      */
-    private static OperatorBase parseDependency(List<Map<String, Object>> dagArgs,
-                                                Map<String, OperatorBase> operatorPool) {
-        OperatorBase headOpt = null;
+    private static Pair<List<OperatorBase>, List<OperatorBase>> parseDependency(
+            List<Map<String, Object>> dagArgs,
+            Map<String, OperatorBase> operatorPool) {
         for (int i = 0; i < dagArgs.size(); ++i) {
             Map<String, Object> arg = dagArgs.get(i);
             // 当前Opt，因为dag里的依赖关系是自底向上构建的，所以当前Opt即为targetOpt
@@ -113,10 +130,14 @@ public class ArgsUtil {
                 }
             }
         }
-        headOpt = operatorPool.values().stream()
+
+        List<OperatorBase> heads = operatorPool.values().stream()
                 .filter(operatorBase -> operatorBase.getInputConnections().size() == 0)
-                .findAny().get();
-        return headOpt;
+                .collect(Collectors.toList());
+        List<OperatorBase> ends = operatorPool.values().stream()
+                .filter(operatorBase -> operatorBase.getOutputConnections().size() == 0)
+                .collect(Collectors.toList());
+        return new Pair<>(heads, ends);
     }
 
     /**
