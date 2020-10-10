@@ -36,16 +36,9 @@ public class LoopOperatorTest {
 
     @Before
     public void before() {
-        try {
-            SparkInitUtil.setSparkContext(
-                    new JavaSparkContext(
-                            new SparkConf().setMaster("local[*]").setAppName("LoopOperatorTest")
-                    )
-            );
-            javaSparkContext = SparkInitUtil.getDefaultSparkContext();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        SparkInitUtil.setSparkContext(
+                new SparkConf().setMaster("local[*]").setAppName("LoopOperatorTest"));
+        javaSparkContext = SparkInitUtil.getDefaultSparkContext();
         List<String> inputValue = Arrays.asList("1", "2", "3", "4", "5");
         List<List<String>> inputValueBox = new ArrayList<>();
         inputValueBox.add(inputValue);

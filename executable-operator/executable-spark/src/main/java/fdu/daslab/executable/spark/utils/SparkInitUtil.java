@@ -37,11 +37,12 @@ public class SparkInitUtil {
     }
 
 
-    public static void setSparkContext(JavaSparkContext sparkContext) throws Exception {
+    public static boolean setSparkContext(SparkConf conf) {
         if (SparkInitUtil.sparkContext == null) {
-            SparkInitUtil.sparkContext = sparkContext;
+            SparkInitUtil.sparkContext = new JavaSparkContext(conf);
+            return true;
         } else {
-            throw new Exception("仅允许存在一个SparkContext");
+            return false;
         }
     }
 }
