@@ -5,10 +5,6 @@ import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
-import fdu.daslab.executable.spark.operators.FileSink;
-import fdu.daslab.executable.spark.operators.LoopOperator;
-import fdu.daslab.executable.spark.operators.MapOperator;
-import fdu.daslab.executable.spark.operators.SparkOperatorFactory;
 import fdu.daslab.executable.spark.utils.SparkInitUtil;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
@@ -21,7 +17,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
