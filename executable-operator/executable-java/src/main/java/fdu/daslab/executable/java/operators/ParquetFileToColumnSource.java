@@ -17,8 +17,6 @@ import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType;
-
-
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
@@ -58,7 +56,6 @@ public class ParquetFileToColumnSource extends OperatorBase<Stream<List<String>>
 
                     //for each column
                     for (ColumnDescriptor colDescriptor:descriptorList) {
-
                         //获取 column的数据类型
                         PrimitiveType.PrimitiveTypeName type = colDescriptor.getType();
                         String[] columnNamePath = colDescriptor.getPath();
@@ -67,10 +64,8 @@ public class ParquetFileToColumnSource extends OperatorBase<Stream<List<String>>
                         List<String>  tmp = new LinkedList<>();
                         //every cell in the column chunk
                         for (int i = 0; i < totalValuesInColumnChunk; i++) {
-
                            tmp.add(getColumn(colReader, type));
                            colReader.consume();
-
                         }
                         resultList.add(tmp);
                     }
@@ -99,7 +94,6 @@ public class ParquetFileToColumnSource extends OperatorBase<Stream<List<String>>
         //暂时支持下面这些类型
         if (type.equals(PrimitiveType.PrimitiveTypeName.INT32)) {
             result = String.valueOf(colReader.getInteger());
-
         } else if (type.equals(PrimitiveType.PrimitiveTypeName.BINARY)) {
             result = colReader.getBinary().toStringUsingUTF8();
         } else if (type.equals(PrimitiveType.PrimitiveTypeName.BOOLEAN)) {
