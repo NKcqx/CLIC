@@ -42,7 +42,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>fdu.daslab.executable.spark.ExecuteSparkOperator</mainClass>
+                            <mainClass>fdu.daslab.executable.spark.ExecuteSparkServer</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

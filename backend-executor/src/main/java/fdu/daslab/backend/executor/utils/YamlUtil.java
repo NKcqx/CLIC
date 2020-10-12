@@ -277,6 +277,10 @@ public class YamlUtil {
                 String containerArgs = ((List<Map<String, String>>)
                         ((Map<String, Object>) stageTemplate.get("arguments")).get("parameters"))
                         .get(0).get("value");
+                // 正常的args之外，还需要添加一些辅助的参数，比如stageId等信息，这些信息需要手动地动态设置
+                // 自动添加的参数: stageId, thriftPort, driverHost, driverPort 本port，本
+                // stageId, thriftPort, driverPort都直接有; driverHost需要通过获取当前port获取
+                containerArgs += " " + KubernetesUtil.enrichContainerArgs(stageId);
                 V1Pod pod = KubernetesUtil.createV1PodByDefault(stageId, containerName,
                         containerImage, containerArgs);
                 stage.setPodInfo(pod);

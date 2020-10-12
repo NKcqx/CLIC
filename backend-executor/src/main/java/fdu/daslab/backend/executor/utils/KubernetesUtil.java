@@ -1,5 +1,6 @@
 package fdu.daslab.backend.executor.utils;
 
+import com.google.common.collect.ImmutableMap;
 import fdu.daslab.backend.executor.model.KubernetesStage;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
@@ -29,11 +30,12 @@ import java.util.Set;
  */
 public class KubernetesUtil {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesUtil.class);
     private static String kubeConfigPath; // kubernetes配置地址
     private static Integer defaultThriftPort; // 默认设置的thrift port地址
     private static String podPrefix;  // pod的名称前缀
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(KubernetesUtil.class);
+    private static String driverPodName; // driver的pod名称
+    private static String defaultNamespaceName; // 默认的namespace名称
 
     static {
         try {
@@ -41,6 +43,10 @@ public class KubernetesUtil {
             kubeConfigPath = configuration.getProperty("kube-config-path");
             defaultThriftPort = Integer.valueOf(configuration.getProperty("default-thrift-port"));
             podPrefix = configuration.getProperty("pod-prefix");
+            driverPodName = configuration.getProperty("driver-pod-name");
+            defaultNamespaceName = configuration.getProperty("default-namespace-name");
+            // 初始化k8s
+            initKubernetes();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -83,14 +89,13 @@ public class KubernetesUtil {
 
     // 将yaml文件提交到kubernetes集群，并查询对应的stage信息
     private static Map<Integer, KubernetesStage> submitToKubernetes(Map<Integer, KubernetesStage> stagePods) {
-        initKubernetes();
         // 创建一个api
         CoreV1Api api = new CoreV1Api();
         // 直接创建若干pod
         stagePods.forEach((stageId, stage) -> {
             try {
                 if (stage.getPodInfo() != null) {
-                    api.createNamespacedPod("argo", stage.getPodInfo(), null, null, null);
+                    api.createNamespacedPod(defaultNamespaceName, stage.getPodInfo(), null, null, null);
                 }
             } catch (ApiException e) {
                 e.printStackTrace();
@@ -99,7 +104,7 @@ public class KubernetesUtil {
         // 查询每一个他stage对应的物理信息，主要是ip和端口
         stagePods.forEach((stageId, kubernetesStage) -> {
             try {
-                V1Pod v1Pod = api.readNamespacedPodStatus(podPrefix + stageId, "argo", null);
+                V1Pod v1Pod = api.readNamespacedPodStatus(podPrefix + stageId, defaultNamespaceName, null);
                 kubernetesStage.setStageId(stageId);
                 kubernetesStage.setHost(Objects.requireNonNull(v1Pod.getStatus()).getPodIP());
                 kubernetesStage.setPort(defaultThriftPort);
@@ -116,11 +121,10 @@ public class KubernetesUtil {
      * @param completedStageIds 已经完成的stage的id列表
      */
     public static void deleteCompletedPods(Set<Integer> completedStageIds) {
-        initKubernetes();
         CoreV1Api api = new CoreV1Api();
         completedStageIds.forEach(stageId -> {
             try {
-                api.deleteNamespacedPod(podPrefix + stageId, "argo", null,
+                api.deleteNamespacedPod(podPrefix + stageId, defaultNamespaceName, null,
                         null, null, null, null, null);
             } catch (Exception e) {
                 // 此api有bug，但是仍然能够成功删除，暂时忽略错误
@@ -130,20 +134,20 @@ public class KubernetesUtil {
     }
 
     /**
-     * 按照默认方式去创建pod
+     * 按照默认方式去创建pod，下面方式都写死，为了可能收敛到某一个base-template中
      *
-     * @param stageId stage的标识
-     * @param containerName container名字
+     * @param stageId        stage的标识
+     * @param containerName  container名字
      * @param containerImage container的image
-     * @param containerArgs image的参数
+     * @param containerArgs  image的参数
      * @return V1Pod
      */
     public static V1Pod createV1PodByDefault(Integer stageId, String containerName,
-                                              String containerImage, String containerArgs) {
+                                             String containerImage, String containerArgs) {
         return new V1PodBuilder()
                 .withNewMetadata()
                 .withName(podPrefix + stageId)
-                .withNamespace("argo")
+                .withNamespace(defaultNamespaceName)
                 .endMetadata()
                 .withNewSpec()
                 .addNewContainer()
@@ -164,6 +168,37 @@ public class KubernetesUtil {
                 .endVolume()
                 .endSpec()
                 .build();
+    }
+
+    /**
+     * 增加一些额外的参数信息，包含stageId, thriftPort, driverHost, driverPort，基本是用来和driver进行交互
+     *
+     * @param stageId stage的id
+     * @return 参数的字符串，格式是 --arg1=xxx --arg2=xxx
+     */
+    public static String enrichContainerArgs(Integer stageId) {
+        CoreV1Api api = new CoreV1Api();
+        StringBuilder result = new StringBuilder();
+        // 获取driver的ip
+        String driverHost = "";
+        try {
+            V1Pod driverPod = api.readNamespacedPodStatus(driverPodName, defaultNamespaceName, null);
+            driverHost = Objects.requireNonNull(driverPod.getStatus()).getPodIP();
+        } catch (ApiException e) {
+            e.printStackTrace();
+        }
+        // driverPort 和 thriftPort 暂时都使用统一的默认值
+        assert driverHost != null;
+        Map<String, String> argsMap = ImmutableMap.of(
+                "--stageId", String.valueOf(stageId),
+                "--thriftPort", String.valueOf(defaultThriftPort),
+                "--driverHost", driverHost,
+                "--driverPort", String.valueOf(defaultThriftPort));
+        for (Map.Entry<String, String> arg : argsMap.entrySet()) {
+            result.append(arg.getKey()).append("=").append(arg.getValue()).append(" ");
+        }
+
+        return result.toString();
     }
 
 }

@@ -219,7 +219,7 @@ public class PlanBuilder {
         TProcessor tprocessor = new SchedulerService.Processor<>(
                 new SchedulerServiceImpl(clicScheduler));
         TServerSocket tServerSocket = new TServerSocket(
-                Integer.parseInt(configuration.getProperty("driver_port")));
+                Integer.parseInt(configuration.getProperty("default-thrift-port")));
         TThreadPoolServer.Args ttpsArgs = new TThreadPoolServer.Args(tServerSocket);
         ttpsArgs.processor(tprocessor);
         ttpsArgs.protocolFactory(new TBinaryProtocol.Factory());

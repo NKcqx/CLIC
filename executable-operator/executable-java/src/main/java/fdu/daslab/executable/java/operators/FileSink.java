@@ -60,7 +60,9 @@ public class FileSink extends OperatorBase<Stream<List<String>>, Stream<List<Str
                     });
             out.close();
             fileWritter.close();
-        } catch (IOException e) {
+            // 数据准备好
+            this.getDriverClient().postDataPrepared();
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
