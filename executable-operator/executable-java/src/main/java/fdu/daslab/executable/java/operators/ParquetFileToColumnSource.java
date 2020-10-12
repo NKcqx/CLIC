@@ -31,7 +31,8 @@ import java.util.stream.Stream;
 @Parameters(separators = "=")
 public class ParquetFileToColumnSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    public ParquetFileToColumnSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+    public ParquetFileToColumnSource(String id, List<String> inputKeys,
+                                     List<String> outputKeys, Map<String, String> params) {
         super("ParquetFileToColumnSource", id, inputKeys, outputKeys, params);
     }
 
@@ -58,7 +59,6 @@ public class ParquetFileToColumnSource extends OperatorBase<Stream<List<String>>
                     for (ColumnDescriptor colDescriptor:descriptorList) {
                         //获取 column的数据类型
                         PrimitiveType.PrimitiveTypeName type = colDescriptor.getType();
-                        String[] columnNamePath = colDescriptor.getPath();
                         colReader = colReadStore.getColumnReader(colDescriptor);
                         long totalValuesInColumnChunk =  rowGroup.getPageReader(colDescriptor).getTotalValueCount();
                         List<String>  tmp = new LinkedList<>();

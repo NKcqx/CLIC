@@ -27,6 +27,7 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("ParquetFileToRowSourceOperator", ParquetFileToRowSource.class);
         put("ParquetFileFromRowSinkOperator", ParquetFileFromRowSink.class);
         put("ParquetFileToColumnSourceOperator", ParquetFileToColumnSource.class);
+        put("ParquetFileFromColumnSinkOperator", ParquetFileFromColumnSink.class);
         put("CountOperator", CountOperator.class);
         put("DistinctOperator", DistinctOperator.class);
         put("MaxOperator", MaxOperator.class);
