@@ -167,7 +167,16 @@ public class ArgoAdapter implements OperatorAdapter {
         Map<String, Param> outputDataList = opt.getOutputDataList();
 
         Map<String, String> paramsMap = new HashMap<>();
-        paramsList.forEach((s, param) -> paramsMap.putAll(param.getKVData()));
+        final int[] tableNum = {0}; // 用户选择的数据源文件的个数
+                                    // 因为用户的sql语句可能是多表连接或嵌套查询
+                                    // inputPath与tableName个数一样
+        paramsList.forEach((s, param) -> {
+            if (param.getName().contains("inputPath") && param.getData() != null)
+                tableNum[0] += 1;
+            paramsMap.putAll(param.getKVData());
+        });
+        // 将tableNum也作为一个param写入yaml文件
+        paramsMap.put("tableNum", String.valueOf(tableNum[0]));
         Map<String, Object> optMap = new HashMap<String, Object>() {{
             put("name", opt.getOperatorName());
             put("id", opt.getOperatorID());

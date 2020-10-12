@@ -72,7 +72,13 @@ public class Param implements Serializable {
 
     public Map<String, String> getKVData() {
         Map<String, String> data = new HashMap<>();
-        data.put(this.name, this.value);
+        if (this.name.contains("inputPath") && this.value == null) {
+            // 对于inputPath参数，只留下用户定义好的inputPath，空值不加入paramsList
+        } else if (this.name.contains("tableName") && this.value == null) {
+            // 对于tableName参数，只留下用户定义好的tableName，空值不加入paramsList
+        } else {
+            data.put(this.name, this.value);
+        }
         return data;
     }
 

@@ -5,6 +5,7 @@ import basic.Param;
 import basic.visitors.Visitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import sql.SQLAdapter;
 
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -154,6 +155,10 @@ public class Operator implements Visitable, Serializable {
      */
     public void setParamValue(String key, String value) {
         if (this.inputParamList.containsKey(key)) {
+            // 荆老师组对Logical Plan(sqlText)进行优化
+            if (key.equals("sqlText")) {
+                value = SQLAdapter.getOptimizedPlan(value);
+            }
             this.inputParamList.get(key).setValue(value);
         } else {
             throw new NoSuchElementException(String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
