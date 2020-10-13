@@ -4,6 +4,8 @@ import fdu.daslab.backend.executor.model.ImageTemplate;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.*;
 
@@ -19,11 +21,22 @@ public class TemplateUtil {
     // template的名称后缀
     private static final String TEMPLATE_SUFFIX = "-template";
     // template的存放路径
-    private static String templateDir = Objects.requireNonNull(TemplateUtil.class.getClassLoader()
-            .getResource("templates/")).getPath();
-    // root-template的存放的Stream
-    private static InputStream rootTemplateStream = TemplateUtil.class.getClassLoader()
-            .getResourceAsStream("templates/root-template.yaml");
+    private static String templateDir;
+    // root-template的存放路径
+    private static String rootTemplate;
+    // root-template的straem
+    private static InputStream rootTemplateStream;
+
+    static {
+        try {
+            Configuration configuration = new Configuration();
+            templateDir = configuration.getProperty("template-yaml-path");
+            rootTemplate = templateDir + "root-template.yaml";
+            rootTemplateStream = new FileInputStream(rootTemplate);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 根据平台的名称获取对应的template名称

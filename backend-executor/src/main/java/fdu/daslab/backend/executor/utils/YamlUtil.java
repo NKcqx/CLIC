@@ -20,8 +20,7 @@ import java.util.stream.Collectors;
  */
 public class YamlUtil {
 
-    private static String argoDag = Objects.requireNonNull(YamlUtil.class.getClassLoader().
-            getResource("templates/argo-dag-simple.yaml")).getPath();
+    private static String argoDag;
 
     private static String resJobPath;
 
@@ -36,6 +35,7 @@ public class YamlUtil {
             Configuration configuration = new Configuration();
             resJobPath = configuration.getProperty("yaml-output-path") + configuration.getProperty("yaml-prefix");
             resPltDagPath = configuration.getProperty("yaml-output-path");
+            argoDag = configuration.getProperty("template-yaml-path") + "argo-dag-simple.yaml";
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
