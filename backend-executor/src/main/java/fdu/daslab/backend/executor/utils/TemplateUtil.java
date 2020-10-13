@@ -22,8 +22,6 @@ public class TemplateUtil {
     private static final String TEMPLATE_SUFFIX = "-template";
     // template的存放路径
     private static String templateDir;
-    // root-template的存放路径
-    private static String rootTemplate;
     // root-template的straem
     private static InputStream rootTemplateStream;
 
@@ -31,7 +29,8 @@ public class TemplateUtil {
         try {
             Configuration configuration = new Configuration();
             templateDir = configuration.getProperty("template-yaml-path");
-            rootTemplate = templateDir + "root-template.yaml";
+            // root-template的存放路径
+            String rootTemplate = templateDir + "root-template.yaml";
             rootTemplateStream = new FileInputStream(rootTemplate);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -56,8 +55,7 @@ public class TemplateUtil {
      */
     public static String getTemplatePathByPlatform(String platform) {
         //由于存在转义问题，暂时先拼接
-        String path = templateDir + getTemplateNameByPlatform(platform) + ".yaml";
-        return path;
+        return templateDir + getTemplateNameByPlatform(platform) + ".yaml";
 //        return Paths.get(templateDir, getTemplateNameByPlatform(platform) + ".yaml")
 //                .toString();
     }
@@ -99,7 +97,7 @@ public class TemplateUtil {
 
             // 写入文件
             YamlUtil yamlUtil = new YamlUtil();
-            yamlUtil.writeYaml(templatePath, templateMap);
+            YamlUtil.writeYaml(templatePath, templateMap);
         }
         return templateName;
     }

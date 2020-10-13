@@ -91,24 +91,28 @@ public class KubernetesUtil {
     private static Map<Integer, KubernetesStage> submitToKubernetes(Map<Integer, KubernetesStage> stagePods) {
         // 创建一个api
         CoreV1Api api = new CoreV1Api();
-        // 直接创建若干pod
-        stagePods.forEach((stageId, stage) -> {
-            try {
-                if (stage.getPodInfo() != null) {
-                    api.createNamespacedPod(defaultNamespaceName, stage.getPodInfo(), null, null, null);
-                }
-            } catch (ApiException e) {
-                e.printStackTrace();
-            }
-        });
-        // 查询每一个他stage对应的物理信息，主要是ip和端口
+        // 直接创建若干pod，并同时查询对应赌物理信息，主要是ip和端口
         stagePods.forEach((stageId, kubernetesStage) -> {
             try {
-                V1Pod v1Pod = api.readNamespacedPodStatus(podPrefix + stageId, defaultNamespaceName, null);
-                kubernetesStage.setStageId(stageId);
-                kubernetesStage.setHost(Objects.requireNonNull(v1Pod.getStatus()).getPodIP());
-                kubernetesStage.setPort(defaultThriftPort);
-            } catch (ApiException e) {
+                if (kubernetesStage.getPodInfo() != null) {
+                    api.createNamespacedPod(defaultNamespaceName, kubernetesStage.getPodInfo(), null, null, null);
+                    // 等待，直到pod正在运行中，超过一定时间，则直接报错
+                    V1Pod v1Pod = api.readNamespacedPodStatus(podPrefix + stageId, defaultNamespaceName, null);
+                    int retryCounts = 0;
+                    while (!"Running".equals(Objects.requireNonNull(v1Pod.getStatus()).getPhase())) {
+                        Thread.sleep(1000);
+                        retryCounts++;
+                        if (retryCounts >= 30) {
+                            LOGGER.error("Cannot initialize pod of stage: " + stageId);
+                            return;
+                        }
+                        v1Pod = api.readNamespacedPodStatus(podPrefix + stageId, defaultNamespaceName, null);
+                    }
+                    kubernetesStage.setStageId(stageId);
+                    kubernetesStage.setHost(Objects.requireNonNull(v1Pod.getStatus()).getPodIP());
+                    kubernetesStage.setPort(defaultThriftPort);
+                }
+            } catch (ApiException | InterruptedException e) {
                 e.printStackTrace();
             }
         });
@@ -191,7 +195,7 @@ public class KubernetesUtil {
         assert driverHost != null;
         Map<String, String> argsMap = ImmutableMap.of(
                 "--stageId", String.valueOf(stageId),
-                "--thriftPort", String.valueOf(defaultThriftPort),
+                "--port", String.valueOf(defaultThriftPort),
                 "--driverHost", driverHost,
                 "--driverPort", String.valueOf(defaultThriftPort));
         for (Map.Entry<String, String> arg : argsMap.entrySet()) {

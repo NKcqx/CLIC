@@ -19,7 +19,7 @@
                     <arg name="--conf=spark.kubernetes.container.image" required="true" with-name="true">spark:v0</arg>
                     <arg name="--conf=spark.kubernetes.namespace" required="true" with-name="true">argo</arg>
                     <arg name="--conf=spark.kubernetes.authenticate.driver.serviceAccountName" required="true" with-name="true">spark</arg>
-                    <arg name="package" required="true" with-name="false">executable-spark.jar</arg>
+                    <arg name="package" required="true" with-name="false">/data/executable-spark.jar</arg>
                     <arg name="--udfPath" required="true" with-name="true"> </arg>
                 </args>
             </execution>
