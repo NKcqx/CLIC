@@ -26,6 +26,9 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("SortOperator", SortOperator.class);
         put("SocketSourceOperator", SocketSource.class);
         put("SocketSinkOperator", SocketSink.class);
+        put("CountByValueOperator", CountByValueOperator.class);
+        put("CountOperator", CountOperator.class);
+        put("DistinctOperator", DistinctOperator.class);
     }};
 
     @Override
