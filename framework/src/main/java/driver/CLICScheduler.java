@@ -84,14 +84,15 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
             logger.info("Stage " + runningId + " is still running!");
         }
         // 所有的stage都运行成功，结束事件循环，并删除所有的pod
-        if (completedStages.size() == stageIdToStage.size()) {
+        if (completedStages.size() == stageIdToStage.size() - 1) {
             logger.info("All stages have completed!");
             // 删除完成的pod
             KubernetesUtil.deleteCompletedPods(completedStages);
-            // 结束driver
-            tServer.stop();
+            // TODO: 删除所有的yaml文件
             // 结束事件循环
             stop();
+            // 结束driver
+            tServer.stop();
         }
     }
 

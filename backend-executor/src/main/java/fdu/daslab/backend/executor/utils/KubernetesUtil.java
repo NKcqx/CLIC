@@ -5,9 +5,7 @@ import fdu.daslab.backend.executor.model.KubernetesStage;
 import io.kubernetes.client.openapi.ApiClient;
 import io.kubernetes.client.openapi.ApiException;
 import io.kubernetes.client.openapi.apis.CoreV1Api;
-import io.kubernetes.client.openapi.models.V1PersistentVolumeClaimVolumeSourceBuilder;
-import io.kubernetes.client.openapi.models.V1Pod;
-import io.kubernetes.client.openapi.models.V1PodBuilder;
+import io.kubernetes.client.openapi.models.*;
 import io.kubernetes.client.util.ClientBuilder;
 import io.kubernetes.client.util.KubeConfig;
 import org.slf4j.Logger;
@@ -43,7 +41,7 @@ public class KubernetesUtil {
             kubeConfigPath = configuration.getProperty("kube-config-path");
             defaultThriftPort = Integer.valueOf(configuration.getProperty("default-thrift-port"));
             podPrefix = configuration.getProperty("pod-prefix");
-            driverPodName = configuration.getProperty("driver-pod-name");
+            driverPodName = System.getenv("HOSTNAME");
             defaultNamespaceName = configuration.getProperty("default-namespace-name");
             // 初始化k8s
             initKubernetes();
@@ -160,6 +158,12 @@ public class KubernetesUtil {
                 .withImagePullPolicy("IfNotPresent")
                 .withCommand("/bin/sh", "-c")
                 .withArgs(containerArgs)
+                .addNewEnv()
+                .withName("POD_IP")
+                .withValueFrom(new V1EnvVarSourceBuilder()
+                    .withFieldRef(new V1ObjectFieldSelectorBuilder()
+                    .withFieldPath("status.podIP").build()).build())
+                .endEnv()
                 .addNewVolumeMount()
                 .withName("nfs-volume")
                 .withMountPath("/data")

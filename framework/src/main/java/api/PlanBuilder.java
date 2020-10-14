@@ -187,7 +187,6 @@ public class PlanBuilder {
         Map<Integer, KubernetesStage> stageInfos = argoWorkflow.execute(); // 将workflow生成为YAML
         // driver的调度
         driverSchedule(stageInfos);
-        // 删除所有pod
     }
 
     /**
@@ -226,6 +225,7 @@ public class PlanBuilder {
         TServer server = new TThreadPoolServer(ttpsArgs);
         clicScheduler.settServer(server);
         server.serve();
+        LOGGER.info("Driver thrift server stop!");
     }
 
     /**

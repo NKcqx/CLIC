@@ -1,22 +1,25 @@
-apiVersion: v1
-kind: Pod
+apiVersion: batch/v1
+kind: Job
 metadata:
   name: clic-driver
   namespace: argo
 spec:
-  containers:
-  - name: clic-driver
-    image: clic-driver:v0
-    imagePullPolicy: IfNotPresent
-    command:
-    - /bin/sh
-    - -c
-    args:
-    - java -jar clic-driver.jar
-    volumeMounts:
-      - name: nfs-volume
-        mountPath: /data
-  volumes:
-    - name: nfs-volume
-      persistentVolumeClaim:
-        claimName: pvc-nfs
+  template:
+    spec:
+      containers:
+        - name: clic-driver
+          image: java-env:v0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - java -jar /data/jars/clic-driver.jar
+          volumeMounts:
+            - name: nfs-volume
+              mountPath: /data
+      restartPolicy: Never
+      volumes:
+        - name: nfs-volume
+          persistentVolumeClaim:
+            claimName: pvc-nfs
