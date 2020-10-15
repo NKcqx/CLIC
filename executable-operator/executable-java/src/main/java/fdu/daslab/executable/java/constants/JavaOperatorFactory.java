@@ -33,7 +33,8 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("MinOperator", MinOperator.class);
         put("LoopOperator", LoopOperator.class);
         put("NextIteration", NextIteration.class);
-        put("CollectionSourceOperator", CollectionSource.class);
+        put("CollectionSource", CollectionSource.class);
+        put("CollectionSink", CollectionSink.class);
     }};
 
     @Override

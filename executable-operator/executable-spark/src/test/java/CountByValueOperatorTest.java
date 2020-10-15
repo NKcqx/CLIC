@@ -5,7 +5,9 @@ import fdu.daslab.executable.spark.utils.SparkInitUtil;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.*;
@@ -23,12 +25,16 @@ public class CountByValueOperatorTest {
     List<String> d = Arrays.asList("www.cctv.com,8".split(","));
     List<String> e = Arrays.asList("www.cctv.com,8".split(","));
     List<List<String>> mydata = Arrays.asList(a, b, c, d, e);
+    private JavaSparkContext javaSparkContext;
 
+    @Before
+    public void before(){
+        SparkInitUtil.setSparkContext(new SparkConf().setMaster("local[*]").setAppName("CountByValueOperatorTest"));
+        javaSparkContext = SparkInitUtil.getDefaultSparkContext();
+    }
 
     @Test
     public void countByValueOperatorTest() {
-        SparkInitUtil.setSparkContext(new SparkConf().setMaster("local[*]").setAppName("CountByValueOperatorTest"));
-        JavaSparkContext javaSparkContext = SparkInitUtil.getDefaultSparkContext();
         JavaRDD<List<String>> listJavaRDD = javaSparkContext.parallelize(mydata);
 
         Map<List<String>, Long> myRes = new HashMap<List<String>, Long>();
@@ -48,14 +54,10 @@ public class CountByValueOperatorTest {
         Map<List<String>, Long> res = countByValue.getOutputData("result");
 
         Assert.assertEquals(res, myRes);
-
-        javaSparkContext.close();
-
     }
 
     @Test
     public void countOperatorTest() {
-        JavaSparkContext javaSparkContext = new JavaSparkContext(new SparkConf().setMaster("local[*]").setAppName("CountDistinctOperatorTest"));
         JavaRDD<List<String>> listJavaRDD = javaSparkContext.parallelize(mydata);
 
         Map<String, String> params = new HashMap<String, String>();
@@ -68,15 +70,11 @@ public class CountByValueOperatorTest {
         countOperator.execute(null, null);
         long res = countOperator.getOutputData("result");
         Assert.assertEquals(res, (long) 5);
-
-        javaSparkContext.close();
     }
 
 
     @Test
     public void distinctOperatorTest() {
-
-        JavaSparkContext javaSparkContext = new JavaSparkContext(new SparkConf().setMaster("local[*]").setAppName("DistinctOperatorTest"));
         JavaRDD<List<String>> listJavaRDD = javaSparkContext.parallelize(mydata);
         List<List<String>> distinctData = Arrays.asList(a, c, b, d);
 
@@ -91,8 +89,11 @@ public class CountByValueOperatorTest {
         JavaRDD<List<String>> res = distinctOperator.getOutputData("result");
 
         Assert.assertEquals(res.collect(), distinctData);
-        javaSparkContext.close();
+    }
 
+    @After
+    public void after(){
+        SparkInitUtil.getDefaultSparkContext().close();
     }
 
 }

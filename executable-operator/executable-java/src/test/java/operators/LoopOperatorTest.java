@@ -6,10 +6,12 @@ import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
 import fdu.daslab.executable.java.constants.JavaOperatorFactory;
+import fdu.daslab.executable.java.operators.CollectionSink;
 import fdu.daslab.executable.java.operators.FileSink;
 import fdu.daslab.executable.java.operators.LoopOperator;
 import fdu.daslab.executable.java.operators.MapOperator;
 import org.javatuples.Pair;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,8 +31,7 @@ import static org.junit.Assert.*;
  */
 public class LoopOperatorTest {
     private LoopOperator loopOperator;
-    private MapOperator loopBody;
-    private FileSink fileSink;
+    private CollectionSink collectionSink;
     private JavaOperatorFactory javaOperatorFactory = new JavaOperatorFactory();
 
     @Before
@@ -61,33 +62,19 @@ public class LoopOperatorTest {
                 "      - id: MapOperator-677696474");
         params.put("loopVarUpdateName", "increment");
 
-        List<String> sinkInputKeys = Collections.singletonList("data");
-        Map<String, String> sinkParams = new HashMap<>();
-        sinkParams.put("separator", " ");
-        sinkParams.put("outputPath", "/tmp/clic_output/loopTest.txt");
-
-        List<String> bodyInputKeys = Collections.singletonList("data");
-        List<String> bodyOutputKeys = Collections.singletonList("result");
-        Map<String, String> bodyParams = new HashMap<>();
-        bodyParams.put("udfName", "loopBodyMapFunc");
-
         try {
-            this.fileSink = (FileSink) this.javaOperatorFactory
-                    .createOperator("SinkOperator", "2", sinkInputKeys, Collections.emptyList(), sinkParams);
-            this.loopBody = (MapOperator) this.javaOperatorFactory
-                    .createOperator("MapOperator", "1", bodyInputKeys, bodyOutputKeys, bodyParams);
+            this.collectionSink = (CollectionSink) this.javaOperatorFactory
+                    .createOperator("CollectionSink", "2", Collections.singletonList("data"), Collections.singletonList("result"), new HashMap<>());
             this.loopOperator = (LoopOperator) this.javaOperatorFactory.createOperator(
                     "LoopOperator", "0", inputKeys, outputKeys, params);
-
 
             this.loopOperator.setInputData("data", inputValueBox.stream());
             this.loopOperator.setInputData("loopVar", loopVarBox.stream());
 
-            this.loopOperator.connectTo("result", fileSink, "data");
+            this.loopOperator.connectTo("result", collectionSink, "data");
         } catch (Exception e) {
             e.printStackTrace();
         }
-
     }
 
     @Test
@@ -116,13 +103,10 @@ public class LoopOperatorTest {
                 }
             }
 
-            File file = new File("/tmp/clic_output/loopTest.txt");
-            assertTrue(file.exists());
-            assertTrue(file.isFile());
-            FileInputStream inputStream = new FileInputStream(file);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String line = bufferedReader.readLine();
-            assertEquals(line, "5 6 7 8 9");
+            List<String> result = collectionSink.getOutputData("result");
+            List<String> expectedResult = Arrays.asList("5", "6", "7", "8", "9");
+            Assert.assertFalse(result.isEmpty());
+            Assert.assertEquals(expectedResult, result);
         }catch (Exception ignored){
         }
 

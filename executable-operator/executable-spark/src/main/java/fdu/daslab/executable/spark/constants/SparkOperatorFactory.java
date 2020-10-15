@@ -1,7 +1,8 @@
-package fdu.daslab.executable.spark.operators;
+package fdu.daslab.executable.spark.constants;
 
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
+import fdu.daslab.executable.spark.operators.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -30,6 +31,8 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("DistinctOperator", DistinctOperator.class);
         put("LoopOperator", LoopOperator.class);
         put("NextIteration", NextIteration.class);
+        put("CollectionSink", CollectionSink.class);
+        put("CollectionSource", CollectionSource.class);
     }};
 
     @Override

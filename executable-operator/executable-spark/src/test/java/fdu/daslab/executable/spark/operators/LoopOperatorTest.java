@@ -5,11 +5,14 @@ import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
+import fdu.daslab.executable.spark.constants.SparkOperatorFactory;
 import fdu.daslab.executable.spark.utils.SparkInitUtil;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.javatuples.Pair;
+import org.junit.After;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -29,8 +32,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class LoopOperatorTest {
     private LoopOperator loopOperator;
-    private MapOperator loopBody;
-    private FileSink fileSink;
+    private CollectionSink collectionSink;
     private SparkOperatorFactory sparkOperatorFactory = new SparkOperatorFactory();
     private JavaSparkContext javaSparkContext;
 
@@ -65,29 +67,16 @@ public class LoopOperatorTest {
                 "      - id: MapOperator-677696474");
         params.put("loopVarUpdateName", "increment");
 
-        List<String> sinkInputKeys = Collections.singletonList("data");
-        Map<String, String> sinkParams = new HashMap<>();
-        sinkParams.put("separator", " ");
-        sinkParams.put("outputPath", "/tmp/clic_output/loopTest.txt");
-
-        List<String> bodyInputKeys = Collections.singletonList("data");
-        List<String> bodyOutputKeys = Collections.singletonList("result");
-        Map<String, String> bodyParams = new HashMap<>();
-        bodyParams.put("udfName", "loopBodyMapFunc");
-
         try {
-            this.fileSink = (FileSink) this.sparkOperatorFactory
-                    .createOperator("SinkOperator", "2", sinkInputKeys, Collections.emptyList(), sinkParams);
-            this.loopBody = (MapOperator) this.sparkOperatorFactory
-                    .createOperator("MapOperator", "1", bodyInputKeys, bodyOutputKeys, bodyParams);
+            this.collectionSink = (CollectionSink) this.sparkOperatorFactory
+                    .createOperator("CollectionSink", "2", Collections.singletonList("data"), Collections.singletonList("result"), new HashMap<>());
             this.loopOperator = (LoopOperator) this.sparkOperatorFactory.createOperator(
                     "LoopOperator", "0", inputKeys, outputKeys, params);
-
 
             this.loopOperator.setInputData("data", javaSparkContext.parallelize(inputValueBox));
             this.loopOperator.setInputData("loopVar", javaSparkContext.parallelize(loopVarBox));
 
-            this.loopOperator.connectTo("result", fileSink, "data");
+            this.loopOperator.connectTo("result", collectionSink, "data");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -96,8 +85,9 @@ public class LoopOperatorTest {
     @Test
     public void testLoop() { // 检查 fileSink 的inputData
         try {
-            final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("TestLoopFunc.class");
+            final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("/Users/jason/Desktop/TestLoopFunc.class");
             ParamsModel inputArgs = new ParamsModel(functionModel);
+            inputArgs.setFunctionClasspath("/Users/jason/Desktop/TestLoopFunc.class");
             // 不能使用之前的BFSTraversal
             Queue<OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>> bfsQueue = new LinkedList<>();
             bfsQueue.add(this.loopOperator);
@@ -119,17 +109,16 @@ public class LoopOperatorTest {
                 }
             }
 
-            File file = new File("/tmp/clic_output/loopTest.txt");
-            assertTrue(file.exists());
-            assertTrue(file.isFile());
-            FileInputStream inputStream = new FileInputStream(file);
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-            String line = bufferedReader.readLine();
-            assertEquals(line, "5 6 7 8 9");
-
-
+            List<String> expectedResult = Arrays.asList("5", "6", "7", "8", "9");
+            List<String> result = collectionSink.getOutputData("result");
+            Assert.assertFalse(result.isEmpty());
+            Assert.assertEquals(expectedResult, result);
         } catch (Exception ignored) {
         }
 
+    }
+    @After
+    public void after(){
+        SparkInitUtil.getDefaultSparkContext().close();
     }
 }

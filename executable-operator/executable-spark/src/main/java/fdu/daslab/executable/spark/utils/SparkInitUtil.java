@@ -38,11 +38,7 @@ public class SparkInitUtil {
 
 
     public static boolean setSparkContext(SparkConf conf) {
-        if (SparkInitUtil.sparkContext == null) {
-            SparkInitUtil.sparkContext = new JavaSparkContext(conf);
-            return true;
-        } else {
-            return false;
-        }
+        SparkInitUtil.sparkContext = new JavaSparkContext(conf);
+        return true;
     }
 }
