@@ -13,6 +13,7 @@ import basic.visitors.PrintVisitor;
 import basic.visitors.WorkflowVisitor;
 import channel.Channel;
 import fdu.daslab.backend.executor.model.Workflow;
+import fdu.daslab.backend.executor.utils.YamlUtil;
 import org.javatuples.Pair;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultListenableGraph;
@@ -25,6 +26,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.*;
 
 /**
@@ -80,6 +82,11 @@ public class PlanBuilder {
         }
         keyPairs.add(keyPair);
         return this.addEdges(sourceDataQuanta, targetDataQuanta, keyPairs);
+    }
+
+    public boolean addEdge(DataQuanta sourceDataQuanta,
+                           DataQuanta targetDataQuanta) {
+        return this.addEdge(sourceDataQuanta, targetDataQuanta, null);
     }
 
     public DataQuanta readDataFrom(Map<String, String> params) throws Exception {
@@ -258,6 +265,14 @@ public class PlanBuilder {
                 e.printStackTrace();
             }
         }
+    }
+
+    /**
+     * 把PlanBuilder代表的Graph转为Yaml格式的字符串
+     */
+    public void toYaml(Writer writer) { // 或许放到YamlUtil里更好？
+        Map<String, Object> yamlMap = ArgoAdapter.graph2Yaml(graph);
+        YamlUtil.writeYaml(writer, yamlMap);
     }
 
     /**

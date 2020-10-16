@@ -1,7 +1,8 @@
-package fdu.daslab.executable.spark.operators;
+package fdu.daslab.executable.java.constants;
 
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
+import fdu.daslab.executable.java.operators.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -12,21 +13,28 @@ import java.util.Map;
 /**
  * @author 陈齐翔
  * @version 1.0
- * @since 2020/9/3 10:36 上午
+ * @since 2020/8/19 10:07 上午
  */
-public class SparkOperatorFactory implements OperatorFactory {
+public class JavaOperatorFactory implements OperatorFactory {
 
     private static Map<String, Class> operatorMap = new HashMap<String, Class>() {{
         put("SourceOperator", FileSource.class);
         put("SinkOperator", FileSink.class);
         put("FilterOperator", FilterOperator.class);
         put("MapOperator", MapOperator.class);
-        // put("JoinOperator", JoinOperator.class);
+        put("JoinOperator", JoinOperator.class);
         put("ReduceByKeyOperator", ReduceByKeyOperator.class);
         put("SortOperator", SortOperator.class);
-        put("CountByValueOperator", CountByValueOperator.class);
+        put("ParquetFileSourceOperator", ParquetFileSource.class);
+        put("ParquetFileSinkOperator", ParquetFileSink.class);
         put("CountOperator", CountOperator.class);
         put("DistinctOperator", DistinctOperator.class);
+        put("MaxOperator", MaxOperator.class);
+        put("MinOperator", MinOperator.class);
+        put("LoopOperator", LoopOperator.class);
+        put("NextIteration", NextIteration.class);
+        put("CollectionSource", CollectionSource.class);
+        put("CollectionSink", CollectionSink.class);
     }};
 
     @Override
