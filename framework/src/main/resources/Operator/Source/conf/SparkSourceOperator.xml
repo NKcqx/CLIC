@@ -4,7 +4,7 @@
     <platform ID="spark">
         <language>spark</language>
 <!--            cost是该operator的cost，此处先简单设定-->
-        <cost>25.9901</cost>
+        <cost>0.01</cost>
     </platform>
     <parameters>
         <parameter name="partitionNum" data_type="integer" default="5"> </parameter>

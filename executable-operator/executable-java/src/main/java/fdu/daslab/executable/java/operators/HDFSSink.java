@@ -10,8 +10,6 @@ import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.io.IOUtils;
-import scala.collection.mutable.StringBuilder;
-
 import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
@@ -34,24 +32,29 @@ public class HDFSSink extends OperatorBase<Stream<List<String>>, Stream<List<Str
         super("HDFSSink", id, inputKeys, outputKeys, params);
     }
 
-    private FileSystem getFileSystem() throws IOException, URISyntaxException, InterruptedException {
+    private FileSystem getFileSystem(String hdfsPath) throws IOException, URISyntaxException, InterruptedException {
         Configuration configuration = new Configuration();
         configuration.set("dfs.replication","1");
-        return FileSystem.get(new URI("hdfs://localhost:8020"),configuration,"zhuxingpo");
+        //return FileSystem.get(configuration);
+        configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+        return FileSystem.get(new URI(hdfsPath), configuration);
     }
 
     @Override
     public void execute(ParamsModel inputArgs, ResultModel<Stream<List<String>>> result) {
         try {
-            Path path = new Path(this.params.get("outputPath"));
-            FSDataOutputStream fsDataOutputStream = getFileSystem().create(path);
+            String outputPath = this.params.get("outputPath");
+            String hdfsURI = "hdfs://" + outputPath.split("/")[2];
+            Path path = new Path(outputPath);
+            FSDataOutputStream fsDataOutputStream = getFileSystem(hdfsURI).create(path);
 
             this.getInputData("data")
                     .forEach(record -> {
                         StringBuilder writeLine = new StringBuilder();
                         record.forEach(field -> {
                             writeLine.append(field);
-                            writeLine.append(this.params.get(separator));
+                            writeLine.append(this.params.get("separator"));
                         });
                         writeLine.deleteCharAt(writeLine.length() - 1);
                         writeLine.append("\n");

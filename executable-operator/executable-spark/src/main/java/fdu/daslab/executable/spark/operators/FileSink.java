@@ -15,6 +15,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Map;
 
@@ -40,6 +41,15 @@ public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<
         super("SparkFileSink", id, inputKeys, outputKeys, params);
     }
 
+    private FileSystem getFileSystem(String hdfsPath) throws IOException, URISyntaxException, InterruptedException {
+        Configuration configuration = new Configuration();
+        configuration.set("dfs.replication","1");
+        //return FileSystem.get(configuration);
+        configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+        return FileSystem.get(new URI(hdfsPath), configuration);
+    }
+
 
 //    // 是否输出一个文件
 //    @Parameter(names = {"--isCombined"})
@@ -57,32 +67,30 @@ public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<
 
         boolean isCombined = this.params.get("isCombined").equals("true"); // todo 之后会根据数据类型在外面自动转换
 
-        if (true) {
-            Configuration configuration = new Configuration();
-            configuration.set("dfs.replication","1");
+        if (isCombined) {
+            // 针对小文件
             try {
+                String outputPath = this.params.get("outputPath");
+                String hdfsURI = "hdfs://" + outputPath.split("/")[2];
+                Path path = new Path(outputPath);
+                FSDataOutputStream fsDataOutputStream = getFileSystem(hdfsURI).create(path);
 
                 this.getInputData("data")
-                        .foreachPartition(partitionIter -> {
-                            // 所有数据均追加到一个文件上
-                            Path path = new Path(this.params.get("outputPath"));
-                            FSDataOutputStream fsDataOutputStream = FileSystem.get(new URI("hdfs://localhost:8020"), configuration, "zhuxingpo").create(path);
-
-
-                            partitionIter.forEachRemaining(record -> {
+                        .collect()
+                        .forEach(record -> {
                             StringBuilder writeLine = new StringBuilder();
                             record.forEach(field -> {
                                 writeLine.append(field);
                                 writeLine.append(this.params.get("separator"));
                             });
                             writeLine.deleteCharAt(writeLine.length() - 1);
+                            writeLine.append("\n");
                             try {
                                 fsDataOutputStream.write(writeLine.toString().getBytes("UTF-8"));
+//                            fsDataOutputStream.write("\n".getBytes("UTF-8"));
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-                        });
-
                         });
             } catch ( Exception e) {
                 e.printStackTrace();
@@ -91,6 +99,7 @@ public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<
 
         } else {
             // 一个partition写入一个文件
+            // 针对大文件
             this.getInputData("data")
                     .map(line -> StringUtils.join(line, this.params.get("separator")))
                     .saveAsTextFile(this.params.get("outputPath"));

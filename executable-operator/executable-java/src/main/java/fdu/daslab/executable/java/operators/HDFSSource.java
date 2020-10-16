@@ -33,10 +33,13 @@ public class HDFSSource extends OperatorBase<Stream<List<String>>, Stream<List<S
         super("HDFSSource", id, inputKeys, outputKeys, params);
     }
 
-    private FileSystem getFileSystem() throws IOException, URISyntaxException, InterruptedException {
+    private FileSystem getFileSystem(String hdfsPath) throws IOException, URISyntaxException, InterruptedException {
         Configuration configuration = new Configuration();
         configuration.set("dfs.replication","1");
-        return FileSystem.get(new URI("hdfs://localhost:8020"),configuration,"zhuxingpo");
+        //return FileSystem.get(configuration);
+        configuration.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        configuration.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+        return FileSystem.get(new URI(hdfsPath), configuration);
     }
 
     @Override
@@ -44,8 +47,10 @@ public class HDFSSource extends OperatorBase<Stream<List<String>>, Stream<List<S
         BufferedReader br = null;
         FSDataInputStream fsDataInputStream = null;
         try {
-            Path path = new Path(this.params.get("inputPath"));
-            fsDataInputStream = getFileSystem().open(path);
+            String inputPath = this.params.get("inputPath");
+            String hdfsURI = "hdfs://" + inputPath.split("/")[2];
+            Path path = new Path(inputPath);
+            fsDataInputStream = getFileSystem(hdfsURI).open(path);
             br = new BufferedReader(new InputStreamReader(fsDataInputStream));
 
             String line = null;

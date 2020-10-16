@@ -3,7 +3,7 @@
 
     <platform ID="spark">
         <language>spark</language>
-        <cost>18.1102</cost>
+        <cost>0.0001</cost>
     </platform>
 
 </Operator>
