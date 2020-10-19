@@ -6,15 +6,14 @@ import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.TopTraversal;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
-import fdu.daslab.executable.basic.utils.ReflectUtil;
 import fdu.daslab.executable.sparksql.operators.SparkSQLOperatorFactory;
 import org.apache.spark.rdd.RDD;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Array;
-
 import java.io.File;
-
 import java.util.*;
 
 /**
@@ -56,15 +55,15 @@ public class ExecuteSparkSQLOperator {
             TopTraversal topTraversal = new TopTraversal(headOperator);
             OperatorBase tailOperator = null;
             while (topTraversal.hasNextOpt()) {
-                OperatorBase<RDD<Array<String>>, RDD<Array<String>>> curOpt = topTraversal.nextOpt();
+                OperatorBase<Dataset<Row>, Dataset<Row>> curOpt = topTraversal.nextOpt();
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections();
                 for (Connection connection : connections) {
-                    OperatorBase<RDD<Array<String>>, RDD<Array<String>>> targetOpt = connection.getTargetOpt();
+                    OperatorBase<Dataset<Row>, Dataset<Row>> targetOpt = connection.getTargetOpt();
                     String sourceKey = connection.getSourceKey();
                     String targetKey = connection.getTargetKey();
-                    RDD<Array<String>> sourceResult = curOpt.getOutputData(sourceKey);
+                    Dataset<Row> sourceResult = curOpt.getOutputData(sourceKey);
                     targetOpt.setInputData(targetKey, sourceResult);
                 }
                 logger.info("Stage(sparkSql) ———— Current SparkSQL Operator is " + curOpt.getName());

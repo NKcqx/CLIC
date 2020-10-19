@@ -25,7 +25,7 @@ public class SQLDemo {
                 put("tableName1", "student");
                 put("inputPath2", "D:/2020project/sql/grade.csv");
                 put("tableName2", "grade");
-                put("sqlText", "select student.id,student.name,grade.grade from student join grade on student.id=grade.id");
+                put("sqlText", "select id,name from student where id in (select student.id from student join grade on student.id=grade.id and grade.grade>=8)");
             }});
 
 //            DataQuanta sqlExeNode = DataQuanta.createInstance("sqlExe", new HashMap<String, String>() {{
