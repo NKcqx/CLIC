@@ -5,13 +5,16 @@ import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
-import fdu.daslab.executable.basic.utils.TopTraversal;
-import fdu.daslab.executable.spark.operators.SparkOperatorFactory;
+import fdu.daslab.executable.basic.utils.TopoTraversal;
+import fdu.daslab.executable.spark.constants.SparkOperatorFactory;
 import org.apache.spark.api.java.JavaRDD;
+import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -47,51 +50,35 @@ public class ExecuteSparkOperator {
         long start = System.currentTimeMillis();   //获取开始时间
         logger.info("Stage(spark) ———— Start A New Spark Stage");
         try {
-            OperatorBase headOperator = ArgsUtil.parseArgs(entry.dagPath, new SparkOperatorFactory());
-            //记录输入文件的大小
-            if (headOperator.getParams().containsKey("inputPath")) {
-                String inputFile = (String) headOperator.getParams().get("inputPath");
-                File f = new File(inputFile);
-                if (f.exists() && f.isFile()) {
-                    logger.info("Stage(spark) ———— Input file size:  " + f.length());
-                } else {
-                    logger.info("Stage(spark) ———— File doesn't exist or it is not a file");
-                }
-            }
+            InputStream yamlStream = new FileInputStream(new File(entry.dagPath));
+            Pair<List<OperatorBase>, List<OperatorBase>> headAndEndOperators =
+                    ArgsUtil.parseArgs(yamlStream, new SparkOperatorFactory());
+
             // 遍历DAG，执行execute，每次执行前把上一跳的输出结果放到下一跳的输入槽中（用Connection来转移ResultModel里的数据）
             ParamsModel inputArgs = new ParamsModel(null);
             inputArgs.setFunctionClasspath(entry.udfPath);
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
-            TopTraversal topTraversal = new TopTraversal(headOperator);
-            OperatorBase tailOperator = null;
-            while (topTraversal.hasNextOpt()) {
-                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = topTraversal.nextOpt();
+            TopoTraversal topoTraversal = new TopoTraversal(headAndEndOperators.getValue0());
+            while (topoTraversal.hasNextOpt()) {
+                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = topoTraversal.nextOpt();
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
                     OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> targetOpt = connection.getTargetOpt();
-                    String sourceKey = connection.getSourceKey();
-                    String targetKey = connection.getTargetKey();
-                    JavaRDD<List<String>> sourceResult = curOpt.getOutputData(sourceKey);
-                    // 将当前opt的输出结果传入下一跳的输入数据
-                    targetOpt.setInputData(targetKey, sourceResult);
+                    topoTraversal.updateInDegree(targetOpt, -1);
+                    List<Pair<String, String>> keyPairs = connection.getKeys();
+                    for (Pair<String, String> keyPair : keyPairs) {
+                        JavaRDD<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
+                        // 将当前opt的输出结果传入下一跳的输入数据
+                        targetOpt.setInputData(keyPair.getValue1(), sourceResult);
+                    }
                 }
                 logger.info("Stage(java) ———— Current Spark Operator is " + curOpt.getName());
-                tailOperator = curOpt;
             }
+
             long end = System.currentTimeMillis(); //获取结束时间
             logger.info("Stage(spark) ———— Running hold time:  " + (end - start) + "ms");
-
-            if (tailOperator != null && tailOperator.getParams().containsKey("outputPath")) {
-                String outputPath = (String) tailOperator.getParams().get("outputPath");
-                File f = new File(outputPath);
-                if (f.exists() && f.isFile()) {
-                    logger.info("Stage(spark) ———— Output file size:  " + f.length());
-                } else {
-                    logger.info("Stage(spark) ———— File doesn't exist or it is not a file");
-                }
-            }
             logger.info("Stage(spark) ———— End The Current Spark Stage");
         } catch (Exception e) {
             e.printStackTrace();

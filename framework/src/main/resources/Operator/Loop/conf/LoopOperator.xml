@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="LoopOperator" name="LoopOperator" kind="calculator">
+
+    <platforms>
+        <platform ID="java">
+            <path>Operator/Loop/conf/JavaLoopOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter name="predicateName" data_type="string" required="true"> </parameter>
+        <!-- 在logical view里 这应该是一个sub-graph (不会出现在总的大Graph中) -->
+        <parameter name="loopBody" data_type="graph" required="true"> </parameter>
+        <parameter name="loopVarUpdateName" data_type="string" required="true"> </parameter>
+    </parameters>
+
+    <inputs>  <!-- 输入数据 -->
+        <input name="loopVar" data_type="string" required="true"> </input> <!-- 传给Predicate的数据 -->
+        <input name="data" data_type="string" required="true"> </input> <!-- 传给loopBody的数据 -->
+    </inputs>
+
+    <outputs> <!-- 计算结果 -->
+        <output name="loopVar" data_type="string"> </output>
+        <output name="result" data_type="string"> </output> <!-- 外部使用的 最终的 输出结果 -->
+    </outputs>
+
+</Operator>

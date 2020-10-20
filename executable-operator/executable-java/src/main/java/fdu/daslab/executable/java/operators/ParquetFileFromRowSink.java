@@ -4,7 +4,6 @@ import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
-import org.apache.hadoop.conf.Configuration;
 import org.apache.parquet.column.ParquetProperties;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
@@ -16,6 +15,7 @@ import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.MessageTypeParser;
 import org.apache.parquet.schema.Type;
 import org.apache.hadoop.fs.Path;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
@@ -86,8 +86,9 @@ public class ParquetFileFromRowSink extends OperatorBase<Stream<List<String>>, S
 
     /**
      * 根据schema的类型进行写入
-     * @param group group数据
-     * @param type  类型信息
+     *
+     * @param group      group数据
+     * @param type       类型信息
      * @param fieldValue 需要存储的field值
      * @return 返回写入后的group
      */

@@ -1,6 +1,5 @@
 package fdu.daslab.backend.executor.model;
 
-import fdu.daslab.backend.executor.utils.HttpUtil;
 import fdu.daslab.backend.executor.utils.YamlUtil;
 
 import java.util.List;
@@ -36,6 +35,6 @@ public class Workflow {
         YamlUtil yamlUtil = new YamlUtil();
         String path = yamlUtil.createArgoYaml(tasks, imageTemplateList);
         // 2.调用argo server api提交post请求
-        HttpUtil.submitPipelineByYaml(path);
+        // HttpUtil.submitPipelineByYaml(path);
     }
 }
