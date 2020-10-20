@@ -32,8 +32,8 @@ public class DataQuantaTest {
 
     @Test
     public void testCreateInstance() {
-        assertNull(dataQuanta1);
-        assertNotNull(dataQuanta2);
+        assertNotNull(dataQuanta1);
+        assertNull(dataQuanta2);
     }
 
     @Test

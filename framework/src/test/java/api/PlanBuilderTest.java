@@ -16,19 +16,20 @@ import static org.mockito.Mockito.mock;
 
 public class PlanBuilderTest {
     private PlanBuilder planBuilder;
+    private Configuration configuration;
     @Before
     public void before() throws Exception{
-        planBuilder = new PlanBuilder();
+        configuration = new Configuration();
+        planBuilder = new PlanBuilder(configuration);
+
     }
 
     @Test
     public void testConstructor() throws Exception {
-        Configuration mockConf = mock(Configuration.class);
-        when(mockConf.getProperty("operator-mapping-file")).thenReturn("OperatorTemplates/OperatorMapping.xml");
-        when(mockConf.getProperty("platform-mapping-file")).thenReturn("Platform/PlatformMapping.xml");
-        planBuilder = new PlanBuilder(mockConf);
-        verify(mockConf).getProperty("operator-mapping-file");
-        verify(mockConf).getProperty("platform-mapping-file");
+        Configuration spyConfiguration = spy(configuration);
+        planBuilder = new PlanBuilder(spyConfiguration);
+        verify(spyConfiguration).getProperty("operator-mapping-file");
+        verify(spyConfiguration).getProperty("platform-mapping-file");
     }
 
     @Test
@@ -112,17 +113,16 @@ public class PlanBuilderTest {
         assertEquals(planBuilder.getHeadDataQuanta(), dataQuanta);
     }
 
-    @Test
-    public void testExecute() throws Exception{
-        // 几个Plan在Execute中调用的次数测试
-        Configuration configuration = new Configuration();
-        planBuilder = new PlanBuilder(configuration);
-        PlanBuilder spyPlanBuilder = spy(planBuilder);
-        testAddMethod();
-        spyPlanBuilder.execute();
-        verify(spyPlanBuilder, times(2)).printPlan();
-        verify(spyPlanBuilder).optimizePlan();
-        // executePlan是一个private，测试不了
-//        verify(spyPlanBuilder).executePlan();
-    }
+//    @Test
+//    public void testExecute() throws Exception{
+//        // 几个Plan在Execute中调用的次数测试
+//
+//        PlanBuilder spyPlanBuilder = spy(planBuilder);
+//        testAddMethod();
+//        spyPlanBuilder.execute();
+//        verify(spyPlanBuilder, times(2)).printPlan();
+//        verify(spyPlanBuilder).optimizePlan();
+//        // executePlan是一个private，测试不了
+////        verify(spyPlanBuilder).executePlan();
+//    }
 }
