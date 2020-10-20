@@ -6,6 +6,7 @@
         <cost>22.1174</cost>
     </platform>
     <parameters> <!-- 计算参数 -->
-        <parameter name="isCombined" data_type="boolean" default="true"> </parameter>
+<!--        <parameter name="isCombined" data_type="boolean" default="true"> </parameter>-->
+        <parameter name="partitionNum" data_type="integer" default="3"> </parameter>
     </parameters>
 </Operator>

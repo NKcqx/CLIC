@@ -28,22 +28,15 @@ public class SQLDemo {
                 put("sqlText", "select id,name from student where id in (select student.id from student join grade on student.id=grade.id and grade.grade>=8)");
             }});
 
-//            DataQuanta sqlExeNode = DataQuanta.createInstance("sqlExe", new HashMap<String, String>() {{
-//                put("sqlText", "select * from person");
-//            }});
-
-            // 最终结果的输出路径   例如该map的value值是本项目output.csv的绝对路径
+            // 最终结果的输出路径 这里写文件夹名字（HDFS形式）
             DataQuanta sinkNode = DataQuanta.createInstance("sqlSink", new HashMap<String, String>() {{
-                put("outputPath", "D:/2020project/sql/sqlOutput.csv"); // 具体resources的路径通过配置文件获得
+                put("outputPath", "D:/2020project/sql/hdfs");
             }});
 
             planBuilder.addVertex(sourceNode);
-//            planBuilder.addVertex(sqlExeNode);
             planBuilder.addVertex(sinkNode);
 
             // 链接节点，即构建DAG
-//            planBuilder.addEdge(sourceNode, sqlExeNode, null);
-//            planBuilder.addEdge(sqlExeNode, sinkNode, null);
             planBuilder.addEdge(sourceNode, sinkNode, null);
 
             planBuilder.execute();

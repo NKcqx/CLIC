@@ -5,8 +5,9 @@ import org.apache.spark.sql.catalyst.plans.logical.{Filter, Join, LogicalPlan, P
 import org.apache.spark.sql.execution.datasources.LogicalRelation
 
 /**
- * Logical Plan与荆老师组对接
+ * Logical Plan与J老师组对接
  * 本部分的Logical Plan指的是Spark SQL的Logical Plan
+ * 现在没有用，暂时搁置
  *
  * @author 刘丰艺
  * @version 1.0
@@ -24,19 +25,21 @@ object SQLAdapter {
    * @return 优化后的Logical Plan对应的sql语句
    */
   def getOptimizedSqlText(sparkSession: SparkSession, sqlText: String, tableNames: Array[String]): String = {
+    // Spark SQL
     val plan = sparkSession.sessionState.optimizer.execute(
       sparkSession.sharedState.cacheManager.useCachedData(
         sparkSession.sessionState.analyzer.executeAndCheck(
           sparkSession.sessionState.sqlParser.parsePlan(sqlText))))
-//    println(plan)
 //    visitLogicalPlan(plan)
-//    sqlText
 //    val newSqlText = new SQLBuilder(plan, tableNames).toSQL(plan)
-//    println(newSqlText)
 //    newSqlText
     sqlText
   }
 
+  /**
+   * 遍历荆老师组返回的plan tree
+   * @param plan
+   */
   def visitLogicalPlan(plan: LogicalPlan): Unit = {
     val children = plan.children
     if (children == null || children.length == 0) {
@@ -44,22 +47,23 @@ object SQLAdapter {
     }
     for (child <- children) {
       child match {
-        case Filter(condition, child) => println("filter_condition: " + condition.sql)
-        case Project(projectList, child) => println("projectList: " + projectList)
+        case Filter(condition, child) => condition.sql
+        case Project(projectList, child) => projectList
         case Join(left, right, joinType, condition) => {
-          println("left: " + left)
-          println("right: " + right)
-          println("joinType: " + joinType)
-          println("join_condition: " + condition)
+          left
+          right
+          joinType
+          condition
         }
         case LogicalRelation(relation, output, catalogTable, isStreaming) => {
-          println("relation: " + relation.schema.toDDL)
-          println("output: " + output)
-          println("catalogTable: " + catalogTable)
-          println("isStreaming: " + isStreaming)
+          relation.schema.toDDL
+          output
+          catalogTable
+          isStreaming
         }
-        case _ => println("other: " + child.getClass)
+        case _ => child.getClass
       }
+      // 递归遍历子节点
       visitLogicalPlan(child)
     }
   }

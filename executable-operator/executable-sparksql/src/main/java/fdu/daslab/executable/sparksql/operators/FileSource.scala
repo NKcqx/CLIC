@@ -3,12 +3,10 @@ import java.util
 
 import fdu.daslab.executable.basic.model.{OperatorBase, ParamsModel, ResultModel}
 import fdu.daslab.executable.sparksql.utils.{SQLAdapter, SparkInitUtil}
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.DataFrame
 
 /**
  * SparkSQL平台的读取数据源算子
- * （现在sql执行功能也在这个算子中）
  *
  * @author 刘丰艺
  * @since 2020/10/8 9:30 PM
@@ -44,7 +42,6 @@ class FileSource(name: String, id: String,
 
       // 通过截取文件名后缀获取该文件类型
       val fileType = inputPath.substring(inputPath.indexOf("."), inputPath.length)
-      // 根据文件类型调用相关read函数
       fileType match {
         case ".csv" => {
           sparkSession.read.format("csv").option("header","true").load(inputPath).createTempView(tableName)
@@ -55,16 +52,11 @@ class FileSource(name: String, id: String,
         case ".json" => {
           sparkSession.read.json(inputPath).toDF().createTempView(tableName)
         }
-//        case ".parquet" => {
-//
-//        }
       }
     }
-
-    val newSqlText = SQLAdapter.getOptimizedSqlText(sparkSession, this.params.get("sqlText"), tableNames)
-    val result = sparkSession.sql(newSqlText)
-    result.show()
-
+//    val newSqlText = SQLAdapter.getOptimizedSqlText(sparkSession, this.params.get("sqlText"), tableNames)
+//    val result = sparkSession.sql(newSqlText)
+    val result = sparkSession.sql(this.params.get("sqlText"))
     this.setOutputData("result", result)
   }
 }

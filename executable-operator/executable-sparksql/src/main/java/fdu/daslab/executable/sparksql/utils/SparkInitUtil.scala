@@ -4,7 +4,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.sql.SparkSession
 
 /**
- * 初始化spark需要的一些方法
+ * 初始化spark
  *
  * @author 刘丰艺
  * @since 2020/10/8 5:30 PM

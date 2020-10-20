@@ -1,25 +1,17 @@
 package fdu.daslab.executable.sparksql.utils
 
 import java.util.concurrent.atomic.AtomicLong
-
 import scala.collection.mutable.Map
-import scala.util.control.NonFatal
 import org.apache.spark.internal.Logging
-import org.apache.spark.sql.Dataset
 import org.apache.spark.sql.catalyst.TableIdentifier
-import org.apache.spark.sql.catalyst.catalog.CatalogTable
-import org.apache.spark.sql.catalyst.expressions.SubqueryExpression
-import org.apache.spark.sql.types.ArrayType
 import org.apache.spark.sql.catalyst.expressions._
-import org.apache.spark.sql.catalyst.optimizer.{CollapseProject, CombineUnions}
 import org.apache.spark.sql.catalyst.plans.logical._
-import org.apache.spark.sql.catalyst.rules.{Rule, RuleExecutor}
 import org.apache.spark.sql.catalyst.util.quoteIdentifier
 import org.apache.spark.sql.execution.datasources.LogicalRelation
-import org.apache.spark.sql.types.{ByteType, DataType, IntegerType, NullType}
 
 /**
- * 将（Spark SQL）的Logical Plan转成SQL语句
+ * 将J老师组返回给我们的（Spark SQL）的Logical Plan转成SQL语句
+ * 现在没有用，暂时搁置
  *
  * @author 刘丰艺
  * @since 2020/10/18 8:30 PM
@@ -46,6 +38,7 @@ class SQLBuilder(logicalPlan: LogicalPlan, nextSubqueryId: AtomicLong, nextGenAt
                 exprIdMap: Map[Long, Long], tableNames: Array[String]) extends Logging {
 
   var tableIndex = 0
+  var whereFlag = false
 
   def this(logicalPlan: LogicalPlan, tableNames: Array[String]) =
     this(logicalPlan, new AtomicLong(0), new AtomicLong(0), Map.empty[Long, Long], tableNames)
@@ -71,9 +64,13 @@ class SQLBuilder(logicalPlan: LogicalPlan, nextSubqueryId: AtomicLong, nextGenAt
       windowToSQL(w)
 
     case Filter(condition, child) =>
-      val whereOrHaving = child match {
-        case _: Aggregate => "HAVING"
-        case _ => "WHERE"
+      var whereOrHaving = ""
+      if (whereFlag == false) {
+          whereOrHaving = child match {
+          case _: Aggregate => "HAVING"
+          case _ => "WHERE"
+        }
+        whereFlag = true
       }
       build(toSQL(child), whereOrHaving, condition.sql)
 
@@ -96,10 +93,11 @@ class SQLBuilder(logicalPlan: LogicalPlan, nextSubqueryId: AtomicLong, nextGenAt
     case p: Join =>
       build(
         toSQL(p.left),
-        p.joinType.sql,
-        "JOIN",
-        toSQL(p.right),
-        p.condition.map(" ON " + _.sql).getOrElse(""))
+        //p.joinType.sql,
+        //"JOIN",
+        toSQL(p.right)
+        //p.condition.map(" ON " + _.sql).getOrElse("")
+     )
 
     case SQLTable(database, table, _, sample) =>
       val qualifiedName = s"${quoteIdentifier(database)}.${quoteIdentifier(table)}"
