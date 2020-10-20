@@ -39,6 +39,12 @@
             <artifactId>jgrapht-ext</artifactId>
             <version>1.4.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>3.5.13</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 </project>
