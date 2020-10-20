@@ -25,19 +25,11 @@ public class FilterOperator extends OperatorBase<Stream<List<String>>, Stream<Li
     @Override
     public void execute(ParamsModel inputArgs,
                         ResultModel<Stream<List<String>>> result) {
-        /*FilterOperator filterArgs = (FilterOperator) inputArgs.getOperatorParam();
-        FunctionModel functionModel = inputArgs.getFunctionModel();
-        assert functionModel != null;
-        Stream<List<String>> nextStream = result.getInnerResult() // 用InputKey获取
-                .filter(data -> (boolean) functionModel.invoke(filterArgs.filterFunctionName, data));
-        result.setInnerResult(nextStream);*/
         FunctionModel functionModel = inputArgs.getFunctionModel();
         assert functionModel != null;
         Stream<List<String>> nextStream = this.getInputData("data")
                 .filter(data -> (boolean) functionModel.invoke(this.params.get("udfName"), data));
-        // Stream<List<String>> nextStream = result.getInnerResult("data")
-        // .filter(data -> (boolean) functionModel.invoke(this.params.get("udfName"), data));
-        // result.setInnerResult("result", nextStream);
         this.setOutputData("result", nextStream);
+
     }
 }

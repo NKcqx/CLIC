@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="CollectionSinkOperator" name="CollectionSinkOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="java">
+            <path>Operator/CollectionSink/conf/JavaCollectionSinkOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>Operator/CollectionSink/conf/SparkCollectionSinkOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+    </parameters>
+    <inputs>
+        <input name="data" data_type="string"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+
+</Operator>

@@ -3,11 +3,11 @@
 
     <platforms>
         <platform ID="java">
-            <path>/framework/resources/Operator/Collect/conf/JavaCollectOperator.xml</path>
+            <path>Operator/Collect/conf/JavaCollectOperator.xml</path>
         </platform>
 
         <platform ID="spark">
-            <path>/framework/resources/Operator/Collect/conf/SparkCollectOperator.xml</path>
+            <path>Operator/Collect/conf/SparkCollectOperator.xml</path>
         </platform>
     </platforms>
 

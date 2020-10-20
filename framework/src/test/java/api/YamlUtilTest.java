@@ -47,7 +47,7 @@ public class YamlUtilTest {
         Operator opt1 = OperatorFactory.createOperator("source");
         Operator opt2 = OperatorFactory.createOperator("filter");
         Operator opt3 = OperatorFactory.createOperator("map");
-        Operator opt4 = OperatorFactory.createOperator("reducebykey");
+        Operator opt4 = OperatorFactory.createOperator("reduce-by-key");
         Operator opt5 = OperatorFactory.createOperator("sort");
         Operator opt6 = OperatorFactory.createOperator("sink");
 

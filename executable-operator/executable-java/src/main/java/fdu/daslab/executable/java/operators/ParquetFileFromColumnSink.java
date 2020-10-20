@@ -5,6 +5,7 @@ import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.Path;
 import org.apache.parquet.column.ParquetProperties;
 import org.apache.parquet.example.data.Group;
 import org.apache.parquet.example.data.simple.SimpleGroupFactory;
@@ -12,59 +13,55 @@ import org.apache.parquet.hadoop.ParquetFileWriter;
 import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.example.ExampleParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
-import org.apache.parquet.schema.MessageType;
-import org.apache.parquet.schema.MessageTypeParser;
-import org.apache.parquet.schema.Type;
-import org.apache.hadoop.fs.Path;
+import org.apache.parquet.schema.*;
 import java.io.IOException;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
  * @author Du Qinghua
  * @version 1.0
- * @since 2020/09/23 12:57
+ * @since 2020/10/12 15:44
  */
-
 @Parameters(separators = "=")
-public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
+public class ParquetFileFromColumnSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    public ParquetFileSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("ParquetFileSink", id, inputKeys, outputKeys, params);
+    public ParquetFileFromColumnSink(String id, List<String> inputKeys, List<String> outputKeys,
+                                     Map<String, String> params) {
+        super("ParquetFileFromColumnSink", id, inputKeys, outputKeys, params);
     }
 
     @Override
     public void execute(ParamsModel inputArgs,
                         ResultModel<Stream<List<String>>> result) {
-
         try {
             //从baseoperator获取schema信息
             String schemaStr = this.getSchema();
             MessageType schema = MessageTypeParser.parseMessageType(schemaStr);
-
             Path outPath = new Path(this.params.get("outputPath"));
+            //对于colum格式的list数据采取group写入
             ExampleParquetWriter.Builder builder = ExampleParquetWriter
                     .builder(outPath).withWriteMode(ParquetFileWriter.Mode.OVERWRITE)
                     .withWriterVersion(ParquetProperties.WriterVersion.PARQUET_2_0)
                     .withCompressionCodec(CompressionCodecName.SNAPPY) //压缩
                     .withType(schema);
-
             ParquetWriter<Group> writer = builder.build();
             SimpleGroupFactory groupFactory = new SimpleGroupFactory(schema);
-
-            this.getInputData("data").forEach(record -> {
-
+            //获取要写入的数据
+            List<List<String>> outputData = this.getInputData("data").collect(Collectors.toList());
+            int recordSize = outputData.get(0).size();
+            int columnSize = outputData.size();
+            //按照group写入
+            for (int i = 0; i < recordSize; i++) {
                 Group group = groupFactory.newGroup();
-                int size = record.size();
-
-                for (int i = 0; i < size; i++) {
-                    Type type = schema.getFields().get(i);
-                    //如果当前值为空值的话，且不是required，跳过不写入该field
-                    if (record.get(i) == null && !type.toString().contains("required")) {
+                for (int j = 0; j < columnSize; j++) {
+                    Type type = schema.getFields().get(j);
+                    if (outputData.get(j).get(i) == null && !type.toString().contains("required")) {
                         continue;
                     } //如果类型是required但是值为null的话，在添加field的时，会空指针报错
-
-                    Group tmpGroup = addField(group, type, record.get(i));
+                    Group tmpGroup = addField(group, type, outputData.get(j).get(i));
                     if (tmpGroup == null) { //如果返回是空值，不写入
                         continue;
                     }
@@ -75,15 +72,12 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-            });
-
+            }
             writer.close();
-
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
     /**
      * 根据schema的类型进行写入
      * @param group group数据
@@ -115,5 +109,6 @@ public class ParquetFileSink extends OperatorBase<Stream<List<String>>, Stream<L
         }
         return group;
     }
+
 }
 

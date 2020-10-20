@@ -3,8 +3,7 @@ package fdu.daslab.backend.executor.utils;
 import fdu.daslab.backend.executor.model.ImageTemplate;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -86,7 +85,12 @@ public class TemplateUtil {
 
             // 写入文件
             YamlUtil yamlUtil = new YamlUtil();
-            yamlUtil.writeYaml(templatePath, templateMap);
+            try {
+                yamlUtil.writeYaml(new OutputStreamWriter((new FileOutputStream(templatePath))), templateMap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
         }
         return templateName;
     }

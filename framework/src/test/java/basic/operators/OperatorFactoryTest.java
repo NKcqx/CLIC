@@ -42,7 +42,7 @@ public class OperatorFactoryTest {
 
         template = (String) getTemplateMethod.invoke(OperatorFactory.class, "filter");
         assertEquals(template, "Operator/Filter/conf/FilterOperator.xml");
-        template = (String) getTemplateMethod.invoke(OperatorFactory.class, "reducebykey");
+        template = (String) getTemplateMethod.invoke(OperatorFactory.class, "reduce-by-key");
         assertEquals(template, "Operator/ReduceByKey/conf/ReduceByKeyOperator.xml");
         template = (String) getTemplateMethod.invoke(OperatorFactory.class, "sink");
         assertEquals(template, "Operator/Sink/conf/SinkOperator.xml");

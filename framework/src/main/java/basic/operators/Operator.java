@@ -28,17 +28,14 @@ public class Operator implements Visitable, Serializable {
     // private List<Channel> inputChannels;
     private Map<String, Param> inputParamList; // 输入参数列表
     private Map<String, Param> inputDataList; // 输入数据列表
-
-    // 记录下一跳Opt.
-    // private List<Channel> outputChannels; // 这里Channel的index应该没什么用
     private Map<String, Param> outputDataList; // 有一个result就得有一个output channel，两个变量的index要（隐性）同步
 
     /**
      * 应避免直接创建Operator，而是使用OperatorFactory的 createOperator 或 createOperatorFromFile
      *
-     * @param id
-     * @param name
-     * @param kind
+     * @param id   UUID( unique key )
+     * @param name Operator 的名字，和实例无关
+     * @param kind Operator 的类型
      */
     public Operator(String id, String name, String kind) {
         this.uuid = UUID.randomUUID();
@@ -100,7 +97,7 @@ public class Operator implements Visitable, Serializable {
     /**
      * 由用户直接为Opt指定具体计算平台，而不用系统择优选择
      *
-     * @param entityId
+     * @param entityId 平台Entity的ID
      * @throws FileNotFoundException
      */
     public void withTargetPlatform(String entityId) throws FileNotFoundException {
@@ -123,6 +120,10 @@ public class Operator implements Visitable, Serializable {
         return true;
     }
 
+    /**
+     * 这里的Operator只是Logical的，理论上不会存在 evaluate 方法
+     * 这里只是临时加的Evaluate函数，用于在Logical中打印Operator的信息
+     */
     public void tempDoEvaluate() {
         this.logging(this.getOperatorID() + " evaluate: {\n   inputs: ");
         for (String key : this.inputParamList.keySet()) {
@@ -159,7 +160,8 @@ public class Operator implements Visitable, Serializable {
 //            }
             this.inputParamList.get(key).setValue(value);
         } else {
-            throw new NoSuchElementException(String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
+            throw new NoSuchElementException(
+                    String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
         }
     }
 
@@ -181,14 +183,6 @@ public class Operator implements Visitable, Serializable {
         this.outputDataList.put(param.getName(), param);
     }
 
-//    public List<Channel> getOutputChannel() {
-//        return outputChannels;
-//    }
-//
-//    public List<Channel> getInputChannel() {
-//        return inputChannels;
-//    }
-
     public Map<String, Param> getInputParamList() {
         return this.inputParamList;
     }
@@ -199,10 +193,6 @@ public class Operator implements Visitable, Serializable {
 
     public Map<String, Param> getOutputDataList() {
         return this.outputDataList;
-    }
-
-    public boolean isLoaded() {
-        return !this.entities.isEmpty(); // 用这个判断可能不太好，也许可以试试判断有没有configFile
     }
 
     public String getOperatorName() {
