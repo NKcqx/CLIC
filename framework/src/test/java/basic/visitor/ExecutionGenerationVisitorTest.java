@@ -7,11 +7,7 @@ import basic.visitors.ExecutionGenerationVisitor;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 
