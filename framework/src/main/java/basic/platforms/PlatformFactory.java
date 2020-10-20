@@ -138,12 +138,7 @@ public class PlatformFactory {
                 put(property.getAttribute("name"), property.getTextContent());
             }
         }};
-//        System.out.println("platformName: " + platformName);
-//        System.out.println("dockerImage: " + dockerImage);
-//        System.out.println("environment: " + environment);
-//        System.out.println("executor: " + executor);
-//        System.out.println("args: " + argsVal);
-//        System.out.println("properties: " + properties);
+
         return new HashMap<String, Object>() {{
             put("platformName", platformName);
             put("dockerImage", dockerImage);
@@ -191,9 +186,6 @@ public class PlatformFactory {
             Map<String, String> argMap = (Map<String, String>) platformInfo.getOrDefault("args",
                     new LinkedHashMap<String, String>());
             argMap.forEach((key, value) -> {
-//                System.out.println(key);
-//                System.out.println(arg);
-//                System.out.println(newVal);
                 if (key.equals(arg)) {
                     // 说明包含key
                     if (value.startsWith(key)) {
