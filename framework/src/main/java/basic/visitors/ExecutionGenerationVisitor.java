@@ -55,11 +55,7 @@ public class ExecutionGenerationVisitor extends Visitor {
                 e.printStackTrace();
             }
         }
-//        if (planTraversal.hasNextOpt()) {
-//            Operator nextOpt = planTraversal.nextOpt();
-//            planTraversal.addSuccessor(nextOpt);
-//            nextOpt.acceptVisitor(this);
-//        }
+
     }
 
     private boolean isVisited(Operator opt) {
