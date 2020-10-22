@@ -1,4 +1,3 @@
-
 package api;
 
 import adapters.ArgoAdapter;
@@ -130,7 +129,6 @@ public class PlanBuilder {
 
         LOGGER.info("===========【Stage 4】execute plan ==========");
         this.executePlan();
-
     }
 
     public void printPlan() {
@@ -235,7 +233,6 @@ public class PlanBuilder {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void checkAndAddSink(Stage stage, String filePath) {
@@ -266,7 +263,6 @@ public class PlanBuilder {
             }
         }
     }
-
     /**
      * 把PlanBuilder代表的Graph转为Yaml格式的字符串
      */
@@ -284,5 +280,4 @@ public class PlanBuilder {
     public void setPlatformUdfPath(String platform, String udfPath) {
         PlatformFactory.setPlatformArgValue(platform, "--udfPath", udfPath);
     }
-
 }

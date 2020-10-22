@@ -91,7 +91,6 @@ public final class OperatorFactory {
         operatorConfig.getDocumentElement().normalize();
 
         Element root = operatorConfig.getDocumentElement();
-
         // 1. 先载入Opt的基本信息，如ID、name、kind
         String code = String.valueOf(new Date().hashCode());
         Operator operator = new Operator(root.getAttribute("ID") + code,
