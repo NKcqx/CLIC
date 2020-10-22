@@ -24,10 +24,10 @@ import java.util.stream.Stream;
  */
 
 @Parameters(separators = "=")
-public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
+public class ParquetFileToRowSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    public ParquetFileSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("ParquetFileSource", id, inputKeys, outputKeys, params);
+    public ParquetFileToRowSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("ParquetFileToRowSource", id, inputKeys, outputKeys, params);
     }
 
     @Override

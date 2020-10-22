@@ -2,6 +2,7 @@ package fdu.daslab.executable.spark.operators;
 
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
+import fdu.daslab.executable.spark.constants.SparkOperatorFactory;
 import fdu.daslab.executable.spark.utils.SparkInitUtil;
 import org.apache.spark.api.java.JavaRDD;
 import org.apache.spark.api.java.JavaSparkContext;

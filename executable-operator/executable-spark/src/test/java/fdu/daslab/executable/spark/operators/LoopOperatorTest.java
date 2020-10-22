@@ -1,16 +1,17 @@
-package operators;
+package fdu.daslab.executable.spark.operators;
 
 import fdu.daslab.executable.basic.model.Connection;
 import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
-import fdu.daslab.executable.java.constants.JavaOperatorFactory;
-import fdu.daslab.executable.java.operators.CollectionSink;
-import fdu.daslab.executable.java.operators.FileSink;
-import fdu.daslab.executable.java.operators.LoopOperator;
-import fdu.daslab.executable.java.operators.MapOperator;
+import fdu.daslab.executable.spark.constants.SparkOperatorFactory;
+import fdu.daslab.executable.spark.utils.SparkInitUtil;
+import org.apache.spark.SparkConf;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.javatuples.Pair;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -20,22 +21,26 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author 陈齐翔
  * @version 1.0
- * @since 2020/9/25 3:41 下午
+ * @since 2020/10/9 1:02 下午
  */
 public class LoopOperatorTest {
     private LoopOperator loopOperator;
     private CollectionSink collectionSink;
-    private JavaOperatorFactory javaOperatorFactory = new JavaOperatorFactory();
+    private SparkOperatorFactory sparkOperatorFactory = new SparkOperatorFactory();
+    private JavaSparkContext javaSparkContext;
 
     @Before
     public void before() {
+        SparkInitUtil.setSparkContext(
+                new SparkConf().setMaster("local[*]").setAppName("LoopOperatorTest"));
+        javaSparkContext = SparkInitUtil.getDefaultSparkContext();
         List<String> inputValue = Arrays.asList("1", "2", "3", "4", "5");
         List<List<String>> inputValueBox = new ArrayList<>();
         inputValueBox.add(inputValue);
@@ -62,15 +67,14 @@ public class LoopOperatorTest {
                 "      - id: MapOperator-677696474");
         params.put("loopVarUpdateName", "increment");
 
-
         try {
-            this.collectionSink = (CollectionSink) this.javaOperatorFactory
+            this.collectionSink = (CollectionSink) this.sparkOperatorFactory
                     .createOperator("CollectionSink", "2", Collections.singletonList("data"), Collections.singletonList("result"), new HashMap<>());
-            this.loopOperator = (LoopOperator) this.javaOperatorFactory.createOperator(
+            this.loopOperator = (LoopOperator) this.sparkOperatorFactory.createOperator(
                     "LoopOperator", "0", inputKeys, outputKeys, params);
 
-            this.loopOperator.setInputData("data", inputValueBox.stream());
-            this.loopOperator.setInputData("loopVar", loopVarBox.stream());
+            this.loopOperator.setInputData("data", javaSparkContext.parallelize(inputValueBox));
+            this.loopOperator.setInputData("loopVar", javaSparkContext.parallelize(loopVarBox));
 
             this.loopOperator.connectTo("result", collectionSink, "data");
         } catch (Exception e) {
@@ -79,38 +83,42 @@ public class LoopOperatorTest {
     }
 
     @Test
-    public void testLoop(){ // 检查 fileSink 的inputData
+    public void testLoop() { // 检查 fileSink 的inputData
         try {
-            final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("TestLoopFunc.class");
+            final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("/Users/jason/Desktop/TestLoopFunc.class");
             ParamsModel inputArgs = new ParamsModel(functionModel);
+            inputArgs.setFunctionClasspath("/Users/jason/Desktop/TestLoopFunc.class");
             // 不能使用之前的BFSTraversal
-            Queue<OperatorBase<Stream<List<String>>, Stream<List<String>>>> bfsQueue = new LinkedList<>();
+            Queue<OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>> bfsQueue = new LinkedList<>();
             bfsQueue.add(this.loopOperator);
             while (!bfsQueue.isEmpty()) {
-                OperatorBase<Stream<List<String>>, Stream<List<String>>>  curOpt = bfsQueue.poll();
+                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = bfsQueue.poll();
                 curOpt.execute(inputArgs, null);
 
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
-                    OperatorBase<Stream<List<String>>, Stream<List<String>>> targetOpt = connection.getTargetOpt();
+                    OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> targetOpt = connection.getTargetOpt();
                     bfsQueue.add(targetOpt);
 
                     List<Pair<String, String>> keyPairs = connection.getKeys();
-                    for (Pair<String, String> keyPair : keyPairs){
-                        Stream<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
+                    for (Pair<String, String> keyPair : keyPairs) {
+                        JavaRDD<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
                     }
                 }
             }
 
-
-            List<String> result = collectionSink.getOutputData("result");
             List<String> expectedResult = Arrays.asList("5", "6", "7", "8", "9");
+            List<String> result = collectionSink.getOutputData("result");
             Assert.assertFalse(result.isEmpty());
             Assert.assertEquals(expectedResult, result);
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
         }
 
+    }
+    @After
+    public void after(){
+        SparkInitUtil.getDefaultSparkContext().close();
     }
 }

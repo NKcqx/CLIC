@@ -25,15 +25,18 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("JoinOperator", JoinOperator.class);
         put("ReduceByKeyOperator", ReduceByKeyOperator.class);
         put("SortOperator", SortOperator.class);
-        put("ParquetFileSourceOperator", ParquetFileSource.class);
-        put("ParquetFileSinkOperator", ParquetFileSink.class);
+        put("ParquetFileToRowSourceOperator", ParquetFileToRowSource.class);
+        put("ParquetFileFromRowSinkOperator", ParquetFileFromRowSink.class);
+        put("ParquetFileToColumnSourceOperator", ParquetFileToColumnSource.class);
+        put("ParquetFileFromColumnSinkOperator", ParquetFileFromColumnSink.class);
         put("CountOperator", CountOperator.class);
         put("DistinctOperator", DistinctOperator.class);
         put("MaxOperator", MaxOperator.class);
         put("MinOperator", MinOperator.class);
         put("LoopOperator", LoopOperator.class);
         put("NextIteration", NextIteration.class);
-        put("CollectionSourceOperator", CollectionSource.class);
+        put("CollectionSource", CollectionSource.class);
+        put("CollectionSink", CollectionSink.class);
     }};
 
     @Override

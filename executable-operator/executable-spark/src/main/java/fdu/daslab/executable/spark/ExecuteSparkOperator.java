@@ -6,7 +6,7 @@ import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.TopoTraversal;
-import fdu.daslab.executable.spark.operators.SparkOperatorFactory;
+import fdu.daslab.executable.spark.constants.SparkOperatorFactory;
 import org.apache.spark.api.java.JavaRDD;
 import org.javatuples.Pair;
 import org.slf4j.Logger;

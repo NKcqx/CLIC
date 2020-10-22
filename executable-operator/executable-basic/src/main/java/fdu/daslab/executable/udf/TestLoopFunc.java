@@ -1,7 +1,6 @@
 package fdu.daslab.executable.udf;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * @author 陈齐翔
@@ -19,8 +18,17 @@ public class TestLoopFunc {
         return Integer.parseInt(value) + 1;
     }
 
+
+    public boolean loopBodyFilterFunc(List<String> list) {
+        return true;
+    }
+
     public List<String> loopBodyMapFunc(List<String> list) {
-        list = list.stream().map(s -> String.valueOf(Integer.parseInt(s) + 1)).collect(Collectors.toList());
+        for (int i = 0; i < list.size(); i++) {
+            Integer realValue = Integer.parseInt(list.get(i));
+            String incrementValue = String.valueOf(realValue + 1);
+            list.set(i, incrementValue);
+        }
         return list;
     }
 }
