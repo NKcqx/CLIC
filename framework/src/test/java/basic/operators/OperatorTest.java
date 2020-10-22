@@ -24,10 +24,13 @@ public class OperatorTest {
 
     private String configFilePath;
     private Operator spyOpt;
+    private Operator opt;
 
     @Before
     public void before() throws Exception {
         configFilePath = "Operator/Filter/conf/FilterOperator.xml";
+        opt = OperatorFactory.createOperatorFromFile(configFilePath);
+
         spyOpt = spy(OperatorFactory.createOperatorFromFile(configFilePath));
         spyOpt.setParamValue("udfName", "a name");
     }

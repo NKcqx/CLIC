@@ -88,5 +88,4 @@ public final class DataQuanta {
     public int hashCode() {
         return Objects.hash(getOperator());
     }
-
 }

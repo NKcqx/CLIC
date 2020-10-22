@@ -1,4 +1,3 @@
-
 package api;
 
 import adapters.ArgoAdapter;
@@ -28,6 +27,7 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 陈齐翔
@@ -36,7 +36,7 @@ import java.util.*;
  */
 public class PlanBuilder {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlanBuilder.class);
-    private DataQuanta headDataQuanta = null; // 其实可以有多个head
+    private List<DataQuanta> headDataQuantas = new ArrayList<>(); // 其实可以有多个head
     // private SimpleDirectedWeightedGraph<Operator, Channel> graph = null;
     private DefaultListenableGraph<Operator, Channel> graph = null;
     private Configuration configuration;
@@ -91,16 +91,12 @@ public class PlanBuilder {
 
     public DataQuanta readDataFrom(Map<String, String> params) throws Exception {
         DataQuanta dataQuanta = DataQuanta.createInstance("source", params);
-        this.headDataQuanta = dataQuanta;
-        return this.headDataQuanta; // 不需要connectTo
+        this.headDataQuantas.add(dataQuanta);
+        return dataQuanta; // 不需要connectTo
     }
 
-    public DataQuanta getHeadDataQuanta() {
-        return headDataQuanta;
-    }
-
-    public void setHeadDataQuanta(DataQuanta headDataQuanta) {
-        this.headDataQuanta = headDataQuanta;
+    public List<DataQuanta> getHeadDataQuanta() {
+        return headDataQuantas;
     }
 
     public DefaultListenableGraph<Operator, Channel> getGraph() {
@@ -130,7 +126,6 @@ public class PlanBuilder {
 
         LOGGER.info("===========【Stage 4】execute plan ==========");
         this.executePlan();
-
     }
 
     public void printPlan() {
@@ -143,15 +138,10 @@ public class PlanBuilder {
     }
 
     public void optimizePlan() {
-        Operator start = graph.vertexSet()
-                .stream()
-                .filter(operator -> graph.inDegreeOf(operator) == 0)
-                .findAny()
-                .get();
-        BreadthFirstIterator<Operator, Channel> breadthFirstIterator = new BreadthFirstIterator<>(graph, start);
+        TopologicalOrderIterator<Operator, Channel> topologicalOrderIterator = new TopologicalOrderIterator<>(graph);
         ExecutionGenerationVisitor executionGenerationVisitor = new ExecutionGenerationVisitor();
-        while (breadthFirstIterator.hasNext()) {
-            breadthFirstIterator.next().acceptVisitor(executionGenerationVisitor);
+        while (topologicalOrderIterator.hasNext()) {
+            topologicalOrderIterator.next().acceptVisitor(executionGenerationVisitor);
         }
     }
 
@@ -235,7 +225,6 @@ public class PlanBuilder {
                 e.printStackTrace();
             }
         }
-
     }
 
     private void checkAndAddSink(Stage stage, String filePath) {
@@ -266,7 +255,6 @@ public class PlanBuilder {
             }
         }
     }
-
     /**
      * 把PlanBuilder代表的Graph转为Yaml格式的字符串
      */
@@ -284,5 +272,4 @@ public class PlanBuilder {
     public void setPlatformUdfPath(String platform, String udfPath) {
         PlatformFactory.setPlatformArgValue(platform, "--udfPath", udfPath);
     }
-
 }
