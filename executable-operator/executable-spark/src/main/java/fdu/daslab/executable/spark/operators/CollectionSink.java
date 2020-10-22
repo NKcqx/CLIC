@@ -27,7 +27,7 @@ public class CollectionSink extends OperatorBase<JavaRDD<List<String>>, List<Str
             List<List<String>> sinkData = this.getInputData("data").collect();
             this.setOutputData("result", sinkData.get(0));
         } catch (Exception e) {
-            while (true);
+//            while (true) ;
             // e.printStackTrace();
         }
     }
