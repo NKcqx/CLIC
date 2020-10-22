@@ -23,7 +23,7 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("SinkOperator", FileSink.class);
         put("FilterOperator", FilterOperator.class);
         put("MapOperator", MapOperator.class);
-        // put("JoinOperator", JoinOperator.class);
+        put("JoinOperator", JoinOperator.class);
         put("ReduceByKeyOperator", ReduceByKeyOperator.class);
         put("SortOperator", SortOperator.class);
         put("CountByValueOperator", CountByValueOperator.class);

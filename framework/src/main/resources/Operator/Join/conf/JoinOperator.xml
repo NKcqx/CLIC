@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="JoinOperator" name="JoinOperator" kind="supplier">
+<Operator ID="JoinOperator" name="JoinOperator" kind="calculator">
 
     <platforms>
         <platform ID="java">
-            <path>Operator/Source/conf/JavaSourceOperator.xml</path>
+            <path>Operator/Join/conf/JavaJoinOperator.xml</path>
         </platform>
 
         <platform ID="spark">
-            <path>Operator/Source/conf/SparkSourceOperator.xml</path>
+            <path>Operator/Join/conf/SparkJoinOperator.xml</path>
         </platform>
     </platforms>
 

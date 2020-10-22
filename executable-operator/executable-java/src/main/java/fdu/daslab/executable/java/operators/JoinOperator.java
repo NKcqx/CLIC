@@ -18,18 +18,6 @@ import java.util.stream.Stream;
 @Parameters(separators = "=")
 public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    @Parameter(names = {"--leftTableKeyName"})
-    String leftTableKeyExtractFunctionName;
-
-    @Parameter(names = {"--rightTableKeyName"})
-    String rightTableKeyExtractFunctionName;
-
-    @Parameter(names = {"--leftTableFuncName"})
-    String leftTableFuncName;
-
-    @Parameter(names = {"--rightTableFuncName"})
-    String rightTableFuncName;
-
     public JoinOperator(String id,
                         List<String> inputKeys,
                         List<String> outputKeys,
@@ -40,7 +28,6 @@ public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List
     @Override
     public void execute(ParamsModel inputArgs,
                         ResultModel<Stream<List<String>>> result) {
-        // JoinOperator joinArgs = (JoinOperator) inputArgs.getOperatorParam();
         FunctionModel joinFunction = inputArgs.getFunctionModel();
         assert joinFunction != null;
 
@@ -61,7 +48,7 @@ public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List
             // 用户指定join时右表要select哪几列
             rightTable.add((List<String>) joinFunction.invoke(this.params.get("rightTableFuncName"), item));
         });
-        /*result.getInnerResult("leftTable").forEach(item -> {
+        result.getInnerResult("leftTable").forEach(item -> {
             // 用户指定key
             leftKeys.add((String) joinFunction.invoke(this.params.get("leftTableKeyName"), item));
             // 用户指定join时左表要select哪几列
@@ -72,7 +59,7 @@ public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List
             rightKeys.add((String) joinFunction.invoke(this.params.get("rightTableKeyName"), item));
             // 用户指定join时右表要select哪几列
             rightTable.add((List<String>) joinFunction.invoke(this.params.get("rightTableFuncName"), item));
-        });*/
+        });
 
         List<String> resultLine = new ArrayList<>();
         List<List<String>> resultList = new ArrayList<>();
@@ -90,7 +77,6 @@ public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List
         }
 
         Stream<List<String>> nextStream = resultList.stream();
-        // result.setInnerResult("result", nextStream);
         this.setOutputData("result", nextStream);
     }
 }
