@@ -3,7 +3,7 @@
 
     <platform ID="java">
         <language>java</language>
-        <cost>1.1174</cost>
+        <cost>2</cost>
     </platform>
 
 </Operator>

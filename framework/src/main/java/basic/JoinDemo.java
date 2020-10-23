@@ -2,6 +2,7 @@ package basic;
 
 import api.DataQuanta;
 import api.PlanBuilder;
+import org.javatuples.Pair;
 
 import java.util.HashMap;
 
@@ -19,21 +20,21 @@ public class JoinDemo {
             //供测试生成文件使用   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
             planBuilder.setPlatformUdfPath("spark", "D:/2020project/join/TestJoinCaseFunc.class");
 
-            // 第一条路
+            // 第一条路 左表
             DataQuanta sourceNode1 = planBuilder.readDataFrom(new HashMap<String, String>() {{
+                put("inputPath", "D:/2020project/join/webCompany.csv");
+            }});
+            DataQuanta filterNode1 = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
+                put("udfName", "filterWebCompanyFunc");
+            }});
+
+            // 第二条路 右表
+            DataQuanta sourceNode2 = planBuilder.readDataFrom(new HashMap<String, String>() {{
                 put("inputPath", "D:/2020project/join/companyInfo.csv");
             }});
 
-            DataQuanta filterNode1 = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
-                put("udfName", "filterCompanyInfoFunc");
-            }});
-
-            // 第二条路
-            DataQuanta sourceNode2 = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("inputPath", "D:/2020project/webCompany.csv");
-            }});
             DataQuanta filterNode2 = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
-                put("udfName", "filterWebCompanyFunc");
+                put("udfName", "filterCompanyInfoFunc");
             }});
 
             // join
@@ -58,9 +59,9 @@ public class JoinDemo {
 
             // 链接节点，即构建DAG
             planBuilder.addEdge(sourceNode1, filterNode1);
-            planBuilder.addEdge(filterNode1, joinNode);
+            planBuilder.addEdge(filterNode1, joinNode, new Pair<>("result", "leftTable"));
             planBuilder.addEdge(sourceNode2, filterNode2);
-            planBuilder.addEdge(filterNode2, joinNode);
+            planBuilder.addEdge(filterNode2, joinNode, new Pair<>("result", "rightTable"));
             planBuilder.addEdge(joinNode, sinkNode);
 
             planBuilder.execute();

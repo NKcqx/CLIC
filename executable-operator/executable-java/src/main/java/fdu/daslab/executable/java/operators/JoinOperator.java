@@ -22,7 +22,7 @@ public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List
                         List<String> inputKeys,
                         List<String> outputKeys,
                         Map<String, String> params) {
-        super("JoinOperator", id, inputKeys, outputKeys, params);
+        super("JavaJoinOperator", id, inputKeys, outputKeys, params);
     }
 
     @Override

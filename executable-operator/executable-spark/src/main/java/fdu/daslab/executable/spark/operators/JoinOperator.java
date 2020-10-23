@@ -28,64 +28,69 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
                         List<String> inputKeys,
                         List<String> outputKeys,
                         Map<String, String> params) {
-        super("JoinOperator", id, inputKeys, outputKeys, params);
+        super("SparkJoinOperator", id, inputKeys, outputKeys, params);
     }
 
     @Override
     public void execute(ParamsModel inputArgs,
                         ResultModel<JavaRDD<List<String>>> result) {
 
-        String leftTableKey = this.params.get("leftTableKey");
-        String leftTableFunc = this.params.get("leftTableFunc");
+        String leftTableKey = this.params.get("leftTableKeyName");
+        String leftTableFunc = this.params.get("leftTableFuncName");
 
-        String rightTableKey = this.params.get("rightTableKey");
-        String rightTableFunc = this.params.get("rightTableFunc");
+        String rightTableKey = this.params.get("rightTableKeyName");
+        String rightTableFunc = this.params.get("rightTableFuncName");
+
+        getInputData("leftTable").foreach(item -> System.out.println(item));
+        getInputData("rightTable").foreach(item -> System.out.println(item));
 
         // First JavaRDD
         JavaPairRDD<String, List<String>> firstRDD = this.getInputData("leftTable")
-                .mapToPair(new PairFunction<List<String>, String, List<String>>() {
-            @Override
-            public Tuple2<String, List<String>> call(List<String> line) throws Exception {
-                FunctionModel joinFunction = inputArgs.getFunctionModel();
-                // 用户指定key
-                // 用户指定join时左表要select哪几列
-                return new Tuple2<>((String) joinFunction.invoke(leftTableKey, line),
-                        (List<String>) joinFunction.invoke(leftTableFunc, line));
-            }
-        });
+                .mapToPair((PairFunction<List<String>, String, List<String>>) line -> {
+                    FunctionModel joinFunction = inputArgs.getFunctionModel();
+                    // 用户指定key
+                    String tableKey = (String) joinFunction.invoke(leftTableKey, line);
+                    System.out.println(tableKey);
+                    // 用户指定join时左表要select哪几列
+                    List<String> tableLine = (List<String>) joinFunction.invoke(leftTableFunc, line);
+                    System.out.println(tableLine);
+                    return new Tuple2<>(tableKey, tableLine);
+                });
+
+        System.out.println("left over");
 
         // Second JavaRDD
         JavaPairRDD<String, List<String>> secondRDD = this.getInputData("rightTable")
-                .mapToPair(new PairFunction<List<String>, String, List<String>>() {
-            @Override
-            public Tuple2<String, List<String>> call(List<String> line) throws Exception {
-                FunctionModel joinFunction = inputArgs.getFunctionModel();
-                // 用户指定key
-                // 用户指定join时左表要select哪几列
-                return new Tuple2<>((String) joinFunction.invoke(rightTableKey, line),
-                        (List<String>) joinFunction.invoke(rightTableFunc, line));
-            }
-        });
+                .mapToPair((PairFunction<List<String>, String, List<String>>) line -> {
+                    FunctionModel joinFunction = inputArgs.getFunctionModel();
+                    // 用户指定key
+                    String tableKey = (String) joinFunction.invoke(rightTableKey, line);
+                    System.out.println(tableKey);
+                    // 用户指定join时右表要select哪几列
+                    List<String> tableLine = (List<String>) joinFunction.invoke(rightTableFunc, line);
+                    System.out.println(tableLine);
+                    return new Tuple2<>(tableKey, tableLine);
+                });
+
+        System.out.println("right over");
 
         // Join
         JavaPairRDD<String, Tuple2<List<String>, List<String>>> joinRDD = firstRDD.join(secondRDD);
 
         JavaRDD<List<String>> nextStream = joinRDD.map(
-                new Function<Tuple2<String, Tuple2<List<String>, List<String>>>, List<String>>() {
-            @Override
-            public List<String> call(Tuple2<String, Tuple2<List<String>, List<String>>> stringTuple2Tuple2)
-                    throws Exception {
-                List<String> resultLine = new ArrayList<>();
-                // key
-                resultLine.add(stringTuple2Tuple2._1());
-                // first table
-                resultLine.addAll(stringTuple2Tuple2._2()._1());
-                // second table
-                resultLine.addAll(stringTuple2Tuple2._2()._2());
-                return Collections.singletonList(String.join(",", resultLine));
-            }
-        });
-
+                (Function<Tuple2<String, Tuple2<List<String>, List<String>>>, List<String>>) stringTuple2Tuple2 -> {
+                    List<String> resultLine = new ArrayList<>();
+                    // key
+                    resultLine.add(stringTuple2Tuple2._1());
+                    // first table
+                    resultLine.addAll(stringTuple2Tuple2._2()._1());
+                    // second table
+                    resultLine.addAll(stringTuple2Tuple2._2()._2());
+                    return Collections.singletonList(String.join(",", resultLine));
+                });
+        nextStream.foreach(item -> System.out.println(item));
         this.setOutputData("result", nextStream);
+
+
     }
 }
