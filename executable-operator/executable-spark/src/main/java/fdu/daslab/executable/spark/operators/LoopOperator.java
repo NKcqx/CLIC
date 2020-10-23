@@ -44,20 +44,29 @@ public class LoopOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
             this.myNextIteration.connectTo("result", this, "data");
 
 
-            String bodyYaml = this.params.get("loopBody");
-            // todo 这默认LoopBody里只有一个起点与Loop本身相连
-            Pair<List<OperatorBase>, List<OperatorBase>> loopHeadsAndEnds =
-                    ArgsUtil.parseArgs(bodyYaml, new SparkOperatorFactory());
-            this.triggerConnections = new ArrayList<>();
-            this.startLoopBody(loopHeadsAndEnds.getValue0().get(0));
-            this.endLoopBody(loopHeadsAndEnds.getValue1().get(0));
+            if (this.params.get("loopBody") != null && !this.params.get("loopBody").isEmpty()) {
+                constructBodyFromYAML(this.params.get("loopBody"));
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("这创建 NextIteration 的时候出错了，可能是这里的硬编码没有和配置文件的修改同步");
         }
+    }
 
-        // myNextIteration.setTheLoopOperator(this);
+    /**
+     * 将loopBody的字符串解析为DAG
+     * @param bodyYaml 用于表示loopBody的YAML格式的字符串
+     * @throws Exception 字符串中出现不受支持的Operator时抛出
+     */
+    public void constructBodyFromYAML(String bodyYaml) throws Exception {
+//        String bodyYaml = this.params.get("loopBody");
+        Pair<List<OperatorBase>, List<OperatorBase>> loopHeadsAndEnds =
+                ArgsUtil.parseArgs(bodyYaml, new SparkOperatorFactory());
+
+        this.triggerConnections = new ArrayList<>();
+        this.startLoopBody(loopHeadsAndEnds.getValue0().get(0));
+        this.endLoopBody(loopHeadsAndEnds.getValue1().get(0));
     }
 
     /**
