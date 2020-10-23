@@ -19,7 +19,8 @@ public class RowWiseDeserializeTable<T> {
 
     public ArrayList<T> deserializeFromBuffer(ByteArrayOutputStream table, Class elementClass) throws Exception {
         DatumReader<GenericRecord> datumReader = new GenericDatumReader<>();
-        DataFileReader<GenericRecord> dataFileReader = new DataFileReader<>(new SeekableByteArrayInput(table.toByteArray()), datumReader);
+        DataFileReader<GenericRecord> dataFileReader =
+                new DataFileReader<>(new SeekableByteArrayInput(table.toByteArray()), datumReader);
 //        Schema schema = dataFileReader.getSchema();
 
         //class fields

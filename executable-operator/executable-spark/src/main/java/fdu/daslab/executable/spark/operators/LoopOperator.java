@@ -123,5 +123,4 @@ public class LoopOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
         }
     }
 
-
 }

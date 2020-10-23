@@ -4,7 +4,9 @@ import basic.operators.Operator;
 import basic.operators.OperatorFactory;
 
 
+import java.io.FileNotFoundException;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Objects;
 
 
@@ -47,6 +49,21 @@ public final class DataQuanta {
             DataQuanta dq = new DataQuanta(opt);
             return dq;
         }
+    }
+
+    public DataQuanta withTargetPlatform(String platformName) {
+        try {
+            this.operator.withTargetPlatform(platformName.toLowerCase().trim());
+            return this;
+        } catch (FileNotFoundException e) {
+            throw new NoSuchElementException(
+                    String.format("未为%s找到与%s匹配的平台，可用的平台有：%s",
+                            this.operator.getOperatorName(),
+                            platformName,
+                            this.operator.getEntities().keySet().toString())
+            );
+        }
+
     }
 
     /**

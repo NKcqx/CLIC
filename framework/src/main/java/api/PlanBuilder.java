@@ -17,7 +17,6 @@ import org.javatuples.Pair;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultListenableGraph;
 import org.jgrapht.graph.SimpleDirectedWeightedGraph;
-import org.jgrapht.traverse.BreadthFirstIterator;
 import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.Writer;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @author 陈齐翔
@@ -119,10 +117,6 @@ public class PlanBuilder {
         this.optimizePlan();
         this.printPlan();
         LOGGER.info("   ");
-
-//        LOGGER.info("===========【Stage 3】Visualization ===========");
-//        this.visualizePlan();
-//        LOGGER.info("   ");
 
         LOGGER.info("===========【Stage 4】execute plan ==========");
         this.executePlan();

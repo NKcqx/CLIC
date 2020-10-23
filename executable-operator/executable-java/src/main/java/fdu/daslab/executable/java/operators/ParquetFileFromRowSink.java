@@ -29,7 +29,10 @@ import java.util.stream.Stream;
 @Parameters(separators = "=")
 public class ParquetFileFromRowSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    public ParquetFileFromRowSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+    public ParquetFileFromRowSink(String id,
+                                  List<String> inputKeys,
+                                  List<String> outputKeys,
+                                  Map<String, String> params) {
         super("ParquetFileFromRowSink", id, inputKeys, outputKeys, params);
     }
 
