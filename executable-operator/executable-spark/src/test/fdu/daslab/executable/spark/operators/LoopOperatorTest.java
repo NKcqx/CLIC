@@ -1,17 +1,14 @@
-package operators;
+package fdu.daslab.executable.spark.operators;
 
 import fdu.daslab.executable.basic.model.Connection;
 import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
-import fdu.daslab.executable.java.constants.JavaOperatorFactory;
-import fdu.daslab.executable.java.operators.CollectionSink;
-import fdu.daslab.executable.java.operators.FileSink;
-import fdu.daslab.executable.java.operators.LoopOperator;
-import fdu.daslab.executable.java.operators.MapOperator;
+import fdu.daslab.executable.spark.utils.SparkInitUtil;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.javatuples.Pair;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -20,22 +17,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.*;
-import java.util.stream.Stream;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author 陈齐翔
  * @version 1.0
- * @since 2020/9/25 3:41 下午
+ * @since 2020/10/9 1:02 下午
  */
 public class LoopOperatorTest {
     private LoopOperator loopOperator;
-    private CollectionSink collectionSink;
-    private JavaOperatorFactory javaOperatorFactory = new JavaOperatorFactory();
+    private MapOperator loopBody;
+    private FileSink fileSink;
+    private SparkOperatorFactory sparkOperatorFactory = new SparkOperatorFactory();
+    private final JavaSparkContext javaSparkContext = SparkInitUtil.getDefaultSparkContext();
 
     @Before
-    public void before() {
+    public void before(){
         List<String> inputValue = Arrays.asList("1", "2", "3", "4", "5");
         List<List<String>> inputValueBox = new ArrayList<>();
         inputValueBox.add(inputValue);
@@ -62,17 +61,29 @@ public class LoopOperatorTest {
                 "      - id: MapOperator-677696474");
         params.put("loopVarUpdateName", "increment");
 
+        List<String> sinkInputKeys = Collections.singletonList("data");
+        Map<String, String> sinkParams = new HashMap<>();
+        sinkParams.put("separator", " ");
+        sinkParams.put("outputPath", "/tmp/clic_output/loopTest.txt");
+
+        List<String> bodyInputKeys = Collections.singletonList("data");
+        List<String> bodyOutputKeys = Collections.singletonList("result");
+        Map<String, String> bodyParams = new HashMap<>();
+        bodyParams.put("udfName", "loopBodyMapFunc");
 
         try {
-            this.collectionSink = (CollectionSink) this.javaOperatorFactory
-                    .createOperator("CollectionSink", "2", Collections.singletonList("data"), Collections.singletonList("result"), new HashMap<>());
-            this.loopOperator = (LoopOperator) this.javaOperatorFactory.createOperator(
+            this.fileSink = (FileSink) this.sparkOperatorFactory
+                    .createOperator("SinkOperator", "2", sinkInputKeys, Collections.emptyList(), sinkParams);
+            this.loopBody = (MapOperator) this.sparkOperatorFactory
+                    .createOperator("MapOperator", "1", bodyInputKeys, bodyOutputKeys, bodyParams);
+            this.loopOperator = (LoopOperator) this.sparkOperatorFactory.createOperator(
                     "LoopOperator", "0", inputKeys, outputKeys, params);
 
-            this.loopOperator.setInputData("data", inputValueBox.stream());
-            this.loopOperator.setInputData("loopVar", loopVarBox.stream());
 
-            this.loopOperator.connectTo("result", collectionSink, "data");
+            this.loopOperator.setInputData("data", javaSparkContext.parallelize(inputValueBox));
+            this.loopOperator.setInputData("loopVar", javaSparkContext.parallelize(loopVarBox));
+
+            this.loopOperator.connectTo("result", fileSink, "data");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -84,31 +95,33 @@ public class LoopOperatorTest {
             final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("TestLoopFunc.class");
             ParamsModel inputArgs = new ParamsModel(functionModel);
             // 不能使用之前的BFSTraversal
-            Queue<OperatorBase<Stream<List<String>>, Stream<List<String>>>> bfsQueue = new LinkedList<>();
+            Queue<OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>> bfsQueue = new LinkedList<>();
             bfsQueue.add(this.loopOperator);
             while (!bfsQueue.isEmpty()) {
-                OperatorBase<Stream<List<String>>, Stream<List<String>>>  curOpt = bfsQueue.poll();
+                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>  curOpt = bfsQueue.poll();
                 curOpt.execute(inputArgs, null);
 
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
-                    OperatorBase<Stream<List<String>>, Stream<List<String>>> targetOpt = connection.getTargetOpt();
+                    OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> targetOpt = connection.getTargetOpt();
                     bfsQueue.add(targetOpt);
 
                     List<Pair<String, String>> keyPairs = connection.getKeys();
                     for (Pair<String, String> keyPair : keyPairs){
-                        Stream<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
+                        JavaRDD<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
                     }
                 }
             }
 
-
-            List<String> result = collectionSink.getOutputData("result");
-            List<String> expectedResult = Arrays.asList("5", "6", "7", "8", "9");
-            Assert.assertFalse(result.isEmpty());
-            Assert.assertEquals(expectedResult, result);
+            File file = new File("/tmp/clic_output/loopTest.txt");
+            assertTrue(file.exists());
+            assertTrue(file.isFile());
+            FileInputStream inputStream = new FileInputStream(file);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line = bufferedReader.readLine();
+            assertEquals(line, "5 6 7 8 9");
         }catch (Exception ignored){
         }
 

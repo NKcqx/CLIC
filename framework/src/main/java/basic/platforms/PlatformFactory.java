@@ -122,6 +122,7 @@ public class PlatformFactory {
         String environment = getElementContentByTag(execution, "environment");
         String executor = getElementContentByTag(execution, "executor");
         // args在传入参数时是有序的
+        // 这里有一个with_name的布尔值，如果是True，那么在初始化的时候会把name = 作为value传进map
         Map<String, String> argsVal = new LinkedHashMap<String, String>() {{
             for (Element arg : getElementListByTag(execution, "args", "arg")) {
                 if (arg.getAttribute("with-name").equals("false")) {
@@ -176,6 +177,7 @@ public class PlatformFactory {
      */
     public static void setPlatformArgValue(String platform, String arg, String newVal) {
         if (platformConfigMap.containsKey(platform)) {
+
             // 使用新的值替换，为了不改变顺序，重新插入一遍
             Map<String, String> newArgMap = new LinkedHashMap<>();
 

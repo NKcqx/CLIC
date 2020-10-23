@@ -18,6 +18,7 @@ public class TestLoopFunc {
         return Integer.parseInt(value) + 1;
     }
 
+
     public boolean loopBodyFilterFunc(List<String> list) {
         return true;
     }

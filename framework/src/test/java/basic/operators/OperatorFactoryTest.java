@@ -22,16 +22,17 @@ public class OperatorFactoryTest {
     @Before
     public void before() throws Exception {
         configuration = new Configuration();
-    }
-
-    @Test
-    public void initMappingTest() throws Exception {
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
     }
+
+//    @Before
+//    public void initMappingTest() throws Exception {
+//        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
+//    }
 
     @Test
     public void getTemplateTest() throws Exception {
-        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
+//        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
 
         // 通过java反射访问私有静态方法
         Method getTemplateMethod = Class.forName("basic.operators.OperatorFactory")
@@ -62,7 +63,7 @@ public class OperatorFactoryTest {
 
     @Test
     public void createOperatorTest() throws Exception {
-        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
+//        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
 
         Operator opt = OperatorFactory.createOperator("filter");
         Operator spyOpt = spy(opt);

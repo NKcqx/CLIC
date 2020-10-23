@@ -231,7 +231,6 @@ public class Operator implements Visitable, Serializable {
 //                + '}';
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) {
