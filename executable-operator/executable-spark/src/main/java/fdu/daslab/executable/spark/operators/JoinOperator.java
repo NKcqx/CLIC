@@ -41,23 +41,16 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
         String rightTableKey = this.params.get("rightTableKeyName");
         String rightTableFunc = this.params.get("rightTableFuncName");
 
-        getInputData("leftTable").foreach(item -> System.out.println(item));
-        getInputData("rightTable").foreach(item -> System.out.println(item));
-
         // First JavaRDD
         JavaPairRDD<String, List<String>> firstRDD = this.getInputData("leftTable")
                 .mapToPair((PairFunction<List<String>, String, List<String>>) line -> {
                     FunctionModel joinFunction = inputArgs.getFunctionModel();
                     // 用户指定key
                     String tableKey = (String) joinFunction.invoke(leftTableKey, line);
-                    System.out.println(tableKey);
                     // 用户指定join时左表要select哪几列
                     List<String> tableLine = (List<String>) joinFunction.invoke(leftTableFunc, line);
-                    System.out.println(tableLine);
                     return new Tuple2<>(tableKey, tableLine);
                 });
-
-        System.out.println("left over");
 
         // Second JavaRDD
         JavaPairRDD<String, List<String>> secondRDD = this.getInputData("rightTable")
@@ -65,14 +58,10 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
                     FunctionModel joinFunction = inputArgs.getFunctionModel();
                     // 用户指定key
                     String tableKey = (String) joinFunction.invoke(rightTableKey, line);
-                    System.out.println(tableKey);
                     // 用户指定join时右表要select哪几列
                     List<String> tableLine = (List<String>) joinFunction.invoke(rightTableFunc, line);
-                    System.out.println(tableLine);
                     return new Tuple2<>(tableKey, tableLine);
                 });
-
-        System.out.println("right over");
 
         // Join
         JavaPairRDD<String, Tuple2<List<String>, List<String>>> joinRDD = firstRDD.join(secondRDD);
@@ -88,9 +77,6 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
                     resultLine.addAll(stringTuple2Tuple2._2()._2());
                     return Collections.singletonList(String.join(",", resultLine));
                 });
-        nextStream.foreach(item -> System.out.println(item));
         this.setOutputData("result", nextStream);
-
-
     }
 }

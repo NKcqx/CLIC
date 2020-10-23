@@ -46,7 +46,8 @@ public class FileSource extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List
         // FileSource sourceArgs = (FileSource) inputArgs.getOperatorParam();
         // 读取文件，并按照分割符分隔开来
         final JavaRDD<List<String>> listJavaRDD = javaSparkContext
-                .textFile(this.params.get("inputPath"), Integer.parseInt(this.params.get("partitionNum")))
+                //.textFile(this.params.get("inputPath"), Integer.parseInt(this.params.get("partitionNum")))
+                .textFile(this.params.get("inputPath"))
                 .map(line -> Arrays.asList(line.split(this.params.get("separator"))));
         // result.setInnerResult(listJavaRDD);
         this.setOutputData("result", listJavaRDD);
