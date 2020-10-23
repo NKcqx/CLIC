@@ -2,6 +2,8 @@ package sql;
 
 import api.DataQuanta;
 import api.PlanBuilder;
+import org.javatuples.Pair;
+
 import java.util.HashMap;
 
 /**
@@ -15,18 +17,26 @@ public class SQLDemo {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
 
-            // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             /**
              * 在这里，用户可以选取多个源文件（txt, csv, json, parquet等）
              * 来满足连接、嵌套查询等sql操作
              */
-            DataQuanta sourceNode = planBuilder.readTableFrom(new HashMap<String, String>() {{
-                put("inputPath1", "D:/2020project/sql/student.csv");
-                put("tableName1", "student");
-                put("inputPath2", "D:/2020project/sql/grade.csv");
-                put("tableName2", "grade");
-                put("inputPath3", "D:/2020project/sql/courseSelection.csv");
-                put("tableName3", "courseSelection");
+            DataQuanta sourceNode1 = planBuilder.readTableFrom(new HashMap<String, String>() {{
+                put("inputPath", "D:/2020project/sql/student.csv");
+                put("tableName", "student");
+            }});
+
+            DataQuanta sourceNode2 = planBuilder.readTableFrom(new HashMap<String, String>() {{
+                put("inputPath", "D:/2020project/sql/grade.csv");
+                put("tableName", "grade");
+            }});
+
+            DataQuanta sourceNode3 = planBuilder.readTableFrom(new HashMap<String, String>() {{
+                put("inputPath", "D:/2020project/sql/courseSelection.csv");
+                put("tableName", "courseSelection");
+            }});
+
+            DataQuanta exeNode = DataQuanta.createInstance("sqlExe", new HashMap<String, String>() {{
 //                // 查找成绩在8分以上的学生的id和姓名
 //                put("sqlText", "select id,name from student where id in " +
 //                        "(select student.id from student join grade on student.id=grade.id and grade.grade>=8)");
@@ -42,11 +52,17 @@ public class SQLDemo {
                 put("outputPath", "D:/2020project/sql/hdfs");
             }});
 
-            planBuilder.addVertex(sourceNode);
+            planBuilder.addVertex(sourceNode1);
+            planBuilder.addVertex(sourceNode2);
+            planBuilder.addVertex(sourceNode3);
+            planBuilder.addVertex(exeNode);
             planBuilder.addVertex(sinkNode);
 
             // 链接节点，即构建DAG
-            planBuilder.addEdge(sourceNode, sinkNode, null);
+            planBuilder.addEdge(sourceNode1, exeNode, new Pair<>("result", "table1"));
+            planBuilder.addEdge(sourceNode2, exeNode, new Pair<>("result", "table2"));
+            planBuilder.addEdge(sourceNode3, exeNode, new Pair<>("result", "table3"));
+            planBuilder.addEdge(exeNode, sinkNode, null);
 
             planBuilder.execute();
         } catch (Exception e) {
