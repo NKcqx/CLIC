@@ -27,36 +27,23 @@ class FileSource(name: String, id: String,
    */
   override def execute(inputArgs: ParamsModel, result: ResultModel[DataFrame]): Unit = {
     val sparkSession = SparkInitUtil.getDefaultSparkSession()
+    var df: DataFrame = null;
 
-    val tableNum = this.params.get("tableNum").toInt
-    var tableNames: Array[String] = new Array[String](tableNum)
-    var  tableIndex: Int = 0
+    val inputPath = this.params.get("inputPath")
 
-    // 循环遍历读取用户输入的多个数据源文件
-    for(i <- 1 to tableNum) {
-      val inputPath = this.params.get("inputPath" + i)
-      val tableName = this.params.get("tableName" + i)
-
-      tableNames(tableIndex) = tableName
-      tableIndex += 1
-
-      // 通过截取文件名后缀获取该文件类型
-      val fileType = inputPath.substring(inputPath.indexOf("."), inputPath.length)
-      fileType match {
-        case ".csv" => {
-          sparkSession.read.format("csv").option("header","true").load(inputPath).createTempView(tableName)
-        }
-        case ".txt" => {
-          sparkSession.read.option("header", "true").csv(inputPath).createTempView(tableName)
-        }
-        case ".json" => {
-          sparkSession.read.json(inputPath).toDF().createTempView(tableName)
-        }
+    // 通过截取文件名后缀获取该文件类型
+    val fileType = inputPath.substring(inputPath.lastIndexOf("."), inputPath.length)
+    fileType match {
+      case ".csv" => {
+        df = sparkSession.read.format("csv").option("header","true").load(inputPath)
+      }
+      case ".txt" => {
+        df = sparkSession.read.option("header", "true").csv(inputPath)
+      }
+      case ".json" => {
+        df = sparkSession.read.json(inputPath).toDF()
       }
     }
-//    val newSqlText = SQLAdapter.getOptimizedSqlText(sparkSession, this.params.get("sqlText"), tableNames)
-//    val result = sparkSession.sql(newSqlText)
-    val result = sparkSession.sql(this.params.get("sqlText"))
-    this.setOutputData("result", result)
+    this.setOutputData("result", df)
   }
 }

@@ -23,25 +23,24 @@ public class SQLDemo {
              */
             DataQuanta sourceNode1 = planBuilder.readTableFrom(new HashMap<String, String>() {{
                 put("inputPath", "D:/2020project/sql/student.csv");
-                put("tableName", "student");
             }});
 
             DataQuanta sourceNode2 = planBuilder.readTableFrom(new HashMap<String, String>() {{
                 put("inputPath", "D:/2020project/sql/grade.csv");
-                put("tableName", "grade");
             }});
 
             DataQuanta sourceNode3 = planBuilder.readTableFrom(new HashMap<String, String>() {{
                 put("inputPath", "D:/2020project/sql/courseSelection.csv");
-                put("tableName", "courseSelection");
             }});
 
             DataQuanta exeNode = DataQuanta.createInstance("sqlExe", new HashMap<String, String>() {{
+                put("tableNames", "student,grade,courseSelection");
 //                // 查找成绩在8分以上的学生的id和姓名
 //                put("sqlText", "select id,name from student where id in " +
 //                        "(select student.id from student join grade on student.id=grade.id and grade.grade>=8)");
                 // 查找跟叫"xiaoming"的学生选同一门课的学生学号和姓名（"xiaoming"会重名并且和别人会有不止一门课一起上）
-                put("sqlText", "select distinct student.id as stuNum, name as stuName from student,courseSelection " +
+                put("sqlText", "select distinct student.id as stuNum,name as stuName " +
+                        "from student,courseSelection " +
                         "where student.id=courseSelection.id and cid in " +
                         "(select cid from courseSelection,student where courseSelection.id=student.id and student.id in " +
                         "(select id from student where student.name='xiaoming'))");

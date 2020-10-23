@@ -8,7 +8,9 @@
     </platforms>
 
     <parameters>
-        <parameter name="sqlText"  data_type="string" required="true"> </parameter>
+        <!-- 为什么需要这个参数？因为spark sql需要用table名字给dataframe注册 -->
+        <parameter name="tableNames" data_type="string" required="true"></parameter>
+        <parameter name="sqlText"  data_type="string" required="true"></parameter>
     </parameters>
 
     <inputs>  <!-- 输入数据 -->
