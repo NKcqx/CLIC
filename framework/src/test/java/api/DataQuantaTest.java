@@ -2,14 +2,19 @@ package api;
 
 import basic.Configuration;
 import basic.operators.OperatorFactory;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
 import static org.junit.Assert.*;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 
 /**
- * @Author nathan
+ * @Author nathan, 陈齐翔
  * @Date 2020/7/8 1:23 下午
  * @Version 1.0
  */
@@ -17,7 +22,8 @@ public class DataQuantaTest {
     public DataQuanta dataQuanta1;
     public DataQuanta dataQuanta2;
     public Configuration configuration;
-
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
     @Before
     public void before() throws Exception {
         configuration = new Configuration();
@@ -81,4 +87,34 @@ public class DataQuantaTest {
 //        Assert.assertNull(planBuilder.getGraph().getEdge(dataQuanta.getOperator(), dataQuanta1.getOperator()));
 //        Assert.assertNotNull(planBuilder.getGraph().getEdge(dataQuanta1.getOperator(), dataQuanta.getOperator()));
 //    }
+
+    @Test
+    public void testWithTargetPlatform(){
+        try {
+            DataQuanta dq1 = DataQuanta.createInstance("filter", null).withTargetPlatform("java");
+            Assert.assertNotNull(dq1.getOperator().getSelectedEntities());
+            Assert.assertEquals(dq1.getOperator().getSelectedEntities().getEntityID(), "java");
+
+            DataQuanta dq2 = DataQuanta.createInstance("filter", null).withTargetPlatform("spark");
+            Assert.assertNotNull(dq2.getOperator().getSelectedEntities());
+            Assert.assertEquals(dq2.getOperator().getSelectedEntities().getEntityID(), "spark");
+            dq2.withTargetPlatform("java");
+            Assert.assertEquals(dq2.getOperator().getSelectedEntities().getEntityID(), "java");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    @Test
+    public void testThrowExceptionWhenSelectPlatform(){
+        DataQuanta dq3 = null;
+        try {
+            dq3 = DataQuanta.createInstance("filter", null);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        thrown.expect(NoSuchElementException.class);
+        dq3.withTargetPlatform("invalid-platform");
+    }
 }
