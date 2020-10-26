@@ -34,7 +34,6 @@ public class SQLDemo {
             }});
 
             DataQuanta exeNode = DataQuanta.createInstance("sqlExe", new HashMap<String, String>() {{
-                put("tableNames", "student,grade,courseSelection");
 //                // 查找成绩在8分以上的学生的id和姓名
 //                put("sqlText", "select id,name from student where id in " +
 //                        "(select student.id from student join grade on student.id=grade.id and grade.grade>=8)");
@@ -49,7 +48,6 @@ public class SQLDemo {
             // 最终结果的输出路径 这里写文件夹名字（HDFS形式）
             DataQuanta sinkNode = DataQuanta.createInstance("sqlSink", new HashMap<String, String>() {{
                 put("outputPath", "D:/2020project/sql/hdfs");
-                put("partitionNum", "10");
             }});
 
             planBuilder.addVertex(sourceNode1);
