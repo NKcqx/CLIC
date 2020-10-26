@@ -33,7 +33,7 @@ public class Demo {
                 put("udfName", "mapFunc");
             }});
 
-            DataQuanta reduceNode = DataQuanta.createInstance("reducebykey", new HashMap<String, String>() {{
+            DataQuanta reduceNode = DataQuanta.createInstance("reduce-by-key", new HashMap<String, String>() {{
                 put("udfName", "reduceFunc");
                 put("keyName", "reduceKey");
             }});
