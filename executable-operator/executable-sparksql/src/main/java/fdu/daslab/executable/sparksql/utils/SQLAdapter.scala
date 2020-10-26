@@ -5,8 +5,7 @@ import org.apache.spark.sql.catalyst.plans.logical.{Filter, Join, LogicalPlan, P
 import org.apache.spark.sql.execution.datasources.LogicalRelation
 
 /**
- * Logical Plan与J老师组对接
- * 本部分的Logical Plan指的是Spark SQL的Logical Plan
+ * CLIC组与Semantics组对接
  * 现在没有用，暂时搁置
  *
  * @author 刘丰艺
@@ -16,24 +15,16 @@ import org.apache.spark.sql.execution.datasources.LogicalRelation
 object SQLAdapter {
 
   /**
-   * 1. 将用户写的sql语句转成Logical Plan
-   * 2. 优化Logical Plan
-   * 3. 将优化后的Logical Plan转回sql语句
-   *
-   * @param 使用Spark SQL相关操作需要一个SparkSession对象
-   * @param 用户写的sql语句
-   * @return 优化后的Logical Plan对应的sql语句
+   * CLIC给Semantics传入一条sql语句
+   * Semantics给CLIC返回一棵优化后的Tree
    */
-  def getOptimizedSqlText(sparkSession: SparkSession, sqlText: String, tableNames: Array[String]): String = {
-    // Spark SQL
+  def getOptimizedSqlText(sparkSession: SparkSession, sqlText: String): LogicalPlan = {
+    // Semantics要做的操作内容跟下面Spark SQL的操作一样
     val plan = sparkSession.sessionState.optimizer.execute(
       sparkSession.sharedState.cacheManager.useCachedData(
         sparkSession.sessionState.analyzer.executeAndCheck(
           sparkSession.sessionState.sqlParser.parsePlan(sqlText))))
-//    visitLogicalPlan(plan)
-//    val newSqlText = new SQLBuilder(plan, tableNames).toSQL(plan)
-//    newSqlText
-    sqlText
+    plan
   }
 
   /**
@@ -47,21 +38,11 @@ object SQLAdapter {
     }
     for (child <- children) {
       child match {
-        case Filter(condition, child) => condition.sql
-        case Project(projectList, child) => projectList
-        case Join(left, right, joinType, condition) => {
-          left
-          right
-          joinType
-          condition
-        }
-        case LogicalRelation(relation, output, catalogTable, isStreaming) => {
-          relation.schema.toDDL
-          output
-          catalogTable
-          isStreaming
-        }
-        case _ => child.getClass
+        case Filter(condition, child) =>
+        case Project(projectList, child) =>
+        case Join(left, right, joinType, condition) =>
+        case LogicalRelation(relation, output, catalogTable, isStreaming) =>
+        case _ =>
       }
       // 递归遍历子节点
       visitLogicalPlan(child)

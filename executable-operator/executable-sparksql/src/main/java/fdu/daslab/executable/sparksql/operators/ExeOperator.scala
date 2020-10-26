@@ -28,17 +28,6 @@ class ExeOperator(name: String, id: String,
    */
   override def execute(inputArgs: ParamsModel, result: ResultModel[DataFrame]): Unit = {
     val sparkSession = SparkInitUtil.getDefaultSparkSession()
-
-    val tableNames: Array[String] = this.params.get("tableNames").split(",")
-    var  tableIndex: Int = 0
-
-    // 循环遍历读取多个FileSource算子传来的多个DataFrame
-    for(i <- 0 to tableNames.length-1) {
-      this.getInputData("table" + (i+1)).createTempView(tableNames(i))
-      tableIndex += 1
-    }
-    //    val newSqlText = SQLAdapter.getOptimizedSqlText(sparkSession, this.params.get("sqlText"), tableNames)
-    //    val result = sparkSession.sql(newSqlText)
     val result = sparkSession.sql(this.params.get("sqlText"))
     this.setOutputData("result", result)
   }

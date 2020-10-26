@@ -31,17 +31,21 @@ class FileSource(name: String, id: String,
 
     val inputPath = this.params.get("inputPath")
 
-    // 通过截取文件名后缀获取该文件类型
+    val tableName = inputPath.substring(inputPath.lastIndexOf("/")+1, inputPath.lastIndexOf("."))
     val fileType = inputPath.substring(inputPath.lastIndexOf("."), inputPath.length)
+
     fileType match {
       case ".csv" => {
         df = sparkSession.read.format("csv").option("header","true").load(inputPath)
+        df.createTempView(tableName)
       }
       case ".txt" => {
         df = sparkSession.read.option("header", "true").csv(inputPath)
+        df.createTempView(tableName)
       }
       case ".json" => {
         df = sparkSession.read.json(inputPath).toDF()
+        df.createTempView(tableName)
       }
     }
     this.setOutputData("result", df)

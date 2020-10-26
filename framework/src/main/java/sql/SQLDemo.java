@@ -18,7 +18,7 @@ public class SQLDemo {
             PlanBuilder planBuilder = new PlanBuilder();
 
             /**
-             * 在这里，用户可以选取多个源文件（txt, csv, json, parquet等）
+             * 在这里，用户可以选取多个源文件（txt, csv, json等）
              * 来满足连接、嵌套查询等sql操作
              */
             DataQuanta sourceNode1 = planBuilder.readTableFrom(new HashMap<String, String>() {{
@@ -49,7 +49,7 @@ public class SQLDemo {
             // 最终结果的输出路径 这里写文件夹名字（HDFS形式）
             DataQuanta sinkNode = DataQuanta.createInstance("sqlSink", new HashMap<String, String>() {{
                 put("outputPath", "D:/2020project/sql/hdfs");
-                put("partitionNum", "20");
+                put("partitionNum", "10");
             }});
 
             planBuilder.addVertex(sourceNode1);
@@ -59,10 +59,10 @@ public class SQLDemo {
             planBuilder.addVertex(sinkNode);
 
             // 链接节点，即构建DAG
-            planBuilder.addEdge(sourceNode1, exeNode, new Pair<>("result", "table1"));
-            planBuilder.addEdge(sourceNode2, exeNode, new Pair<>("result", "table2"));
-            planBuilder.addEdge(sourceNode3, exeNode, new Pair<>("result", "table3"));
-            planBuilder.addEdge(exeNode, sinkNode, null);
+            planBuilder.addEdge(sourceNode1, exeNode);
+            planBuilder.addEdge(sourceNode2, exeNode);
+            planBuilder.addEdge(sourceNode3, exeNode);
+            planBuilder.addEdge(exeNode, sinkNode);
 
             planBuilder.execute();
         } catch (Exception e) {
