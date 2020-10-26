@@ -16,14 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.*;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 /**
  * @author 陈齐翔
@@ -117,8 +110,101 @@ public class LoopOperatorTest {
         }
 
     }
+
+    @Test
+    public void testConstructLoopThroughStr() {
+        try {
+            Map<String, String> params = new HashMap<>();
+            params.put("predicateName", "loopCondition");
+            params.put("loopBody", "      operators:\n" +
+                    "      - inputKeys:\n" +
+                    "        - data\n" +
+                    "        name: MapOperator\n" +
+                    "        id: MapOperator-677696474\n" +
+                    "        outputKeys:\n" +
+                    "        - result\n" +
+                    "        params:\n" +
+                    "          udfName: loopBodyMapFunc\n" +
+                    "      dag:\n" +
+                    "      - id: MapOperator-677696474");
+            params.put("loopVarUpdateName", "increment");
+
+            LoopOperator loopOperator = (LoopOperator) this.sparkOperatorFactory.createOperator(
+                    "LoopOperator", "0",
+                    Arrays.asList("loopVar", "data"),
+                    Arrays.asList("loopVar", "result"),
+                    params);
+
+            Assert.assertFalse(loopOperator.getOutputConnections().isEmpty());
+            OperatorBase targetOpt = loopOperator.getOutputConnections().get(0).getTargetOpt();
+            Assert.assertTrue(targetOpt.getName().contains("MapOperator"));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void testConstructLoopByHand() {
+        try {
+            OperatorBase mapOperator = new SparkOperatorFactory().createOperator(
+                    "MapOperator",
+                    "id",
+                    Collections.singletonList("data"),
+                    Collections.singletonList("result"),
+                    new HashMap<String, String>(){{
+                        put("udfName", "loopBodyMapFunc");
+                    }}
+            );
+
+            OperatorBase mapOperator2 = new SparkOperatorFactory().createOperator(
+                    "MapOperator",
+                    "id",
+                    Collections.singletonList("data"),
+                    Collections.singletonList("result"),
+                    new HashMap<String, String>(){{
+                        put("udfName", "loopBodyMapFunc");
+                    }}
+            );
+
+            mapOperator.connectTo("result", mapOperator2, "data");
+
+            Map<String, String> params = new HashMap<>();
+            params.put("predicateName", "loopCondition");
+            LoopOperator loopOperator = (LoopOperator) this.sparkOperatorFactory.createOperator(
+                    "LoopOperator", "0",
+                    Arrays.asList("loopVar", "data"),
+                    Arrays.asList("loopVar", "result"),
+                    params);
+
+            // 此时还没设置连接到loopBody的边，不应该能拿到下一跳，无论是trigger 还是 real 的
+            Assert.assertTrue(loopOperator.getOutputConnections().isEmpty());
+            loopOperator.startLoopBody(mapOperator);
+
+            // 此时应该能拿到body的起点，即loop的triggerConnection，不应为空
+            Assert.assertFalse(loopOperator.getOutputConnections().isEmpty());
+            Object mapOpt = loopOperator.getOutputConnections().get(0).getTargetOpt();
+            // 下一跳应该是Map
+            Assert.assertTrue(mapOpt instanceof MapOperator);
+            Assert.assertEquals(mapOpt, mapOperator);
+
+            // 但此时还没有endBody呢，而loop内部需要令 loopEnd 连接到loop自己创建的nextIteration
+            // 所以在没endBody的时候，loopEnd的下一跳应该是空的
+            Assert.assertTrue(mapOperator2.getOutputConnections().isEmpty());
+            loopOperator.endLoopBody(mapOperator2);
+            // 此时应该能拿到end的下一跳（nextIteration）
+            Assert.assertFalse(mapOperator2.getOutputConnections().isEmpty());
+            Object nextIteration = mapOperator2.getOutputConnections().get(0);
+            Assert.assertTrue(nextIteration instanceof NextIteration);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
     @After
-    public void after(){
+    public void after() {
         SparkInitUtil.getDefaultSparkContext().close();
     }
 }
