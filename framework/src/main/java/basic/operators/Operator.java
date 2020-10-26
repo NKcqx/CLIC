@@ -1,6 +1,5 @@
 package basic.operators;
 
-
 import basic.Param;
 import basic.visitors.Visitor;
 import org.slf4j.Logger;

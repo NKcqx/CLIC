@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="SqlSourceOperator" name="SqlSourceOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="sparkSql">
+            <path>Operator/SqlSource/conf/SparkSqlSourceOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter name="inputPath" data_type="string" required="true"> </parameter>
+<!--        <parameter kind="input" name="separator" data_type="string" default=","> </parameter>-->
+    </parameters>
+    <inputs>  </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+
+</Operator>
