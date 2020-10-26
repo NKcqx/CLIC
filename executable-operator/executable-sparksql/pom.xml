@@ -12,7 +12,7 @@
     <artifactId>executable-sparksql</artifactId>
 
     <properties>
-        <scala.version>2.11.8</scala.version>
+        <scala.version>2.13.3</scala.version>
         <spark.version>2.4.5</spark.version>
     </properties>
 
