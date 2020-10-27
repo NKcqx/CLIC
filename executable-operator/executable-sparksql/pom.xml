@@ -11,46 +11,11 @@
 
     <artifactId>executable-sparksql</artifactId>
 
-    <properties>
-        <scala.version>2.11.8</scala.version>
-        <spark.version>2.4.5</spark.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>fdu.daslab</groupId>
             <artifactId>executable-basic</artifactId>
             <version>1.0-SNAPSHOT</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${scala.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>${scala.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-reflect</artifactId>
-            <version>${scala.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-core_2.11</artifactId>
-            <version>${spark.version}</version>
-        </dependency>
-        <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
-        <dependency>
-            <groupId>org.apache.spark</groupId>
-            <artifactId>spark-sql_2.11</artifactId>
-            <version>${spark.version}</version>
         </dependency>
     </dependencies>
 
@@ -72,7 +37,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>fdu.daslab.executable.java.ExecuteJavaOperator</mainClass>
+                            <mainClass>fdu.daslab.executable.sparksql.ExecuteSparkSQLOperator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -86,52 +51,6 @@
                     </execution>
                 </executions>
             </plugin>
-
-            <plugin>
-                <groupId>net.alchim31.maven</groupId>
-                <artifactId>scala-maven-plugin</artifactId>
-                <!--                <version>3.3.1</version>-->
-                <executions>
-                    <execution>
-                        <id>scala-compile-first</id>
-                        <phase>process-resources</phase>
-                        <goals>
-                            <goal>add-source</goal>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-
-                    <execution>
-                        <phase>compile</phase>
-                        <goals>
-                            <goal>compile</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <scalaVersion>${scala.version}</scalaVersion>
-                </configuration>
-            </plugin>
-
-            <!--            <plugin>-->
-            <!--                <groupId>org.scala-tools</groupId>-->
-            <!--                <artifactId>maven-scala-plugin</artifactId>-->
-            <!--                <executions>-->
-            <!--                    <execution>-->
-            <!--                        <goals>-->
-            <!--                            <goal>compile</goal>-->
-            <!--                            <goal>testCompile</goal>-->
-            <!--                        </goals>-->
-            <!--                    </execution>-->
-            <!--                </executions>-->
-            <!--                <configuration>-->
-            <!--                    <scalaVersion>${scala.version}</scalaVersion>-->
-            <!--                    <args>-->
-            <!--                        <arg>-target:jvm-1.8</arg>-->
-            <!--                    </args>-->
-            <!--                </configuration>-->
-            <!--            </plugin>-->
         </plugins>
     </build>
 </project>

@@ -34,14 +34,15 @@ public class SQLDemo {
             }});
 
             DataQuanta exeNode = DataQuanta.createInstance("sqlExe", new HashMap<String, String>() {{
-//                // 查找成绩在8分以上的学生的id和姓名
-//                put("sqlText", "select id,name from student where id in " +
-//                        "(select student.id from student join grade on student.id=grade.id and grade.grade>=8)");
-                // 查找跟叫"xiaoming"的学生选同一门课的学生学号、姓名、成绩（"xiaoming"会重名并且和别人会有不止一门课一起上）
-                put("sqlText", "select distinct student.id as stuNum,name as stuName,grade as stuGrade " +
+                // 查找跟叫"xiaoming"的学生选同一门课的学生学号、姓名、成绩
+                // （"xiaoming"会重名并且和别人会有不止一门课一起上）
+                put("sqlText", "select distinct student.id as stuNum," +
+                        "name as stuName,grade as stuGrade " +
                         "from student,courseSelection,grade " +
-                        "where student.id=courseSelection.id and student.id=grade.id and cid in " +
-                        "(select cid from courseSelection,student where courseSelection.id=student.id and student.id in " +
+                        "where student.id=courseSelection.id " +
+                        "and student.id=grade.id and cid in " +
+                        "(select cid from courseSelection,student " +
+                        "where courseSelection.id=student.id and student.id in " +
                         "(select id from student where student.name='xiaoming'))");
             }});
 
