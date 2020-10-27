@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>executable-spark</artifactId>
+    <artifactId>executable-sparksql</artifactId>
 
     <dependencies>
         <dependency>
@@ -37,7 +37,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>fdu.daslab.executable.spark.ExecuteSparkOperator</mainClass>
+                            <mainClass>fdu.daslab.executable.sparksql.ExecuteSparkSQLOperator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -53,6 +53,5 @@
             </plugin>
         </plugins>
     </build>
-
 
 </project>
