@@ -4,6 +4,7 @@ import fdu.daslab.backend.executor.model.ArgoNode;
 import fdu.daslab.backend.executor.model.ImageTemplate;
 import fdu.daslab.backend.executor.model.KubernetesStage;
 import io.kubernetes.client.openapi.models.V1Pod;
+import org.apache.commons.lang3.StringUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -205,13 +206,14 @@ public class YamlUtil {
     /**
      * 将argo的yaml适配生成kubernetes client的meta信息
      *
+     * @param planName plan的全局唯一的名称
      * @param argoYamlPath argo yaml的路径
-     * @return stagedId - kubernetes的对象
+     * @return 所有该plan下的stage
      */
     @SuppressWarnings("unchecked")
-    public static Map<Integer, KubernetesStage> adaptArgoYamlToKubernetes(String argoYamlPath) {
+    public static Map<String, KubernetesStage> adaptArgoYamlToKubernetes(String planName, String argoYamlPath) {
         Yaml argoYaml = new Yaml();
-        Map<Integer, KubernetesStage> resultStages = new HashMap<>();
+        Map<String, KubernetesStage> resultStages = new HashMap<>();
         try {
             Object loadObj = argoYaml.load(new FileInputStream(argoYamlPath));
             // 获取所有的dag信息及其依赖
@@ -220,6 +222,7 @@ public class YamlUtil {
             // 默认第一个为workflow的template
             Map<String, Object> dagInfo = (Map<String, Object>) templates.get(0).get("dag");
             List<Map<String, Object>> tasks = (List<Map<String, Object>>) dagInfo.get("tasks");
+
             // 存储所有template和其container-image的映射关系
             Map<String, String> templateToImage = new HashMap<>();
             templates.forEach(template -> {
@@ -228,66 +231,76 @@ public class YamlUtil {
                 String imageName = (String) container.getOrDefault("image", "");
                 templateToImage.put((String) template.get("name"), imageName);
             });
-            // 初始化stage0，作为所有开始stage的父节点
-            KubernetesStage stage0 = new KubernetesStage(0);
-            resultStages.put(0, stage0);
-            // templateName到stageId的映射
-            Map<String, Integer> templateNameToStageId = new HashMap<>();
+
+            // stageName到stageId的映射
+            Map<String, String> stageNameToStageId = new HashMap<>();
             for (int stageId = 1; stageId <= tasks.size(); stageId++) {
-                templateNameToStageId.put((String) tasks.get(stageId - 1).get("name"), stageId);
+                Map<String, Object> curStage = tasks.get(stageId - 1);
+                String uniqueStageId = StringUtils.join(new String[]{
+                        planName, (String) curStage.get("template"), String.valueOf(stageId)}, "-");
+                stageNameToStageId.put((String) curStage.get("name"), uniqueStageId);
             }
-            tasks.forEach(stageTemplate -> {
-                Integer stageId = templateNameToStageId.get((String) stageTemplate.get("name"));
-                KubernetesStage stage;
-                if (resultStages.containsKey(stageId)) {
-                    stage = resultStages.get(stageId);
-                } else {
-                    stage = new KubernetesStage(stageId);
-                    stage.setStageId(stageId);
-                }
-
-                // 添加parent和child
-                List<Integer> parentStages = new ArrayList<>();
-                Object dependencies = stageTemplate.get("dependencies");
-                if (dependencies == null) {
-                    // 开始节点
-                    resultStages.get(0).getChildStageIds().add(stageId);
-                } else {
-                    List<String> dependencyNames = (List<String>) dependencies;
-                    dependencyNames.forEach(dependency -> {
-                        Integer parentId = templateNameToStageId.get(dependency);
-                        parentStages.add(parentId);
-                        KubernetesStage parentStage;
-                        if (resultStages.containsKey(parentId)) {
-                            parentStage = resultStages.get(parentId);
-                        } else {
-                            parentStage = new KubernetesStage(parentId);
-                            parentStage.setStageId(parentId);
-                        }
-                        // 设置parent的child
-                        parentStage.getChildStageIds().add(stageId);
-                        resultStages.put(parentId, parentStage);
-                    });
-                }
-                stage.getParentStageIds().addAll(parentStages);
-
-                // 添加详细的信息，几个必须的参数: podName, containerName, containerImage, containerArgs
-                String containerName = (String) stageTemplate.get("template");
-                String containerImage = templateToImage.get(containerName);
-                // 正常的args之外，还需要添加一些辅助的参数，比如stageId等信息，这些信息需要手动地动态设置
-                String containerArgs = ((List<Map<String, String>>)
-                        ((Map<String, Object>) stageTemplate.get("arguments")).get("parameters"))
-                        .get(0).get("value") + " " + KubernetesUtil.enrichContainerArgs(stageId);
-                V1Pod pod = KubernetesUtil.createV1PodByDefault(stageId, containerName,
-                        containerImage, containerArgs);
-                stage.setPodInfo(pod);
-
-                resultStages.put(stageId, stage);
-            });
+            tasks.forEach(stageTemplate -> buildKubernetesPods(
+                    resultStages, stageNameToStageId, templateToImage, stageTemplate));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return resultStages;
+    }
+
+    /**
+     * 构建KubernetesStage
+     *
+     * @param resultStages 需要返回的stages
+     * @param stageNameToStageId stage的name到全局唯一的stageId的映射
+     * @param templateToImage containerName到对应的image的映射
+     * @param stageTemplate yaml描述上的每一个template
+     */
+    @SuppressWarnings("unchecked")
+    private static void buildKubernetesPods(Map<String, KubernetesStage> resultStages,
+            Map<String, String> stageNameToStageId, Map<String, String> templateToImage,
+            Map<String, Object> stageTemplate) {
+        String stageId = stageNameToStageId.get((String) stageTemplate.get("name"));
+        KubernetesStage stage;
+        if (resultStages.containsKey(stageId)) {
+            stage = resultStages.get(stageId);
+        } else {
+            stage = new KubernetesStage(String.valueOf(stageId));
+            stage.setStageId(stageId);
+        }
+        // 添加parent和child
+        List<String> parentStages = new ArrayList<>();
+        Object dependencies = stageTemplate.get("dependencies");
+        if (dependencies != null) {
+            List<String> dependencyNames = (List<String>) dependencies;
+            dependencyNames.forEach(dependency -> {
+                String parentId = stageNameToStageId.get(dependency);
+                parentStages.add(parentId);
+                KubernetesStage parentStage;
+                if (resultStages.containsKey(parentId)) {
+                    parentStage = resultStages.get(parentId);
+                } else {
+                    parentStage = new KubernetesStage(parentId);
+                    parentStage.setStageId(parentId);
+                }
+                // 设置parent的child
+                parentStage.getChildStageIds().add(stageId);
+                resultStages.put(parentId, parentStage);
+            });
+        }
+        stage.getParentStageIds().addAll(parentStages);
+        // 添加详细的信息，几个必须的参数: podName, containerName, containerImage, containerArgs
+        String containerName = (String) stageTemplate.get("template");
+        String containerImage = templateToImage.get(containerName);
+        // 正常的args之外，还需要添加一些辅助的参数，比如stageId等信息，这些信息需要手动地动态设置
+        String containerArgs = ((List<Map<String, String>>)
+                ((Map<String, Object>) stageTemplate.get("arguments")).get("parameters"))
+                .get(0).get("value") + " " + KubernetesUtil.enrichContainerArgs(stageId);
+        V1Pod pod = KubernetesUtil.createV1PodByDefault(stageId, containerName,
+                containerImage, containerArgs);
+        stage.setPodInfo(pod);
+        stage.setPlatformName(containerName.substring(0, containerName.indexOf("-")));
+        resultStages.put(stageId, stage);
     }
 
 }

@@ -1,4 +1,4 @@
-package driver.event;
+package fdu.daslab.scheduler.event;
 
 /**
  * stage数据准备完成
@@ -9,7 +9,7 @@ package driver.event;
  */
 public class StageDataPreparedEvent extends SchedulerEvent {
 
-    public StageDataPreparedEvent(Integer stageId) {
+    public StageDataPreparedEvent(String stageId) {
         super(stageId);
     }
 }

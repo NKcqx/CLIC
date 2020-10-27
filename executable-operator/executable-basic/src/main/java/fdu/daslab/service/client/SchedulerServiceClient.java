@@ -1,6 +1,6 @@
-package fdu.daslab.executable.service.client;
+package fdu.daslab.service.client;
 
-import fdu.daslab.executable.thrift.master.SchedulerService;
+import fdu.daslab.thrift.master.SchedulerService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TMultiplexedProtocol;

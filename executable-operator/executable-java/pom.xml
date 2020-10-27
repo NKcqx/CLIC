@@ -41,7 +41,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>fdu.daslab.executable.java.ExecuteJavaServer</mainClass>
+                            <mainClass>fdu.daslab.executable.java.ExecuteJavaOperator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

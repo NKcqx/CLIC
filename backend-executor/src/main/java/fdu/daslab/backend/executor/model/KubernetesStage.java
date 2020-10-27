@@ -2,6 +2,7 @@ package fdu.daslab.backend.executor.model;
 
 import io.kubernetes.client.openapi.models.V1Pod;
 
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -14,18 +15,43 @@ import java.util.Set;
  */
 public class KubernetesStage {
 
-    Integer stageId;
-    //        String dagPath;
-//        String udfPath;
-    String host;    // 运行的host，需要生成后在才会存在
-    Integer port; // 运行的port，指的是thrift的port，用于不同服务交互 TODO: port是否需要在k8s中开放
-    Integer retryCounts; // 重试次数，重试最多三次
-    Set<Integer> parentStageIds = new HashSet<>();    // 所依赖的父stage
-    Set<Integer> childStageIds = new HashSet<>();     // 依赖本stage的child stage
-    V1Pod podInfo; // 实际的pod的定义信息
+    private String stageId; // 全局唯一的stageId
+    private String platformName; // 对应的平台
+    private String host;    // 运行的host，需要生成后在才会存在
+    private Integer port; // 运行的port，指的是thrift的port，用于不同服务交互
+    private Integer retryCounts; // 重试次数，重试最多三次
+    private Set<String> parentStageIds = new HashSet<>();    // 所依赖的父stage
+    private Set<String> childStageIds = new HashSet<>();     // 依赖本stage的child stage
+    private V1Pod podInfo; // 实际的pod的定义信息
+    private Date startTime;  // stage的开始时间
+    private Date completeTime; // stage的完成时间
 
-    public KubernetesStage(Integer stageId) {
+    public KubernetesStage(String stageId) {
         this.stageId = stageId;
+    }
+
+    public Date getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(Date startTime) {
+        this.startTime = startTime;
+    }
+
+    public Date getCompleteTime() {
+        return completeTime;
+    }
+
+    public void setCompleteTime(Date completeTime) {
+        this.completeTime = completeTime;
+    }
+
+    public String getPlatformName() {
+        return platformName;
+    }
+
+    public void setPlatformName(String platformName) {
+        this.platformName = platformName;
     }
 
     public V1Pod getPodInfo() {
@@ -36,11 +62,11 @@ public class KubernetesStage {
         this.podInfo = podInfo;
     }
 
-    public Integer getStageId() {
+    public String getStageId() {
         return stageId;
     }
 
-    public void setStageId(Integer stageId) {
+    public void setStageId(String stageId) {
         this.stageId = stageId;
     }
 
@@ -68,19 +94,19 @@ public class KubernetesStage {
         this.retryCounts = retryCounts;
     }
 
-    public Set<Integer> getParentStageIds() {
+    public Set<String> getParentStageIds() {
         return parentStageIds;
     }
 
-    public void setParentStageIds(Set<Integer> parentStageIds) {
+    public void setParentStageIds(Set<String> parentStageIds) {
         this.parentStageIds = parentStageIds;
     }
 
-    public Set<Integer> getChildStageIds() {
+    public Set<String> getChildStageIds() {
         return childStageIds;
     }
 
-    public void setChildStageIds(Set<Integer> childStageIds) {
+    public void setChildStageIds(Set<String> childStageIds) {
         this.childStageIds = childStageIds;
     }
 }

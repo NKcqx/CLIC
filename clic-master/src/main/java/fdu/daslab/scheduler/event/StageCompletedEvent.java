@@ -1,4 +1,4 @@
-package driver.event;
+package fdu.daslab.scheduler.event;
 
 import java.util.Map;
 
@@ -12,7 +12,7 @@ import java.util.Map;
 public class StageCompletedEvent extends SchedulerEvent {
     private Map<String, String> messages;
 
-    public StageCompletedEvent(Integer stageId, Map<String, String> messages) {
+    public StageCompletedEvent(String stageId, Map<String, String> messages) {
         super(stageId);
         this.messages = messages;
     }

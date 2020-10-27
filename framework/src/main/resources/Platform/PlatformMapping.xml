@@ -16,12 +16,13 @@
                     <arg name="--name" required="true" with-name="true">spark-running</arg>
                     <arg name="--class" required="true" with-name="true">fdu.daslab.executable.spark.ExecuteSparkServer</arg>
                     <arg name="--conf=spark.executor.instance" required="true" with-name="true">5</arg>
-                    <arg name="--conf=spark.kubernetes.container.image" required="true" with-name="true">spark-env:v0</arg>
+                    <arg name="--conf=spark.kubernetes.container.image" required="true" with-name="true">spark:v0</arg>
                     <arg name="--conf=spark.kubernetes.namespace" required="true" with-name="true">argo</arg>
-                    <arg name="--conf=spark.kubernetes.authenticate.driver.serviceAccountName" required="true" with-name="true">spark</arg>
                     <arg name="--conf=spark.driver.host" required="true" with-name="true">$POD_IP</arg>
                     <arg name="--conf=spark.driver.bindAddress" required="true" with-name="true">0.0.0.0</arg>
-                    <arg name="--conf spark.driver.port" required="true" with-name="true">40091</arg>
+                    <arg name="--conf=spark.driver.port" required="true" with-name="true">40091</arg>
+                    <arg name="--conf=spark.kubernetes.driver.pod.name" required="true" with-name="true">$POD_NAME</arg>
+                    <arg name="--conf=spark.kubernetes.authenticate.driver.serviceAccountName" required="true" with-name="true">spark</arg>
                     <arg name="package" required="true" with-name="false">/data/jars/executable-spark-server.jar</arg>
                     <arg name="--udfPath" required="true" with-name="true"> </arg>
                 </args>

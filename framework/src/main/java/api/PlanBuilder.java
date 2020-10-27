@@ -12,14 +12,9 @@ import basic.visitors.ExecutionGenerationVisitor;
 import basic.visitors.PrintVisitor;
 import basic.visitors.WorkflowVisitor;
 import channel.Channel;
-import driver.CLICScheduler;
 import fdu.daslab.backend.executor.model.KubernetesStage;
 import fdu.daslab.backend.executor.model.Workflow;
-import org.apache.thrift.TProcessor;
-import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.server.TServer;
-import org.apache.thrift.server.TThreadPoolServer;
-import org.apache.thrift.transport.TServerSocket;
+import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransportException;
 import org.javatuples.Pair;
 import org.jgrapht.Graphs;
@@ -30,8 +25,7 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-import service.SchedulerService;
-import service.impl.SchedulerServiceImpl;
+import service.client.TaskServiceClient;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -42,15 +36,14 @@ import java.util.*;
  * @version 1.0
  * @since 2020/7/6 1:40 下午
  */
-public class PlanBuilder {
+public class PlanBuilder implements java.io.Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlanBuilder.class);
     private DataQuanta headDataQuanta = null; // 其实可以有多个head
     // private SimpleDirectedWeightedGraph<Operator, Channel> graph = null;
     private DefaultListenableGraph<Operator, Channel> graph = null;
     private Configuration configuration;
-
-    // 调度器，一直会在后台轮询，直到结束
-    private CLICScheduler clicScheduler = new CLICScheduler();
+    // 用户定义的plan名字，保存方便查看用户的任务信息（实际的plan会在该名字上加上一个随机防止名字相同）
+    private String planName;
 
     /**
      * @param configuration 配置文件，从中加载系统运行时必要的参数，即系统运行时的上下文
@@ -66,7 +59,12 @@ public class PlanBuilder {
     }
 
     public PlanBuilder() throws ParserConfigurationException, SAXException, IOException {
+        this("default-plan");
+    }
+
+    public PlanBuilder(String planName) throws IOException, ParserConfigurationException, SAXException {
         this(new Configuration());
+        this.planName = planName;
     }
 
     public boolean addVertex(DataQuanta dataQuanta) {
@@ -111,6 +109,14 @@ public class PlanBuilder {
 
     public DefaultListenableGraph<Operator, Channel> getGraph() {
         return graph;
+    }
+
+    public void submit(String planDagPath) throws TException {
+        // 提交任务，直接将任务提交给clic的master
+        String masterIp = configuration.getProperty("clic-master-ip");
+        Integer masterPort = Integer.valueOf(configuration.getProperty("clic-master-port"));
+        TaskServiceClient taskClient = new TaskServiceClient(masterIp, masterPort);
+        taskClient.submitPlan(planName, planDagPath);
     }
 
     /**
@@ -183,50 +189,11 @@ public class PlanBuilder {
         wrapStageWithHeadTail(stages); // 为每个Stage添加一个对应平台的SourceOpt 和 SinkOpt
 //        graph.removeGraphListener(listener);
         Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
-        // 生成argo的yaml，然后适配到kubernetes上生成相应的pod，并返回相应的物理地址信息
-        Map<Integer, KubernetesStage> stageInfos = argoWorkflow.execute(); // 将workflow生成为YAML
-        // driver的调度
-        driverSchedule(stageInfos);
+        // 生成优化好的dag的plan，然后提交给master进行调度和运行
+        String argoPath = argoWorkflow.execute();
+        submit(argoPath); // TODO：暂时使用异步的提交，driver和master之间并没有实现实时的交互，调度
     }
 
-    /**
-     * driver实际的调度过程：
-     *  1.先根据yaml，创建若干平台的server并启动 ===> 需要纪录下ip, port由系统生成
-     *  2.纪录各个stage和对应ip / port的对应关系 (类似于zk的名称存储)，以及每个stage的下一个stage
-     *  3.启动driver的server
-     *  4.后台启动调度器的线程，负责处理实际的调度请求
-     *  5.当收到所有stage的完成消息后，可以退出server / 错误可以需要重试
-     *
-     * @param stageInfos 每一个stage对应的信息
-     * @throws TTransportException
-     */
-    private void driverSchedule(Map<Integer, KubernetesStage> stageInfos) throws TTransportException {
-        // 将对应stage的信息保存到scheduler中，这些信息至少在workflow过程中不会停止
-        // 初始化stage
-        clicScheduler.initStages(stageInfos);
-        // 启动后台调度器
-        clicScheduler.start();
-        // 调度初始的那一些节点，存在的问题是，先调用rpc启动过程中，有可能服务还没启动
-        clicScheduler.handlerSourceStages();
-        // 启动主程序
-        serve();
-    }
-
-    // 启动driver常驻的服务，和各个平台进行交互
-    private void serve() throws TTransportException {
-        LOGGER.info("Driver thrift server start...");
-        TProcessor tprocessor = new SchedulerService.Processor<>(
-                new SchedulerServiceImpl(clicScheduler));
-        TServerSocket tServerSocket = new TServerSocket(
-                Integer.parseInt(configuration.getProperty("default-thrift-port")));
-        TThreadPoolServer.Args ttpsArgs = new TThreadPoolServer.Args(tServerSocket);
-        ttpsArgs.processor(tprocessor);
-        ttpsArgs.protocolFactory(new TBinaryProtocol.Factory());
-        TServer server = new TThreadPoolServer(ttpsArgs);
-        clicScheduler.settServer(server);
-        server.serve();
-        LOGGER.info("Driver thrift server stop!");
-    }
 
     /**
      * 不同的Stage会放到不同平台上处理，每个平台上的stage都需要独立的source和sink，

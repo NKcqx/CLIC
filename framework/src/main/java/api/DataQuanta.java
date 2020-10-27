@@ -4,6 +4,7 @@ import basic.operators.Operator;
 import basic.operators.OperatorFactory;
 
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.Objects;
 
@@ -15,7 +16,7 @@ import java.util.Objects;
  * @version 1.0
  * @since 2020/7/6 1:40 下午
  */
-public final class DataQuanta {
+public final class DataQuanta implements Serializable {
     private Operator operator;
 
     private DataQuanta(Operator operator) {

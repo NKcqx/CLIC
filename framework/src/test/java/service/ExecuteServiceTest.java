@@ -1,9 +1,6 @@
 package service;
 
 import base.TransParams;
-import org.apache.thrift.TException;
-import org.junit.Test;
-import service.client.ExecuteServiceClient;
 
 /**
  * 测试直接调用client

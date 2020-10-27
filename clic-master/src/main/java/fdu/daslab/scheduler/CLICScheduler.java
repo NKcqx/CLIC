@@ -1,25 +1,19 @@
-package driver;
+package fdu.daslab.scheduler;
 
-import base.TransParams;
-import driver.event.SchedulerEvent;
-import driver.event.StageCompletedEvent;
-import driver.event.StageDataPreparedEvent;
-import driver.event.StageStartedEvent;
+import fdu.daslab.scheduler.event.SchedulerEvent;
+import fdu.daslab.scheduler.event.StageCompletedEvent;
+import fdu.daslab.scheduler.event.StageDataPreparedEvent;
+import fdu.daslab.scheduler.event.StageStartedEvent;
 import fdu.daslab.backend.executor.model.KubernetesStage;
-import fdu.daslab.backend.executor.utils.KubernetesUtil;
-import org.apache.thrift.server.TServer;
+import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import service.client.ExecuteServiceClient;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 
 /**
- * CLIC的调度器，是一个事件循环
+ * CLIC的调度器，是一个事件循环，接收stage粒度的调度，此调度器不区分任务概念，做为最底层的执行引擎
  *
  * @author 唐志伟
  * @version 1.0
@@ -28,16 +22,15 @@ import java.util.Set;
 public class CLICScheduler extends EventLoop<SchedulerEvent> {
 
     private static Logger logger = LoggerFactory.getLogger(CLICScheduler.class);
+    // TODO: 以下信息暂时存储在内存中，未来可能统一收敛到etcd来存储state信息
     // 已经完成的stage
-    private Set<Integer> completedStages = new HashSet<>();
+    private Set<String> completedStages = new HashSet<>();
     // 现在正在运行的stage
-    private Set<Integer> runningStages = new HashSet<>();
+    private Set<String> runningStages = new HashSet<>();
     // 数据已经准备好的stage
-    private Set<Integer> dataPreparedStages = new HashSet<>();
+    private Set<String> dataPreparedStages = new HashSet<>();
     // 所有stage运行需要的信息
-    private Map<Integer, Stage> stageIdToStage = new HashMap<>();
-    // thrift的server，为了能够关闭，或许有其他办法
-    TServer tServer;
+    private Map<String, KubernetesStage> stageIdToStage = new HashMap<>();
 
     public CLICScheduler() {
         super("CLICScheduler");
@@ -61,9 +54,9 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
      * @param event 事件信息
      */
     private void handlerStartedEvent(StageStartedEvent event) {
-        Integer stageId = event.getStageId();
-        // 暂时不做任何处理，仅打出日志
+        String stageId = event.getStageId();
         logger.info(stageId + " started!");
+        stageIdToStage.get(stageId).setStartTime(new Date());
         runningStages.add(stageId);
     }
 
@@ -73,58 +66,59 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
      * @param event 事件信息
      */
     private void handlerCompletedEvent(StageCompletedEvent event) {
-        Integer stageId = event.getStageId();
-        // 暂时不做任何处理，仅打出日志
+        String stageId = event.getStageId();
         logger.info(stageId + " completed!");
+        stageIdToStage.get(stageId).setCompleteTime(new Date());
         completedStages.add(stageId);
         runningStages.remove(stageId);
         dataPreparedStages.remove(stageId);
         // 打印出当前正在运行的stage
-        for (Integer runningId : runningStages) {
+        for (String runningId : runningStages) {
             logger.info("Stage " + runningId + " is still running!");
-        }
-        // 所有的stage都运行成功，结束事件循环，并删除所有的pod
-        if (completedStages.size() == stageIdToStage.size() - 1) {
-            logger.info("All stages have completed!");
-            // 删除完成的pod
-            KubernetesUtil.deleteCompletedPods(completedStages);
-            // TODO: 删除所有的yaml文件
-            // 结束事件循环
-            stop();
-            // 结束driver
-            tServer.stop();
         }
     }
 
     private void handlerDataPreparedEvent(StageDataPreparedEvent event) {
-        Integer stageId = event.getStageId();
-        // 需要调度下一跳执行，单独启一个线程去执行，因为这个执行很可能会阻塞一段时间
+        String stageId = event.getStageId();
+        // 需要调度下一跳执行
         dataPreparedStages.add(stageId);
-        Set<Integer> nextStageIds = getNextStageIds(stageId); // 所有接下来要运行的stage
-        for (Integer nextStageId : nextStageIds) {
-            logger.info(stageId + " data prepared, start next ===> " + nextStageId);
-            new Thread(() -> {
-                // 调用对应stage的rpc执行调度
-                Stage stage = stageIdToStage.get(nextStageId);
-                ExecuteServiceClient stageClient = new ExecuteServiceClient(stage.host, stage.port);
-                try {
-                    // TODO: 未来参数可能都收敛到这里
-                    stageClient.executeStage(new TransParams());
-                } catch (Exception e) {
-                    logger.info("Call client of stage" + nextStageId + " fail: " + e.getMessage());
-                    // 需要重试
-                }
-
-            }, nextStageId + " listenThread").start();
+        for (String nextStageId : getNextStageIds(stageId)) { // 所有接下来要运行的stage
+            logger.info(stageId + " data prepared, start schedule next ===> " + nextStageId);
+            schedulerNextStage(nextStageId);
         }
     }
 
+    /**
+     * 根据一定的调度策略，调度该stage去执行，
+     *
+     * @param nextStageId 即将被调度的stageId
+     */
+    private void schedulerNextStage(String nextStageId) {
+        // 根据当前的任务情况，创建job
+
+        // 实际的调度策略
+//        new Thread(() -> {
+//            // TODO: 改成直接动态创建pod，而不是调用rpc ===> 存在问题，如何查看运行pod的状态？
+//            // 调用对应stage的rpc执行调度
+//            KubernetesStage stage = stageIdToStage.get(nextStageId);
+//            ExecuteServiceClient stageClient = new ExecuteServiceClient(stage.getHost(), stage.getPort());
+//            try {
+//                // TODO: 未来参数可能都收敛到这里
+//                stageClient.executeStage(new TransParams());
+//            } catch (Exception e) {
+//                logger.info("Call client of stage" + nextStageId + " fail: " + e.getMessage());
+//                // 需要重试
+//            }
+//
+//        }, nextStageId + " listenThread").start();
+    }
+
     // 获取该stage的下一个运行的stage，这些stage必须都已经完成，或者数据准备完成
-    private Set<Integer> getNextStageIds(Integer stageId) {
-        Set<Integer> result = new HashSet<>();
-        stageIdToStage.get(stageId).childStageIds.forEach(childStageId -> {
+    private Set<String> getNextStageIds(String stageId) {
+        Set<String> result = new HashSet<>();
+        stageIdToStage.get(stageId).getChildStageIds().forEach(childStageId -> {
             // 所有的stage都准备好了
-            if (stageIdToStage.get(childStageId).parentStageIds.stream().allMatch(
+            if (stageIdToStage.get(childStageId).getParentStageIds().stream().allMatch(
                     pid -> completedStages.contains(pid) || dataPreparedStages.contains(pid))) {
                 result.add(childStageId);
             }
@@ -132,42 +126,32 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
         return result;
     }
 
-    // physical上的stage，只包含启动各个平台的stage的运行需要的信息
-    public static class Stage {
-        Integer stageId;
-        String host;    // 运行的host，需要生成后在才会存在
-        Integer port;
-        Integer retryCounts; // 重试次数，重试最多三次
-        Set<Integer> parentStageIds = new HashSet<>();    // 所依赖的父stage
-        Set<Integer> childStageIds = new HashSet<>();     // 依赖本stage的child stage
-    }
-
-    // 运行侧的stage和这里的stage结构相同，只是为了解耦和划分业务的方便才把Stage结构放到这里
-    public void initStages(Map<Integer, KubernetesStage> stageInfos) {
-        stageInfos.forEach((stageId, stageInfo) -> {
-            Stage stage = new Stage();
-            stage.stageId = stageId;
-            stage.host = stageInfo.getHost();
-            stage.port = stageInfo.getPort();
-            stage.retryCounts = 0;
-            stage.parentStageIds = stageInfo.getParentStageIds();
-            stage.childStageIds = stageInfo.getChildStageIds();
-            stageIdToStage.put(stageId, stage);
+    /**
+     * 处理新过来的所有的stages
+     *
+     * @param stageMap 所有的stage
+     */
+    public void handlerNewStageList(Map<String, KubernetesStage> stageMap) {
+        // 找到初始的stage，其余的stage全部加入到待处理的队列中
+        stageIdToStage.putAll(stageMap);
+        stageMap.forEach((stageId, stage) -> {
+            // 没有依赖的stage为初始的stage，先进行调度
+            if (CollectionUtils.isEmpty(stage.getParentStageIds())) {
+                logger.info("source stage" + stageId + " will be scheduled");
+                schedulerNextStage(stageId);
+            }
         });
+
     }
 
-    // 启动初始的节点
-    public void handlerSourceStages() {
-        // 所有stage中没有parent依赖的stage，使用parentId=0标识
-        try {
-            post(new StageDataPreparedEvent(0));
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void settServer(TServer tServer) {
-        this.tServer = tServer;
+    /**
+     * 查看stage的实时的状态，主要是对外部接口访问的需要
+     *
+     * @param stageId stage的唯一标识
+     * @return stage的信息
+     */
+    public KubernetesStage getStageInfo(String stageId) {
+        return stageIdToStage.get(stageId);
     }
 
 }

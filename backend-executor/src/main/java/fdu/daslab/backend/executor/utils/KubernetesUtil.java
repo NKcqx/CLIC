@@ -68,18 +68,18 @@ public class KubernetesUtil {
         io.kubernetes.client.openapi.Configuration.setDefaultApiClient(client);
     }
 
-    /**
-     * 根据argo的文件，生成同时执行的一系列pod，同时保存其物理上的信息（ip, port）并返回
-     *
-     * @param argoPath argo的Dag路径
-     * @return stageId和stageInfo之间的对应关系
-     */
-    public static Map<Integer, KubernetesStage> createStagePodAndGetStageInfo(String argoPath) {
-        // 设置spec信息和依赖信息 TODO：半依赖时如何设置
-        Map<Integer, KubernetesStage> stagePods = YamlUtil.adaptArgoYamlToKubernetes(argoPath);
-        // 设置ip和port等物理信息，并同时提交pod的生成
-        return submitToKubernetes(stagePods);
-    }
+//    /**
+//     * 根据argo的文件，生成同时执行的一系列pod，同时保存其物理上的信息（ip, port）并返回
+//     *
+//     * @param argoPath argo的Dag路径
+//     * @return stageId和stageInfo之间的对应关系
+//     */
+//    public static Map<Integer, KubernetesStage> createStagePodAndGetStageInfo(String argoPath) {
+//        // 设置spec信息和依赖信息 TODO：半依赖时如何设置
+//        Map<Integer, KubernetesStage> stagePods = YamlUtil.adaptArgoYamlToKubernetes(argoPath);
+//        // 设置ip和port等物理信息，并同时提交pod的生成
+//        return submitToKubernetes(stagePods);
+//    }
 
 //    public static void main(String[] args) {
 //        createStagePodAndGetStageInfo("/Users/edward/Code/Lab/data/job-1416858673428874.yml");
@@ -117,23 +117,23 @@ public class KubernetesUtil {
         return stagePods;
     }
 
-    /**
-     * 删除所有已经完成的pod
-     *
-     * @param completedStageIds 已经完成的stage的id列表
-     */
-    public static void deleteCompletedPods(Set<Integer> completedStageIds) {
-        CoreV1Api api = new CoreV1Api();
-        completedStageIds.forEach(stageId -> {
-            try {
-                api.deleteNamespacedPod(podPrefix + stageId, defaultNamespaceName, null,
-                        null, null, null, null, null);
-            } catch (Exception e) {
-                // 此api有bug，但是仍然能够成功删除，暂时忽略错误
-                LOGGER.info(e.getMessage());
-            }
-        });
-    }
+//    /**
+//     * 删除所有已经完成的pod
+//     *
+//     * @param completedStageIds 已经完成的stage的id列表
+//     */
+//    public static void deleteCompletedPods(Set<Integer> completedStageIds) {
+//        CoreV1Api api = new CoreV1Api();
+//        completedStageIds.forEach(stageId -> {
+//            try {
+//                api.deleteNamespacedPod(podPrefix + stageId, defaultNamespaceName, null,
+//                        null, null, null, null, null);
+//            } catch (Exception e) {
+//                // 此api有bug，但是仍然能够成功删除，暂时忽略错误
+//                LOGGER.info(e.getMessage());
+//            }
+//        });
+//    }
 
     /**
      * 按照默认方式去创建pod，下面方式都写死，为了可能收敛到某一个base-template中
@@ -144,11 +144,11 @@ public class KubernetesUtil {
      * @param containerArgs  image的参数
      * @return V1Pod
      */
-    public static V1Pod createV1PodByDefault(Integer stageId, String containerName,
+    public static V1Pod createV1PodByDefault(String stageId, String containerName,
                                              String containerImage, String containerArgs) {
         return new V1PodBuilder()
                 .withNewMetadata()
-                .withName(podPrefix + stageId)
+                .withName(stageId)
                 .withNamespace(defaultNamespaceName)
                 .endMetadata()
                 .withNewSpec()
@@ -163,6 +163,12 @@ public class KubernetesUtil {
                 .withValueFrom(new V1EnvVarSourceBuilder()
                     .withFieldRef(new V1ObjectFieldSelectorBuilder()
                     .withFieldPath("status.podIP").build()).build())
+                .endEnv()
+                .addNewEnv()
+                .withName("POD_NAME")
+                .withValueFrom(new V1EnvVarSourceBuilder()
+                    .withFieldRef(new V1ObjectFieldSelectorBuilder()
+                    .withFieldPath("metadata.name").build()).build())
                 .endEnv()
                 .addNewVolumeMount()
                 .withName("nfs-volume")
@@ -184,7 +190,7 @@ public class KubernetesUtil {
      * @param stageId stage的id
      * @return 参数的字符串，格式是 --arg1=xxx --arg2=xxx
      */
-    public static String enrichContainerArgs(Integer stageId) {
+    public static String enrichContainerArgs(String stageId) {
         CoreV1Api api = new CoreV1Api();
         StringBuilder result = new StringBuilder();
         // 获取driver的ip
@@ -198,7 +204,7 @@ public class KubernetesUtil {
         // driverPort 和 thriftPort 暂时都使用统一的默认值
         assert driverHost != null;
         Map<String, String> argsMap = ImmutableMap.of(
-                "--stageId", String.valueOf(stageId),
+                "--stageId", stageId,
                 "--port", String.valueOf(defaultThriftPort),
                 "--driverHost", driverHost,
                 "--driverPort", String.valueOf(defaultThriftPort));

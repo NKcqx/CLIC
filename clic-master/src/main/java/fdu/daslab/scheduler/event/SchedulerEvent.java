@@ -1,4 +1,4 @@
-package driver.event;
+package fdu.daslab.scheduler.event;
 
 /**
  * 调度事件的标记类
@@ -8,13 +8,13 @@ package driver.event;
  * @since 2020/9/24 2:36 PM
  */
 public abstract class SchedulerEvent {
-    private Integer stageId; // stageId
+    private String stageId; // stageId
 
-    public SchedulerEvent(Integer stageId) {
+    public SchedulerEvent(String stageId) {
         this.stageId = stageId;
     }
 
-    public Integer getStageId() {
+    public String getStageId() {
         return stageId;
     }
 }
