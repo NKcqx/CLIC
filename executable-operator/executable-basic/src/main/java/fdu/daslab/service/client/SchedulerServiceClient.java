@@ -1,8 +1,9 @@
 package fdu.daslab.executable.service.client;
 
-import fdu.daslab.executable.service.SchedulerService;
+import fdu.daslab.executable.thrift.master.SchedulerService;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.apache.thrift.protocol.TMultiplexedProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
@@ -10,7 +11,7 @@ import org.apache.thrift.transport.TTransport;
 import java.util.HashMap;
 
 /**
- * driver调用的client
+ * 调用master所需要的client
  *
  * @author 唐志伟
  * @version 1.0
@@ -22,12 +23,14 @@ public class SchedulerServiceClient {
     private SchedulerService.Client client;
     private TTransport transport;
     // 当前client的ID标识
-    private Integer stageId;
+    private String stageId;
 
-    public SchedulerServiceClient(Integer stageId, String driverHost, Integer driverPort) {
-        this.transport = new TSocket(driverHost, driverPort);
+    public SchedulerServiceClient(String stageId, String masterHost, Integer masterPort) {
+        this.transport = new TSocket(masterHost, masterPort);
         TProtocol protocol = new TBinaryProtocol(transport);
-        this.client = new SchedulerService.Client(protocol);
+        // 由于多个服务绑定一个端口，需要使用multiplex的协议
+        TMultiplexedProtocol tMultiplexedProtocol = new TMultiplexedProtocol(protocol, "SchedulerService");
+        this.client = new SchedulerService.Client(tMultiplexedProtocol);
         this.stageId = stageId;
     }
 
