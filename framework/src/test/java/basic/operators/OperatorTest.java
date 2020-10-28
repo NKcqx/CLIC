@@ -1,14 +1,15 @@
 package basic.operators;
 
 import basic.Param;
+import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.function.ThrowingRunnable;
+import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.*;
 /**
  * Testing for Operator.java
  *
- * @author 刘丰艺
+ * @author 刘丰艺, 陈齐翔
  * @version 1.0
  * @since 2020/7/10 0:52
  */
@@ -24,13 +25,14 @@ public class OperatorTest {
 
     private String configFilePath;
     private Operator spyOpt;
+    private Operator sortOpt;
     private Operator opt;
 
     @Before
     public void before() throws Exception {
         configFilePath = "Operator/Filter/conf/FilterOperator.xml";
         opt = OperatorFactory.createOperatorFromFile(configFilePath);
-
+        sortOpt = OperatorFactory.createOperatorFromFile("Operator/Sort/conf/SortOperator.xml");
         spyOpt = spy(OperatorFactory.createOperatorFromFile(configFilePath));
         spyOpt.setParamValue("udfName", "a name");
     }
@@ -96,7 +98,7 @@ public class OperatorTest {
 
         List<String> expectedInputKeys = new ArrayList<>(Arrays.asList("data", "inputKey", "inputKey2"));
         for (Map.Entry<String, Param> entry : spyOpt.getInputDataList().entrySet()) {
-           assertTrue(expectedInputKeys.contains(entry.getValue().getName()));
+            assertTrue(expectedInputKeys.contains(entry.getValue().getName()));
         }
     }
 
@@ -129,5 +131,11 @@ public class OperatorTest {
             assertTrue(expectedParamKeys.contains(entry.getValue().getName()));
             assertTrue(expectedValues.contains(entry.getValue().getData()));
         }
+    }
+
+    @Test
+    public void setParamValueTest() {
+        sortOpt.setParamValue("partitionNum", "5");
+        assertThrows(NoSuchElementException.class, () -> sortOpt.setParamValue("non-exist-param", null));
     }
 }

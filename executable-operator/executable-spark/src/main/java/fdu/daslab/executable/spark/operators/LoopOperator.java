@@ -29,6 +29,7 @@ public class LoopOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
                         Map<String, String> params) throws Exception {
         super("LoopOperator", id, inputKeys, outputKeys, params);
         realConnections = new ArrayList<>();
+        triggerConnections = new ArrayList<>();
         try {
             HashMap<String, String> nextIterationParams = new HashMap<>();
             nextIterationParams.put("loopVarUpdateName", this.params.get("loopVarUpdateName"));
@@ -64,7 +65,6 @@ public class LoopOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
         Pair<List<OperatorBase>, List<OperatorBase>> loopHeadsAndEnds =
                 ArgsUtil.parseArgs(bodyYaml, new SparkOperatorFactory());
 
-        this.triggerConnections = new ArrayList<>();
         this.startLoopBody(loopHeadsAndEnds.getValue0().get(0));
         this.endLoopBody(loopHeadsAndEnds.getValue1().get(0));
     }

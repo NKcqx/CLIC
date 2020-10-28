@@ -15,11 +15,35 @@ public class OperatorEntity implements Serializable {
     String language;
     Double cost;
     List<Param> params;
+
     public OperatorEntity(String entityID, String language, Double cost, List<Param> params) {
         this.entityID = entityID;
         this.language = language;
         this.cost = cost;
         this.params = params;
+    }
+
+    public List<Param> getParams() {
+        return this.params;
+    }
+
+    public boolean hasParam(String key) {
+        for (Param param : params) {
+            if (param.getName().equals(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean setParam(String key, String value) {
+        for (Param param : params) {
+            if (param.getName().equals(key)) {
+                param.setValue(value);
+                return true;
+            }
+        }
+        return false;
     }
 
     public String getEntityID() {
