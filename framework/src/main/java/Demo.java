@@ -23,29 +23,29 @@ public class Demo {
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
                 put("inputPath", "/Users/jason/Desktop/test.csv");
-            }});
+            }}).withTargetPlatform("spark");
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
                 put("udfName", "filterFunc");
-            }});
+            }}).withTargetPlatform("spark");
 
             DataQuanta mapNode = DataQuanta.createInstance("map", new HashMap<String, String>() {{
                 put("udfName", "mapFunc");
-            }});
+            }}).withTargetPlatform("spark");
 
             DataQuanta reduceNode = DataQuanta.createInstance("reduce-by-key", new HashMap<String, String>() {{
                 put("udfName", "reduceFunc");
                 put("keyName", "reduceKey");
-            }});
+            }}).withTargetPlatform("spark");
 
             DataQuanta sortNode = DataQuanta.createInstance("sort", new HashMap<String, String>() {{
                 put("udfName", "sortFunc");
-            }});
+            }}).withTargetPlatform("spark");
 
             // 最终结果的输出路径   例如该map的value值是本项目output.csv的绝对路径
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
                 put("outputPath", "/tmp/clic_output/output.csv"); // 具体resources的路径通过配置文件获得
-            }});
+            }}).withTargetPlatform("spark");
 
             planBuilder.addVertex(sourceNode);
             planBuilder.addVertex(filterNode);
