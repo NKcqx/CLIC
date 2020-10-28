@@ -1,13 +1,15 @@
 package fdu.daslab.scheduler;
 
 import fdu.daslab.backend.executor.model.KubernetesStage;
-import fdu.daslab.backend.executor.utils.YamlUtil;
+import fdu.daslab.backend.executor.utils.KubernetesUtil;
 import fdu.daslab.scheduler.event.TaskEvent;
 import fdu.daslab.scheduler.event.TaskListAllEvent;
 import fdu.daslab.scheduler.event.TaskSubmitEvent;
 import fdu.daslab.scheduler.model.Task;
 import fdu.daslab.scheduler.model.TaskStatus;
 import org.apache.commons.lang3.RandomStringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class TaskScheduler extends EventLoop<TaskEvent> {
 
     private CLICScheduler clicScheduler;
+    private static Logger logger = LoggerFactory.getLogger(TaskScheduler.class);
 
     // 保存当前的所有plan
     private Map<String, Task> taskList = new HashMap<>();
@@ -49,9 +52,11 @@ public class TaskScheduler extends EventLoop<TaskEvent> {
      */
     private void handlerEventSubmit(TaskSubmitEvent event) {
         // 全局唯一的planName
-        String uniquePlanName = event.getPlanName() + RandomStringUtils.randomAlphabetic(6);
+        String uniquePlanName = event.getPlanName() + "-"
+                + RandomStringUtils.randomAlphabetic(8).toLowerCase();
+        logger.info("Receive plan: " + uniquePlanName + " from " + event.getPlanDagPath());
         // 首先会读取plan中的dag，然后将其切分为不同的stage，并推送给下游处理
-        final Map<String, KubernetesStage> stages = YamlUtil.adaptArgoYamlToKubernetes(
+        final Map<String, KubernetesStage> stages = KubernetesUtil.adaptArgoYamlToKubernetes(
                 uniquePlanName, event.getPlanDagPath());
         // 保存当前task
         List<String> stageIdList = stages.values().stream()

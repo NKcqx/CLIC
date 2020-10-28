@@ -1,5 +1,6 @@
 package fdu.daslab.scheduler;
 
+import fdu.daslab.backend.executor.utils.KubernetesUtil;
 import fdu.daslab.scheduler.event.SchedulerEvent;
 import fdu.daslab.scheduler.event.StageCompletedEvent;
 import fdu.daslab.scheduler.event.StageDataPreparedEvent;
@@ -95,22 +96,9 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
      */
     private void schedulerNextStage(String nextStageId) {
         // 根据当前的任务情况，创建job
-
-        // 实际的调度策略
-//        new Thread(() -> {
-//            // TODO: 改成直接动态创建pod，而不是调用rpc ===> 存在问题，如何查看运行pod的状态？
-//            // 调用对应stage的rpc执行调度
-//            KubernetesStage stage = stageIdToStage.get(nextStageId);
-//            ExecuteServiceClient stageClient = new ExecuteServiceClient(stage.getHost(), stage.getPort());
-//            try {
-//                // TODO: 未来参数可能都收敛到这里
-//                stageClient.executeStage(new TransParams());
-//            } catch (Exception e) {
-//                logger.info("Call client of stage" + nextStageId + " fail: " + e.getMessage());
-//                // 需要重试
-//            }
-//
-//        }, nextStageId + " listenThread").start();
+        KubernetesStage stage = stageIdToStage.get(nextStageId);
+        // 暂时直接创建job TODO: 未来可能采用一定的调度策略，从stage的等待队列中选择合适的pod执行
+        KubernetesUtil.submitJobStage(stage.getJobInfo());
     }
 
     // 获取该stage的下一个运行的stage，这些stage必须都已经完成，或者数据准备完成

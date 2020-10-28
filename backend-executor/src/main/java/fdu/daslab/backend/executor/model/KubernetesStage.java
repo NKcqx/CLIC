@@ -1,6 +1,6 @@
 package fdu.daslab.backend.executor.model;
 
-import io.kubernetes.client.openapi.models.V1Pod;
+import io.kubernetes.client.openapi.models.V1Job;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -17,12 +17,12 @@ public class KubernetesStage {
 
     private String stageId; // 全局唯一的stageId
     private String platformName; // 对应的平台
-    private String host;    // 运行的host，需要生成后在才会存在
-    private Integer port; // 运行的port，指的是thrift的port，用于不同服务交互
+//    private String host;    // 运行的host，需要生成后在才会存在
+//    private Integer port; // 运行的port，指的是thrift的port，用于不同服务交互
     private Integer retryCounts; // 重试次数，重试最多三次
     private Set<String> parentStageIds = new HashSet<>();    // 所依赖的父stage
     private Set<String> childStageIds = new HashSet<>();     // 依赖本stage的child stage
-    private V1Pod podInfo; // 实际的pod的定义信息
+    private V1Job jobInfo; // 实际的job的定义信息
     private Date startTime;  // stage的开始时间
     private Date completeTime; // stage的完成时间
 
@@ -54,12 +54,12 @@ public class KubernetesStage {
         this.platformName = platformName;
     }
 
-    public V1Pod getPodInfo() {
-        return podInfo;
+    public V1Job getJobInfo() {
+        return jobInfo;
     }
 
-    public void setPodInfo(V1Pod podInfo) {
-        this.podInfo = podInfo;
+    public void setJobInfo(V1Job jobInfo) {
+        this.jobInfo = jobInfo;
     }
 
     public String getStageId() {
@@ -70,21 +70,21 @@ public class KubernetesStage {
         this.stageId = stageId;
     }
 
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    public Integer getPort() {
-        return port;
-    }
-
-    public void setPort(Integer port) {
-        this.port = port;
-    }
+//    public String getHost() {
+//        return host;
+//    }
+//
+//    public void setHost(String host) {
+//        this.host = host;
+//    }
+//
+//    public Integer getPort() {
+//        return port;
+//    }
+//
+//    public void setPort(Integer port) {
+//        this.port = port;
+//    }
 
     public Integer getRetryCounts() {
         return retryCounts;

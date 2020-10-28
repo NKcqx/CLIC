@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: clic-master
+  namespace: argo
+spec:
+  containers:
+    - name: master-template
+      image: clic-master:v0
+      imagePullPolicy: IfNotPresent
+      command:
+        - /bin/sh
+        - -c
+      args:
+        - java -jar clic-master.jar
+      volumeMounts:
+        - name: nfs-volume
+          mountPath: /data
+  volumes:
+    - name: nfs-volume
+      persistentVolumeClaim:
+        claimName: pvc-nfs
