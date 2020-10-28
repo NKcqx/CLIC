@@ -78,7 +78,7 @@ public class Operator implements Visitable, Serializable {
         if (this.entities.containsKey(entityId)) {
             this.selectedEntity = this.entities.get(entityId);
             // 加载平台特有的参数
-            for (Param param : this.selectedEntity.params) {
+            for (Param param : this.selectedEntity.getParams()) {
                 this.addParameter(param);
             }
         } else {
@@ -149,16 +149,28 @@ public class Operator implements Visitable, Serializable {
 
     /**
      * 设置输入参数的值，用于某些参数没有默认值，需在代码中设置时使用
+     * 当在Operator默认的参数列表没有找到指定参数名时，再去其所有平台的参数列表中查找
+     * （注意：若多个平台的参数有重名时，每个重名参数的值会被更新）
      *
      * @param key   Param参数的name字段
      * @param value 参数对应的值 todo 类型泛化
+     * @throws NoSuchElementException 在默认参数列表和平台内的专用参数列表中都没找到对应的参数名时抛出
      */
     public void setParamValue(String key, String value) {
         if (this.inputParamList.containsKey(key)) {
             this.inputParamList.get(key).setValue(value);
         } else {
-            throw new NoSuchElementException(
-                    String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
+            boolean isMatch = false;
+            for (OperatorEntity entity : this.entities.values()) { // O(N^2)的时间复杂度
+                if (entity.hasParam(key)) {
+                    entity.setParam(key, value);
+                    isMatch = true;
+                }
+            }
+            if (!isMatch) {
+                throw new NoSuchElementException(
+                        String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
+            }
         }
     }
 

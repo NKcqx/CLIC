@@ -108,13 +108,13 @@ public class DataQuantaTest {
 
     @Test
     public void testThrowExceptionWhenSelectPlatform(){
-        DataQuanta dq3 = null;
         try {
-            dq3 = DataQuanta.createInstance("filter", null);
+            DataQuanta dq3 = DataQuanta.createInstance("filter", null);
+            assertThrows(NoSuchElementException.class, ()->dq3.withTargetPlatform("invalid-platform"));
         } catch (Exception e) {
             e.printStackTrace();
         }
-        thrown.expect(NoSuchElementException.class);
-        dq3.withTargetPlatform("invalid-platform");
+
+
     }
 }

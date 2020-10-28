@@ -147,7 +147,7 @@ public class LoopOperatorTest {
     @Test
     public void testConstructLoopByHand() {
         try {
-            OperatorBase mapOperator = new SparkOperatorFactory().createOperator(
+            MapOperator mapOperator = (MapOperator) new SparkOperatorFactory().createOperator(
                     "MapOperator",
                     "id",
                     Collections.singletonList("data"),
@@ -157,7 +157,7 @@ public class LoopOperatorTest {
                     }}
             );
 
-            OperatorBase mapOperator2 = new SparkOperatorFactory().createOperator(
+            MapOperator mapOperator2 = (MapOperator) new SparkOperatorFactory().createOperator(
                     "MapOperator",
                     "id",
                     Collections.singletonList("data"),
@@ -194,7 +194,7 @@ public class LoopOperatorTest {
             loopOperator.endLoopBody(mapOperator2);
             // 此时应该能拿到end的下一跳（nextIteration）
             Assert.assertFalse(mapOperator2.getOutputConnections().isEmpty());
-            Object nextIteration = mapOperator2.getOutputConnections().get(0);
+            Object nextIteration = (mapOperator2).getOutputConnections().get(0).getTargetOpt();
             Assert.assertTrue(nextIteration instanceof NextIteration);
 
         } catch (Exception e) {
