@@ -19,4 +19,7 @@ service SchedulerService {
 service TaskService {
     // 异步的，直接提交 TODO: 未来driver可能需要常驻后台和master进行交互
     void submitPlan(1: string planName, 2: string planDagPath);
+
+    // 查看所有任务的状态
+    list<string> listAllTask();
 }

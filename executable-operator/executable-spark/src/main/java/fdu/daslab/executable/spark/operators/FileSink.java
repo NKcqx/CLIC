@@ -79,7 +79,7 @@ public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<
         }
         try {
             // 数据准备好
-            this.getDriverClient().postDataPrepared();
+            this.getMasterClient().postDataPrepared();
         } catch (TException e) {
             e.printStackTrace();
         }

@@ -35,7 +35,7 @@ public class SocketSink extends OperatorBase<Stream<List<String>>, Stream<List<S
     public void execute(ParamsModel inputArgs,
                         ResultModel<Stream<List<String>>> result) {
         try {
-            this.getDriverClient().postDataPrepared();
+            this.getMasterClient().postDataPrepared();
             // 接下来发送数据
             ServerSocket server = new ServerSocket(Integer.parseInt(this.params.get("socketPort")));
             // 阻塞，等待客户端连接上来就发送数据

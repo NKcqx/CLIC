@@ -36,7 +36,7 @@ public class SocketSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List
         // 先发送通知告诉下一跳可以准备接收数据了，然后不同partition分别发送数据
         // TODO: 1.是否需要控制数据的发送顺序 2.是否所有数据都发送到一个节点？
         try {
-            this.getDriverClient().postDataPrepared();
+            this.getMasterClient().postDataPrepared();
             // 接下来发送数据
             ServerSocket server = new ServerSocket(Integer.parseInt(this.params.get("socketPort")));
             // 阻塞，等待客户端连接上来就发送数据

@@ -6,13 +6,13 @@ metadata:
 spec:
   containers:
     - name: master-template
-      image: clic-master:v0
+      image: java-env:v0
       imagePullPolicy: IfNotPresent
       command:
         - /bin/sh
         - -c
       args:
-        - java -jar clic-master.jar
+        - java -jar /data/jars/clic-master.jar
       volumeMounts:
         - name: nfs-volume
           mountPath: /data

@@ -39,7 +39,12 @@ public abstract class EventLoop<E> {
                     // 从事件队列中依次取出执行
                     final E event = eventQueue.take();
                     // 处理event
-                    onReceive(event);
+                    try {
+                        onReceive(event);
+                    } catch (Exception  e) {
+                        // 某个事件的执行不能影响其他的事件
+                        e.printStackTrace();
+                    }
                 }
             } catch (Exception e) {
                 logger.error("event error: " + e.getMessage());

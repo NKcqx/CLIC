@@ -80,6 +80,5 @@
         <module>executable-operator</module>
         <module>backend-executor</module>
         <module>clic-master</module>
-        <module>clic-master</module>
     </modules>
 </project>

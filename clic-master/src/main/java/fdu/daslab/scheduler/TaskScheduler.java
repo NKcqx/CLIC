@@ -3,7 +3,6 @@ package fdu.daslab.scheduler;
 import fdu.daslab.backend.executor.model.KubernetesStage;
 import fdu.daslab.backend.executor.utils.KubernetesUtil;
 import fdu.daslab.scheduler.event.TaskEvent;
-import fdu.daslab.scheduler.event.TaskListAllEvent;
 import fdu.daslab.scheduler.event.TaskSubmitEvent;
 import fdu.daslab.scheduler.model.Task;
 import fdu.daslab.scheduler.model.TaskStatus;
@@ -39,9 +38,6 @@ public class TaskScheduler extends EventLoop<TaskEvent> {
         if (event instanceof TaskSubmitEvent) {
             // 任务提交
             handlerEventSubmit((TaskSubmitEvent) event);
-        } else if (event instanceof TaskListAllEvent) {
-            // 查询所有正在运行的任务的状态
-            handlerListAllEvent();
         }
     }
 
@@ -70,13 +66,17 @@ public class TaskScheduler extends EventLoop<TaskEvent> {
     /**
      * 查看所有任务的状态
      */
-    private void handlerListAllEvent() {
+    public List<String> handlerListAllEvent() {
         // 对于每一个任务，如果没有完成，则查看是否所有的stage都完成了，并更新状态
+        List<String> printData = new ArrayList<>();
         taskList.forEach((planName, task) -> {
             if (task.getTaskStatus() != TaskStatus.COMPLETED) {
                 updateTask(task);
             }
+            printData.add(task.getPlanName() + "-" + task.getStartTime());
+            // TODO: others
         });
+        return printData;
     }
 
     /**
