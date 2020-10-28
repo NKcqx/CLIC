@@ -41,12 +41,7 @@ public class ExecutionGenerationVisitor extends Visitor {
             visited.add(opt);
             // 拿到所有的entities并遍历找到cost最小的
             OperatorEntity bestOperatorEntity = Collections.min(
-                    opt.getEntities().values(), new Comparator<OperatorEntity>() {
-                        @Override
-                        public int compare(OperatorEntity o1, OperatorEntity o2) {
-                            return o1.getCost().compareTo(o2.getCost());
-                        }
-                    });
+                    opt.getEntities().values(), Comparator.comparing(OperatorEntity::getCost));
             try {
                 // 为opt选择最佳的entity
                 opt.selectEntity(bestOperatorEntity.getEntityID());
@@ -60,11 +55,7 @@ public class ExecutionGenerationVisitor extends Visitor {
                 e.printStackTrace();
             }
         }
-//        if (planTraversal.hasNextOpt()) {
-//            Operator nextOpt = planTraversal.nextOpt();
-//            planTraversal.addSuccessor(nextOpt);
-//            nextOpt.acceptVisitor(this);
-//        }
+
     }
 
     private boolean isVisited(Operator opt) {

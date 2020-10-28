@@ -1,6 +1,5 @@
 package fdu.daslab.backend.executor.model;
 
-//import fdu.daslab.backend.executor.utils.HttpUtil;
 import fdu.daslab.backend.executor.utils.YamlUtil;
 
 import java.util.List;
@@ -31,7 +30,7 @@ public class Workflow {
         this.imageTemplateList = this.adapter.generateTemplateByConfig();
     }
 
-
+    // 仅返回路径
     public String execute() {
         // 1.组装DAG成一个yaml文件，并保存下本地
         YamlUtil yamlUtil = new YamlUtil();
@@ -39,7 +38,5 @@ public class Workflow {
 //        // 2.目前的yaml只用于描述dag，不作为实际运行需要，实际运行依赖于k8s，并返回每一个pod的ip:port和对应的依赖关系
 //        return KubernetesUtil.createStagePodAndGetStageInfo(yamlPath);
 
-        // 2.调用argo server api提交post请求
-//        HttpUtil.submitPipelineByYaml(path);
     }
 }

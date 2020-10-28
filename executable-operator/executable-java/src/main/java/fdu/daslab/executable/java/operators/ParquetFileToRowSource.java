@@ -14,6 +14,7 @@ import org.apache.parquet.hadoop.example.GroupReadSupport;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.GroupType;
 import org.apache.parquet.schema.MessageType;
+
 import java.util.*;
 import java.util.stream.Stream;
 
@@ -24,10 +25,13 @@ import java.util.stream.Stream;
  */
 
 @Parameters(separators = "=")
-public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
+public class ParquetFileToRowSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
-    public ParquetFileSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("ParquetFileSource", id, inputKeys, outputKeys, params);
+    public ParquetFileToRowSource(String id,
+                                  List<String> inputKeys,
+                                  List<String> outputKeys,
+                                  Map<String, String> params) {
+        super("ParquetFileToRowSource", id, inputKeys, outputKeys, params);
     }
 
     @Override
@@ -61,12 +65,13 @@ public class ParquetFileSource extends OperatorBase<Stream<List<String>>, Stream
             e.printStackTrace();
         }
     }
+
     /**
-     * @param group group数据
-     * @param groupType  类型信息
+     * @param group     group数据
+     * @param groupType 类型信息
      * @return 将group行取后转化的list
      */
-    private List<String>  parseGroup(Group group, GroupType groupType) {
+    private List<String> parseGroup(Group group, GroupType groupType) {
         List<String> res = new LinkedList<String>();
         int fieldSize = groupType.getFieldCount();
         for (int j = 0; j < fieldSize; j++) {

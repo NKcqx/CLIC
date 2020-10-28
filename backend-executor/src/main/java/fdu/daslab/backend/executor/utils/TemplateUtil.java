@@ -7,6 +7,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.io.*;
 import java.util.*;
 
 /**
@@ -97,7 +98,11 @@ public class TemplateUtil {
 
             // 写入文件
             YamlUtil yamlUtil = new YamlUtil();
-            YamlUtil.writeYaml(templatePath, templateMap);
+            try {
+                yamlUtil.writeYaml(new OutputStreamWriter((new FileOutputStream(templatePath))), templateMap);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
         }
         return templateName;
     }

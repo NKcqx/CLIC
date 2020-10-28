@@ -54,6 +54,36 @@
     </pair>
 
     <pair>
+        <name>sparkSql</name>
+        <platform>
+            <docker-image>executable/spark:v1</docker-image>
+
+            <execution>
+                <environment>/bin/sh -c</environment> <!--  -c: 从string中读取命令  -->
+                <executor>/spark-runner/bin/spark-submit</executor>
+                <args>
+                    <!-- 平台级运行时参数 由用户或系统填入 -->
+                    <!-- 按序读取、写入 -->
+                    <arg name="--master" required="true" with-name="true">spark://sparkmcores-master-svc:7077</arg>
+                    <arg name="--deploy-mode" required="true" with-name="true">cluster</arg>
+                    <arg name="--name" required="true" with-name="true">spark-running</arg>
+                    <arg name="--class" required="true" with-name="true">fdu.daslab.executable.sparksql.ExecuteSparkSQLOperator</arg>
+                    <arg name="--conf=spark.executor.instance" required="true" with-name="true">5</arg>
+                    <arg name="--conf=spark.kubernetes.container.image" required="true" with-name="true">spark:v0</arg>
+                    <arg name="--conf=spark.kubernetes.namespace" required="true" with-name="true">argo</arg>
+                    <arg name="--conf=spark.kubernetes.authenticate.driver.serviceAccountName" required="true" with-name="true">spark</arg>
+                    <arg name="package" required="true" with-name="false">/data/executable-spark-sql-new.jar</arg>
+                </args>
+            </execution>
+
+            <!-- 平台自定义属性，framework仅负责传递，不进去看都有什么 -->
+            <properties>
+                <property name="master">local[2]</property>
+            </properties>
+        </platform>
+    </pair>
+
+    <pair>
         <!-- 可以是随便一个C++的平台，以CMake构建的MPI工程为例 -->
         <name>alchemist</name>
         <platform>

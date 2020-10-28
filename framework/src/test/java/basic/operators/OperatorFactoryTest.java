@@ -22,16 +22,17 @@ public class OperatorFactoryTest {
     @Before
     public void before() throws Exception {
         configuration = new Configuration();
-    }
-
-    @Test
-    public void initMappingTest() throws Exception {
         OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
     }
+
+//    @Before
+//    public void initMappingTest() throws Exception {
+//        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
+//    }
 
     @Test
     public void getTemplateTest() throws Exception {
-        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
+//        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
 
         // 通过java反射访问私有静态方法
         Method getTemplateMethod = Class.forName("basic.operators.OperatorFactory")
@@ -42,7 +43,7 @@ public class OperatorFactoryTest {
 
         template = (String) getTemplateMethod.invoke(OperatorFactory.class, "filter");
         assertEquals(template, "Operator/Filter/conf/FilterOperator.xml");
-        template = (String) getTemplateMethod.invoke(OperatorFactory.class, "reducebykey");
+        template = (String) getTemplateMethod.invoke(OperatorFactory.class, "reduce-by-key");
         assertEquals(template, "Operator/ReduceByKey/conf/ReduceByKeyOperator.xml");
         template = (String) getTemplateMethod.invoke(OperatorFactory.class, "sink");
         assertEquals(template, "Operator/Sink/conf/SinkOperator.xml");
@@ -62,7 +63,7 @@ public class OperatorFactoryTest {
 
     @Test
     public void createOperatorTest() throws Exception {
-        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
+//        OperatorFactory.initMapping(configuration.getProperty("operator-mapping-file"));
 
         Operator opt = OperatorFactory.createOperator("filter");
         Operator spyOpt = spy(opt);

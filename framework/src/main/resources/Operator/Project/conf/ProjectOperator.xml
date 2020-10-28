@@ -3,13 +3,14 @@
 
     <platforms>
         <platform ID="java">
-            <path>Source/conf/JavaSourceOperator.xml</path>
+            <path>Operator/Source/conf/JavaSourceOperator.xml</path>
         </platform>
 
         <platform ID="spark">
-            <path>Source/conf/SparkSourceOperator.xml</path>
+            <path>Operator/Source/conf/SparkSourceOperator.xml</path>
         </platform>
     </platforms>
+
 
     <parameters>
         <parameter name="predicate" data_type="string" required="true"> </parameter>
