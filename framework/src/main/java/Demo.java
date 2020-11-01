@@ -12,40 +12,44 @@ import java.util.HashMap;
  * @since 2020/7/6 1:40 下午
  */
 public class Demo {
-    public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
+    public static void main(String[] args) {
         try {
             PlanBuilder planBuilder = new PlanBuilder();
             // 设置udf路径   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
+            //planBuilder.setPlatformUdfPath("java", "/data/TestSmallWebCaseFunc.class");
             planBuilder.setPlatformUdfPath("java", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
             //供测试生成文件使用   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
+            //planBuilder.setPlatformUdfPath("spark", "/data/TestSmallWebCaseFunc.class");
             planBuilder.setPlatformUdfPath("spark", "/Users/jason/Desktop/TestSmallWebCaseFunc.class");
 
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("inputPath", "/Users/jason/Desktop/test.csv");
-            }}).withTargetPlatform("spark");
+                //put("inputPath", "hdfs://hdfs-namenode:8020/zxpDir/test.csv");
+                put("inputPath", "hdfs://localhost:8020/input/test.csv");
+            }}).withTargetPlatform("java");
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
                 put("udfName", "filterFunc");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
             DataQuanta mapNode = DataQuanta.createInstance("map", new HashMap<String, String>() {{
                 put("udfName", "mapFunc");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
             DataQuanta reduceNode = DataQuanta.createInstance("reduce-by-key", new HashMap<String, String>() {{
                 put("udfName", "reduceFunc");
                 put("keyName", "reduceKey");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
             DataQuanta sortNode = DataQuanta.createInstance("sort", new HashMap<String, String>() {{
                 put("udfName", "sortFunc");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
             // 最终结果的输出路径   例如该map的value值是本项目output.csv的绝对路径
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
-                put("outputPath", "/tmp/clic_output/output.csv"); // 具体resources的路径通过配置文件获得
-            }}).withTargetPlatform("spark");
+                //put("outputPath", "hdfs://hdfs-namenode:8020/zxpDir/output.csv"); // 具体resources的路径通过配置文件获得
+                put("outputPath", "hdfs://localhost:8020/output/output.csv"); // 具体resources的路径通过配置文件获得
+            }}).withTargetPlatform("java");
 
             planBuilder.addVertex(sourceNode);
             planBuilder.addVertex(filterNode);

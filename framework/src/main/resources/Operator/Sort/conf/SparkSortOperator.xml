@@ -3,7 +3,7 @@
 
     <platform ID="spark">
         <language>java</language>
-        <cost>7.9928</cost>
+        <cost>0.01</cost>
     </platform>
 
     <parameters>

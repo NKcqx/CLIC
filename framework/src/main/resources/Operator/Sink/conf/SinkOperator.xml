@@ -6,6 +6,10 @@
             <path>Operator/Sink/conf/JavaSinkOperator.xml</path>
         </platform>
 
+        <platform ID="java">
+            <path>Operator/Sink/conf/HdfsSinkOperator.xml</path>
+        </platform>
+
         <platform ID="spark">
             <path>Operator/Sink/conf/SparkSinkOperator.xml</path>
         </platform>

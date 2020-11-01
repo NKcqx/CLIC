@@ -3,7 +3,7 @@
 
     <platform ID="spark">
         <language>java</language>
-        <cost>22.1174</cost>
+        <cost>0.01</cost>
     </platform>
     <parameters> <!-- 计算参数 -->
         <parameter name="isCombined" data_type="boolean" default="true"> </parameter>

@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="FilterOperator" name="FilterOperator" kind="shuffler">
+<Operator ID="HDFSSourceOperator" name="HDFSSourceOperator" kind="shuffler">
 
     <platform ID="java">
         <language>java</language>
-        <cost>0.555</cost>
+        <cost>21.1174</cost>
     </platform>
-    
 
 </Operator>
