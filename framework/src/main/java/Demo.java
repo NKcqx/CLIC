@@ -1,9 +1,6 @@
 import api.DataQuanta;
 import api.PlanBuilder;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
 import java.util.HashMap;
 
 /**
@@ -34,12 +31,12 @@ public class Demo {
 
             DataQuanta mapNode = DataQuanta.createInstance("map", new HashMap<String, String>() {{
                 put("udfName", "mapFunc");
-            }}).withTargetPlatform("java");
+            }}).withTargetPlatform("spark");
 
             DataQuanta reduceNode = DataQuanta.createInstance("reduce-by-key", new HashMap<String, String>() {{
                 put("udfName", "reduceFunc");
                 put("keyName", "reduceKey");
-            }}).withTargetPlatform("java");
+            }}).withTargetPlatform("spark");
 
             DataQuanta sortNode = DataQuanta.createInstance("sort", new HashMap<String, String>() {{
                 put("udfName", "sortFunc");

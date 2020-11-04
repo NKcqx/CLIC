@@ -51,15 +51,15 @@ import static org.junit.Assert.assertArrayEquals;
 //        /**
 //         * DAG的初始化
 //         */
-//        optA = OperatorFactory.createOperatorFromFile("Operator/Source/conf/SourceOperator.xml");
+//        optA = OperatorFactory.createOperatorFromFile("Operator/Source/conf/HDFSSource.xml");
 //        optB = OperatorFactory.createOperatorFromFile("Operator/Map/conf/MapOperator.xml");
 //        optC = OperatorFactory.createOperatorFromFile("Operator/Sort/conf/SortOperator.xml");
 //        optD = OperatorFactory.createOperatorFromFile("Operator/Filter/conf/FilterOperator.xml");
 //        optE = OperatorFactory.createOperatorFromFile("Operator/Map/conf/MapOperator.xml");
 //        optF = OperatorFactory.createOperatorFromFile("Operator/ReduceByKey/conf/ReduceByKeyOperator.xml");
 //        optG = OperatorFactory.createOperatorFromFile("Operator/Join/conf/JoinOperator.xml");
-//        optH = OperatorFactory.createOperatorFromFile("Operator/Source/conf/SourceOperator.xml");
-//        optI = OperatorFactory.createOperatorFromFile("Operator/Sink/conf/SinkOperator.xml");
+//        optH = OperatorFactory.createOperatorFromFile("Operator/Source/conf/HDFSSource.xml");
+//        optI = OperatorFactory.createOperatorFromFile("Operator/Sink/conf/HdfsSink");
 //        optJ = OperatorFactory.createOperatorFromFile("Operator/Map/conf/MapOperator.xml");
 //        aTb = new Channel(optA, optB, null);
 //        aTc = new Channel(optA, optC, null);

@@ -39,6 +39,10 @@ public class PlanBuilder {
     private DefaultListenableGraph<Operator, Channel> graph = null;
     private Configuration configuration;
 
+    private enum FileSystem {
+        DB, Local, HDFS, MEM
+    }
+
     /**
      * @param configuration 配置文件，从中加载系统运行时必要的参数，即系统运行时的上下文
      * @throws IOException
@@ -88,18 +92,41 @@ public class PlanBuilder {
     }
 
     public DataQuanta readDataFrom(Map<String, String> params) throws Exception {
-        DataQuanta dataQuanta = DataQuanta.createInstance("source", params);
+        if (!params.containsKey("inputPath")) {
+            throw new IllegalArgumentException("读取数据需要指定 'inputPath'参数");
+        }
+        String operator;
+        switch (selectFileSystem(params.get("inputPath"))) {
+            case DB:
+                operator = "sqlSource";
+                break;
+            case MEM:
+                operator = "collection-source";
+                break;
+            case HDFS:
+                operator = "hdfs-source";
+                break;
+            case Local:
+            default:
+                operator = "source";
+                break;
+        }
+        DataQuanta dataQuanta = DataQuanta.createInstance(operator, params);
         this.headDataQuantas.add(dataQuanta);
         return dataQuanta; // 不需要connectTo
     }
 
     /**
-     * 读取用户提供的数据源，可以是csv, json, txt等格式
+     * 指定以 *Table* 格式读取数据源，可以是csv, json, txt等格式
+     *
      * @param
      * @return
      * @throws Exception
      */
     public DataQuanta readTableFrom(Map<String, String> params) throws Exception {
+        if (!params.containsKey("inputPath")) {
+            throw new IllegalArgumentException("读取数据需要指定 'inputPath' 参数");
+        }
         DataQuanta dataQuanta = DataQuanta.createInstance("sqlSource", params);
         this.headDataQuantas.add(dataQuanta);
         return dataQuanta;
@@ -210,7 +237,23 @@ public class PlanBuilder {
                 .anyMatch(operator -> operator.getOperatorID().contains("Source"));
         if (!containSource) { // 如果头节点不包含任何Source类节点时，插入Source todo 选择插入哪种Source
             try {
-                Operator sourceOperator = OperatorFactory.createOperator("source");
+                String operatorType;
+                switch (selectFileSystem(filePath)) {
+                    case DB:
+                        operatorType = "sqlSource";
+                        break;
+                    case MEM:
+                        operatorType = "collection-source";
+                        break;
+                    case HDFS:
+                        operatorType = "hdfs-source";
+                        break;
+                    case Local:
+                    default:
+                        operatorType = "source";
+                        break;
+                }
+                Operator sourceOperator = OperatorFactory.createOperator(operatorType);
                 sourceOperator.selectEntity(stage.getPlatform());
                 sourceOperator.setParamValue("inputPath", filePath);
                 List<Operator> heads = stage.getHeads();
@@ -238,7 +281,24 @@ public class PlanBuilder {
                 .anyMatch(operator -> operator.getOperatorID().contains("Sink"));
         if (!containSink) {
             try {
-                Operator sinkOperator = OperatorFactory.createOperator("sink");
+                String operatorType;
+                switch (selectFileSystem(filePath)) {
+                    case DB:
+                        operatorType = "sqlSink";
+                        break;
+                    case MEM:
+                        operatorType = "collection-sink";
+                        break;
+                    case HDFS:
+                        operatorType = "hdfs-sink";
+                        break;
+                    case Local:
+                    default:
+                        operatorType = "sink";
+                        break;
+                }
+
+                Operator sinkOperator = OperatorFactory.createOperator(operatorType);
                 sinkOperator.selectEntity(stage.getPlatform());
                 sinkOperator.setParamValue("outputPath", filePath);
                 List<Operator> tails = stage.getTails();
@@ -261,10 +321,11 @@ public class PlanBuilder {
             }
         }
     }
+
     /**
      * 把PlanBuilder代表的Graph转为Yaml格式的字符串
      */
-    public void toYaml(Writer writer) { // 或许放到YamlUtil里更好？
+    public void adapt2Yaml(Writer writer) { // 或许放到YamlUtil里更好？
         Map<String, Object> yamlMap = ArgoAdapter.graph2Yaml(graph);
         YamlUtil.writeYaml(writer, yamlMap);
     }
@@ -277,5 +338,27 @@ public class PlanBuilder {
      */
     public void setPlatformUdfPath(String platform, String udfPath) {
         PlatformFactory.setPlatformArgValue(platform, "--udfPath", udfPath);
+    }
+
+    private FileSystem selectFileSystem(String filePath) {
+        FileSystem targetSys = FileSystem.Local;
+        if (filePath.contains("://")) {
+            String prefix = filePath.split("://")[0];
+            switch (prefix) {
+                case "db":
+                    targetSys = FileSystem.DB;
+                    break;
+                case "hdfs":
+                    targetSys = FileSystem.HDFS;
+                    break;
+                case "file":
+                default:
+                    targetSys = FileSystem.Local;
+                    break;
+            }
+            return targetSys;
+        } else {
+            return targetSys;
+        }
     }
 }

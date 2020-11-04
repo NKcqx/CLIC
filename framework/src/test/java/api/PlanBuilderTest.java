@@ -23,8 +23,9 @@ import static org.mockito.Mockito.*;
 public class PlanBuilderTest {
     private PlanBuilder planBuilder;
     private Configuration configuration;
+
     @Before
-    public void before() throws Exception{
+    public void before() throws Exception {
         configuration = new Configuration();
         planBuilder = new PlanBuilder(configuration);
 
@@ -39,7 +40,7 @@ public class PlanBuilderTest {
     }
 
     @Test
-    public void testAddMethod() throws Exception{
+    public void testAddMethod() throws Exception {
         Pair<String, String> keyPair = new Pair<>("input_key", "output_key");
         List<Pair<String, String>> keyPairs = new ArrayList<>();
         keyPairs.add(keyPair);
@@ -52,7 +53,8 @@ public class PlanBuilderTest {
         }});
         // test
         assertTrue(planBuilder.addVertex(dataQuanta1));
-        assertTrue(planBuilder.addVertex(dataQuanta2));;
+        assertTrue(planBuilder.addVertex(dataQuanta2));
+        ;
         assertTrue(planBuilder.addVertex(operator));
         assertTrue(planBuilder.addEdge(dataQuanta1, dataQuanta2, keyPair));
         // 要运行testExecute需要先把这行给注释掉，否则不会产生一个DAG
@@ -85,7 +87,7 @@ public class PlanBuilderTest {
         }});
         loopBodyBuilder.addVertex(loopBodyMap);
         StringWriter stringWriter = new StringWriter();
-        loopBodyBuilder.toYaml(stringWriter);
+        loopBodyBuilder.adapt2Yaml(stringWriter);
 
         DataQuanta loopNode = DataQuanta.createInstance("loop", new HashMap<String, String>() {{
             put("predicateName", "loopCondition");
@@ -135,7 +137,7 @@ public class PlanBuilderTest {
     }
 
     @Test
-    public void optimizeTwoIsolatePlanTest() throws  Exception{
+    public void optimizeTwoIsolatePlanTest() throws Exception {
         PlanBuilder planBuilder = new PlanBuilder();
         DataQuanta sourceA = planBuilder.readDataFrom(new HashMap<String, String>() {{
             put("inputPath", "/Users/jason/Desktop/fakeInputFileA.csv");
@@ -145,11 +147,11 @@ public class PlanBuilderTest {
             put("inputPath", "/Users/jason/Desktop/fakeInputFileB.csv");
         }});
 
-        DataQuanta mapA = DataQuanta.createInstance("map", new HashMap<String, String>(){{
+        DataQuanta mapA = DataQuanta.createInstance("map", new HashMap<String, String>() {{
             put("udfName", "fake");
         }});
 
-        DataQuanta mapB = DataQuanta.createInstance("map", new HashMap<String, String>(){{
+        DataQuanta mapB = DataQuanta.createInstance("map", new HashMap<String, String>() {{
             put("udfName", "fake");
         }});
 
@@ -174,4 +176,30 @@ public class PlanBuilderTest {
         }
 
     }
+
+    @Test
+    public void testSelectFileSystem() {
+        DataQuanta test = null;
+        try {
+            test = planBuilder.readDataFrom(new HashMap<String, String>() {{
+                put("inputPath", "file:///Users/fake/path");
+            }});
+            assertEquals(test.getOperator().getOperatorName(), "SourceOperator");
+
+            test = planBuilder.readDataFrom(new HashMap<String, String>() {{
+                put("inputPath", "hdfs:///Users/fake/path");
+            }});
+            assertEquals(test.getOperator().getOperatorName(), "HDFSSource");
+
+            test = planBuilder.readDataFrom(new HashMap<String, String>() {{
+                put("inputPath", "db:///Users/fake/path");
+            }});
+            assertEquals(test.getOperator().getOperatorName(), "SqlSourceOperator");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
 }

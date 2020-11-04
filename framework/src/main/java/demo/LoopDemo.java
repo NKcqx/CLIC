@@ -37,7 +37,7 @@ public class LoopDemo {
         }});
         loopBodyBuilder.addVertex(loopBodyMap);
         StringWriter stringWriter = new StringWriter();
-        loopBodyBuilder.toYaml(stringWriter);
+        loopBodyBuilder.adapt2Yaml(stringWriter);
 
         DataQuanta loopNode = DataQuanta.createInstance("loop", new HashMap<String, String>() {{
             put("predicateName", "loopCondition");

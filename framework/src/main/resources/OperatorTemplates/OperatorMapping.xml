@@ -6,8 +6,16 @@
         <template>Operator/Source/conf/SourceOperator.xml</template>
     </pair>
     <pair>
+        <ability>hdfs-source</ability>
+        <template>Operator/HDFSSource/conf/HDFSSource.xml</template>
+    </pair>
+    <pair>
         <ability>sink</ability>
         <template>Operator/Sink/conf/SinkOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>hdfs-sink</ability>
+        <template>Operator/HDFSSink/conf/HDFSSink.xml</template>
     </pair>
     <pair>
         <ability>sort</ability>
