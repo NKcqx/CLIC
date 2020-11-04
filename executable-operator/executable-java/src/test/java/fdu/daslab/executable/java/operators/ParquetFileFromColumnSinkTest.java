@@ -24,7 +24,7 @@ public class ParquetFileFromColumnSinkTest {
             getResource("").getPath()+"myusersColumn2.parquet";//写入
 
     @Test
-    public void  writeParquetFileTest() throws Exception {
+    public void  writeParquetFileTest() {
         //从已有文件中读取，获得Stream
         String schemaStr ="message example.avro.User {"+
                 "required binary name (UTF8);"+
@@ -32,13 +32,13 @@ public class ParquetFileFromColumnSinkTest {
                 "optional int32 favorite_number;"+
                 "}";
         Stream<List<String>> data=fileRead(filePath1);
-        Map<String,String> schema = new HashMap<String, String>();
-        Map<String,String> params = new HashMap<String, String>();
+        Map<String,String> schema = new HashMap<>();
+        Map<String,String> params = new HashMap<>();
         params.put("outputPath",filePath2);//parquet文件路径
 
-        List<String> in = new LinkedList<String>();
+        List<String> in = new LinkedList<>();
         in.add("data");
-        List<String> out = new LinkedList<String>();
+        List<String> out = new LinkedList<>();
         out.add("result");
         ParquetFileFromColumnSink parquetFileFromColumnSink=new ParquetFileFromColumnSink("1",in,out, params);
         parquetFileFromColumnSink.setInputData("data",data);

@@ -12,9 +12,9 @@ import org.apache.parquet.column.ColumnReader;
 import org.apache.parquet.column.impl.ColumnReadStoreImpl;
 import org.apache.parquet.column.page.PageReadStore;
 import org.apache.parquet.example.data.simple.convert.GroupRecordConverter;
-import org.apache.parquet.format.converter.ParquetMetadataConverter;
 import org.apache.parquet.hadoop.ParquetFileReader;
-import org.apache.parquet.hadoop.metadata.ParquetMetadata;
+import org.apache.parquet.hadoop.util.HadoopInputFile;
+import org.apache.parquet.io.InputFile;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType;
 import java.io.IOException;
@@ -40,14 +40,18 @@ public class ParquetFileToColumnSource extends OperatorBase<Stream<List<String>>
     public void execute(ParamsModel inputArgs, ResultModel<Stream<List<String>>> result) {
         List<List<String>> resultList = new ArrayList<>();
         try {
-            Configuration conf = new Configuration();
-            Path filePath = new Path(this.params.get("inputPath"));
-            ParquetMetadata readFooter = ParquetFileReader.readFooter(conf, filePath,
-                    ParquetMetadataConverter.NO_FILTER);
-            MessageType schemas = readFooter.getFileMetaData().getSchema();
-            ParquetFileReader parquetFileReader = new ParquetFileReader(conf, filePath, readFooter);
-            PageReadStore rowGroup = null;
 
+//            Configuration conf = new Configuration();
+//            Path filePath = new Path(this.params.get("inputPath"));
+//            ParquetMetadata readFooter = ParquetFileReader.readFooter(conf, filePath,
+//                    ParquetMetadataConverter.NO_FILTER);
+//            MessageType schemas = readFooter.getFileMetaData().getSchema();
+//            ParquetFileReader parquetFileReader = new ParquetFileReader(conf, filePath, readFooter);
+            InputFile inputFile = HadoopInputFile.fromPath(new Path(this.params.get("inputPath")), new Configuration());
+            ParquetFileReader parquetFileReader = ParquetFileReader.open(inputFile);
+            MessageType schemas = parquetFileReader.getFileMetaData().getSchema();
+
+            PageReadStore rowGroup = null;
             try {
                 while (null != (rowGroup = parquetFileReader.readNextRowGroup())) {
                     ColumnReader colReader = null;
