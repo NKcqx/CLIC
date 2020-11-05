@@ -2,6 +2,10 @@
 <Operator ID="TableSourceOperator" name="TableSourceOperator" kind="supplier">
 
     <platforms>
+        <platform ID="java">
+            <path>Operator/TableSource/conf/JavaTableSourceOperator.xml</path>
+        </platform>
+
         <platform ID="spark">
             <path>Operator/TableSource/conf/SparkTableSourceOperator.xml</path>
         </platform>

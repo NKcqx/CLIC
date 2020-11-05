@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SparkSQL平台的写入文件算子
+ * 将table写入文件的算子
  *
  * @author 刘丰艺
  * @since 2020/10/27 9:30 PM

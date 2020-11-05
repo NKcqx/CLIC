@@ -19,22 +19,21 @@ import java.util.Map;
  * @since 2020/11/3 3:30 PM
  * @version 1.0
  */
-public class TableToRDDOperator extends OperatorBase<Dataset<Row>, JavaRDD<List<String>>> {
+public class FromTableOperator extends OperatorBase<Dataset<Row>, JavaRDD<List<String>>> {
 
-    public TableToRDDOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("SparkTableToRDDOperator", id, inputKeys, outputKeys, params);
+    public FromTableOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("SparkFromTableOperator", id, inputKeys, outputKeys, params);
     }
 
     /**
      * 类型转换步骤：
-     * JavaRDD<List<String>> -> JavaRDD<Row> -> Dataset<Row>
+     * Dataset<Row> -> JavaRDD<Row> -> JavaRDD<List<String>>
      * @param inputArgs 参数列表
      * @param result 返回的结果
      */
     @Override
     public void execute(ParamsModel inputArgs, ResultModel<JavaRDD<List<String>>> result) {
         JavaRDD<Row> rowRDD = this.getInputData("data").toJavaRDD();
-        String separator = this.params.get("separator");
         JavaRDD<List<String>> convertResult = rowRDD.map(new Function<Row, List<String>>() {
             @Override
             public List<String> call(Row row) throws Exception {
@@ -45,7 +44,7 @@ public class TableToRDDOperator extends OperatorBase<Dataset<Row>, JavaRDD<List<
                 } else {
                     // row.toString()会给每行的头尾加中括号[]，需要将其删去
                     lineStr = lineStr.substring(1, lineStr.length() - 1);
-                    String[] items = lineStr.split(separator);
+                    String[] items = lineStr.split(",");
                     for (String item : items) {
                         line.add(item);
                     }

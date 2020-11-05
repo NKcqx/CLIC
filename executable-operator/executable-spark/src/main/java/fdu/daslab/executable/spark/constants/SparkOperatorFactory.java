@@ -36,8 +36,8 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("TableSourceOperator", TableSource.class);
         put("QueryOperator", QueryOperator.class);
         put("TableSinkOperator", TableSink.class);
-        put("RDDToTableOperator", RDDToTableOperator.class);
-        put("TableToRDDOperator", TableToRDDOperator.class);
+        put("ToTableOperator", ToTableOperator.class);
+        put("FromTableOperator", FromTableOperator.class);
     }};
 
     @Override

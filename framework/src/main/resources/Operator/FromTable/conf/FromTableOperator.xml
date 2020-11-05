@@ -1,16 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="RDDToTableOperator" name="RDDToTableOperator" kind="transformer">
+<Operator ID="FromTableOperator" name="FromTableOperator" kind="transformer">
 
     <platforms>
+        <platform ID="java">
+            <path>Operator/FromTable/conf/JavaFromTableOperator.xml</path>
+        </platform>
+
         <platform ID="spark">
-            <path>Operator/RDDToTable/conf/SparkRDDToTableOperator.xml</path>
+            <path>Operator/FromTable/conf/SparkFromTableOperator.xml</path>
         </platform>
     </platforms>
 
     <parameters>
-        <parameter name="udfName"  data_type="string" required="true"></parameter>
-        <parameter name="tableName"  data_type="string" required="true"></parameter>
-        <parameter name="separator" data_type="string" default=","> </parameter>
+        <parameter name="udfName"  data_type="string"></parameter>
     </parameters>
 
     <inputs>  <!-- 输入数据 -->
@@ -19,6 +21,4 @@
     <outputs> <!-- 计算结果 -->
         <output name="result" data_type="string"> </output>
     </outputs>
-
-
 </Operator>

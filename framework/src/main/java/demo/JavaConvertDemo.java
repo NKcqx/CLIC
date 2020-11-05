@@ -6,13 +6,13 @@ import api.PlanBuilder;
 import java.util.HashMap;
 
 /**
- * RDD与Table的转换
+ * Java平台，Stream与Table的转换
  *
  * @author 刘丰艺
  * @version 1.0
  * @since 2020/10/27 11:00 pm
  */
-public class ConvertDemo {
+public class JavaConvertDemo {
 
     public static void main(String[] args) {
         try {
@@ -24,63 +24,55 @@ public class ConvertDemo {
 
             DataQuanta sourceNode1 = planBuilder.readDataFrom(new HashMap<String, String>() {{
                 put("inputPath", "D:/2020project/convert/test.csv");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
                 put("udfName", "filterFunc");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
             DataQuanta mapNode = DataQuanta.createInstance("map", new HashMap<String, String>() {{
                 put("udfName", "mapFunc");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
             DataQuanta reduceNode = DataQuanta.createInstance("reduce-by-key", new HashMap<String, String>() {{
                 put("udfName", "reduceFunc");
                 put("keyName", "reduceKey");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
             DataQuanta sortNode = DataQuanta.createInstance("sort", new HashMap<String, String>() {{
                 put("udfName", "sortFunc");
-            }}).withTargetPlatform("spark");
+            }}).withTargetPlatform("java");
 
-            // 在这里将原 Demo.java 的 workflow 与 SQL 的 workflow 拼接
-            // JavaRDD -> Dataset
-            DataQuanta rddToTableNode = DataQuanta.createInstance("rdd-to-table", new HashMap<String, String>() {{
-                put("udfName", "rddToTableFunc");
-                put("tableName", "clickResult");
-            }});
+            // 在这里将原 Demo.java 的 workflow 与 java DataFrame 的 workflow 拼接
+            // Stream -> DataFrame
+            DataQuanta toTableNode = DataQuanta.createInstance("to-table", new HashMap<String, String>() {{
+                put("udfName", "toTableFunc");
+            }}).withTargetPlatform("java");
 
-            DataQuanta queryNode = DataQuanta.createInstance("query", new HashMap<String, String>() {{
-                put("sqlText", "select url,clickTimes from clickResult where clickTimes >= 1");
-            }});
-
-            // 以分布式形式存储table
             DataQuanta sinkNode1 = DataQuanta.createInstance("table-sink", new HashMap<String, String>() {{
-                put("outputPath", "D:/2020project/convert/hdfs");
-            }});
+                put("outputPath", "D:/2020project/convert/javaTableOutput.csv");
+            }}).withTargetPlatform("java");
 
-            // 以分布式形式读取table
             DataQuanta sourceNode2 = planBuilder.readTableFrom(new HashMap<String, String>() {{
-                put("inputPath", "D:/2020project/convert/hdfs");
-            }});
+                put("inputPath", "D:/2020project/convert/javaTableOutput.csv");
+            }}).withTargetPlatform("java");
 
-            // Dataset -> JavaRDD
-            DataQuanta tableToRDDNode = DataQuanta.createInstance("table-to-rdd", null);
+            // DataFrame -> Stream
+            DataQuanta fromTableNode = DataQuanta.createInstance("from-table", null).withTargetPlatform("java");
 
             DataQuanta sinkNode2 = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
-                put("outputPath", "D:/2020project/convert/output.csv"); // 具体resources的路径通过配置文件获得
-            }}).withTargetPlatform("spark");
+                put("outputPath", "D:/2020project/convert/javaOutput.csv"); // 具体resources的路径通过配置文件获得
+            }}).withTargetPlatform("java");
 
             planBuilder.addVertex(sourceNode1);
             planBuilder.addVertex(filterNode);
             planBuilder.addVertex(mapNode);
             planBuilder.addVertex(reduceNode);
             planBuilder.addVertex(sortNode);
-            planBuilder.addVertex(rddToTableNode);
-            planBuilder.addVertex(queryNode);
+            planBuilder.addVertex(toTableNode);
             planBuilder.addVertex(sinkNode1);
             planBuilder.addVertex(sourceNode2);
-            planBuilder.addVertex(tableToRDDNode);
+            planBuilder.addVertex(fromTableNode);
             planBuilder.addVertex(sinkNode2);
 
             // 链接节点，即构建DAG
@@ -88,12 +80,11 @@ public class ConvertDemo {
             planBuilder.addEdge(filterNode, mapNode);
             planBuilder.addEdge(mapNode, reduceNode);
             planBuilder.addEdge(reduceNode, sortNode);
-            planBuilder.addEdge(sortNode, rddToTableNode);
-            planBuilder.addEdge(rddToTableNode, queryNode);
-            planBuilder.addEdge(queryNode, sinkNode1);
+            planBuilder.addEdge(sortNode, toTableNode);
+            planBuilder.addEdge(toTableNode, sinkNode1);
             planBuilder.addEdge(sinkNode1, sourceNode2);
-            planBuilder.addEdge(sourceNode2, tableToRDDNode);
-            planBuilder.addEdge(tableToRDDNode, sinkNode2);
+            planBuilder.addEdge(sourceNode2, fromTableNode);
+            planBuilder.addEdge(fromTableNode, sinkNode2);
 
             planBuilder.execute();
         } catch (Exception e) {

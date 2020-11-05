@@ -1,12 +1,8 @@
 package fdu.daslab.executable.udf;
 
-import org.apache.spark.sql.types.DataTypes;
-import org.apache.spark.sql.types.Metadata;
-import org.apache.spark.sql.types.StructField;
-import org.apache.spark.sql.types.StructType;
+import org.javatuples.Triplet;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,12 +49,12 @@ public class TestConvertFunc {
     }
 
     // rdd-to-table
-    // 用户在这里提供schema
-    public StructType rddToTableFunc() {
-        return new StructType(
-                new StructField[] {
-                    new StructField("url", DataTypes.StringType, true, Metadata.empty()),
-                    new StructField("clickTimes", DataTypes.StringType, true, Metadata.empty())
-        });
+    // 用户在这里提供schema信息
+    public Map<String, Triplet<Class, Boolean, String>> toTableFunc() {
+        Map<String, Triplet<Class, Boolean, String>> schemaMap =
+                new LinkedHashMap<String, Triplet<Class, Boolean, String>>();
+        schemaMap.put("url", new Triplet<>(String.class, true, null));
+        schemaMap.put("clickTimes", new Triplet<>(String.class, true, null));
+        return schemaMap;
     }
 }

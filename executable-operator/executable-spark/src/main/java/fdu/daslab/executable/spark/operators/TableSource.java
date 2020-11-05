@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * SparkSQL平台的读取table算子
+ * 从文件读取table的算子
  *
  * @author 刘丰艺
  * @since 2020/10/27 9:30 PM
@@ -36,6 +36,8 @@ public class TableSource extends OperatorBase<Dataset<Row>, Dataset<Row>> {
         if (inputPath.contains(".")) {
             tableName = inputPath.substring(inputPath.lastIndexOf("/") + 1, inputPath.lastIndexOf("."));
             fileType = inputPath.substring(inputPath.lastIndexOf("."), inputPath.length());
+        } else {
+            tableName = inputPath.substring(inputPath.lastIndexOf("/") + 1);
         }
 
         switch (fileType) {
@@ -51,8 +53,7 @@ public class TableSource extends OperatorBase<Dataset<Row>, Dataset<Row>> {
                 df = sparkSession.read().format("csv").option("header", "true").load(inputPath);
         }
         try {
-            if (!tableName.equals(""))
-                df.createTempView(tableName);
+            df.createTempView(tableName);
         } catch (AnalysisException e) {
             e.printStackTrace();
         }

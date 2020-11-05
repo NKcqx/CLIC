@@ -50,12 +50,12 @@
         <template>Operator/TableSink/conf/TableSinkOperator.xml</template>
     </pair>
     <pair>
-        <ability>rdd-to-table</ability>
-        <template>Operator/RDDToTable/conf/RDDToTableOperator.xml</template>
+        <ability>to-table</ability>
+        <template>Operator/ToTable/conf/ToTableOperator.xml</template>
     </pair>
     <pair>
-        <ability>table-to-rdd</ability>
-        <template>Operator/TableToRDD/conf/TableToRDDOperator.xml</template>
+        <ability>from-table</ability>
+        <template>Operator/FromTable/conf/FromTableOperator.xml</template>
     </pair>
     <pair>
         <ability>loop</ability>

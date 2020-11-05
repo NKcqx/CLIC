@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="TableToRDDOperator" name="TableToRDDOperator" kind="transformer">
+<Operator ID="ToTableOperator" name="ToTableOperator" kind="transformer">
 
     <platforms>
+        <platform ID="java">
+            <path>Operator/ToTable/conf/JavaToTableOperator.xml</path>
+        </platform>
+
         <platform ID="spark">
-            <path>Operator/TableToRDD/conf/SparkTableToRDDOperator.xml</path>
+            <path>Operator/ToTable/conf/SparkToTableOperator.xml</path>
         </platform>
     </platforms>
 
     <parameters>
-        <parameter name="udfName"  data_type="string"></parameter>
-        <parameter name="separator" data_type="string" default=","> </parameter>
+        <parameter name="udfName"  data_type="string" required="true"></parameter>
     </parameters>
 
     <inputs>  <!-- 输入数据 -->
@@ -18,4 +21,6 @@
     <outputs> <!-- 计算结果 -->
         <output name="result" data_type="string"> </output>
     </outputs>
+
+
 </Operator>
