@@ -29,7 +29,7 @@ public class QueryOperatorTest {
 
     @Before
     public void before() throws AnalysisException {
-        sparkSession = SparkInitUtil.setSparkSession("local[*]", "SparkSQLTest");
+        sparkSession = SparkInitUtil.getDefaultSparkSession();
 
         StructField[] studentFields = new StructField[] {
           new StructField("id", DataTypes.StringType, true, Metadata.empty()),
