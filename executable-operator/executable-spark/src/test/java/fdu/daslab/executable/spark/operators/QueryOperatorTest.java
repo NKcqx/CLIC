@@ -1,13 +1,15 @@
-package fdu.daslab.executable.sparksql;
+package fdu.daslab.executable.spark.operators;
 
 import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
-import fdu.daslab.executable.sparksql.operators.ExeOperator;
-import fdu.daslab.executable.sparksql.utils.SparkInitUtil;
+import fdu.daslab.executable.spark.utils.SparkInitUtil;
 import org.apache.spark.sql.*;
-import org.apache.spark.sql.types.*;
+import org.apache.spark.sql.types.DataTypes;
+import org.apache.spark.sql.types.Metadata;
+import org.apache.spark.sql.types.StructField;
+import org.apache.spark.sql.types.StructType;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -19,9 +21,9 @@ import java.util.*;
  * @version 1.0
  * @since 2020/10/8 4:30 PM
  */
-public class ExecuteSparkSQLOperatorTest {
+public class QueryOperatorTest {
 
-    private ExeOperator exeOperator;
+    private QueryOperator queryOperator;
 
     private SparkSession sparkSession;
 
@@ -36,7 +38,7 @@ public class ExecuteSparkSQLOperatorTest {
         StructField[] gradeFields = new StructField[] {
                 new StructField("id", DataTypes.StringType, true, Metadata.empty()),
                 new StructField("cid", DataTypes.StringType, true, Metadata.empty()),
-                new StructField("grade", DataTypes.IntegerType, true, Metadata.empty())
+                new StructField("grade", DataTypes.StringType, true, Metadata.empty())
         };
         StructField[] courseFields = new StructField[] {
                 new StructField("cid", DataTypes.StringType, true, Metadata.empty()),
@@ -52,9 +54,9 @@ public class ExecuteSparkSQLOperatorTest {
         stuRows.add(RowFactory.create("2", "Hua Li"));
         stuRows.add(RowFactory.create("3", "Jianguo Li"));
         List<Row> graRows = new ArrayList<>();
-        graRows.add(RowFactory.create("2", "A209", 80));
-        graRows.add(RowFactory.create("3", "B102", 95));
-        graRows.add(RowFactory.create("5", "B102", 75));
+        graRows.add(RowFactory.create("2", "A209", "80"));
+        graRows.add(RowFactory.create("3", "B102", "95"));
+        graRows.add(RowFactory.create("5", "B102", "75"));
         List<Row> courRows = new ArrayList<>();
         courRows.add(RowFactory.create("A209", "Math"));
         courRows.add(RowFactory.create("B102", "History"));
@@ -75,8 +77,8 @@ public class ExecuteSparkSQLOperatorTest {
         List<String> outputKeys = Arrays.asList("result");
         Map<String, String> params = new HashMap<>();
         params.put("sqlText", "SELECT student.id,grade,cname "
-                + "FROM (student JOIN grade on student.id=grade.id) JOIN course ON grade.cid=course.cid");
-        exeOperator = new ExeOperator(id, inputKeys, outputKeys, params);
+                + "FROM (student JOIN grade on student.id=grade.id AND grade>80) JOIN course ON grade.cid=course.cid");
+        queryOperator = new QueryOperator(id, inputKeys, outputKeys, params);
 
         // 下面几个参数没有实际作用，只是为了满足旧版的execute函数
         final FunctionModel functionModel = ReflectUtil
@@ -85,8 +87,8 @@ public class ExecuteSparkSQLOperatorTest {
         ResultModel<Dataset<Row>> fakeResult = null;
 
         // 执行算子
-        exeOperator.execute(inputArgs, fakeResult);
-        Dataset<Row> resultDF = exeOperator.getOutputData("result");
+        queryOperator.execute(inputArgs, fakeResult);
+        Dataset<Row> resultDF = queryOperator.getOutputData("result");
 
         // assert阶段
         List<List<Object>> resultRows = new ArrayList<>();
@@ -104,8 +106,8 @@ public class ExecuteSparkSQLOperatorTest {
             }
             resultRows.add(values);
         }
-        expectedRows.add(Arrays.asList("2", 80, "Math"));
-        expectedRows.add(Arrays.asList("3", 95, "History"));
+        //expectedRows.add(Arrays.asList("2", 80, "Math"));
+        expectedRows.add(Arrays.asList("3", "95", "History"));
         Assert.assertEquals(expectedRows, resultRows);
     }
 }

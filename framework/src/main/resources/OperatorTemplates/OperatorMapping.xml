@@ -38,16 +38,24 @@
         <template>Operator/ReduceByKey/conf/ReduceByKeyOperator.xml</template>
     </pair>
     <pair>
-        <ability>sqlSource</ability>
-        <template>Operator/SqlSource/conf/SqlSourceOperator.xml</template>
+        <ability>table-source</ability>
+        <template>Operator/TableSource/conf/TableSourceOperator.xml</template>
     </pair>
     <pair>
-        <ability>sqlExe</ability>
-        <template>Operator/SqlExe/conf/SqlExeOperator.xml</template>
+        <ability>query</ability>
+        <template>Operator/Query/conf/QueryOperator.xml</template>
     </pair>
     <pair>
-        <ability>sqlSink</ability>
-        <template>Operator/SqlSink/conf/SqlSinkOperator.xml</template>
+        <ability>table-sink</ability>
+        <template>Operator/TableSink/conf/TableSinkOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>rdd-to-table</ability>
+        <template>Operator/RDDToTable/conf/RDDToTableOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>table-to-rdd</ability>
+        <template>Operator/TableToRDD/conf/TableToRDDOperator.xml</template>
     </pair>
     <pair>
         <ability>loop</ability>

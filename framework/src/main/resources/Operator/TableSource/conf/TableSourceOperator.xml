@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="SqlSourceOperator" name="SqlSourceOperator" kind="supplier">
+<Operator ID="TableSourceOperator" name="TableSourceOperator" kind="supplier">
 
     <platforms>
-        <platform ID="sparkSql">
-            <path>Operator/SqlSource/conf/SparkSqlSourceOperator.xml</path>
+        <platform ID="spark">
+            <path>Operator/TableSource/conf/SparkTableSourceOperator.xml</path>
         </platform>
     </platforms>
 

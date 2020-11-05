@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="TableToRDDOperator" name="TableToRDDOperator" kind="transformer">
+
+    <platform ID="spark">
+        <language>java</language>
+        <cost>2.4</cost>
+    </platform>
+
+</Operator>

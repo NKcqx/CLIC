@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="SqlExeOperator" name="SqlExeOperator" kind="transformer">
+<Operator ID="TableToRDDOperator" name="TableToRDDOperator" kind="transformer">
 
     <platforms>
-        <platform ID="sparkSql">
-            <path>Operator/SqlExe/conf/SparkSqlExeOperator.xml</path>
+        <platform ID="spark">
+            <path>Operator/TableToRDD/conf/SparkTableToRDDOperator.xml</path>
         </platform>
     </platforms>
 
     <parameters>
-        <parameter name="sqlText"  data_type="string" required="true"></parameter>
+        <parameter name="udfName"  data_type="string"></parameter>
+        <parameter name="separator" data_type="string" default=","> </parameter>
     </parameters>
 
     <inputs>  <!-- 输入数据 -->
@@ -17,6 +18,4 @@
     <outputs> <!-- 计算结果 -->
         <output name="result" data_type="string"> </output>
     </outputs>
-
-
 </Operator>

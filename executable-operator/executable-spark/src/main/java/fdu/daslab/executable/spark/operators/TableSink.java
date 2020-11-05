@@ -1,4 +1,4 @@
-package fdu.daslab.executable.sparksql.operators;
+package fdu.daslab.executable.spark.operators;
 
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
@@ -16,10 +16,10 @@ import java.util.Map;
  * @since 2020/10/27 9:30 PM
  * @version 1.0
  */
-public class FileSink extends OperatorBase<Dataset<Row>, Dataset<Row>> {
+public class TableSink extends OperatorBase<Dataset<Row>, Dataset<Row>> {
 
-    public FileSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("SparkSQLFileSink", id, inputKeys, outputKeys, params);
+    public TableSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
+        super("SparkTableSink", id, inputKeys, outputKeys, params);
     }
 
     @Override

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="SqlExeOperator" name="SqlExeOperator" kind="transformer">
+<Operator ID="QueryOperator" name="QueryOperator" kind="transformer">
 
-    <platform ID="sparkSql">
-        <language>scala</language>
+    <platform ID="spark">
+        <language>java</language>
         <!--            cost是该operator的cost，此处先简单设定-->
         <cost>2.99901</cost>
     </platform>

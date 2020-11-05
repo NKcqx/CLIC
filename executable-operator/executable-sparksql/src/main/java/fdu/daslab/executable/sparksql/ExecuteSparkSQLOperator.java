@@ -20,6 +20,7 @@ import java.util.*;
 /**
  * SparkSQL平台的operator的具体实现，兼顾算子融合
  * 按照--dagPath指定实际的算子DAG图
+ * SparkSQL平台接收的输入可以是HDFS，输出也可以是HDFS
  *
  * @author 刘丰艺
  * @version 1.0

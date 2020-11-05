@@ -100,7 +100,7 @@ public class PlanBuilder {
      * @throws Exception
      */
     public DataQuanta readTableFrom(Map<String, String> params) throws Exception {
-        DataQuanta dataQuanta = DataQuanta.createInstance("sqlSource", params);
+        DataQuanta dataQuanta = DataQuanta.createInstance("table-source", params);
         this.headDataQuantas.add(dataQuanta);
         return dataQuanta;
     }

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="SqlSinkOperator" name="SqlSinkOperator" kind="consumer">
+<Operator ID="TableSinkOperator" name="TableSinkOperator" kind="consumer">
 
     <platforms>
-        <platform ID="sparkSql">
-            <path>Operator/SqlSink/conf/SparkSqlSinkOperator.xml</path>
+        <platform ID="spark">
+            <path>Operator/TableSink/conf/SparkTableSinkOperator.xml</path>
         </platform>
     </platforms>
 

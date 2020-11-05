@@ -2,6 +2,7 @@ package fdu.daslab.executable.spark.utils;
 
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
+import org.apache.spark.sql.SparkSession;
 
 /**
  * 初始化spark需要的一些方法
@@ -15,6 +16,7 @@ public class SparkInitUtil {
     // SparkContext，这里的配置实际上没有意义，配置通过参数传递
     private static JavaSparkContext sparkContext = null;
 
+    private static SparkSession sparkSession = null;
 
     /**
      * 初始化JavaSparkContext
@@ -36,9 +38,20 @@ public class SparkInitUtil {
         return sparkContext;
     }
 
-
     public static boolean setSparkContext(SparkConf conf) {
         SparkInitUtil.sparkContext = new JavaSparkContext(conf);
         return true;
+    }
+
+    public static SparkSession getDefaultSparkSession() {
+        if (sparkSession == null) {
+            sparkSession = SparkSession.builder().master("local").appName("SparkSQLStage").getOrCreate();
+        }
+        return sparkSession;
+    }
+
+    public static SparkSession setSparkSession(String master, String appName) {
+        sparkSession = SparkSession.builder().master(master).appName(appName).getOrCreate();
+        return sparkSession;
     }
 }

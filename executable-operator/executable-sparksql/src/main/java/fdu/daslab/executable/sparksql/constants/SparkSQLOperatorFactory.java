@@ -2,9 +2,9 @@ package fdu.daslab.executable.sparksql.constants;
 
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
-import fdu.daslab.executable.sparksql.operators.ExeOperator;
-import fdu.daslab.executable.sparksql.operators.FileSink;
-import fdu.daslab.executable.sparksql.operators.FileSource;
+import fdu.daslab.executable.sparksql.operators.QueryOperator;
+import fdu.daslab.executable.sparksql.operators.TableSink;
+import fdu.daslab.executable.sparksql.operators.TableSource;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -21,9 +21,9 @@ import java.util.NoSuchElementException;
 public class SparkSQLOperatorFactory implements OperatorFactory {
 
     private static Map<String, Class> operatorMap = new HashMap<String, Class>() {{
-        put("SqlSourceOperator", FileSource.class);
-        put("SqlExeOperator", ExeOperator.class);
-        put("SqlSinkOperator", FileSink.class);
+        put("TableSourceOperator", TableSource.class);
+        put("QueryOperator", QueryOperator.class);
+        put("TableSinkOperator", TableSink.class);
     }};
 
     @Override

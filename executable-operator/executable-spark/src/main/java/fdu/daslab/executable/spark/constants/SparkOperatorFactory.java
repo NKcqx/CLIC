@@ -33,6 +33,11 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("NextIteration", NextIteration.class);
         put("CollectionSink", CollectionSink.class);
         put("CollectionSource", CollectionSource.class);
+        put("TableSourceOperator", TableSource.class);
+        put("QueryOperator", QueryOperator.class);
+        put("TableSinkOperator", TableSink.class);
+        put("RDDToTableOperator", RDDToTableOperator.class);
+        put("TableToRDDOperator", TableToRDDOperator.class);
     }};
 
     @Override

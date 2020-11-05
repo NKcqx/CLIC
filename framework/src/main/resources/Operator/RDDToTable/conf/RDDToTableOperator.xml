@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="RDDToTableOperator" name="RDDToTableOperator" kind="transformer">
+
+    <platforms>
+        <platform ID="spark">
+            <path>Operator/RDDToTable/conf/SparkRDDToTableOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter name="udfName"  data_type="string" required="true"></parameter>
+        <parameter name="tableName"  data_type="string" required="true"></parameter>
+        <parameter name="separator" data_type="string" default=","> </parameter>
+    </parameters>
+
+    <inputs>  <!-- 输入数据 -->
+        <input name="data" data_type="string" required="true"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+
+</Operator>
