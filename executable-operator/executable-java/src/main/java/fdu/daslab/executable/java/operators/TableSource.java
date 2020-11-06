@@ -3,7 +3,6 @@ package fdu.daslab.executable.java.operators;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
-import joinery.DataFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,15 +14,17 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
  * 从文件读取table的算子
+ * 目前与FileSource的区别是从第二行开始读
  *
  * @author 刘丰艺
  * @since 2020/10/27 9:30 PM
  * @version 1.0
  */
-public class TableSource extends OperatorBase<DataFrame<Object>, DataFrame<Object>> {
+public class TableSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
     Logger logger = LoggerFactory.getLogger(TableSource.class);
 
@@ -32,7 +33,7 @@ public class TableSource extends OperatorBase<DataFrame<Object>, DataFrame<Objec
     }
 
     @Override
-    public void execute(ParamsModel inputArgs, ResultModel<DataFrame<Object>> result) {
+    public void execute(ParamsModel inputArgs, ResultModel<Stream<List<String>>> result) {
         try {
             File file = new File(this.params.get("inputPath"));
             FileInputStream inputStream = new FileInputStream(file);
@@ -42,15 +43,13 @@ public class TableSource extends OperatorBase<DataFrame<Object>, DataFrame<Objec
                 logger.info("Stage(java) ———— File doesn't exist or it is not a file");
             }
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
-
             List<String> tableSchema = Arrays.asList(bufferedReader.readLine().split(","));
-            DataFrame<Object> resultDF = new DataFrame<>(tableSchema);
-
             String line;
+            List<List<String>> resultList = new ArrayList<>();
             while ((line = bufferedReader.readLine()) != null) {
-                resultDF.append(Arrays.asList(line.split(",")));
+                resultList.add(Arrays.asList(line.split(this.params.get("separator"))));
             }
-            this.setOutputData("result", resultDF);
+            this.setOutputData("result", resultList.stream());
             bufferedReader.close();
             inputStream.close();
         } catch (Exception e) {

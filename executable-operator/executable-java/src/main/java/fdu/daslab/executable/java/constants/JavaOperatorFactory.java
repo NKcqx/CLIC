@@ -38,9 +38,6 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("CollectionSource", CollectionSource.class);
         put("CollectionSink", CollectionSink.class);
         put("TableSourceOperator", TableSource.class);
-        put("TableSinkOperator", TableSink.class);
-        put("ToTableOperator", ToTableOperator.class);
-        put("FromTableOperator", FromTableOperator.class);
     }};
 
     @Override

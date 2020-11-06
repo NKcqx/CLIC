@@ -21,19 +21,6 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
-
-        <!-- joinery库提供java的DataFrame -->
-        <dependency>
-            <groupId>joinery</groupId>
-            <artifactId>joinery-dataframe</artifactId>
-            <version>1.9</version>
-        </dependency>
-        <!-- 与joinery库配合使用，为了支持对csv的操作 -->
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi</artifactId>
-            <version>3.17</version>
-        </dependency>
     </dependencies>
 
     <build>
