@@ -2,10 +2,6 @@
 <Operator ID="ToTableOperator" name="ToTableOperator" kind="transformer">
 
     <platforms>
-        <platform ID="java">
-            <path>Operator/ToTable/conf/JavaToTableOperator.xml</path>
-        </platform>
-
         <platform ID="spark">
             <path>Operator/ToTable/conf/SparkToTableOperator.xml</path>
         </platform>

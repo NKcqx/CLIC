@@ -2,10 +2,6 @@
 <Operator ID="FromTableOperator" name="FromTableOperator" kind="transformer">
 
     <platforms>
-        <platform ID="java">
-            <path>Operator/FromTable/conf/JavaFromTableOperator.xml</path>
-        </platform>
-
         <platform ID="spark">
             <path>Operator/FromTable/conf/SparkFromTableOperator.xml</path>
         </platform>
