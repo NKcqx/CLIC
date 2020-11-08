@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="TableSourceOperator" name="TableSourceOperator" kind="supplier">
+
+    <platform ID="java">
+        <language>java</language>
+        <cost>22.5</cost>
+    </platform>
+
+</Operator>

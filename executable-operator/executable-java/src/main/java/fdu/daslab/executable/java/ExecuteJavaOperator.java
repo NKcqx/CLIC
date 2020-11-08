@@ -61,17 +61,17 @@ public class ExecuteJavaOperator {
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
             TopoTraversal topoTraversal = new TopoTraversal(headAndEndsOperators.getValue0());
             while (topoTraversal.hasNextOpt()) {
-                OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = topoTraversal.nextOpt();
+                OperatorBase<Object, Object> curOpt = topoTraversal.nextOpt();
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
-                    OperatorBase<Stream<List<String>>, Stream<List<String>>> targetOpt = connection.getTargetOpt();
+                    OperatorBase<Object, Object> targetOpt = connection.getTargetOpt();
                     topoTraversal.updateInDegree(targetOpt, -1);
 
                     List<Pair<String, String>> keyPairs = connection.getKeys();
                     for (Pair<String, String> keyPair : keyPairs) {
-                        Stream<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
+                        Object sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
                     }

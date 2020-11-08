@@ -6,6 +6,8 @@ import api.PlanBuilder;
 import java.util.HashMap;
 
 /**
+ * SparkSQL
+ *
  * @author 刘丰艺
  * @version 1.0
  * @since 2020/10/27 11:00 pm
@@ -18,6 +20,7 @@ public class SQLDemo {
 
             /**
              * 在这里，用户可以选取多个源文件（txt, csv, json等）
+             * 源文件可以是本地也可以是HDFS上分布式存储的文件
              * 来满足连接、嵌套查询等sql操作
              */
             DataQuanta sourceNode1 = planBuilder.readTableFrom(new HashMap<String, String>() {{
@@ -32,7 +35,7 @@ public class SQLDemo {
                 put("inputPath", "D:/2020project/sql/courseSelection.csv");
             }});
 
-            DataQuanta exeNode = DataQuanta.createInstance("sqlExe", new HashMap<String, String>() {{
+            DataQuanta exeNode = DataQuanta.createInstance("query", new HashMap<String, String>() {{
                 // 查找跟叫"xiaoming"的学生选同一门课的学生学号、姓名、成绩（"xiaoming"会重名并且和别人会有不止一门课一起上）
                 put("sqlText", "select distinct student.id as stuNum,name as stuName,grade as stuGrade "
                         + "from student,courseSelection,grade "
@@ -43,7 +46,7 @@ public class SQLDemo {
             }});
 
             // 最终结果的输出路径 这里写文件夹名字（HDFS形式）
-            DataQuanta sinkNode = DataQuanta.createInstance("sqlSink", new HashMap<String, String>() {{
+            DataQuanta sinkNode = DataQuanta.createInstance("table-sink", new HashMap<String, String>() {{
                 put("outputPath", "D:/2020project/sql/hdfs");
             }});
 

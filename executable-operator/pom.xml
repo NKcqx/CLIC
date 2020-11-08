@@ -15,7 +15,6 @@
         <module>executable-basic</module>
         <module>executable-java</module>
         <module>executable-spark</module>
-        <module>executable-sparksql</module>
     </modules>
 
     <dependencies>

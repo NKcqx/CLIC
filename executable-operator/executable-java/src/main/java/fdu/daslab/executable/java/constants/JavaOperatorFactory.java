@@ -37,6 +37,7 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("NextIteration", NextIteration.class);
         put("CollectionSource", CollectionSource.class);
         put("CollectionSink", CollectionSink.class);
+        put("TableSourceOperator", TableSource.class);
     }};
 
     @Override
