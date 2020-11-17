@@ -105,6 +105,18 @@ public class PlanBuilder {
         return dataQuanta;
     }
 
+    /**
+     * 连接数据库
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    public DataQuanta connectDB(Map<String, String> params) throws Exception {
+        DataQuanta dataQuanta = DataQuanta.createInstance("connect-db", params);
+        this.headDataQuantas.add(dataQuanta);
+        return dataQuanta;
+    }
+
     public List<DataQuanta> getHeadDataQuanta() {
         return headDataQuantas;
     }

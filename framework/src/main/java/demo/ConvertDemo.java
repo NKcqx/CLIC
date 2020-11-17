@@ -12,7 +12,7 @@ import java.util.HashMap;
  * @version 1.0
  * @since 2020/10/27 11:00 pm
  */
-public class SparkConvertDemo {
+public class ConvertDemo {
 
     public static void main(String[] args) {
         try {

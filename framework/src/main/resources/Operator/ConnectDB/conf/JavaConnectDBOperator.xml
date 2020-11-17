@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="ConnectDBOperator" name="ConnectDBOperator" kind="supplier">
+
+    <platform ID="java">
+        <language>java</language>
+        <!--            cost是该operator的cost，此处先简单设定-->
+        <cost>30</cost>
+    </platform>
+
+</Operator>

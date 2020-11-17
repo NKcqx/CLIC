@@ -1,13 +1,12 @@
-package fdu.daslab.executable.spark.operators;
+package fdu.daslab.executable.spark.operators.table;
 
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import fdu.daslab.executable.spark.utils.SparkInitUtil;
-import org.apache.spark.api.java.function.ForeachFunction;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.SQLContext;
 
 import java.util.List;
 import java.util.Map;
@@ -28,8 +27,8 @@ public class QueryOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> {
     @Override
     public void execute(ParamsModel inputArgs,
                         ResultModel<Dataset<Row>> result) {
-        SparkSession sparkSession = SparkInitUtil.getDefaultSparkSession();
-        Dataset<Row> queryResult = sparkSession.sql(this.params.get("sqlText"));
+        SQLContext sqlContext = SparkInitUtil.getDefaultSQLContext();
+        Dataset<Row> queryResult = sqlContext.sql(this.params.get("sqlText"));
         this.setOutputData("result", queryResult);
     }
 }

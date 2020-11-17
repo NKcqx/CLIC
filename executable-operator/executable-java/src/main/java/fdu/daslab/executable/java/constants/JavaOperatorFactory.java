@@ -3,6 +3,9 @@ package fdu.daslab.executable.java.constants;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
 import fdu.daslab.executable.java.operators.*;
+import fdu.daslab.executable.java.operators.table.ConnectDB;
+import fdu.daslab.executable.java.operators.table.DBTableSource;
+import fdu.daslab.executable.java.operators.table.TableSource;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -37,7 +40,10 @@ public class JavaOperatorFactory implements OperatorFactory {
         put("NextIteration", NextIteration.class);
         put("CollectionSource", CollectionSource.class);
         put("CollectionSink", CollectionSink.class);
+
         put("TableSourceOperator", TableSource.class);
+        put("ConnectDBOperator", ConnectDB.class);
+        put("DBTableSourceOperator", DBTableSource.class);
     }};
 
     @Override

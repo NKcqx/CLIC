@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="DBTableSourceOperator" name="DBTableSourceOperator" kind="supplier">
+
+    <platform ID="spark">
+        <language>java</language>
+        <!--            cost是该operator的cost，此处先简单设定-->
+        <cost>18</cost>
+    </platform>
+
+</Operator>

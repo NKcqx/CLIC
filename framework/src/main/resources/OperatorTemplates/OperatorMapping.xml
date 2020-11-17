@@ -58,6 +58,14 @@
         <template>Operator/FromTable/conf/FromTableOperator.xml</template>
     </pair>
     <pair>
+        <ability>connect-db</ability>
+        <template>Operator/ConnectDB/conf/ConnectDBOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>dbtable-source</ability>
+        <template>Operator/DBTableSource/conf/DBTableSourceOperator.xml</template>
+    </pair>
+    <pair>
         <ability>loop</ability>
         <template>Operator/Loop/conf/LoopOperator.xml</template>
     </pair>

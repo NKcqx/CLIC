@@ -4,13 +4,12 @@ import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
-import fdu.daslab.executable.spark.utils.SparkInitUtil;
+import fdu.daslab.executable.spark.operators.table.QueryOperator;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -25,11 +24,11 @@ public class QueryOperatorTest {
 
     private QueryOperator queryOperator;
 
-    private SparkSession sparkSession;
+    private SQLContext sqlContext;
 
     @Before
     public void before() throws AnalysisException {
-        //sparkSession = SparkInitUtil.getDefaultSparkSession();
+        //sqlContext = SparkInitUtil.getDefaultSQLContext();
 
         StructField[] studentFields = new StructField[] {
           new StructField("id", DataTypes.StringType, true, Metadata.empty()),
@@ -62,11 +61,11 @@ public class QueryOperatorTest {
         courRows.add(RowFactory.create("B102", "History"));
         courRows.add(RowFactory.create("B205", "Data Science"));
 
-//        Dataset<Row> stuDF = sparkSession.createDataFrame(stuRows, studentType);
+//        Dataset<Row> stuDF = sqlContext.createDataFrame(stuRows, studentType);
 //        stuDF.createTempView("student");
-//        Dataset<Row> graDF = sparkSession.createDataFrame(graRows, gradeType);
+//        Dataset<Row> graDF = sqlContext.createDataFrame(graRows, gradeType);
 //        graDF.createTempView("grade");
-//        Dataset<Row> courDF = sparkSession.createDataFrame(courRows, courseType);
+//        Dataset<Row> courDF = sqlContext.createDataFrame(courRows, courseType);
 //        courDF.createTempView("course");
     }
 

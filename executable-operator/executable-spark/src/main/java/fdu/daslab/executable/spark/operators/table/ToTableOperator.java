@@ -1,4 +1,4 @@
-package fdu.daslab.executable.spark.operators;
+package fdu.daslab.executable.spark.operators.table;
 
 import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.OperatorBase;
@@ -35,7 +35,7 @@ public class ToTableOperator extends OperatorBase<JavaRDD<List<String>>, Dataset
      */
     @Override
     public void execute(ParamsModel inputArgs, ResultModel<Dataset<Row>> result) {
-        SparkSession sparkSession = SparkInitUtil.getDefaultSparkSession();
+        SQLContext sqlContext = SparkInitUtil.getDefaultSQLContext();
         FunctionModel functionModel = inputArgs.getFunctionModel();
 
         // 获取用户定义的schemaMap
@@ -51,7 +51,7 @@ public class ToTableOperator extends OperatorBase<JavaRDD<List<String>>, Dataset
                 return RowFactory.create(split);
             }
         });
-        Dataset<Row> convertResult = sparkSession.createDataFrame(rowRDD, tableSchema);
+        Dataset<Row> convertResult = sqlContext.createDataFrame(rowRDD, tableSchema);
         try {
             convertResult.createTempView(this.params.get("tableName"));
         } catch (AnalysisException e) {

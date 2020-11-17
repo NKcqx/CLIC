@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="DBTableSourceOperator" name="DBTableSourceOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="java">
+            <path>Operator/DBTableSource/conf/JavaDBTableSourceOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>Operator/DBTableSource/conf/SparkDBTableSourceOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter name="dbtable" data_type="string" required="true"> </parameter>
+    </parameters>
+    <inputs>  </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+
+</Operator>
