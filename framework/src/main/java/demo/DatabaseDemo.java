@@ -28,6 +28,10 @@ public class DatabaseDemo {
                 put("driver", "com.mysql.cj.jdbc.Driver");
                 put("user", "root");
                 put("password", "123456");
+//                put("url", "jdbc:postgresql://192.168.100.134:5432/clicdb");
+//                put("driver", "org.postgresql.Driver");
+//                put("user", "xiaohua");
+//                put("password", "123456");
             }}).withTargetPlatform("spark");
 
             // 读取table
