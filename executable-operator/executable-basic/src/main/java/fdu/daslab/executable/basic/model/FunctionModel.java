@@ -30,7 +30,8 @@ public class FunctionModel {
     public Object invoke(String functionName, Object... args) {
         try {
             return functionMap.get(functionName).invoke(obj, args);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+        } catch (Exception e) {
+            // 所有udf的异常都不管，因为一条数据的错误不能影响其他数据
             e.printStackTrace();
         }
         return null;

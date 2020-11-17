@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: clic-master-svc
+  namespace: argo
+spec:
+  selector:
+    clic: master
+  ports:
+  - protocol: TCP
+    port: 7777
+    targetPort: 7777

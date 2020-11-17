@@ -1,6 +1,6 @@
 package fdu.daslab.executable.spark.operators;
 
-import com.beust.jcommander.Parameter;
+//import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
@@ -23,17 +23,17 @@ import java.util.Map;
 @Parameters(separators = "=")
 public class FileSource extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
 
-    // 输入路径
-    @Parameter(names = {"--input"}, required = true)
-    String inputFileName;
-
-    // 输入的分隔符
-    @Parameter(names = {"--separator"})
-    String separateStr = ",";
-
-    // 初始的partition数量
-    @Parameter(names = {"--partitionNum"})
-    Integer partitionNum = 5;
+//    // 输入路径
+//    @Parameter(names = {"--input"}, required = true)
+//    String inputFileName;
+//
+//    // 输入的分隔符
+//    @Parameter(names = {"--separator"})
+//    String separateStr = ",";
+//
+//    // 初始的partition数量
+//    @Parameter(names = {"--partitionNum"})
+//    Integer partitionNum = 5;
 
     public FileSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
         super("SparkFileSource", id, inputKeys, outputKeys, params);

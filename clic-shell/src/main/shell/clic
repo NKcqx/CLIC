@@ -1,0 +1,107 @@
+#!/usr/bin/env bash
+
+bin=`which $0`
+bin=`dirname ${bin}`
+bin=`cd "$bin"; pwd`
+
+echo ""
+function  print_usage() {
+  echo " Usage:"
+  echo " clic -command Args[...]"
+  echo " where command is one of:"
+  echo "      -submit <planName> <planDagPath>         Submit a plan/task via yaml"
+  echo "      -submit <planJarPath>                    Submit a plan/task via jar"
+  echo "      -list_task                               Get a list of all tasks"
+  echo "      -task <taskName>                         Get detailed information of a specified task"
+  echo "      -task_stage <taskName>                   Get information on all stages of a task"
+  echo "      -stage <stageId>                         Get detailed information of a specified stage"
+  echo "      -stage_result <stageId> [<lineNum>]      Get the result of a specified stage. The parameter lineNum represents the"
+  echo "                                                     maximum number of lines of the result, which is optional, and the default is 10."
+  echo "      -suspend_stage <stageId>                 Pause a specified stage (including subsequent stages that depend on it)"
+  echo "      -continue_stage <stageId>                Continue a specified stage (including subsequent stages that depend on it)"
+  echo "      -version                                 Print version information"
+  echo "      -help                                    Show the usage"
+  echo ""
+}
+if [ $# = 0 ]; then
+  print_usage
+  exit
+fi
+
+command=$1
+shift
+case $command in
+  --help|-help|-h)
+    print_usage
+    exit
+    ;;
+esac
+#set PATH
+if [ -d "$CLIC_HOME/" ]; then
+  PATH=$CLIC_HOME/jars
+elif [ -d "/data/jars" ]; then
+  CLIC_HOME="/data"
+  PATH=$CLIC_HOME/jars
+else
+  echo  "Error: CLIC service is not found."
+fi
+#get conf
+if [ -f "$CLIC_HOME/conf/master-info.config" ]; then
+  config="$CLIC_HOME/conf/master-info.config"
+  . $config
+else
+   echo  "Error: CLIC config is not found."
+fi
+
+#set master ip&port
+master_host="${ip}"
+master_port="${port}"
+#some java parameters
+if [ "$JAVA_HOME" != "" ]; then
+  JAVA=$JAVA_HOME/bin/java
+else
+  echo "Error: JAVA_HOME is not set."
+  exit 1
+fi
+
+#core command
+if [ "$command" = "-list_task" ]; then
+  CLASS=fdu.daslab.shellservice.ShellGetTaskList
+elif [ "$command" = "-version" ]; then
+  CLASS=fdu.daslab.shellservice.ShellGetVersionInfo
+elif [ "$command" = "-submit" ]; then
+  if [[ $1 = *.jar ]]; then
+    if [ -x $1 ]; then
+       echo "$1 has been submitted for execution"
+       echo ""
+       eval exec "$JAVA" -jar $1
+    else
+       echo "$1 does not exist, please check and try again!"
+       echo ""
+    fi
+    exit 1
+  else
+    CLASS=fdu.daslab.shellservice.ShellSubmitPlan
+  fi
+elif [ "$command" = "-task" ]; then
+  CLASS=fdu.daslab.shellservice.ShellGetTaskInfo
+elif [ "$command" = "-task_stage" ]; then
+  CLASS=fdu.daslab.shellservice.ShellGetStagesOfTask
+elif [ "$command" = "-stage" ]; then
+  CLASS=fdu.daslab.shellservice.ShellGetStageInfo
+elif [ "$command" = "-stage_result" ]; then
+  CLASS=fdu.daslab.shellservice.ShellGetStageResult
+elif [ "$command" = "-suspend_stage" ]; then
+  CLASS=fdu.daslab.shellservice.ShellSuspendStage
+elif [ "$command" = "-continue_stage" ]; then
+  CLASS=fdu.daslab.shellservice.ShellContinueStage
+else
+  echo $command - invalid command
+  print_usage
+  exit 1
+fi
+
+PATH=$PATH/"clic-shell-test.jar"
+
+JAVA_HEAP_MAX=-Xmx1000m
+eval exec "$JAVA" $JAVA_HEAP_MAX -classpath $PATH $CLASS "$@" $master_host $master_port
