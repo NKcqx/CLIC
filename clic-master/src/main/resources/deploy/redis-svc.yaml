@@ -1,0 +1,16 @@
+## Service，TODO: 不对外暴露ip，目前测试为了方便而已
+apiVersion: v1
+kind: Service
+metadata:
+  name: redis
+  labels:
+    app: redis
+spec:
+  type: NodePort
+  ports:
+    - name: redis
+      port: 6379
+      nodePort: 30379
+      targetPort: 6379
+  selector:
+    app: redis

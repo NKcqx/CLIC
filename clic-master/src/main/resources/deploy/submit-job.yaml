@@ -1,0 +1,25 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: clic-driver
+  namespace: argo
+spec:
+  template:
+    spec:
+      containers:
+        - name: clic-plan
+          image: java-env:v0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - java -jar /data/jars/clic-driver.jar
+          volumeMounts:
+            - name: nfs-volume
+              mountPath: /data
+      restartPolicy: Never
+      volumes:
+        - name: nfs-volume
+          persistentVolumeClaim:
+            claimName: pvc-nfs

@@ -12,6 +12,7 @@ import basic.visitors.PrintVisitor;
 import basic.visitors.WorkflowVisitor;
 import channel.Channel;
 import fdu.daslab.backend.executor.model.Workflow;
+import org.apache.thrift.TException;
 import fdu.daslab.backend.executor.utils.YamlUtil;
 import org.javatuples.Pair;
 import org.jgrapht.Graphs;
@@ -21,6 +22,7 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
+import fdu.daslab.service.client.TaskServiceClient;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -32,12 +34,14 @@ import java.util.*;
  * @version 1.0
  * @since 2020/7/6 1:40 下午
  */
-public class PlanBuilder {
+public class PlanBuilder implements java.io.Serializable {
     private static final Logger LOGGER = LoggerFactory.getLogger(PlanBuilder.class);
     private List<DataQuanta> headDataQuantas = new ArrayList<>(); // 其实可以有多个head
     // private SimpleDirectedWeightedGraph<Operator, Channel> graph = null;
     private DefaultListenableGraph<Operator, Channel> graph = null;
     private Configuration configuration;
+    // 用户定义的plan名字，保存方便查看用户的任务信息（实际的plan会在该名字上加上一个随机防止名字相同）
+    private String planName;
 
     /**
      * @param configuration 配置文件，从中加载系统运行时必要的参数，即系统运行时的上下文
@@ -53,7 +57,12 @@ public class PlanBuilder {
     }
 
     public PlanBuilder() throws ParserConfigurationException, SAXException, IOException {
+        this("default-plan");
+    }
+
+    public PlanBuilder(String planName) throws IOException, ParserConfigurationException, SAXException {
         this(new Configuration());
+        this.planName = planName;
     }
 
     public boolean addVertex(DataQuanta dataQuanta) {
@@ -111,6 +120,15 @@ public class PlanBuilder {
 
     public DefaultListenableGraph<Operator, Channel> getGraph() {
         return graph;
+    }
+
+    public void submit(String planDagPath) throws TException {
+        // 提交任务，直接将任务提交给clic的master
+        String masterIp = configuration.getProperty("clic-master-ip");
+        Integer masterPort = Integer.valueOf(configuration.getProperty("clic-master-port"));
+        TaskServiceClient taskClient = new TaskServiceClient(masterIp, masterPort);
+        LOGGER.info("submit plan:" + planName + ", path:" + planDagPath);
+        taskClient.submitPlan(planName, planDagPath);
     }
 
     /**
@@ -173,8 +191,11 @@ public class PlanBuilder {
         wrapStageWithHeadTail(stages); // 为每个Stage添加一个对应平台的SourceOpt 和 SinkOpt
 //        graph.removeGraphListener(listener);
         Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
-        argoWorkflow.execute(); // 将workflow生成为YAML
+        // 生成优化好的dag的plan，然后提交给master进行调度和运行
+        String argoPath = argoWorkflow.execute();
+        submit(argoPath); // TODO：暂时使用异步的提交，driver和master之间并没有实现实时的交互，调度
     }
+
 
     /**
      * 不同的Stage会放到不同平台上处理，每个平台上的stage都需要独立的source和sink，
