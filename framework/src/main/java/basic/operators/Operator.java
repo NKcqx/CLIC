@@ -3,8 +3,11 @@ package basic.operators;
 
 import basic.Param;
 import basic.visitors.Visitor;
+import org.apache.spark.sql.AnalysisException;
+import org.apache.spark.sql.catalyst.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import siamese.SiameseAdapter;
 
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -158,6 +161,13 @@ public class Operator implements Visitable, Serializable {
      */
     public void setParamValue(String key, String value) {
         if (this.inputParamList.containsKey(key)) {
+            // 为了与Siamese组对接，这里需要判断key的值
+            // 暂时只能硬编码，没想到好的解决方法
+            try {
+                checkKeyOfSQL(key, value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             this.inputParamList.get(key).setValue(value);
         } else {
             boolean isMatch = false;
@@ -172,6 +182,38 @@ public class Operator implements Visitable, Serializable {
                         String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
             }
         }
+    }
+
+    /**
+     * 跟Siamese组对接
+     * 判断key是否是"inputPath"或"SQLNeedForOptimized"
+     * 他们只能接受sql语句作为输入
+     * 这里暂时只能硬编码，没想到好的解决方法
+     */
+    private void checkKeyOfSQL(String key, String value) throws Exception {
+        if (key.equals("inputPath")) {
+            addTableToSiamese(value);
+        }
+        if (key.equals("sqlNeedForOptimized")) {
+            exeSiamese(value);
+        }
+    }
+
+    /**
+     * 要让Siamese优化SQL语句，还需要让他们先读一下每一个table
+     * 获取每一个table的schema信息
+     * @param value
+     */
+    private void addTableToSiamese(String value) {
+        SiameseAdapter.readTableToGetSchema(value);
+    }
+
+    /**
+     * 调用SiameseAdapter的SQL2LogicalPlan函数，执行荆老师组提供的优化
+     * @param value
+     */
+    private void exeSiamese(String value) throws Exception {
+        SiameseAdapter.sqlToLogicalPlan(value);
     }
 
     /**

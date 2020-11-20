@@ -29,16 +29,16 @@
             <artifactId>jgrapht-core</artifactId>
             <version>1.4.0</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-api</artifactId>
-            <version>2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>2.2</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-api</artifactId>-->
+<!--            <version>2.2</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-core</artifactId>-->
+<!--            <version>2.2</version>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.jgrapht</groupId>
             <artifactId>jgrapht-ext</artifactId>
@@ -48,6 +48,15 @@
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
             <version>0.13.0</version>
+        </dependency>
+        <!-- 荆老师组尚未将他们项目封装成我们可用的包 -->
+        <!-- 因此只能先用Spark SQL代替 -->
+        <!-- 这种逻辑计划与物理平台混淆的方法肯定不行 -->
+        <!-- 但现在为了对接，没办法 -->
+        <dependency>
+            <groupId>fdu.daslab</groupId>
+            <artifactId>executable-spark</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

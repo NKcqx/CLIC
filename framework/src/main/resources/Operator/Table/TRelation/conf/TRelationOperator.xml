@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="TRelationOperator" name="TRelationOperator" kind="transformer">
+
+    <platforms>
+        <platform ID="spark">
+            <path>Operator/Table/TRelation/conf/SparkTRelationOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter name="tableName"  data_type="string"></parameter>
+        <parameter name="inputPath"  data_type="string"></parameter>
+        <parameter name="schema"  data_type="string"></parameter>
+        <parameter name="condition"  data_type="string"></parameter>
+    </parameters>
+
+    <inputs>  <!-- 输入数据 -->
+        <input name="data" data_type="string" required="true"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+</Operator>
