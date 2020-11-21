@@ -1,10 +1,9 @@
 package fdu.daslab.consoleprint.enums;
 
 import fdu.daslab.consoleprint.table.Cell;
+
 /**
- * @author Du Qinghua
- * @version 1.0
- * @since 2020/10/22 18:14
+ * 引用自：https://github.com/clyoudu/clyoudu-util
  */
 public enum NullPolicy {
 
@@ -17,7 +16,7 @@ public enum NullPolicy {
     NULL_STRING {
         @Override
         public Cell getCell(Cell cell) {
-            if(cell == null){
+            if (cell == null) {
                 return new Cell("null");
             }
             cell.setValue("null");
@@ -27,7 +26,7 @@ public enum NullPolicy {
     EMPTY_STRING {
         @Override
         public Cell getCell(Cell cell) {
-            if(cell == null){
+            if (cell == null) {
                 return new Cell("");
             }
             cell.setValue("");
