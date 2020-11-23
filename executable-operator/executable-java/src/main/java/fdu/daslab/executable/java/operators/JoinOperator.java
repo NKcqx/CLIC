@@ -37,15 +37,13 @@ public class JoinOperator extends OperatorBase<Stream<List<String>>, Stream<List
 
         this.getInputData("leftTable").forEach(item -> {
             // 用户指定key
-            leftKeys.add((String) joinFunction.invoke(this.params.get("leftTableKeyName"), item));
-            // 用户指定join时左表要select哪几列
-            leftTable.add((List<String>) joinFunction.invoke(this.params.get("leftTableFuncName"), item));
+            leftKeys.add((String) joinFunction.invoke(this.params.get("leftKey"), item));
+            leftTable.add(item);
         });
         this.getInputData("rightTable").forEach(item -> {
             // 用户指定key
-            rightKeys.add((String) joinFunction.invoke(this.params.get("rightTableKeyName"), item));
-            // 用户指定join时右表要select哪几列
-            rightTable.add((List<String>) joinFunction.invoke(this.params.get("rightTableFuncName"), item));
+            rightKeys.add((String) joinFunction.invoke(this.params.get("rightKey"), item));
+            rightTable.add(item);
         });
 
         List<String> resultLine = new ArrayList<>();

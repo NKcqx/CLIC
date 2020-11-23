@@ -12,10 +12,8 @@
     </platforms>
 
     <parameters>
-        <parameter name="leftTableKeyName" data_type="string" required="true"> </parameter>
-        <parameter name="rightTableKeyName" data_type="string" required="true"> </parameter>
-        <parameter name="leftTableFuncName" data_type="string" required="true"> </parameter>
-        <parameter name="rightTableFuncName" data_type="string" required="true"> </parameter>
+        <parameter name="leftKey" data_type="string" required="true"> </parameter>
+        <parameter name="rightKey" data_type="string" required="true"> </parameter>
     </parameters>
 
     <inputs>  <!-- 输入数据 -->

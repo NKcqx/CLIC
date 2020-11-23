@@ -33,20 +33,17 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
     @Override
     public void execute(ParamsModel inputArgs,
                         ResultModel<JavaRDD<List<String>>> result) {
-        String leftTableKey = this.params.get("leftTableKeyName");
-        String leftTableFunc = this.params.get("leftTableFuncName");
-
-        String rightTableKey = this.params.get("rightTableKeyName");
-        String rightTableFunc = this.params.get("rightTableFuncName");
+        String leftKey = this.params.get("leftKey");
+        String rightKey = this.params.get("rightKey");
 
         // First JavaRDD
         JavaPairRDD<String, List<String>> firstRDD = this.getInputData("leftTable")
                 .mapToPair((PairFunction<List<String>, String, List<String>>) line -> {
                     FunctionModel joinFunction = inputArgs.getFunctionModel();
                     // 用户指定key
-                    String tableKey = (String) joinFunction.invoke(leftTableKey, line);
+                    String tableKey = (String) joinFunction.invoke(leftKey, line);
                     // 用户指定join时左表要select哪几列
-                    List<String> tableLine = (List<String>) joinFunction.invoke(leftTableFunc, line);
+                    List<String> tableLine = line;
                     return new Tuple2<>(tableKey, tableLine);
                 });
 
@@ -55,9 +52,9 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
                 .mapToPair((PairFunction<List<String>, String, List<String>>) line -> {
                     FunctionModel joinFunction = inputArgs.getFunctionModel();
                     // 用户指定key
-                    String tableKey = (String) joinFunction.invoke(rightTableKey, line);
+                    String tableKey = (String) joinFunction.invoke(rightKey, line);
                     // 用户指定join时右表要select哪几列
-                    List<String> tableLine = (List<String>) joinFunction.invoke(rightTableFunc, line);
+                    List<String> tableLine = line;
                     return new Tuple2<>(tableKey, tableLine);
                 });
 
