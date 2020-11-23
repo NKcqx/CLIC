@@ -38,4 +38,13 @@ public class TestJoinCaseFunc {
     public String rightKey(List<String> record) {
         return record.get(0);
     }
+
+    // 自定义join之后左表中要select的属性
+    public List<String> leftCols(List<String> record) {
+        return Arrays.asList(record.get(0), record.get(1));
+    }
+    // 自定义join之后右表中要select的属性
+    public List<String> rightCols(List<String> record) {
+        return Arrays.asList(record.get(1), record.get(2), record.get(3));
+    }
 }

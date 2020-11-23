@@ -8,10 +8,7 @@ import org.apache.spark.api.java.function.Function;
 import org.apache.spark.api.java.function.PairFunction;
 import scala.Tuple2;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * spark平台的join算子
@@ -35,6 +32,15 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
                         ResultModel<JavaRDD<List<String>>> result) {
         String leftKey = this.params.get("leftKey");
         String rightKey = this.params.get("rightKey");
+        String leftCols = this.params.get("leftCols");
+        String rightCols = this.params.get("rightCols");
+
+        if (leftKey == null) {
+            throw new NoSuchElementException("key of left table must not be empty!");
+        }
+        if (rightKey == null) {
+            throw new NoSuchElementException("key of right table must not be empty!");
+        }
 
         // First JavaRDD
         JavaPairRDD<String, List<String>> firstRDD = this.getInputData("leftTable")
@@ -42,8 +48,13 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
                     FunctionModel joinFunction = inputArgs.getFunctionModel();
                     // 用户指定key
                     String tableKey = (String) joinFunction.invoke(leftKey, line);
-                    // 用户指定join时左表要select哪几列
-                    List<String> tableLine = line;
+                    List<String> tableLine = null;
+                    if (leftCols != null) {
+                        // 用户指定join时左表要select哪几列
+                        tableLine = (List<String>) joinFunction.invoke(leftCols, line);
+                    } else {
+                        tableLine = line;
+                    }
                     return new Tuple2<>(tableKey, tableLine);
                 });
 
@@ -53,8 +64,13 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
                     FunctionModel joinFunction = inputArgs.getFunctionModel();
                     // 用户指定key
                     String tableKey = (String) joinFunction.invoke(rightKey, line);
-                    // 用户指定join时右表要select哪几列
-                    List<String> tableLine = line;
+                    List<String> tableLine = null;
+                    if (rightCols != null) {
+                        // 用户指定join时右表要select哪几列
+                        tableLine = (List<String>) joinFunction.invoke(rightCols, line);
+                    } else {
+                        tableLine = line;
+                    }
                     return new Tuple2<>(tableKey, tableLine);
                 });
 
@@ -63,6 +79,10 @@ public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
         JavaRDD<List<String>> nextStream = joinRDD.map(
                 (Function<Tuple2<String, Tuple2<List<String>, List<String>>>, List<String>>) stringTuple2Tuple2 -> {
                     List<String> resultLine = new ArrayList<>();
+                    if (leftCols != null) {
+                        // key
+                        resultLine.add(stringTuple2Tuple2._1);
+                    }
                     // first table
                     resultLine.addAll(stringTuple2Tuple2._2()._1());
                     // second table

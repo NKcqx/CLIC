@@ -40,6 +40,8 @@ public class JoinDemo {
             DataQuanta joinNode = DataQuanta.createInstance("join", new HashMap<String, String>() {{
                 put("leftKey", "leftKey");
                 put("rightKey", "rightKey");
+//                put("leftCols", "leftCols");
+//                put("rightCols", "rightCols");
             //}}).withTargetPlatform("java");
             }}).withTargetPlatform("spark");
 
