@@ -1,3 +1,4 @@
+
 package fdu.daslab.executable.spark;
 
 import com.beust.jcommander.JCommander;
@@ -7,7 +8,9 @@ import fdu.daslab.executable.basic.model.*;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.TopoTraversal;
 import fdu.daslab.executable.spark.constants.SparkOperatorFactory;
+import fdu.daslab.service.client.SchedulerServiceClient;
 import org.apache.spark.api.java.JavaRDD;
+import org.apache.thrift.TException;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +35,25 @@ import java.util.List;
 @Parameters(separators = "=")
 public class ExecuteSparkOperator {
 
+    @Parameter(names = {"--stageId", "-sid"})
+    String stageId = null;    // stage的全局唯一标识
+
     @Parameter(names = {"--udfPath", "-udf"})
     String udfPath;
+
     @Parameter(names = {"--dagPath", "-dag"})
     String dagPath;
 
-    public static void main(String[] args) {
+    // @Parameter(names = {"--port", "-p"})
+    // Integer thriftPort; // 本server启动的thrift端口
+
+    @Parameter(names = {"--masterHost", "-mh"})
+    String masterHost = null; // master的thrift地址
+
+    @Parameter(names = {"--masterPort", "-mp"})
+    Integer masterPort = null; // master的thrift端口
+
+    public static void main(String[] args) throws TException {
         Logger logger = LoggerFactory.getLogger(ExecuteSparkOperator.class);
         ExecuteSparkOperator entry = new ExecuteSparkOperator();
         JCommander.newBuilder()
@@ -46,6 +62,14 @@ public class ExecuteSparkOperator {
                 .parse(args);
         // String functionPath =  entry.udfPath;
         // final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(entry.udfPath);
+
+        // 创建一个thrift client，用于和master进行交互
+        SchedulerServiceClient masterClient = new SchedulerServiceClient(entry.stageId,
+                entry.masterHost, entry.masterPort);
+
+        // 开始stage
+        masterClient.postStarted();
+
         //记录时间
         long start = System.currentTimeMillis();   //获取开始时间
         logger.info("Stage(spark) ———— Start A New Spark Stage");
@@ -60,16 +84,18 @@ public class ExecuteSparkOperator {
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
             TopoTraversal topoTraversal = new TopoTraversal(headAndEndOperators.getValue0());
             while (topoTraversal.hasNextOpt()) {
-                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = topoTraversal.nextOpt();
+                OperatorBase<Object, Object> curOpt = topoTraversal.nextOpt();
+                // 每个operator内部设置一个client，方便和master进行交互
+                curOpt.setMasterClient(masterClient);
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
-                    OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> targetOpt = connection.getTargetOpt();
+                    OperatorBase<Object, Object> targetOpt = connection.getTargetOpt();
                     topoTraversal.updateInDegree(targetOpt, -1);
                     List<Pair<String, String>> keyPairs = connection.getKeys();
                     for (Pair<String, String> keyPair : keyPairs) {
-                        JavaRDD<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
+                        Object sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
                     }
@@ -82,6 +108,11 @@ public class ExecuteSparkOperator {
             logger.info("Stage(spark) ———— End The Current Spark Stage");
         } catch (Exception e) {
             e.printStackTrace();
+
+            // TODO: 尽量所有错误都直接上报给master，业务代码不要捕获其中的异常
         }
+
+        // 结束stage
+        masterClient.postCompleted();
     }
 }

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="JoinOperator" name="JoinOperator" kind="calculator">
+
+    <platform ID="java">
+        <language>java</language>
+        <cost>2</cost>
+    </platform>
+
+</Operator>
+

@@ -69,3 +69,6 @@ hs_err_pid*
 Icon?  
 ehthumbs.db  
 Thumbs.db 
+
+# go vendor
+*/vendor/*

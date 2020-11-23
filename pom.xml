@@ -61,20 +61,31 @@
         </dependency>
         <!-- mockito -->
 
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-core_2.11</artifactId>
+            <version>2.4.5</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/org.apache.spark/spark-sql -->
+        <!-- 亲测spark-core中不包含部分spark-sql类 比如Row -->
         <dependency>
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-sql_2.11</artifactId>
             <version>2.4.5</version>
         </dependency>
 
-
-
+        <dependency>
+            <groupId>org.javatuples</groupId>
+            <artifactId>javatuples</artifactId>
+            <version>1.2</version>
+        </dependency>
     </dependencies>
 
     <modules>
         <module>framework</module>
         <module>executable-operator</module>
         <module>backend-executor</module>
+        <module>clic-master</module>
+        <module>clic-shell</module>
     </modules>
 </project>

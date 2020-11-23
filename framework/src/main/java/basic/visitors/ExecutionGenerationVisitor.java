@@ -39,20 +39,22 @@ public class ExecutionGenerationVisitor extends Visitor {
     public void visit(Operator opt) {
         if (!isVisited(opt)) {
             visited.add(opt);
-            // 拿到所有的entities并遍历找到cost最小的
-            OperatorEntity bestOperatorEntity = Collections.min(
-                    opt.getEntities().values(), Comparator.comparing(OperatorEntity::getCost));
-            try {
-                // 为opt选择最佳的entity
-                opt.selectEntity(bestOperatorEntity.getEntityID());
-                this.logging(String.format("> Pick %s 's `%s[%f]` implement as best Operator\n",
-                        opt.getOperatorID(),
-                        opt.getSelectedEntities().getEntityID(),
-                        opt.getSelectedEntities().getCost()));
+            if (opt.getSelectedEntities() == null) {
+                // 拿到所有的entities并遍历找到cost最小的
+                OperatorEntity bestOperatorEntity = Collections.min(
+                        opt.getEntities().values(), Comparator.comparing(OperatorEntity::getCost));
+                try {
+                    // 为opt选择最佳的entity
+                    opt.selectEntity(bestOperatorEntity.getEntityID());
+                    this.logging(String.format("> Pick %s 's `%s[%f]` implement as best Operator\n",
+                            opt.getOperatorID(),
+                            opt.getSelectedEntities().getEntityID(),
+                            opt.getSelectedEntities().getCost()));
 
-            } catch (FileNotFoundException e) {
-                // 即使出了问题也不要来这找...这只是调用对象内部的ID，错也是别人往里传错了
-                e.printStackTrace();
+                } catch (FileNotFoundException e) {
+                    // 即使出了问题也不要来这找...这只是调用对象内部的ID，错也是别人往里传错了
+                    e.printStackTrace();
+                }
             }
         }
 

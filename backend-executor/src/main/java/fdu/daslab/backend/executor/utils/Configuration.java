@@ -15,7 +15,9 @@ import java.util.Properties;
  * @since 2020/7/12 12:50 上午
  */
 public class Configuration {
-    private static final String DEFAULT_CONFIGURATION_FILE_NAME = "default-config.properties";
+    // 设置一个系统参数，方便本地调试
+    private static final String DEFAULT_CONFIGURATION_FILE_NAME =
+            System.getProperty("configPath", "default-config.properties");
     private Map<String, String> properties = new HashMap<>();
 
     public Configuration() throws FileNotFoundException {

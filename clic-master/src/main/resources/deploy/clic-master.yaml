@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clic-master
+  namespace: argo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      clic: master
+  template:
+    metadata:
+      labels:
+        clic: master
+    spec:
+      containers:
+        - name: master-template
+          image: java-env:v0
+          imagePullPolicy: IfNotPresent
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - java -jar /data/jars/clic-master.jar
+          volumeMounts:
+            - name: nfs-volume
+              mountPath: /data
+          ports:
+            - containerPort: 7777
+      volumes:
+        - name: nfs-volume
+          persistentVolumeClaim:
+            claimName: pvc-nfs

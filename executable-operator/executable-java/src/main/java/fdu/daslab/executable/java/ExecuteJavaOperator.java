@@ -1,3 +1,4 @@
+
 package fdu.daslab.executable.java;
 
 import com.beust.jcommander.JCommander;
@@ -8,6 +9,8 @@ import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
 import fdu.daslab.executable.basic.utils.TopoTraversal;
 import fdu.daslab.executable.java.constants.JavaOperatorFactory;
+import fdu.daslab.service.client.SchedulerServiceClient;
+import org.apache.thrift.TException;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,12 +35,25 @@ import java.util.stream.Stream;
  */
 @Parameters(separators = "=")
 public class ExecuteJavaOperator {
+    @Parameter(names = {"--stageId", "-sid"})
+    String stageId = null;    // stage的全局唯一标识
+
     @Parameter(names = {"--udfPath", "-udf"})
     String udfPath;
+
     @Parameter(names = {"--dagPath", "-dag"})
     String dagPath;
 
-    public static void main(String[] args) {
+//    @Parameter(names = {"--port", "-p"})
+//    Integer thriftPort; // 本server启动的thrift端口
+
+    @Parameter(names = {"--masterHost", "-mh"})
+    String masterHost = null; // master的thrift地址
+
+    @Parameter(names = {"--masterPort", "-mp"})
+    Integer masterPort = null; // master的thrift端口
+
+    public static void main(String[] args) throws TException {
         Logger logger = LoggerFactory.getLogger(ExecuteJavaOperator.class);
         // 解析命令行参数
         ExecuteJavaOperator entry = new ExecuteJavaOperator();
@@ -45,6 +61,13 @@ public class ExecuteJavaOperator {
                 .addObject(entry)
                 .build()
                 .parse(args);
+
+        // 创建一个thrift client，用于和master进行交互
+        SchedulerServiceClient masterClient = new SchedulerServiceClient(entry.stageId,
+                entry.masterHost, entry.masterPort);
+
+        // 开始stage
+        masterClient.postStarted();
 
         final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath(entry.udfPath);
 
@@ -61,17 +84,19 @@ public class ExecuteJavaOperator {
             // 拓扑排序保证了opt不会出现 没得到所有输入数据就开始计算的情况
             TopoTraversal topoTraversal = new TopoTraversal(headAndEndsOperators.getValue0());
             while (topoTraversal.hasNextOpt()) {
-                OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = topoTraversal.nextOpt();
+                OperatorBase<Object, Object> curOpt = topoTraversal.nextOpt();
+                // 每个operator内部设置一个client，方便和master进行交互
+                curOpt.setMasterClient(masterClient);
                 curOpt.execute(inputArgs, null);
                 // 把计算结果传递到每个下一跳opt
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
                 for (Connection connection : connections) {
-                    OperatorBase<Stream<List<String>>, Stream<List<String>>> targetOpt = connection.getTargetOpt();
+                    OperatorBase<Object, Object> targetOpt = connection.getTargetOpt();
                     topoTraversal.updateInDegree(targetOpt, -1);
 
                     List<Pair<String, String>> keyPairs = connection.getKeys();
                     for (Pair<String, String> keyPair : keyPairs) {
-                        Stream<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
+                        Object sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
                     }
@@ -81,8 +106,13 @@ public class ExecuteJavaOperator {
             long end = System.currentTimeMillis(); //获取结束时间
             logger.info("Stage(java) ———— Running hold time:： " + (end - start) + "ms");
             logger.info("Stage(java) ———— End The Current Java Stage");
+
         } catch (Exception e) {
+            // TODO: 这种异常不要捕获，直接post error 到master
             e.printStackTrace();
         }
+
+        // 结束stage
+        masterClient.postCompleted();
     }
 }

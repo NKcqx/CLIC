@@ -1,6 +1,6 @@
 package fdu.daslab.executable.java.operators;
 
-import com.beust.jcommander.Parameter;
+//import com.beust.jcommander.Parameter;
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
@@ -28,13 +28,13 @@ import java.util.stream.Stream;
 @Parameters(separators = "=")
 public class FileSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
     Logger logger = LoggerFactory.getLogger(FileSource.class);
-    // 输入路径
-    @Parameter(names = {"--input"}, required = true)
-    String inputFileName;
-
-    // 输入的分隔符
-    @Parameter(names = {"--separator"})
-    String separateStr = ",";
+//    // 输入路径
+//    @Parameter(names = {"--input"}, required = true)
+//    String inputFileName;
+//
+//    // 输入的分隔符
+//    @Parameter(names = {"--separator"})
+//    String separateStr = ",";
 
     public FileSource(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
         super("FileSource", id, inputKeys, outputKeys, params);

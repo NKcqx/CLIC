@@ -23,9 +23,11 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("SinkOperator", FileSink.class);
         put("FilterOperator", FilterOperator.class);
         put("MapOperator", MapOperator.class);
-        // put("JoinOperator", JoinOperator.class);
+        put("JoinOperator", JoinOperator.class);
         put("ReduceByKeyOperator", ReduceByKeyOperator.class);
         put("SortOperator", SortOperator.class);
+        put("SocketSourceOperator", SocketSource.class);
+        put("SocketSinkOperator", SocketSink.class);
         put("CountByValueOperator", CountByValueOperator.class);
         put("CountOperator", CountOperator.class);
         put("DistinctOperator", DistinctOperator.class);
@@ -33,6 +35,11 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("NextIteration", NextIteration.class);
         put("CollectionSink", CollectionSink.class);
         put("CollectionSource", CollectionSource.class);
+        put("TableSourceOperator", TableSource.class);
+        put("QueryOperator", QueryOperator.class);
+        put("TableSinkOperator", TableSink.class);
+        put("ToTableOperator", ToTableOperator.class);
+        put("FromTableOperator", FromTableOperator.class);
     }};
 
     @Override
