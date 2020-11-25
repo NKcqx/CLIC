@@ -29,5 +29,4 @@ public class CollectionSource extends OperatorBase<Stream<List<String>>, Stream<
             e.printStackTrace();
         }
     }
-
 }

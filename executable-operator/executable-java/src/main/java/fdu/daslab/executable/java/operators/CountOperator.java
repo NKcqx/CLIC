@@ -14,6 +14,7 @@ import java.util.stream.Stream;
  * @version 1.0
  * @since 2020/09/10 16:36
  */
+
 @Parameters(separators = "=")
 public class CountOperator extends OperatorBase<Stream<List<String>>, Stream<Long>> {
 
