@@ -100,7 +100,7 @@ public class ExecuteSparkOperator {
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
                     }
                 }
-                logger.info("Stage(java) ———— Current Spark Operator is " + curOpt.getName());
+                logger.info("Stage(spark) ———— Current Spark Operator is " + curOpt.getName());
             }
 
             long end = System.currentTimeMillis(); //获取结束时间

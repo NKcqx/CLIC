@@ -65,4 +65,8 @@
         <ability>collection-source</ability>
         <template>Operator/CollectionSource/conf/CollectionSourceOperator.xml</template>
     </pair>
+    <pair>
+        <ability>pagerank</ability>
+        <template>Operator/PageRank/conf/PageRankOperator.xml</template>
+    </pair>
 </mappings>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="ConvertToGraphOperator" name="ConvertToGraphOperator" kind="transform">
+
+    <platforms>
+        <platform ID="graphx">
+            <path>Operator/ConvertToGraph/conf/RddToGraphOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <inputs>  <!-- 输入数据 -->
+        <input name="data" data_type="string" required="true"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+</Operator>
