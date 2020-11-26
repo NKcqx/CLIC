@@ -16,7 +16,7 @@ class PdIloc(OperatorBase):
 
     def execute(self):
         try:
-            dataFrame = pd.DataFrame(self.getInputData("input_DataFrame"))
+            dataFrame = pd.DataFrame(self.getInputData("data"))
             dataFrame = dataFrame.iloc[self.params["row_from"]: self.params["row_to"],
                                        self.params["col_from"]: self.params["col_to"]]
             self.setOutputData("result", dataFrame)

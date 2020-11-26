@@ -16,8 +16,8 @@ class PdConcat(OperatorBase):
 
     def execute(self):
         try:
-            self.setOutputData("result", pd.concat([self.getInputData("input_DataFrame1"),
-                                                    self.getInputData("input_DataFrame2")],
+            self.setOutputData("result", pd.concat([self.getInputData("data1"),
+                                                    self.getInputData("data2")],
                                                    # ignore_index=self.params["ignore_index"],
                                                    # keys=self.params["keys"],
                                                    # names=self.params["names"],
@@ -30,6 +30,14 @@ class PdConcat(OperatorBase):
             print(e.args)
             print("="*20)
             print(traceback.format_exc())
+
+    def setInputData(self, key, data):
+        if self.inputData["data1"] is None:
+            self.inputData["data1"] = data
+        elif self.inputData["data2"] is None:
+            self.inputData["data2"] = data
+        else:
+            raise Exception("Concat算子的输入数据已准备好")
 
 
 

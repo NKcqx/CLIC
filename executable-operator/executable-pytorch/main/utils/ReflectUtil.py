@@ -36,5 +36,4 @@ class ReflectUtil:
 
 
 if __name__ == '__main__':
-    ReflectUtil.createInstanceAndMethodByPath("/Users/zjchen/IdeaProjects/CLIC/executable-operator/executable-pytorch"
-                                              "/udf/TestUdf.py")
+    ReflectUtil.createInstanceAndMethodByPath("/udf/TestUdf.py")

@@ -16,7 +16,7 @@ class PdDummies(OperatorBase):
 
     def execute(self):
         try:
-            self.setOutputData("result", pd.get_dummies(self.getInputData("input_DataFrame"),
+            self.setOutputData("result", pd.get_dummies(self.getInputData("data"),
                                                         dummy_na=self.params["dummy_na"]
                                                         ))
         except Exception as e:
