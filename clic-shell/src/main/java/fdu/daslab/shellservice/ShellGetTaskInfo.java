@@ -16,12 +16,14 @@ import java.util.Map;
 
 /**
  * 根据task name获取具体task的详细信息
+ *
  * @author Du Qinghua
  * @version 1.0
  * @since 2020/11/05 09:37
  */
 public class ShellGetTaskInfo {
-    private static  Logger logger = LoggerFactory.getLogger(ShellGetTaskInfo.class);
+    private static Logger logger = LoggerFactory.getLogger(ShellGetTaskInfo.class);
+
     public static void main(String[] args) {
         int size = args.length;
         //取最后两个参数作为ip和port
@@ -33,18 +35,20 @@ public class ShellGetTaskInfo {
 
         //如果stageinfo不为空
         if (!taskInfo.isEmpty()) {
-            List<Cell> header = new ArrayList<Cell>() { {
-                add(new Cell(FieldName.TASK_PLAN_NAME));
-                add(new Cell(FieldName.TASK_SUBMIT_TIME));
-                add(new Cell(FieldName.TASK_START_TIME));
-                add(new Cell(FieldName.TASK_COMPLETE_TIME));
-                add(new Cell(FieldName.TASK_STATUS));
-                add(new Cell(FieldName.TASK_STAGE_NUM));
-                add(new Cell(FieldName.TASK_STAGE_LIST));
-            }};
+            List<Cell> header = new ArrayList<Cell>() {
+                {
+                    add(new Cell(FieldName.TASK_PLAN_NAME));
+                    add(new Cell(FieldName.TASK_SUBMIT_TIME));
+                    add(new Cell(FieldName.TASK_START_TIME));
+                    add(new Cell(FieldName.TASK_COMPLETE_TIME));
+                    add(new Cell(FieldName.TASK_STATUS));
+                    add(new Cell(FieldName.TASK_STAGE_NUM));
+                    add(new Cell(FieldName.TASK_STAGE_LIST));
+                }
+            };
             List<List<Cell>> body = new ArrayList<List<Cell>>();
             List<String> stageId = stringToList(taskInfo.get(FieldName.TASK_STAGE_LIST));
-            for (int i=0; i<stageId.size(); i++) {
+            for (int i = 0; i < stageId.size(); i++) {
                 List<Cell> row = new ArrayList<Cell>();
                 if (i == 0) {
                     row.add(new Cell(PrintUtil.processOutLen(taskInfo.get(FieldName.TASK_PLAN_NAME))));
@@ -53,8 +57,8 @@ public class ShellGetTaskInfo {
                     row.add(new Cell(PrintUtil.processOutLen(taskInfo.get(FieldName.TASK_COMPLETE_TIME))));
                     row.add(new Cell(PrintUtil.processOutLen(taskInfo.get(FieldName.TASK_STATUS))));
                     row.add(new Cell(PrintUtil.processOutLen(taskInfo.get(FieldName.TASK_STAGE_NUM))));
-                }else {
-                    for (int j=0; j<6; j++){
+                } else {
+                    for (int j = 0; j < 6; j++) {
                         row.add(new Cell(""));
                     }
                 }
@@ -63,10 +67,11 @@ public class ShellGetTaskInfo {
             };
             new ConsoleTable.ConsoleTableBuilder().addHeaders(header).addRows(body).build().print();
         }
-        System.out.println();
+        System.out.format("\n");
         logger.info("get task info has completed!");
     }
-    private static List<String> stringToList(String strs){
+
+    private static List<String> stringToList(String strs) {
         String str[] = strs.split(",");
         return Arrays.asList(str);
     }

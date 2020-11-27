@@ -11,4 +11,4 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   nfs:
     server: 10.141.221.217
-    path: /data/kubernetes
+    path: /nfs/data
