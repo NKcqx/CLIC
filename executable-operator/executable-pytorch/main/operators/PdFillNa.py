@@ -15,7 +15,7 @@ class PdFillNa(OperatorBase):
 
     def execute(self):
         try:
-            self.setOutputData("result", self.getInputData("input_DataFrame").fillna[self.params["value"]])
+            self.setOutputData("result", self.getInputData("data").fillna(self.params["value"]))
         except Exception as e:
             print(e.args)
             print("="*20)

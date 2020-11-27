@@ -16,7 +16,7 @@ class TorchPCA(OperatorBase):
 
     def execute(self):
         try:
-            self.setOutputData("result", self.PCA_svd(X=self.getInputData("input_Tensor"),
+            self.setOutputData("result", self.PCA_svd(X=self.getInputData("data"),
                                                       k=self.params["k"],
                                                       center=self.params["center"]
                                                       ))
@@ -26,6 +26,7 @@ class TorchPCA(OperatorBase):
             print(traceback.format_exc())
 
     def PCA_svd(self, X, k, center=True):
+        print(type(X))
         n = X.size()[0]
         ones = torch.ones(n).view([n, 1])
         h = ((1/n) * torch.mm(ones, ones.t())) if center else torch.zeros(n*n).view([n, n])

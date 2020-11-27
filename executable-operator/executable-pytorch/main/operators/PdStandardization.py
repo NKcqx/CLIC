@@ -16,7 +16,7 @@ class PdStandardization(OperatorBase):
 
     def execute(self):
         try:
-            dataFrame = self.getInputData("input_DataFrame")
+            dataFrame = self.getInputData("data")
             toStandIndex = dataFrame.dtypes[dataFrame.dtypes != 'object'].index
             dataFrame[toStandIndex] = dataFrame[toStandIndex].apply(lambda x: (x - x.mean()) / (x.std()))
             self.setOutputData("result", dataFrame)
