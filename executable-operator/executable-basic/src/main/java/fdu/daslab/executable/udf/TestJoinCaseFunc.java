@@ -32,20 +32,19 @@ public class TestJoinCaseFunc {
     // join
     // join这两个表，key为公司id，case仅测试所用请无视范式约束
     // 本case设定leftTable是webCompany.csv，rightTable是companyInfo.csv
-    public String leftTableKey(List<String> record) {
+    public String leftKey(List<String> record) {
         return record.get(2);
     }
-    public String rightTableKey(List<String> record) {
+    public String rightKey(List<String> record) {
         return record.get(0);
     }
 
     // 自定义join之后左表中要select的属性
-    public List<String> leftTableFunc(List<String> record) {
+    public List<String> leftCols(List<String> record) {
         return Arrays.asList(record.get(0), record.get(1));
     }
     // 自定义join之后右表中要select的属性
-    public List<String> rightTableFunc(List<String> record) {
+    public List<String> rightCols(List<String> record) {
         return Arrays.asList(record.get(1), record.get(2), record.get(3));
     }
-
 }

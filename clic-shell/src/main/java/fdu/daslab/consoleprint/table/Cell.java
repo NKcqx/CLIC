@@ -3,9 +3,7 @@ package fdu.daslab.consoleprint.table;
 import fdu.daslab.consoleprint.enums.Align;
 
 /**
- * @author Du Qinghua
- * @version 1.0
- * @since 2020/10/22 18:14
+ * 引用自：https://github.com/clyoudu/clyoudu-util
  */
 public class Cell {
 
@@ -13,12 +11,12 @@ public class Cell {
 
     private String value;
 
-    public Cell(Align align, String value){
+    public Cell(Align align, String value) {
         this.align = align;
         this.value = value;
     }
 
-    public Cell(String value){
+    public Cell(String value) {
         this.align = Align.LEFT;
         this.value = value;
     }
