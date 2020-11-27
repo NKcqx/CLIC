@@ -16,8 +16,8 @@ class DataframeUnion(OperatorBase):
 
     def execute(self):
         try:
-            df_1 = self.getInputData("input_Data_1")
-            df_2 = self.getInputData("input_Data_2")
+            df_1 = self.getInputData("input_data_1")
+            df_2 = self.getInputData("input_data_2")
 
             self.setOutputData("result", df_1.union(df_2))
 

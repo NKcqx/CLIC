@@ -18,7 +18,7 @@ class SparkOneHotEncode(OperatorBase):
 
     def execute(self):
         try:
-            df = self.getInputData("input_Data")
+            df = self.getInputData("input_data")
             cols = self.params["cols"]
 
             indexers = [StringIndexer(inputCol=c, outputCol=c + '-idx') for c in cols]

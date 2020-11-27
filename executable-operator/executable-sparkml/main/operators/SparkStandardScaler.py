@@ -20,7 +20,7 @@ class SparkStandardScaler(OperatorBase):
 
     def execute(self):
         try:
-            df = self.getInputData("input_Data")
+            df = self.getInputData("input_data")
             cols = self.params["cols"]
             numeric_types = ['int', 'long', 'double', 'float']  # TODO 待补充
             numeric_features = [item[0] for item in df.dtypes if item[1] in numeric_types and item[0] in cols]

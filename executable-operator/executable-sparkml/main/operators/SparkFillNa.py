@@ -16,7 +16,7 @@ class SparkFillNa(OperatorBase):
 
     def execute(self):
         try:
-            df = self.getInputData("input_Data")
+            df = self.getInputData("input_data")
             value = self.params["value"]
 
             self.setOutputData("result", df.fillna(value))
