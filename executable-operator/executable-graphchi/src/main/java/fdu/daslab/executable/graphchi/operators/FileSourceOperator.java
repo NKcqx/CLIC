@@ -27,7 +27,7 @@ public class FileSourceOperator extends OperatorBase<File, InputStream> {
     public void execute(ParamsModel inputArgs, ResultModel<InputStream> result) {
         File file = new File(this.params.get("inputPath"));
         try {
-            FileInputStream inputStream = new FileInputStream(file);
+            final FileInputStream inputStream = new FileInputStream(file);
             if (file.exists() && file.isFile()) {
                 logger.info("Stage(graphchi) ———— Input file size:  " + file.length());
             } else {

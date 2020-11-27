@@ -69,4 +69,8 @@
         <ability>pagerank</ability>
         <template>Operator/PageRank/conf/PageRankOperator.xml</template>
     </pair>
+    <pair>
+        <ability>convert-to-graph</ability>
+        <template>Operator/ConvertToGraph/conf/ConvertToGraphOperator.xml</template>
+    </pair>
 </mappings>

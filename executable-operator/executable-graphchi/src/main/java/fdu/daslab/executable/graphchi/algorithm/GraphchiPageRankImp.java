@@ -35,18 +35,19 @@ public class GraphchiPageRankImp implements GraphChiProgram<Float, Float> {
     public void update(ChiVertex<Float, Float> vertex, GraphChiContext context) {
         if (context.getIteration() == 0) {
             /* Initialize on first iteration */
+            //因为采用的edgelist格式，所以顶点vertex的值为空，初始化此处赋值
             vertex.setValue(1.0f);
         } else {
             /* On other iterations, set my value to be the weighted
                average of my in-coming neighbors pageranks.
              */
             float sum = 0.f;
+            //收集入边
             for (int i = 0; i < vertex.numInEdges(); i++) {
                 sum += vertex.inEdge(i).getValue();
             }
             vertex.setValue(0.15f + 0.85f * sum);
         }
-
         /* Write my value (divided by my out-degree) to my out-edges so neighbors can read it. */
         float outValue = vertex.getValue() / vertex.numOutEdges();
         for (int i = 0; i < vertex.numOutEdges(); i++) {
@@ -97,19 +98,18 @@ public class GraphchiPageRankImp implements GraphChiProgram<Float, Float> {
      * @param inputStream fileInputStream
      * @param graphName
      * @param shardNum    分片数
-     * @param fileType    文件中图结构类型，包括 edgelist和 adjacencylist 两种
      * @param iterNum     pagerank计算迭代数
      * @return pagerank 的结果，形式为降序的 id value
      * @throws Exception
      */
     public List<List<String>> exec(InputStream inputStream, String graphName, int shardNum,
-                                   String fileType, int iterNum) throws Exception {
+                                   int iterNum) throws Exception {
 
         List<List<String>> res = new ArrayList<>();
         CompressedIO.disableCompression();
         /* Create shards */
         FastSharder sharder = createSharder(graphName, shardNum);
-        sharder.shard(inputStream, fileType);
+        sharder.shard(inputStream, FastSharder.GraphInputFormat.EDGELIST);
 
         /* Run GraphChi */
         GraphChiEngine<Float, Float> engine = new GraphChiEngine<Float, Float>(graphName, shardNum);
@@ -125,10 +125,10 @@ public class GraphchiPageRankImp implements GraphChiProgram<Float, Float> {
         VertexIdTranslate trans = engine.getVertexIdTranslate();
         //获取所有的rank值
         TreeSet<IdFloat> resList = new TreeSet<IdFloat>(new IdFloat.Comparator());
-        VertexAggregator.foreach(engine.numVertices(), graphName, new FloatConverter(), new ForeachCallback<Float>()  {
-                    public void callback(int vertexId, Float vertexValue) {
-                        resList.add(new IdFloat(vertexId, vertexValue));
-                    }
+        VertexAggregator.foreach(engine.numVertices(), graphName, new FloatConverter(), new ForeachCallback<Float>() {
+            public void callback(int vertexId, Float vertexValue) {
+                resList.add(new IdFloat(vertexId, vertexValue));
+            }
         });
 
         for (IdFloat vertexRank : resList) {

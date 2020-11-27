@@ -76,7 +76,7 @@ public final class OperatorFactory {
     }
 
     /**
-     * 从给定配置文件中读取并创建一个Operator
+     * 从给定配置文件中读取并创建一个Operator·
      *
      * @param templatePath 配置文件的资源路径（相对resource目录的路径）
      * @return 创建完成的Operator

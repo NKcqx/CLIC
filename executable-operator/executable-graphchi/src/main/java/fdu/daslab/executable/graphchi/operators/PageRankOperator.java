@@ -29,9 +29,7 @@ public class PageRankOperator extends OperatorBase<InputStream, Stream<List<Stri
             GraphchiPageRankImp graphchiPageRankImp = new GraphchiPageRankImp();
             //调用
             List<List<String>> res = graphchiPageRankImp.exec(this.getInputData("data"), this.params.get("graphName"),
-                    Integer.parseInt(this.params.get("shardNum")), "edgelist",
-                    Integer.parseInt(this.params.get("iterNum")));
-
+                    Integer.parseInt(this.params.get("shardNum")), Integer.parseInt(this.params.get("iterNum")));
             this.setOutputData("result", res.stream());
         } catch (Exception e) {
             e.printStackTrace();

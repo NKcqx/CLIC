@@ -7,7 +7,7 @@
         </platform>
 
         <platform ID="graphx">
-            <path>Operator/PageRank/conf/SparkGraphXPageRankOperator.xml</path>
+            <path>Operator/PageRank/conf/GraphXPageRankOperator.xml</path>
         </platform>
     </platforms>
 
