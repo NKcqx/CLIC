@@ -23,13 +23,11 @@ public class DockingDemo {
             }}).withTargetPlatform("spark");
 
             DataQuanta sourceNode2 = planBuilder.readTableFrom(new HashMap<String, String>() {{
-                put("inputPath", "D:/2020project/sql/grade.csv");
+                put("inputPath", "D:/2020project/docking/grade.csv");
             }}).withTargetPlatform("spark");
 
             /**
              * 这里是跟Siamese组对接的算子
-             * 因为对接尚有一些工作没有做（他们还没有提供封装好的包）
-             * 因此在逻辑层面与普通的query算子暂时分开
              */
             DataQuanta queryNode = DataQuanta.createInstance("query", new HashMap<String, String>() {{
                 put("sqlNeedForOptimized", "select student.id from student,grade where student.id=grade.id");

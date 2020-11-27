@@ -161,10 +161,10 @@ public class Operator implements Visitable, Serializable {
      */
     public void setParamValue(String key, String value) {
         if (this.inputParamList.containsKey(key)) {
-            // 为了与Siamese组对接，这里需要判断key的值
-            // 暂时只能硬编码，没想到好的解决方法
+            // 与Siamese组的对接要求CLIC在传送SQL语句之前
+            // 需要先让Siamese得知都有哪些table，包括表名和表的schema等信息
             try {
-                checkKeyOfSQL(key, value);
+                checkKeyOfSQL(key, value, this.getOperatorName());
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -185,35 +185,23 @@ public class Operator implements Visitable, Serializable {
     }
 
     /**
-     * 跟Siamese组对接
-     * 判断key是否是"inputPath"或"SQLNeedForOptimized"
-     * 他们只能接受sql语句作为输入
+     * 判断key是否是"inputPath"且opt是否是TableSource
+     * 如果是，则让Siamese先读取这些表，获取表名以及表的schema信息
      * 这里暂时只能硬编码，没想到好的解决方法
      */
-    private void checkKeyOfSQL(String key, String value) throws Exception {
-        if (key.equals("inputPath")) {
+    private void checkKeyOfSQL(String key, String value, String optName){
+        if (key.equals("inputPath") && optName.equals("TableSourceOperator")) {
             addTableToSiamese(value);
-        }
-        if (key.equals("sqlNeedForOptimized")) {
-            exeSiamese(value);
         }
     }
 
     /**
-     * 要让Siamese优化SQL语句，还需要让他们先读一下每一个table
-     * 获取每一个table的schema信息
+     * 要让Siamese优化SQL语句，需要让他们先读一下每一个table
+     * 获取每一个table的表名和schema信息
      * @param value
      */
     private void addTableToSiamese(String value) {
         SiameseAdapter.readTableToGetSchema(value);
-    }
-
-    /**
-     * 调用SiameseAdapter的SQL2LogicalPlan函数，执行荆老师组提供的优化
-     * @param value
-     */
-    private void exeSiamese(String value) throws Exception {
-        SiameseAdapter.sqlToLogicalPlan(value);
     }
 
     /**
