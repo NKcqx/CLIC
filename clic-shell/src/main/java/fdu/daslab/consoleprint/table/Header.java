@@ -7,48 +7,46 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * @author Du Qinghua
- * @version 1.0
- * @since 2020/10/22 18:14
+ * 引用自：https://github.com/clyoudu/clyoudu-util
  */
 public class Header {
 
-    public List<Cell> cells;
+    private List<Cell> cells;
 
-    public Header(){
+    public Header() {
         this.cells = new ArrayList<>();
     }
 
-    public void addHead(Cell cell){
+    public void addHead(Cell cell) {
         cells.add(cell);
     }
 
-    public void addHeads(List<Cell> headers){
+    public void addHeads(List<Cell> headers) {
         cells.addAll(headers);
     }
 
-    public boolean isEmpty(){
+    public boolean isEmpty() {
         return cells == null || cells.isEmpty();
     }
 
+    public List<Cell> getCells() {
+        return cells;
+    }
     /**
      * print header including top and bottom sep
-     * @param columnWidths max width of each column
+     *
+     * @param columnWidths  max width of each column
      * @param horizontalSep char of h-sep, default '-'
-     * @param verticalSep char of v-sep, default '|'
-     * @param joinSep char of corner, default '+'
-     * @return like:
-     * +------------+--------------+------------+
-     * | one        | two          | three      |
-     * bottom will be printed by the body, for more completely output when there is no header sometimes
+     * @param verticalSep   char of v-sep, default '|'
+     * @param joinSep       char of corner, default '+'
      */
-    public List<String> print(int[] columnWidths,String horizontalSep,String verticalSep,String joinSep){
+    public List<String> print(int[] columnWidths, String horizontalSep, String verticalSep, String joinSep) {
         List<String> result = new ArrayList<>();
-        if(!isEmpty()){
+        if (!isEmpty()) {
             //top horizontal sep line
-            result.addAll(PrintUtil.printLineSep(columnWidths,horizontalSep, verticalSep, joinSep));
+            result.addAll(PrintUtil.printLineSep(columnWidths, horizontalSep, verticalSep, joinSep));
             //header row
-            result.addAll(PrintUtil.printRows(Collections.singletonList(cells),columnWidths,verticalSep));
+            result.addAll(PrintUtil.printRows(Collections.singletonList(cells), columnWidths, verticalSep));
         }
         return result;
     }

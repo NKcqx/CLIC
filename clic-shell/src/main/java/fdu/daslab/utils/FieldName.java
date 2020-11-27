@@ -5,6 +5,7 @@ package fdu.daslab.utils;
  * @version 1.0
  * @since 2020/11/05 13:57
  */
+@SuppressWarnings("checkstyle:ModifierOrder")
 public class FieldName {
     public final static String TASK_PLAN_NAME = "plan_name";
     public final static String TASK_SUBMIT_TIME = "submit_time";
