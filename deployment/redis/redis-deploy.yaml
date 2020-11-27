@@ -48,7 +48,7 @@ spec:
             successThreshold: 1
             failureThreshold: 3
           volumeMounts:
-            - name: nfs-volume
+            - name:
               mountPath: /data
             - name: config
               mountPath:  /usr/local/etc/redis/redis.conf
