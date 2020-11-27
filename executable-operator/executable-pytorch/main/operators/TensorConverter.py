@@ -16,11 +16,9 @@ class TensorConverter(OperatorBase):
 
     def execute(self):
         try:
-            print(type(self.getInputData("data").values))
             self.setOutputData("result", torch.tensor(self.getInputData("data").values,
                                                       dtype=self.params["dtype"]
                                                       ))
-            print(type(self.outputData["result"]))
         except Exception as e:
             print(e.args)
             print("=" * 20)
