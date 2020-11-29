@@ -16,6 +16,8 @@ public class SparkInitUtil {
     // SparkContext，这里的配置实际上没有意义，配置通过参数传递
     private static JavaSparkContext sparkContext = null;
 
+    //TODO: SparkContext其实包含在SparkSession内
+    // 后续必须把二者整合起来，否则maven编译相关单元测试类时会有冲突
     private static SparkSession sparkSession = null;
 
     /**

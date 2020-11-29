@@ -8,6 +8,7 @@ import org.apache.spark.sql.catalyst.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import siamese.SiameseAdapter;
+import siamese.SiameseSchema;
 
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -201,7 +202,7 @@ public class Operator implements Visitable, Serializable {
      * @param value
      */
     private void addTableToSiamese(String value) {
-        SiameseAdapter.readTableToGetSchema(value);
+        SiameseSchema.readTableToGetSchema(value);
     }
 
     /**

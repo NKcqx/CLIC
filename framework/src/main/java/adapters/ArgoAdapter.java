@@ -121,7 +121,9 @@ public class ArgoAdapter implements OperatorAdapter {
             fillLists(optMapList, dagList, curOpt, graph);
         }
 
-        judgeTableSource(optMapList, dagList);
+        // 如果遇到与Siamese组对接的情况
+        // 则需要把之前已添加到yaml中的TableSource算子删除，因为到时候返回的树自带Relation算子
+        removeTableSource(optMapList, dagList);
 
         return new HashMap<String, Object>() {{
             put("operators", optMapList);
@@ -138,9 +140,12 @@ public class ArgoAdapter implements OperatorAdapter {
      */
     private static void fillLists(List<Map<String, Object>> optMapList, List<Map<String, Object>> dagList,
                                   Operator curOpt, Graph<Operator, Channel> graph) {
-        String param = checkOptOfSiamese(curOpt);
+        String param = null;
+
+        // param不为空，代表当前算子是要使用优化SQL语句功能的query算子
+        param = checkOptOfSiamese(curOpt);
+
         if (param != null) {
-            // 有要使用优化SQL语句功能的query算子的情况
             // 与Siamese进行对接
             dockingWithSiamese(param, curOpt, optMapList, dagList, graph);
         } else {
@@ -157,8 +162,8 @@ public class ArgoAdapter implements OperatorAdapter {
             }
         }
 
-        // 这个函数在原代码基础上添加了几个if条件分支判断，这是因为graph是AsSubgraph类型，无法直接给它添加新的节点
-        // 而与Siamese组的对接，需要将一个query算子拆分、生成成一个新的DAG
+        // 这个函数在原代码基础上添加了几个if条件分支判断，这是因为Siamese组的对接，需要将一个query算子拆分、生成成一个新的DAG
+        // 而graph是AsSubgraph类型，无法给它添加新节点和边
     }
 
     /**
@@ -204,20 +209,21 @@ public class ArgoAdapter implements OperatorAdapter {
         // 做标记，yaml中已添加过这个算子
         opts.add(targetOpt);
 
-        // 根据Siamese返回的树，我们创建一个DAG（原来的graph参数是Subgraph类型，无法添加顶点）
-        DefaultListenableGraph<Operator, Channel> sqlGraph =
-                new DefaultListenableGraph<>(new SimpleDirectedWeightedGraph<>(Channel.class));
-
-        List<Operator> qOpts = new ArrayList<>();
         try {
+            // 根据Siamese返回的树，我们创建一个DAG（原来的graph参数是Subgraph类型，无法添加顶点）
+            DefaultListenableGraph<Operator, Channel> sqlGraph =
+                    new DefaultListenableGraph<>(new SimpleDirectedWeightedGraph<>(Channel.class));
+
+            List<Operator> qOpts = new ArrayList<>();
             // 进行对接
             qOpts = SiameseAdapter.unfoldQuery2DAG(sqlText, targetOpt, sqlGraph);
+            // 解析树生成的子DAG中的算子都加到yaml文件中
+            for (Operator qOpt : qOpts) {
+                optMapList.add(ArgoAdapter.operator2Map(qOpt));
+                dagList.add(ArgoAdapter.operatorDependency2Map(sqlGraph, qOpt));
+            }
         } catch (Exception e) {
             e.printStackTrace();
-        }
-        for (Operator qOpt : qOpts) {
-            optMapList.add(ArgoAdapter.operator2Map(qOpt));
-            dagList.add(ArgoAdapter.operatorDependency2Map(sqlGraph, qOpt));
         }
     }
 
@@ -229,18 +235,29 @@ public class ArgoAdapter implements OperatorAdapter {
      * @param optMapList
      * @param dagList
      */
-    private static void judgeTableSource(List<Map<String, Object>> optMapList, List<Map<String, Object>> dagList) {
+    private static void removeTableSource(List<Map<String, Object>> optMapList, List<Map<String, Object>> dagList) {
+        boolean dockingFlag = false;
+        // 先判断是否遇到要使用优化SQL语句的query算子的情况
         for (int i = 0; i<optMapList.size(); i++) {
-            if (optMapList.get(i).get("name").equals("TableSourceOperator")) {
-                optMapList.remove(i);
-                // List会动态变化，因此索引后退一次
-                i--;
+            if (optMapList.get(i).get("name").equals("TRelationOperator")) {
+                dockingFlag = true;
+                break;
             }
         }
-        for (int i = 0; i<dagList.size(); i++) {
-            if (((String) dagList.get(i).get("id")).contains("TableSourceOperator")) {
-                dagList.remove(i);
-                i--;
+        // 如果确定使用了对接功能
+        if (dockingFlag) {
+            for (int i = 0; i<optMapList.size(); i++) {
+                if (optMapList.get(i).get("name").equals("TableSourceOperator")) {
+                    optMapList.remove(i);
+                    // List会动态变化，因此索引后退一次
+                    i--;
+                }
+            }
+            for (int i = 0; i<dagList.size(); i++) {
+                if (((String) dagList.get(i).get("id")).contains("TableSourceOperator")) {
+                    dagList.remove(i);
+                    i--;
+                }
             }
         }
     }

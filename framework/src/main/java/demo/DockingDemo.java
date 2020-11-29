@@ -30,7 +30,8 @@ public class DockingDemo {
              * 这里是跟Siamese组对接的算子
              */
             DataQuanta queryNode = DataQuanta.createInstance("query", new HashMap<String, String>() {{
-                put("sqlNeedForOptimized", "select student.id from student,grade where student.id=grade.id");
+                put("sqlNeedForOptimized", "select student.id,name,grade.grade from student,grade "
+                        + "where student.id=grade.id and grade>2");
             }});
 
             DataQuanta sinkNode = DataQuanta.createInstance("table-sink", new HashMap<String, String>() {{

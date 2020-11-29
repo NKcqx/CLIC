@@ -12,6 +12,13 @@ import org.apache.spark.sql.SparkSession;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 从文件读取table的算子（用于自动生成DAG的情况）
+ *
+ * @author 刘丰艺
+ * @since 2020/11/20 9:30 PM
+ * @version 1.0
+ */
 public class TRelationOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> {
     public TRelationOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
         super("SparkTRelationOperator", id, inputKeys, outputKeys, params);
@@ -49,5 +56,6 @@ public class TRelationOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> 
         } catch (AnalysisException e) {
             e.printStackTrace();
         }
+        this.setOutputData("result", df);
     }
 }
