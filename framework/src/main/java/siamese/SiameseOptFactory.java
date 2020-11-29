@@ -13,6 +13,9 @@ import java.util.Map;
 /**
  * 工厂类，用于根据Siamese返回的树的节点创建CLIC的逻辑算子
  *
+ * Siamese还没有封装好他们的包给我们用，所以先用真正的Spark SQL代替
+ * 逻辑阶段与物理阶段混淆，这是对接的锅，没办法
+ *
  * @author 刘丰艺
  * @version 1.0
  * @since 2020/11/29 1:53 PM
@@ -51,7 +54,6 @@ public class SiameseOptFactory {
                 i++;
             }
             condition = condition.substring(bracketsIndex+1, equalSignIndex);
-            System.out.println(condition);
         }
         return condition;
     }

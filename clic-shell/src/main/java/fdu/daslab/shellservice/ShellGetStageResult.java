@@ -11,12 +11,14 @@ import java.util.List;
 /**
  * 查看某个stage的结果（task的中间结果）
  * 目前是nfs文件，保存在本地。如果以后中间结果形式发生改变，需修改。
+ *
  * @author Du Qinghua
  * @version 1.0
  * @since 2020/11/12 09:31
  */
 public class ShellGetStageResult {
     private static Logger logger = LoggerFactory.getLogger(ShellGetStageResult.class);
+
     public static void main(String[] args) {
 
         int size = args.length;
@@ -26,14 +28,14 @@ public class ShellGetStageResult {
         TaskServiceClient taskServiceClient = new TaskServiceClient(masterHost, masterPort);
         String stageId = args[0];
         int lineNum = 10;
-        if (args.length == 4){
+        if (args.length == 4) {
             lineNum = Integer.parseInt(args[1]);
         }
         String resPath = taskServiceClient.getStageResult(stageId);
-        if (resPath != null){
+        if (resPath != null) {
             File file = new File(resPath);
             if (file.exists()) {
-                System.out.format("\nThe result of "+ stageId + " has been saved in ：" + resPath +" \n");
+                System.out.format("\nThe result of " + stageId + " has been saved in ：" + resPath + " \n");
                 try {
                     List<String> result = readFileByLine(resPath, lineNum);
                     result.forEach(System.out::println);
@@ -41,25 +43,27 @@ public class ShellGetStageResult {
                     e.printStackTrace();
                     logger.error("Error executing cat command using file path!");
                 }
-                logger.info("The result of "+ stageId + " has been saved in ：" + resPath);
+                logger.info("The result of " + stageId + " has been saved in ：" + resPath);
             } else {
-                System.out.println("\nThe result of "+ stageId +": File path does not exist!");
-                logger.info("The result of "+ stageId +": File path does not exist!");
+                System.out.println("\nThe result of " + stageId + ": File path does not exist!");
+                logger.info("The result of " + stageId + ": File path does not exist!");
             }
 
-        }else {
-            System.out.format("\nThe result of "+ stageId + " is empty. Please check if the stage has been completed.");
-            logger.info("The result of "+ stageId + " is empty.");
+        } else {
+            System.out.format("\nThe result of " + stageId + " is empty. Please check if the stage has been completed.");
+            logger.info("The result of " + stageId + " is empty.");
         }
-        System.out.println();
+        System.out.format("\n");
     }
 
     /**
      * 按行读取文件
+     *
      * @param path
      * @param line
      * @return
      */
+    @SuppressWarnings("checkstyle:InnerAssignment")
     private static List<String> readFileByLine(String path, int line) {
         List<String> result = new ArrayList<>();
         try {
@@ -71,7 +75,7 @@ public class ShellGetStageResult {
                 }
             }
         } catch (IOException e) {
-            logger.error("An Error occur when readFileByLine from"+ path);
+            logger.error("An Error occur when readFileByLine from" + path);
             e.printStackTrace();
         }
         return result;

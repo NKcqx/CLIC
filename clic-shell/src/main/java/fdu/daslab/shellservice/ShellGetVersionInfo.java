@@ -8,12 +8,13 @@ import java.io.FileNotFoundException;
 
 /**
  * 获取当前系统的版本信息
+ *
  * @author Du Qinghua
  * @version 1.0
  * @since 2020/10/22 18:15
  */
 public class ShellGetVersionInfo {
-    private static  Logger logger = LoggerFactory.getLogger(ShellGetVersionInfo.class);
+    private static Logger logger = LoggerFactory.getLogger(ShellGetVersionInfo.class);
     private static final String VERSION_FILE_NAME =
             System.getProperty("configPath", "version-info.properties");
 
@@ -29,8 +30,8 @@ public class ShellGetVersionInfo {
         }
         return version;
     }
-    
-    public static void main(String[] args)  {
+
+    public static void main(String[] args) {
         logger.info("CLIC version:" + getVersion());
         System.out.println("CLIC " + getVersion());
         System.out.println("other info....");

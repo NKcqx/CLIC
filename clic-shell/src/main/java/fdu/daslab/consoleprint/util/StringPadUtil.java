@@ -3,9 +3,7 @@ package fdu.daslab.consoleprint.util;
 import java.nio.charset.Charset;
 
 /**
- * @author Du Qinghua
- * @version 1.0
- * @since 2020/10/22 18:14
+ * 引用自：https://github.com/clyoudu/clyoudu-util
  */
 public class StringPadUtil {
 
@@ -110,9 +108,4 @@ public class StringPadUtil {
         }
         return len;
     }
-
-    public static void main(String[] args) {
-        System.out.println(strLength("이것은매우긴번체의중국어이다", "UTF-8"));
-    }
-
 }
