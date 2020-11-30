@@ -46,13 +46,8 @@ public class SiameseAdapter {
 
     /**
      * 与Siamese的对接，从这里开始
-     * @param sqlText
-     * @param endOpt
-     * @param graph
-     * @return
-     * @throws Exception
      */
-    public static List<Operator> unfoldQuery2DAG(String sqlText, Operator endOpt, Graph<Operator, Channel> graph) {
+    public static void unfoldQuery2DAG(String sqlText, Operator endOpt, Graph<Operator, Channel> graph) {
         try {
             // CLIC的SQL -> Siamese的树
             rootNode = sql2LogicalPlan(sqlText);
@@ -63,15 +58,7 @@ public class SiameseAdapter {
         }
 
         // 将新生成的子DAG的最后一个节点（树的根节点）对应的算子与外面的原query算子的下一跳算子连接
-        optMap.put(null, endOpt);
-        graph.addVertex(endOpt);
         graph.addEdge(optMap.get(rootNode), endOpt);
-
-        List<Operator> qOpts = new ArrayList<>();
-        optMap.forEach((plan, opt) -> {
-            qOpts.add(opt);
-        });
-        return qOpts;
     }
 
     /**

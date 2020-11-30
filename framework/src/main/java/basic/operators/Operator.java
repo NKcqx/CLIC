@@ -3,11 +3,8 @@ package basic.operators;
 
 import basic.Param;
 import basic.visitors.Visitor;
-import org.apache.spark.sql.AnalysisException;
-import org.apache.spark.sql.catalyst.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import siamese.SiameseAdapter;
 import siamese.SiameseSchema;
 
 import java.io.FileNotFoundException;

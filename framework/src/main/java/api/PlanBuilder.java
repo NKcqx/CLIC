@@ -2,6 +2,7 @@ package api;
 
 import adapters.ArgoAdapter;
 import basic.Configuration;
+import basic.Param;
 import basic.Stage;
 import basic.Util;
 import basic.operators.Operator;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import fdu.daslab.service.client.TaskServiceClient;
+import siamese.SiameseAdapter;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -30,7 +32,7 @@ import java.io.Writer;
 import java.util.*;
 
 /**
- * @author 陈齐翔
+ * @author 陈齐翔，刘丰艺
  * @version 1.0
  * @since 2020/7/6 1:40 下午
  */
@@ -144,6 +146,8 @@ public class PlanBuilder implements java.io.Serializable {
         LOGGER.info("   ");
 
         LOGGER.info("===========【Stage 2】Choose best Operator implementation ===========");
+        // 判断是否有对接情况
+        this.checkOfSiamese();
         this.optimizePlan();
         this.printPlan();
         LOGGER.info("   ");
@@ -196,6 +200,71 @@ public class PlanBuilder implements java.io.Serializable {
         submit(argoPath); // TODO：暂时使用异步的提交，driver和master之间并没有实现实时的交互，调度
     }
 
+    /**
+     * 判断该DAG中是否有要与Siamese对接的query算子
+     * 有的话，需要将这个算子展开成一个子DAG，再加到大DAG中
+     * 这里的判断得用硬编码，没想到更好的解决办法，对接的锅
+     * @return
+     */
+    private void checkOfSiamese() {
+        boolean siameseFlag = false;
+        String sql = null;
+        Operator queryOpt = null;
+        Set<Operator> opts = graph.vertexSet();
+        for (Operator opt : opts) {
+            if (opt.getOperatorName().equals("QueryOperator")) {
+                Map<String, Param> paramsMap = opt.getInputParamList();
+                for (Map.Entry<String, Param> entry : paramsMap.entrySet()) {
+                    // 如果sqlNeedForOptimized参数不为空，则表明这个算子是需要优化SQL语句的query算子
+                    if (entry.getKey().equals("sqlNeedForOptimized") && entry.getValue().getData() != null) {
+                        siameseFlag = true;
+                        sql = entry.getValue().getData();
+                        queryOpt = opt;
+                        break;
+                    }
+                }
+            }
+        }
+        if (siameseFlag) {
+            // 执行对接
+            dockingWithSiamese(sql, queryOpt);
+        }
+    }
+
+    /**
+     * 如果遇到需要与Siamese对接的情况（遇到含有需要优化SQL语句的参数的query算子）
+     * 则执行这个对接函数
+     */
+    private void dockingWithSiamese(String sql, Operator queryOpt) {
+
+        // 获取query算子上一跳的所有算子，需要将它们从graph中删除
+        Set<Channel> inputEdges = graph.incomingEdgesOf(queryOpt);
+        List<Operator> sourceOpts = new ArrayList<>();
+        for (Channel inputEdge : inputEdges) {
+            sourceOpts.add(graph.getEdgeSource(inputEdge));
+        }
+        for (Operator src : sourceOpts) {
+            graph.removeVertex(src);
+        }
+
+        // 获取query算子下一跳的所有算子，需要将它们与CLIC根据Siamese的tree生成的子DAG的输出节点连起来
+        // 实际上query算子的下一跳通常只有一个算子（起码对目前的CLIC来说）
+        Set<Channel> outputEdges = graph.outgoingEdgesOf(queryOpt);
+        Operator targetOpt = null;
+        for (Channel outputEdge : outputEdges) {
+            targetOpt = graph.getEdgeTarget(outputEdge);
+        }
+
+        // 删除原来的query节点
+        graph.removeVertex(queryOpt);
+
+        try {
+            // 进行对接
+            SiameseAdapter.unfoldQuery2DAG(sql, targetOpt, graph);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
 
     /**
      * 不同的Stage会放到不同平台上处理，每个平台上的stage都需要独立的source和sink，
