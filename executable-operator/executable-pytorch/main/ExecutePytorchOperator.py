@@ -4,6 +4,8 @@ import torch
 import logging
 import time
 import random
+import Executor
+
 """
 @ProjectName: CLIC
 @Time       : 2020/11/26 上午9:25
@@ -89,26 +91,7 @@ if __name__ == "__main__":
     # 本来应该是由ArgsParser解析Yaml文件得到的，这里只有一个headNode
     headOperators = [source]
 
-    # 开始拓扑排序
-    topoTraversal = TopoTraversal(headOperators)
-    while topoTraversal.hasNextOpt():
-        curOpt = topoTraversal.nextOpt()
-        print("="*100 + "Stage(Pytorch) ———— Current Pytorch Operator is " + curOpt.name)
-        curOpt.execute()
-        print("Stage(Pytorch) ———— Current Pytorch Result:\n", curOpt.getOutputData("result"))
-        connections = curOpt.getOutputConnections()
-        for connection in connections:
-            targetOpt = connection.getTargetOpt()
-            topoTraversal.updateInDegree(targetOpt, -1)
-            keyPairs = connection.getKeys()
-            for keyPair in keyPairs:
-                sourceResult = curOpt.getOutputData(keyPair[0])
-                targetOpt.setInputData(keyPair[1], sourceResult)
-
-    # 任务结束，输出信息
-    end = time.process_time()
-    print("Stage(Pytorch) ———— Running hold time:： " + str(end - start) + "s")
-    print("Stage(Pytorch) ———— End The Current Pytorch Stage")
+    Executor.execute(headOperators)
 
 
 

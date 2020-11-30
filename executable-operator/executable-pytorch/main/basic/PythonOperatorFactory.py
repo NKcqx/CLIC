@@ -1,4 +1,5 @@
 import traceback
+from model import OperatorBase
 from operators.PdConcat import PdConcat
 from operators.PdCsvSource import PdCsvSource
 from operators.PdDummies import PdDummies
@@ -7,6 +8,7 @@ from operators.PdIloc import PdIloc
 from operators.PdStandardization import PdStandardization
 from operators.TensorConverter import TensorConverter
 from operators.TorchPCA import TorchPCA
+from operators.TorchNet import TorchNet
 from model.OperatorFactory import OperatorFactory
 """
 @ProjectName: CLIC
@@ -26,10 +28,11 @@ class PytorchOperatorFactory(OperatorFactory):
             "PdIloc": PdIloc,
             "PdStandardization": PdStandardization,
             "TensorConverter": TensorConverter,
-            "TorchPCA": TorchPCA
+            "TorchPCA": TorchPCA,
+            "TorchNet": TorchNet
         }
 
-    def createOperator(self, name, id, inputKeys, outputKeys, params):
+    def createOperator(self, name, id, inputKeys, outputKeys, params) -> OperatorBase:
         if name not in self.operatorMap.keys():
             raise ValueError("操作符不存在或未被初始化！")
         optCls = self.operatorMap[name]
