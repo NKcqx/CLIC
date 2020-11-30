@@ -13,9 +13,9 @@ from model.OperatorBase import OperatorBase
 """
 
 
-class SparkOneHotEncode(OperatorBase):
+class SparkLinearRegression(OperatorBase):
     def __init__(self, ID, inputKeys, outputKeys, Params):
-        super().__init__("SparkOneHotEncode", ID, inputKeys, outputKeys, Params)
+        super().__init__("SparkLinearRegression", ID, inputKeys, outputKeys, Params)
 
     def execute(self):
         try:

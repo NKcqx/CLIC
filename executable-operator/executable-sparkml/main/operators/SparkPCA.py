@@ -18,8 +18,8 @@ class SparkPCA(OperatorBase):
 
     def execute(self):
         try:
-            df = self.getInputData("input_data")
-            cols = self.params["cols"]
+            df = self.getInputData("data")
+            cols = self.getInputData("cols")
             k = self.params["k"]
             output_label = self.params["output_label"]
 

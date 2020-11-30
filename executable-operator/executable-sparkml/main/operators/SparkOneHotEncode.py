@@ -18,8 +18,8 @@ class SparkOneHotEncode(OperatorBase):
 
     def execute(self):
         try:
-            df = self.getInputData("input_data")
-            cols = self.params["cols"]
+            df = self.getInputData("data")
+            cols = self.getInputData("cols")
 
             indexers = [StringIndexer(inputCol=c, outputCol=c + '-idx') for c in cols]
             encoders = [OneHotEncoder(inputCol=c + '-idx', outputCol=c + "-onehot", dropLast=False) for c in cols]

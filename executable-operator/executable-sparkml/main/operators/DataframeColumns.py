@@ -4,22 +4,21 @@ from model.OperatorBase import OperatorBase
 
 """
 @ProjectName: CLIC
-@Time       : 2020/11/25 19:49
+@Time       : 2020/11/30 11:35
 @Author     : jimmy
-@Description: 使用pyspark对dataframe的空值填充指定值
+@Description: 
 """
 
 
-class SparkFillNa(OperatorBase):
+class DataframeColumns(OperatorBase):
     def __init__(self, ID, inputKeys, outputKeys, Params):
-        super().__init__("SparkFillNa", ID, inputKeys, outputKeys, Params)
+        super().__init__("DataframeColumns", ID, inputKeys, outputKeys, Params)
 
     def execute(self):
         try:
             df = self.getInputData("data")
-            value = self.params["value"]
 
-            self.setOutputData("result", df.fillna(value))
+            self.setOutputData("result", df.columns)
 
         except Exception as e:
             print(e.args)
