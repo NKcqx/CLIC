@@ -2,6 +2,7 @@ from basic.PythonOperatorFactory import PytorchOperatorFactory
 import random
 import time
 import Executor
+
 """
 @ProjectName: CLIC
 @Time       : 2020/11/24 下午3:35

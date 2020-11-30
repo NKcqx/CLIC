@@ -9,7 +9,7 @@ from typing import Any, Callable, Dict, IO, List, Optional, Tuple, Union
 class 名称必须为 `Net` 且继承自nn.Module
 """
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, args = None):
         super(Net, self).__init__()
         self.conv1 = nn.Conv2d(1, 32, 3, 1)
         self.conv2 = nn.Conv2d(32, 64, 3, 1)
