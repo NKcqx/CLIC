@@ -7,7 +7,7 @@ import time
 @ProjectName: CLIC
 @Time       : 2020/11/30 10:48
 @Author     : jimmy
-@Description: 
+@Description: 使用CLIC中已扩展的算子完成PCA的操作
 """
 
 

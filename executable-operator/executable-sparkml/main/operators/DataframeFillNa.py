@@ -10,9 +10,9 @@ from model.OperatorBase import OperatorBase
 """
 
 
-class SparkFillNa(OperatorBase):
+class DataframeFillNa(OperatorBase):
     def __init__(self, ID, inputKeys, outputKeys, Params):
-        super().__init__("SparkFillNa", ID, inputKeys, outputKeys, Params)
+        super().__init__("DataframeFillNa", ID, inputKeys, outputKeys, Params)
 
     def execute(self):
         try:

@@ -6,9 +6,11 @@ from operators.DataframeLimit import DataframeLimit
 from operators.DataframeUnion import DataframeUnion
 from operators.SparkLinearRegression import SparkLinearRegression
 from operators.SparkOneHotEncode import SparkOneHotEncode
-from operators.SparkFillNa import SparkFillNa
+from operators.DataframeFillNa import DataframeFillNa
+from operators.SparkLDA import SparkLDA
 from operators.SparkPCA import SparkPCA
 from operators.SparkReadCSV import SparkReadCSV
+from operators.SparkRegexTokenizer import SparkRegexTokenizer
 from operators.SparkStandardScaler import SparkStandardScaler
 
 """
@@ -25,13 +27,15 @@ class SparkOperatorFactory(OperatorFactory):
             "CreateSparkSession": CreateSparkSession,
             "DataframeColumns": DataframeColumns,
             "DataframeDrop": DataframeDrop,
+            "DataframeFillNa": DataframeFillNa,
             "DataframeLimit": DataframeLimit,
             "DataframeUnion": DataframeUnion,
             "SparkLinearRegression": SparkLinearRegression,
             "SparkOneHotEncode": SparkOneHotEncode,
-            "SparkFillNa": SparkFillNa,
+            "SparkLDA": SparkLDA,
             "SparkPCA": SparkPCA,
             "SparkReadCSV": SparkReadCSV,
+            "SparkRegexTokenizer": SparkRegexTokenizer,
             "SparkStandardScaler": SparkStandardScaler
         }
 
