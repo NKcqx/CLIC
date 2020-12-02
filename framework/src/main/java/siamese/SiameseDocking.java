@@ -5,11 +5,7 @@ import channel.Channel;
 import fdu.daslab.executable.spark.utils.SparkInitUtil;
 import org.apache.spark.sql.SparkSession;
 import org.apache.spark.sql.catalyst.parser.ParseException;
-import org.apache.spark.sql.catalyst.plans.logical.Filter;
-import org.apache.spark.sql.catalyst.plans.logical.Join;
-import org.apache.spark.sql.catalyst.plans.logical.LogicalPlan;
-import org.apache.spark.sql.catalyst.plans.logical.Project;
-import org.apache.spark.sql.execution.datasources.LogicalRelation;
+import org.apache.spark.sql.catalyst.plans.logical.*;
 import org.javatuples.Pair;
 import org.jgrapht.Graph;
 
@@ -33,7 +29,7 @@ import java.util.*;
  * @version 1.0
  * @since 2020/11/18 9:00 pm
  */
-public class SiameseAdapter {
+public class SiameseDocking {
 
     // 为了优化SQL，需要启动SparkSession
     // 为了对接没办法
@@ -135,19 +131,10 @@ public class SiameseAdapter {
      * @param node
      */
     private static Operator node2Operator(LogicalPlan node) throws Exception {
-        Operator opt = null;
         // 工厂模式创建Operator
-        if (node.getClass().equals(LogicalRelation.class)) {
-            opt = SiameseOptFactory.createTRelationOpt(node);
-        }
-        if (node.getClass().equals(Filter.class)) {
-            opt = SiameseOptFactory.createTFilterOpt(node);
-        }
-        if (node.getClass().equals(Join.class)) {
-            opt = SiameseOptFactory.createTJoinOpt(node);
-        }
-        if (node.getClass().equals(Project.class)) {
-            opt = SiameseOptFactory.createTProject(node);
+        Operator opt = SiameseOptFactory.createOperator(node);
+        if (opt == null) {
+            throw new NoSuchMethodException("缺少该种类的SQL算子：" + node.getClass());
         }
         return opt;
     }

@@ -74,6 +74,10 @@
         <template>Operator/Table/TRelation/conf/TRelationOperator.xml</template>
     </pair>
     <pair>
+        <ability>t-aggregate</ability>
+        <template>Operator/Table/TAggregate/conf/TAggregateOperator.xml</template>
+    </pair>
+    <pair>
         <ability>loop</ability>
         <template>Operator/Loop/conf/LoopOperator.xml</template>
     </pair>

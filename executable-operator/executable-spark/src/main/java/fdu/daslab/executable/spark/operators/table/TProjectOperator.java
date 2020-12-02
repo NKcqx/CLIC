@@ -24,10 +24,10 @@ public class TProjectOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> {
     @Override
     public void execute(ParamsModel inputArgs, ResultModel<Dataset<Row>> result) {
         Dataset<Row> df = this.getInputData("data");
-        String[] cols = this.params.get("condition").split(",");
-        if (cols.length < 1) {
+        if (this.params.get("condition") == null) {
             throw new IllegalArgumentException("投影算子选择的列属性参数不能为空！");
         }
+        String[] cols = this.params.get("condition").split(",");
         if (cols.length == 1) {
             df = df.select(cols[0]);
         } else {

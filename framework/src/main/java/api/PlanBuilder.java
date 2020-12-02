@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 import fdu.daslab.service.client.TaskServiceClient;
-import siamese.SiameseAdapter;
+import siamese.SiameseDocking;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
@@ -260,7 +260,7 @@ public class PlanBuilder implements java.io.Serializable {
 
         try {
             // 进行对接
-            SiameseAdapter.unfoldQuery2DAG(sql, targetOpt, graph);
+            SiameseDocking.unfoldQuery2DAG(sql, targetOpt, graph);
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -19,19 +19,26 @@ public class DockingDemo {
             PlanBuilder planBuilder = new PlanBuilder();
 
             DataQuanta sourceNode1 = planBuilder.readTableFrom(new HashMap<String, String>() {{
-                put("inputPath", "D:/2020project/docking/student.csv");
+                put("inputPath", "D:/2020project/data/student.csv");
             }}).withTargetPlatform("spark");
 
             DataQuanta sourceNode2 = planBuilder.readTableFrom(new HashMap<String, String>() {{
-                put("inputPath", "D:/2020project/docking/grade.csv");
+                put("inputPath", "D:/2020project/data/grade.csv");
             }}).withTargetPlatform("spark");
 
             /**
              * 这里是跟Siamese组对接的算子
              */
             DataQuanta queryNode = DataQuanta.createInstance("query", new HashMap<String, String>() {{
-                put("sqlNeedForOptimized", "select student.id,name,grade.grade from student,grade "
-                        + "where student.id=grade.id and grade>2");
+//                // 连接
+//                put("sqlNeedForOptimized", "select student.id,name,grade.grade from student,grade "
+//                        + "where student.id=grade.id and grade>2");
+//                // 聚合
+//                put("sqlNeedForOptimized", "select sum(grade) from student,grade "
+//                        + "where student.id=grade.id group by gender");
+                // 复杂聚合
+                put("sqlNeedForOptimized", "select avg(grade),sum(sgrade) from student,grade "
+                        + "where student.id=grade.id group by gender,year");
             }});
 
             DataQuanta sinkNode = DataQuanta.createInstance("table-sink", new HashMap<String, String>() {{
