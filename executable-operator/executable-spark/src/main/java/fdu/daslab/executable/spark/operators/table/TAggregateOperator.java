@@ -44,7 +44,7 @@ public class TAggregateOperator extends OperatorBase<Dataset<Row>, Dataset<Row>>
         // 根据group by参数的数目分类讨论
         if (this.params.get("groupCondition") == null) {
             // 如果没有group by参数，直接进行聚合
-            df.agg(aggMap);
+            df = df.agg(aggMap);
         } else {
             String[] groupCondition = this.params.get("groupCondition").split(",");
             Column[] cols = new Column[groupCondition.length];
@@ -52,9 +52,8 @@ public class TAggregateOperator extends OperatorBase<Dataset<Row>, Dataset<Row>>
                 Column col = new Column(groupCondition[i]);
                 cols[i] = col;
             }
-            df.groupBy(cols).agg(aggMap);
+            df = df.groupBy(cols).agg(aggMap);
         }
-
         this.setOutputData("result", df);
     }
 }

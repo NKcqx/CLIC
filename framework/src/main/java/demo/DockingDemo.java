@@ -33,12 +33,15 @@ public class DockingDemo {
 //                // 连接
 //                put("sqlNeedForOptimized", "select student.id,name,grade.grade from student,grade "
 //                        + "where student.id=grade.id and grade>2");
+//                // 自定义列名
+//                put("sqlNeedForOptimized", "select student.id as stuid,name as stuname from student,grade "
+//                         + "where student.id = grade.id");
 //                // 聚合
 //                put("sqlNeedForOptimized", "select sum(grade) from student,grade "
 //                        + "where student.id=grade.id group by gender");
                 // 复杂聚合
-                put("sqlNeedForOptimized", "select avg(grade),sum(sgrade) from student,grade "
-                        + "where student.id=grade.id group by gender,year");
+                put("sqlNeedForOptimized", "select sum(grade),avg(sgrade) from student,grade "
+                        + "where student.id=grade.id group by gender having sum(grade)>11 ");
             }});
 
             DataQuanta sinkNode = DataQuanta.createInstance("table-sink", new HashMap<String, String>() {{

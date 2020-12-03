@@ -2,6 +2,7 @@ package siamese;
 
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
+import org.apache.spark.sql.catalyst.expressions.Attribute;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.NamedExpression;
 import org.apache.spark.sql.catalyst.plans.logical.*;
@@ -52,19 +53,34 @@ public class SiameseOptFactory {
      * 其所带的udf参数还需要先处理一下，再写进yaml文件
      * 再传给物理平台的DataFrame API使用
      * @param condition 原udf语句
-     * @param ability 有时候需要对特定的算子进行特定处理
+     * @param ability 有时候需要对特定类型的算子进行特定处理
      * @return
      */
     private static String processConditionStr(String condition, String ability) {
-        // 处理"&&"子串
+        // 如果有"&&"，则换成"and"
         if (condition.contains("&&")) {
             condition = condition.replaceAll("&&", "and");
         }
-        // 处理"#xxx"的句柄
+        // 如果有"#xxx"的句柄，则删除
         if (condition.matches(".*#\\d+.*")) {
             condition = condition.replaceAll("#\\d+", "");
         }
-        // 对join算子，它的udf需要特别处理
+        // 如果字符串首尾两端有'['和']'，则删除
+        if (condition.matches("\\[.*\\]")) {
+            condition = condition.substring(1, condition.length() - 1);
+        }
+        // 如果SQL中含有"having"字句，则最后最顶层的节点一定是一个udf带有聚合函数的project节点
+        // 比如这个project节点的udf为"sum(CAST(grade AS DOUBLE)), avg(CAST(sgrade AS DOUBLE))"
+        // 对于这个project节点，无需执行它
+        // 因为它的上一个节点的输出结果的列属性名就已经带有聚合函数声明，比如"sum(grade)"
+        // 如果到这个project节点还继续以"select sum(grade) from ..."字样作为udf来执行的话，是违反语法的
+        // 因为列属性名已经变成了"sum(grade)"，而不是"grade"
+        if (ability.equals("t-project")) {
+            if (condition.contains("CAST") || condition.contains("cast")) {
+                condition = "no need to exe";
+            }
+        }
+        // 对join节点，它的udf需要特别处理
         if (ability.equals("t-join")) {
             // 例如Siamese给CLIC返回的join节点的condition为"Some((id = id))"
             // 那么CLIC需要将"id"提取出来
@@ -81,7 +97,7 @@ public class SiameseOptFactory {
             }
             condition = condition.substring(bracketsIndex+1, equalSignIndex);
         }
-        // 对aggregate算子，它有group by的udf以及aggregate的udf
+        // 对aggregate节点，它有group by的udf以及aggregate的udf
         // 其中的aggregate udf需要特别处理
         if (ability.equals("t-aggregate") && condition.matches(".*\\(.*")) {
             // 例如"avg(CAST(grade AS DOUBLE))"
@@ -90,7 +106,13 @@ public class SiameseOptFactory {
             // TODO: 从csv中读取出来的数字都是string类型？
             //  现在对要聚合操作的数据，Spark SQL都会先cast成double等数字型类型
             //  如果数据源是Database，需要补充考虑
-            String aggCol = condition.substring(condition.indexOf("CAST(") + 5, condition.indexOf(" AS "));
+            String aggCol = "";
+            if (condition.contains("CAST")) {
+                aggCol = condition.substring(condition.indexOf("CAST(") + 5, condition.indexOf(" AS "));
+            }
+            if (condition.contains("cast")) {
+                aggCol = condition.substring(condition.indexOf("cast(") + 5, condition.indexOf(" as "));
+            }
             condition = aggCol + "-" + aggFunc;
         }
         return condition;
@@ -98,6 +120,7 @@ public class SiameseOptFactory {
 
     /**
      * 根据树节点的schema获取字段名称
+     * 暂无用途
      * @param schema
      * @return
      */
@@ -168,11 +191,12 @@ public class SiameseOptFactory {
      */
     public static Operator createTProjectOpt(LogicalPlan node) throws Exception {
         String ability = "t-project";
-        String fieldNames = getFieldNames(node.schema());
+        String condition = ((Project) node).argString();
+        condition = processConditionStr(condition, ability);
 
         Operator opt = OperatorFactory.createOperator(ability);
         opt.setParamValue("schema", node.schema().toString());
-        opt.setParamValue("condition", fieldNames);
+        opt.setParamValue("condition", condition);
         return opt;
     }
 
@@ -200,8 +224,6 @@ public class SiameseOptFactory {
             groupUdf.append(processConditionStr(grExp.toString(), ability));
             groupUdf.append(",");
         }
-        // 把最后的逗号删掉
-        groupUdf.deleteCharAt(groupUdf.length() - 1);
 
         // 再获取aggregate的udf
         List<NamedExpression> aggExps = scala.collection.JavaConversions.seqAsJavaList(
@@ -221,7 +243,13 @@ public class SiameseOptFactory {
 
         Operator opt = OperatorFactory.createOperator(ability);
         opt.setParamValue("schema", node.schema().toString());
-        opt.setParamValue("groupCondition", groupUdf.toString());
+        if (groupUdf.length() > 0) {
+            // 把最后的逗号删掉
+            groupUdf.deleteCharAt(groupUdf.length() - 1);
+            opt.setParamValue("groupCondition", groupUdf.toString());
+        } else {
+            opt.setParamValue("groupCondition", null);
+        }
         opt.setParamValue("aggregateCondition", aggregateUdf.toString());
         return opt;
     }

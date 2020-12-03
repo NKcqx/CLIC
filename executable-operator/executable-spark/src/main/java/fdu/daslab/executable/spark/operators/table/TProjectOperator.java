@@ -6,6 +6,7 @@ import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -27,11 +28,13 @@ public class TProjectOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> {
         if (this.params.get("condition") == null) {
             throw new IllegalArgumentException("投影算子选择的列属性参数不能为空！");
         }
-        String[] cols = this.params.get("condition").split(",");
-        if (cols.length == 1) {
-            df = df.select(cols[0]);
-        } else {
-            df = df.selectExpr(cols);
+        if (!this.params.get("condition").equals("no need to exe")) {
+            String[] cols = this.params.get("condition").split(",");
+            if (cols.length == 1) {
+                df = df.selectExpr(cols[0]);
+            } else {
+                df = df.selectExpr(cols);
+            }
         }
         this.setOutputData("result", df);
     }
