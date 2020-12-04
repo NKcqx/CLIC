@@ -2,7 +2,6 @@ package siamese;
 
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
-import org.apache.spark.sql.catalyst.expressions.Attribute;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.NamedExpression;
 import org.apache.spark.sql.catalyst.plans.logical.*;
@@ -69,6 +68,38 @@ public class SiameseOptFactory {
         if (condition.matches("\\[.*\\]")) {
             condition = condition.substring(1, condition.length() - 1);
         }
+        // 对filter节点
+        // 比如说用户写的SQL语句是" select ... where name='lihua' "
+        // 在生成树时，Spark SQL会把filter节点里的udf变成"(name = lihua)"，lihua两边的单引号被删去
+        // 我们需要将 lihua 两边的单引号补回来
+        if (ability.equals("t-filter") && condition.contains("=")) {
+            // 一个filter节点的udf可能由多个子udf组成，需要划分出来一个个处理
+            String[] filterUdfs = condition.split("and");
+            String newCondition = "";
+            for (int i=0; i<filterUdfs.length; i++) {
+                // 只有不含"cast"字样的udf才是需要加单引号的udf
+                // 因为，比如某个子udf是"cast(year as int) = 2010"
+                // 则说明这个filter要操作的列属性是数值型不是字符串型，不用考虑引号问题
+                if (!filterUdfs[i].contains("cast")
+                        && !filterUdfs[i].contains("CAST")
+                        && !filterUdfs[i].contains("isnotnull")) {
+                    int nameStart = filterUdfs[i].indexOf(" = ") + 3;
+                    int nameEnd = filterUdfs[i].indexOf(")");
+                    int length = filterUdfs[i].length();
+                    String valueName = filterUdfs[i].substring(
+                            nameStart, nameEnd
+                    );
+                    valueName = "'" + valueName + "'";
+                    // 把"(name = lihua)"变成"(name = 'lihua')"
+                    filterUdfs[i] = filterUdfs[i].substring(0, nameStart)
+                            + valueName
+                            + filterUdfs[i].substring(nameEnd, length);
+                }
+                newCondition = newCondition + filterUdfs[i] + "and";
+            }
+            // 把末尾的"and"删除
+            condition = newCondition.substring(0, newCondition.length() - 3);
+        }
         // 如果SQL中含有"having"字句，则最后最顶层的节点一定是一个udf带有聚合函数的project节点
         // 比如这个project节点的udf为"sum(CAST(grade AS DOUBLE)), avg(CAST(sgrade AS DOUBLE))"
         // 对于这个project节点，无需执行它
@@ -97,23 +128,26 @@ public class SiameseOptFactory {
             }
             condition = condition.substring(bracketsIndex+1, equalSignIndex);
         }
-        // 对aggregate节点，它有group by的udf以及aggregate的udf
-        // 其中的aggregate udf需要特别处理
-        if (ability.equals("t-aggregate") && condition.matches(".*\\(.*")) {
+        // 对aggregate节点，主要有两种情况需要处理一下
+        if (ability.equals("t-aggregate")) {
+            // 正常情况下，aggregate节点有group by的udf以及aggregate的udf
+            // 其中的aggregate udf需要特别处理
             // 例如"avg(CAST(grade AS DOUBLE))"
-            // 需要让aggCol = "grade"，让aggFunc = "avg"
-            String aggFunc = condition.substring(0, condition.indexOf("("));
-            // TODO: 从csv中读取出来的数字都是string类型？
-            //  现在对要聚合操作的数据，Spark SQL都会先cast成double等数字型类型
-            //  如果数据源是Database，需要补充考虑
-            String aggCol = "";
-            if (condition.contains("CAST")) {
-                aggCol = condition.substring(condition.indexOf("CAST(") + 5, condition.indexOf(" AS "));
+            // 需要让aggCol = "grade"，让aggFunc = "avg"，再用"-"把二者连接起来，方便后续构建一个Map
+            if (condition.matches(".*\\(.*")) {
+                String aggFunc = condition.substring(0, condition.indexOf("("));
+                // TODO: 从csv中读取出来的数字都是string类型？
+                //  现在对要聚合操作的数据，Spark SQL都会先cast成double等数字型类型
+                //  如果数据源是Database，需要补充考虑
+                String aggCol = "";
+                if (condition.contains("CAST")) {
+                    aggCol = condition.substring(condition.indexOf("CAST(") + 5, condition.indexOf(" AS "));
+                }
+                if (condition.contains("cast")) {
+                    aggCol = condition.substring(condition.indexOf("cast(") + 5, condition.indexOf(" as "));
+                }
+                condition = aggCol + "-" + aggFunc;
             }
-            if (condition.contains("cast")) {
-                aggCol = condition.substring(condition.indexOf("cast(") + 5, condition.indexOf(" as "));
-            }
-            condition = aggCol + "-" + aggFunc;
         }
         return condition;
     }
@@ -138,6 +172,12 @@ public class SiameseOptFactory {
 
     /**
      * 创建一个t-filter类型的Operator，并设置相关参数
+     * 写进CLIC的yaml文件的参数需要在原参数基础上作一些处理
+     * 比如filter节点自带的参数为
+     * "(((isnotnull(name#11) && isnotnull(gender#12)) && (name#11 = xiaoming)) && (gender#12 = male))"
+     * 经过处理后变成
+     * "(((isnotnull(name) and isnotnull(gender)) and (name = 'xiaoming')) and (gender = 'male'))"
+     * 才能被物理阶段的DataFrame API使用
      * @param node
      * @return
      */
@@ -250,7 +290,17 @@ public class SiameseOptFactory {
         } else {
             opt.setParamValue("groupCondition", null);
         }
-        opt.setParamValue("aggregateCondition", aggregateUdf.toString());
+        if (aggregateUdf.toString().contains("-")) {
+            // 包含"-"字符，则表明存在表明这个aggregate是正常的aggregate节点，因为前面以生成了正常的Map参数
+            opt.setParamValue("aggregateCondition", aggregateUdf.toString());
+        } else {
+            // 还会有另一种情况，aggregate节点不是正常的aggregate节点
+            // 这种aggregate节点的udf没有包含要用哪些聚合函数（max min sum avg等）
+            // 这种情况发生在用户传入的SQL语句是多重子查询
+            // 而用户也没有使用聚合函数，但Spark SQL解析语法树时会在树的最顶端生成一个不包含聚合函数的声明aggregate节点
+            // 这种情况下，这个aggregate节点无需执行
+            opt.setParamValue("aggregateCondition", "no need to exe");
+        }
         return opt;
     }
 }

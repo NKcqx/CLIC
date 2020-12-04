@@ -26,33 +26,35 @@ public class TAggregateOperator extends OperatorBase<Dataset<Row>, Dataset<Row>>
     @Override
     public void execute(ParamsModel inputArgs, ResultModel<Dataset<Row>> result) {
         Dataset<Row> df = this.getInputData("data");
-        // 提取聚合函数的udf
-        if (this.params.get("aggregateCondition") == null) {
-            throw new IllegalArgumentException("聚合算子选择的列属性不能为空！");
-        }
-        String[] aggregateCondition = this.params.get("aggregateCondition").split(",");
-        Map<String, String> aggMap = new HashMap<>();
-        for (String aggFuncAndCol : aggregateCondition) {
-            String[] colFuncPair = aggFuncAndCol.split("-");
-            if (colFuncPair.length != 2) {
-                throw new IllegalArgumentException("聚合函数与列属性的匹配格式不对");
+        if (!this.params.get("aggregateCondition").equals("no need to exe")) {
+            // 提取聚合函数的udf
+            if (this.params.get("aggregateCondition") == null) {
+                throw new IllegalArgumentException("聚合算子选择的列属性不能为空！");
             }
-            aggMap.put(colFuncPair[0], colFuncPair[1]);
-        }
+            String[] aggregateCondition = this.params.get("aggregateCondition").split(",");
+            Map<String, String> aggMap = new HashMap<>();
+            for (String aggFuncAndCol : aggregateCondition) {
+                String[] colFuncPair = aggFuncAndCol.split("-");
+                if (colFuncPair.length != 2) {
+                    throw new IllegalArgumentException("聚合函数与列属性的匹配格式不对");
+                }
+                aggMap.put(colFuncPair[0], colFuncPair[1]);
+            }
 
-        // 开始聚合操作
-        // 根据group by参数的数目分类讨论
-        if (this.params.get("groupCondition") == null) {
-            // 如果没有group by参数，直接进行聚合
-            df = df.agg(aggMap);
-        } else {
-            String[] groupCondition = this.params.get("groupCondition").split(",");
-            Column[] cols = new Column[groupCondition.length];
-            for (int i = 0; i < groupCondition.length; i++) {
-                Column col = new Column(groupCondition[i]);
-                cols[i] = col;
+            // 开始聚合操作
+            // 根据group by参数的数目分类讨论
+            if (this.params.get("groupCondition") == null) {
+                // 如果没有group by参数，直接进行聚合
+                df = df.agg(aggMap);
+            } else {
+                String[] groupCondition = this.params.get("groupCondition").split(",");
+                Column[] cols = new Column[groupCondition.length];
+                for (int i = 0; i < groupCondition.length; i++) {
+                    Column col = new Column(groupCondition[i]);
+                    cols[i] = col;
+                }
+                df = df.groupBy(cols).agg(aggMap);
             }
-            df = df.groupBy(cols).agg(aggMap);
         }
         this.setOutputData("result", df);
     }
