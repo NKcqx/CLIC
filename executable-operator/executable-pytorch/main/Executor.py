@@ -1,13 +1,20 @@
 from utils.TopoTraversal import TopoTraversal
+import utils.YamlParser as YamlParser
 import logging
 import time
 import random
+import argparse
+
 """
 @ProjectName: CLIC
 @Time       : 2020/11/28 下午5:41
-@Author     : NKCqx
+@Author     : NKCqx, zjchen
 @Description: 
 """
+
+def parseYAML(yaml_path):
+    return YamlParser.parse(yaml_path)
+
 def execute(heads):
     print("Stage(Pytorch) ———— Start A New Pytorch Stage")
     start = time.process_time()
@@ -32,3 +39,12 @@ def execute(heads):
     end = time.process_time()
     print("Stage(Pytorch) ———— Running hold time:： " + str(end - start) + "s")
     print("Stage(Pytorch) ———— End The Current Pytorch Stage")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='analysis and execute the given yaml job')
+    parser.add_argument("--dagPath", type=str, help='yaml file path declaring the job')
+    parser.add_argument("--udfPath", type=str, help='python udf file\'s root dir path that containg all the udf file in absolute path')
+    args = parser.parse_args()
+    heads = parseYAML(args.dagPath)
+    execute(heads)
+

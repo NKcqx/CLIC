@@ -82,7 +82,7 @@ class TorchNet(OperatorBase):
                     scheduler.step()
             else:
                 self.test(model, data_loader)
-                
+
 
         except Exception as e:
             print(e)
