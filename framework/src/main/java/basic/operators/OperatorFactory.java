@@ -92,7 +92,9 @@ public final class OperatorFactory {
 
         Element root = operatorConfig.getDocumentElement();
         // 1. 先载入Opt的基本信息，如ID、name、kind
-        String code = String.valueOf(new Date().hashCode());
+        // TODO: 光靠Date().hashCode()无法保证operator的id独一无二
+        //  这会造成yaml文件中数个operator的id出现重复，物理阶段无法识别正确的DAG
+        String code = (String.valueOf(new Date().hashCode()));
         Operator operator = new Operator(root.getAttribute("ID") + code,
                 root.getAttribute("name"),
                 root.getAttribute("kind"));

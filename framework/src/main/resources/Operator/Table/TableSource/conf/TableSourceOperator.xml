@@ -3,11 +3,11 @@
 
     <platforms>
         <platform ID="java">
-            <path>Operator/TableSource/conf/JavaTableSourceOperator.xml</path>
+            <path>Operator/Table/TableSource/conf/JavaTableSourceOperator.xml</path>
         </platform>
 
         <platform ID="spark">
-            <path>Operator/TableSource/conf/SparkTableSourceOperator.xml</path>
+            <path>Operator/Table/TableSource/conf/SparkTableSourceOperator.xml</path>
         </platform>
     </platforms>
 

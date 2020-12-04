@@ -3,7 +3,7 @@
 
     <platforms>
         <platform ID="spark">
-            <path>Operator/TableSink/conf/SparkTableSinkOperator.xml</path>
+            <path>Operator/Table/TableSink/conf/SparkTableSinkOperator.xml</path>
         </platform>
     </platforms>
 

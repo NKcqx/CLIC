@@ -3,6 +3,7 @@ package fdu.daslab.executable.spark.constants;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.OperatorFactory;
 import fdu.daslab.executable.spark.operators.*;
+import fdu.daslab.executable.spark.operators.table.*;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -40,6 +41,11 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("TableSinkOperator", TableSink.class);
         put("ToTableOperator", ToTableOperator.class);
         put("FromTableOperator", FromTableOperator.class);
+        put("TFilterOperator", TFilterOperator.class);
+        put("TJoinOperator", TJoinOperator.class);
+        put("TProjectOperator", TProjectOperator.class);
+        put("TRelationOperator", TRelationOperator.class);
+        put("TAggregateOperator", TAggregateOperator.class);
     }};
 
     @Override

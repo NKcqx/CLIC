@@ -5,6 +5,7 @@ import basic.Param;
 import basic.visitors.Visitor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import siamese.SiameseSchema;
 
 import java.io.FileNotFoundException;
 import java.io.Serializable;
@@ -158,6 +159,13 @@ public class Operator implements Visitable, Serializable {
      */
     public void setParamValue(String key, String value) {
         if (this.inputParamList.containsKey(key)) {
+            // 与Siamese组的对接要求CLIC在传送SQL语句之前
+            // 需要先让Siamese得知都有哪些table，包括表名和表的schema等信息
+            try {
+                checkKeyOfSQL(key, value, this.getOperatorName());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             this.inputParamList.get(key).setValue(value);
         } else {
             boolean isMatch = false;
@@ -172,6 +180,26 @@ public class Operator implements Visitable, Serializable {
                         String.format("未在%s的配置文件中找到指定的参数名：%s", this.operatorName, key));
             }
         }
+    }
+
+    /**
+     * 判断key是否是"inputPath"且opt是否是TableSource
+     * 如果是，则让Siamese先读取这些表，获取表名以及表的schema信息
+     * 这里暂时只能硬编码，没想到好的解决方法
+     */
+    private void checkKeyOfSQL(String key, String value, String optName){
+        if (key.equals("inputPath") && optName.equals("TableSourceOperator")) {
+            addTableToSiamese(value);
+        }
+    }
+
+    /**
+     * 要让Siamese优化SQL语句，需要让他们先读一下每一个table
+     * 获取每一个table的表名和schema信息
+     * @param value
+     */
+    private void addTableToSiamese(String value) {
+        SiameseSchema.readTableToGetSchema(value);
     }
 
     /**

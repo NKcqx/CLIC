@@ -39,23 +39,43 @@
     </pair>
     <pair>
         <ability>table-source</ability>
-        <template>Operator/TableSource/conf/TableSourceOperator.xml</template>
+        <template>Operator/Table/TableSource/conf/TableSourceOperator.xml</template>
     </pair>
     <pair>
         <ability>query</ability>
-        <template>Operator/Query/conf/QueryOperator.xml</template>
+        <template>Operator/Table/Query/conf/QueryOperator.xml</template>
     </pair>
     <pair>
         <ability>table-sink</ability>
-        <template>Operator/TableSink/conf/TableSinkOperator.xml</template>
+        <template>Operator/Table/TableSink/conf/TableSinkOperator.xml</template>
     </pair>
     <pair>
         <ability>to-table</ability>
-        <template>Operator/ToTable/conf/ToTableOperator.xml</template>
+        <template>Operator/Table/ToTable/conf/ToTableOperator.xml</template>
     </pair>
     <pair>
         <ability>from-table</ability>
-        <template>Operator/FromTable/conf/FromTableOperator.xml</template>
+        <template>Operator/Table/FromTable/conf/FromTableOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>t-filter</ability>
+        <template>Operator/Table/TFilter/conf/TFilterOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>t-join</ability>
+        <template>Operator/Table/TJoin/conf/TJoinOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>t-project</ability>
+        <template>Operator/Table/TProject/conf/TProjectOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>t-relation</ability>
+        <template>Operator/Table/TRelation/conf/TRelationOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>t-aggregate</ability>
+        <template>Operator/Table/TAggregate/conf/TAggregateOperator.xml</template>
     </pair>
     <pair>
         <ability>loop</ability>

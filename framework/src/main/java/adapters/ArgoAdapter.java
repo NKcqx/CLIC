@@ -114,8 +114,8 @@ public class ArgoAdapter implements OperatorAdapter {
             Operator curOpt = breadthFirstIterator.next();
             optMapList.add(ArgoAdapter.operator2Map(curOpt)); // 先把 opt -> map 为了生成yaml
             dagList.add(ArgoAdapter.operatorDependency2Map(graph, curOpt)); // channel -> map
-
         }
+
         return new HashMap<String, Object>() {{
             put("operators", optMapList);
             put("dag", dagList);
