@@ -83,7 +83,6 @@ class TorchNet(OperatorBase):
             else:
                 self.test(model, data_loader)
 
-
         except Exception as e:
             print(e)
             print("=" * 20)
