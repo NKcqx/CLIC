@@ -1,6 +1,7 @@
 from pyspark.sql import SparkSession
 import traceback
 from model.OperatorBase import OperatorBase
+from utils.SparkInitUtil import SparkInitUtil
 
 """
 @ProjectName: CLIC
@@ -16,7 +17,7 @@ class SparkReadCSV(OperatorBase):
 
     def execute(self):
         try:
-            sparkSession = self.getInputData("spark_session")
+            sparkSession = SparkInitUtil.getSparkSession()
             path = self.params["input_path"]
             header = self.params["header"]              # 首行是否为表头
             inferSchema = self.params["infer_schema"]    # 是否自动判断类型

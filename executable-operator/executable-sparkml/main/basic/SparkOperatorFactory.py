@@ -1,5 +1,4 @@
 from model.OperatorFactory import OperatorFactory
-from operators.CreateSparkSession import CreateSparkSession
 from operators.DataframeColumns import DataframeColumns
 from operators.DataframeDrop import DataframeDrop
 from operators.DataframeLimit import DataframeLimit
@@ -26,7 +25,6 @@ from operators.SparkStopWordsRemover import SparkStopWordsRemover
 class SparkOperatorFactory(OperatorFactory):
     def __init__(self):
         self.operatorMap = {
-            "CreateSparkSession": CreateSparkSession,
             "DataframeColumns": DataframeColumns,
             "DataframeDrop": DataframeDrop,
             "DataframeFillNa": DataframeFillNa,

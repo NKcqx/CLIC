@@ -1,5 +1,7 @@
 from basic.SparkOperatorFactory import SparkOperatorFactory
+from utils.SparkInitUtil import SparkInitUtil
 from utils.TopoTraversal import TopoTraversal
+from pyspark.conf import SparkConf
 import random
 import time
 
@@ -24,11 +26,11 @@ if __name__ == "__main__":
 
     # 手动初始化所有Operator
     # 构造 SparkSession
-    spark_session = factory.createOperator("CreateSparkSession", RandID(), [], ["result"],
-                                           {"app_name": "CLIC_demo", "master": "local"})
+    conf = SparkConf().setAppName("CLIC_LDA").setMaster("local")
+    spark = SparkInitUtil(conf=conf)
 
     # 读取csv文件
-    source = factory.createOperator("SparkReadCSV", RandID(), ["spark_session"], ["result"],
+    source = factory.createOperator("SparkReadCSV", RandID(), [], ["result"],
                                     {"input_path": r"E:\Project\CLIC_ML\data\Data_PCA\hotel_bookings.csv",
                                      "header": True,
                                      "infer_schema": True,
@@ -55,9 +57,6 @@ if __name__ == "__main__":
                                  {"k": 10, "output_label": "PCA_res"})
 
     # 手动构建DAG图
-    spark_session.connectTo("result", source, "spark_session")
-    source.connectFrom("spark_session", spark_session, "result")
-
     source.connectTo("result", df_drop, "data")
     df_drop.connectFrom("data", source, "result")
 
@@ -86,7 +85,7 @@ if __name__ == "__main__":
     pca.connectFrom("cols", df_columns, "result")
 
     # headNode
-    headOperators = [spark_session]
+    headOperators = [source]
 
     # 拓扑排序
     topoTraversal = TopoTraversal(headOperators)
