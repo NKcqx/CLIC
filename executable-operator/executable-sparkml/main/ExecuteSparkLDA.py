@@ -38,6 +38,14 @@ if __name__ == "__main__":
     tokenizer = factory.createOperator("SparkRegexTokenizer", RandID(), ["data"], ["result"],
                                        {"col": "documents", "pattern": r'\s+|[,.\"]'})
 
+    # 去停用词
+    remover = factory.createOperator("SparkStopWordsRemover", RandID(), ["data"], ["result"],
+                                 {"col": "documents"})
+
+    # 统计词频
+    vectorizer = factory.createOperator("SparkCountVectorizer", RandID(), ["data"], ["result"],
+                                        {"col": "documents"})
+
     # LDA
     lda = factory.createOperator("SparkLDA", RandID(), ["data"], ["result"],
                                  {"k": 2, "col": "documents", "optimizer": "online", "output_label": "LDA_res"})
@@ -49,8 +57,14 @@ if __name__ == "__main__":
     source.connectTo("result", tokenizer, "data")
     tokenizer.connectFrom("data", source, "result")
 
-    tokenizer.connectTo("result", lda, "data")
-    lda.connectFrom("data", tokenizer, "result")
+    tokenizer.connectTo("result", remover, "data")
+    remover.connectFrom("data", tokenizer, "result")
+
+    remover.connectTo("result", vectorizer, "data")
+    vectorizer.connectFrom("data", remover, "result")
+
+    vectorizer.connectTo("result", lda, "data")
+    lda.connectFrom("data", vectorizer, "result")
 
     # headNode
     headOperators = [spark_session]

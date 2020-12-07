@@ -7,11 +7,13 @@ from operators.DataframeUnion import DataframeUnion
 from operators.SparkLinearRegression import SparkLinearRegression
 from operators.SparkOneHotEncode import SparkOneHotEncode
 from operators.DataframeFillNa import DataframeFillNa
+from operators.SparkCountVectorizer import SparkCountVectorizer
 from operators.SparkLDA import SparkLDA
 from operators.SparkPCA import SparkPCA
 from operators.SparkReadCSV import SparkReadCSV
 from operators.SparkRegexTokenizer import SparkRegexTokenizer
 from operators.SparkStandardScaler import SparkStandardScaler
+from operators.SparkStopWordsRemover import SparkStopWordsRemover
 
 """
 @ProjectName: CLIC
@@ -30,13 +32,15 @@ class SparkOperatorFactory(OperatorFactory):
             "DataframeFillNa": DataframeFillNa,
             "DataframeLimit": DataframeLimit,
             "DataframeUnion": DataframeUnion,
+            "SparkCountVectorizer": SparkCountVectorizer,
             "SparkLinearRegression": SparkLinearRegression,
             "SparkOneHotEncode": SparkOneHotEncode,
             "SparkLDA": SparkLDA,
             "SparkPCA": SparkPCA,
             "SparkReadCSV": SparkReadCSV,
             "SparkRegexTokenizer": SparkRegexTokenizer,
-            "SparkStandardScaler": SparkStandardScaler
+            "SparkStandardScaler": SparkStandardScaler,
+            "SparkStopWordsRemover": SparkStopWordsRemover
         }
 
     def createOperator(self, name, id, inputKeys, outputKeys, params):

@@ -25,20 +25,10 @@ class SparkLDA(OperatorBase):
             k = self.params["k"]
             output_label = self.params["output_label"]
 
-            # 去停用词
-            stopwords = ft.StopWordsRemover(inputCol=col, outputCol=col + '-stop')
+            lda = LDA(featuresCol=col, optimizer=optimizer, k=k, topicDistributionCol=output_label)
 
-            # 统计词频
-            stringIndex = ft.CountVectorizer(inputCol=col + '-stop', outputCol=col + '-indexed')
-
-            # LDA
-            lda = LDA(featuresCol=col + '-indexed', optimizer=optimizer, k=k, topicDistributionCol=output_label)
-
-            pipline = Pipeline(stages=[stopwords, stringIndex, lda])
-            result = pipline.fit(df) \
-                .transform(df) \
-                .drop(col+'-stop') \
-                .drop(col+'-indexed')
+            # pipline = Pipeline(stages=[lda])
+            result = lda.fit(df).transform(df)
 
             self.setOutputData("result", result)
 
