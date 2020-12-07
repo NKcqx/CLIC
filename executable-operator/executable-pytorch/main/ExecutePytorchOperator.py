@@ -1,4 +1,4 @@
-from basic.PythonOperatorFactory import PytorchOperatorFactory
+from basic.PytorchOperatorFactory import PytorchOperatorFactory
 from utils.TopoTraversal import TopoTraversal
 import torch
 import logging

@@ -3,10 +3,10 @@
 @ProjectName: CLIC
 @Time       : 2020/11/25 上午10:07
 @Author     : zjchen
-@Description: 
+@Description: 传入一个Class，用列表的形式传出它所有的方法
 """
 import inspect
-# from basic.utils.ReflectUtil import ReflectUtil
+from udf.TestUdf import TestUdf
 
 
 class MethodGetter:
@@ -22,5 +22,5 @@ class MethodGetter:
 
 
 if __name__ == "__main__":
-    pass
-    # print(MethodGetter(ReflectUtil).getMethodList())
+    # pass
+    print(MethodGetter(TestUdf).getMethodList())

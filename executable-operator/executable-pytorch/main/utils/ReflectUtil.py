@@ -36,4 +36,4 @@ class ReflectUtil:
 
 
 if __name__ == '__main__':
-    ReflectUtil.createInstanceAndMethodByPath("/udf/TestUdf.py")
+    print(ReflectUtil.createInstanceAndMethodByPath("/udf/TestUdf.py"))

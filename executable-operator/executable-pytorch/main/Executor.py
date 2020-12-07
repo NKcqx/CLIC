@@ -12,8 +12,10 @@ import argparse
 @Description: 
 """
 
+
 def parseYAML(yaml_path):
     return YamlParser.parse(yaml_path)
+
 
 def execute(heads):
     print("Stage(Pytorch) ———— Start A New Pytorch Stage")
@@ -39,6 +41,7 @@ def execute(heads):
     end = time.process_time()
     print("Stage(Pytorch) ———— Running hold time:： " + str(end - start) + "s")
     print("Stage(Pytorch) ———— End The Current Pytorch Stage")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='analysis and execute the given yaml job')

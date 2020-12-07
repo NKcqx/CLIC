@@ -32,7 +32,7 @@ class Transition(nn.Module):
         return out
 
 
-class Net(nn.Module): # DenseNet
+class Net(nn.Module):  # DenseNet
     # def __init__(self, block, nblocks, growth_rate=12, reduction=0.5, num_classes=10):
     def __init__(self, args): 
         super(Net, self).__init__()

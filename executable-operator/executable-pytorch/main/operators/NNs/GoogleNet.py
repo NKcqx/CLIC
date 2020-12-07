@@ -100,6 +100,6 @@ class Net(nn.Module):
 
 def test():
     net = Net()
-    x = torch.randn(1,3,32,32)
+    x = torch.randn(1, 3, 32, 32)
     y = net(x)
     print(y.size())

@@ -2,6 +2,8 @@ from model.OperatorBase import OperatorBase
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
+from basic.LossFunctionFactory import LossFunctionFactory
+from basic.OptimizerFactory import OptimizerFactory
 import torch.optim as optim
 from torch.optim.lr_scheduler import StepLR
 from torchvision import datasets, transforms
@@ -15,17 +17,18 @@ import traceback
 @Description: 
 """
 
+
 class TorchNet(OperatorBase):
     def __init__(self, ID, inputKeys, outputKeys, Params):
         super().__init__("TorchNet", ID, inputKeys, outputKeys, Params)
 
-    def train(self, model, train_loader, optimizer, epoch):
+    def train(self, model, loss_function, train_loader, optimizer, epoch):
         model.train()
         for batch_idx, (data, target) in enumerate(train_loader):
             data, target = data.to(self.params["device"]), target.to(self.params["device"])
             optimizer.zero_grad()
             output = model(data)
-            loss = F.nll_loss(output, target)
+            loss = loss_function(output, target)
             loss.backward()
             optimizer.step()
             if batch_idx % self.params["log-interval"] == 0:
@@ -35,7 +38,7 @@ class TorchNet(OperatorBase):
                 # if self.params["dry_run"]:
                 #     break
 
-    def test(self, model, test_loader):
+    def test(self, model, loss_function, test_loader):
         model.eval()
         test_loss = 0
         correct = 0
@@ -43,7 +46,7 @@ class TorchNet(OperatorBase):
             for data, target in test_loader:
                 data, target = data.to(self.params["device"]), target.to(self.params["device"])
                 output = model(data)
-                test_loss += F.nll_loss(output, target, reduction='sum').item()  # sum up batch loss
+                test_loss += loss_function(output, target, reduction='sum').item()  # sum up batch loss
                 pred = output.argmax(dim=1, keepdim=True)  # get the index of the max log-probability
                 correct += pred.eq(target.view_as(pred)).sum().item()
 
@@ -55,11 +58,13 @@ class TorchNet(OperatorBase):
 
     def execute(self):
         try:
+            lossFunctionFactory = LossFunctionFactory()
+            optimizerFactory = OptimizerFactory()
             kwargs = {'batch_size': self.params["batch-size"]}
             if self.params["device"] == "cuda":
                 cuda_kwargs = {'num_workers': 1,
-                            'pin_memory': True,
-                            'shuffle': True}
+                               'pin_memory': True,
+                               'shuffle': True}
                 kwargs.update(cuda_kwargs)
 
             module = importlib.import_module(self.params["network"])
@@ -73,20 +78,20 @@ class TorchNet(OperatorBase):
                 ])
             data = module.Dataset(root=self.params["data-path"], train=self.params["train"], transform=transform)
             data_loader = torch.utils.data.DataLoader(data, **kwargs)
-            
+            loss_function = lossFunctionFactory.createLossFunction(self.params["loss_function"])
+            optimizer = optimizerFactory.createOptimizer(self.params["optimizer"])
             if self.params["train"]:
-                optimizer = optim.Adadelta(model.parameters(), lr=self.params["lr"]) # TODO: 可指定不同的optimizer 下同
+                optimizer = optimizer(model.parameters(), lr=self.params["lr"])  # TODO: 可指定不同的optimizer 下同
                 scheduler = StepLR(optimizer, step_size=1, gamma=self.params["gamma"])
                 for epoch in range(1, self.params["epochs"] + 1):
-                    self.train(model, data_loader, optimizer, epoch)
+                    self.train(model, loss_function, data_loader, optimizer, epoch)
                     scheduler.step()
             else:
-                self.test(model, data_loader)
+                self.test(model, loss_function, data_loader)
 
         except Exception as e:
             print(e)
             print("=" * 20)
             print(traceback.format_exc())
 
-    
     
