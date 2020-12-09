@@ -2,14 +2,12 @@ import traceback
 
 from model.OperatorBase import OperatorBase
 from pyspark.ml.clustering import LDA
-import pyspark.ml.feature as ft
-from pyspark.ml import Pipeline
 
 """
 @ProjectName: CLIC
 @Time       : 2020/12/1 14:47
 @Author     : jimmy
-@Description: 
+@Description: Spark LDA
 """
 
 
@@ -27,7 +25,6 @@ class SparkLDA(OperatorBase):
 
             lda = LDA(featuresCol=col, optimizer=optimizer, k=k, topicDistributionCol=output_label)
 
-            # pipline = Pipeline(stages=[lda])
             result = lda.fit(df).transform(df)
 
             self.setOutputData("result", result)

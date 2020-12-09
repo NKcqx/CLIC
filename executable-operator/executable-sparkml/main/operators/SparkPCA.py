@@ -8,7 +8,7 @@ from model.OperatorBase import OperatorBase
 @ProjectName: CLIC
 @Time       : 2020/11/25 19:29
 @Author     : jimmy
-@Description: 使用pyspark对dataframe做PCA特征提取
+@Description: Spark PCA特征提取
 """
 
 
@@ -19,9 +19,9 @@ class SparkPCA(OperatorBase):
     def execute(self):
         try:
             df = self.getInputData("data")
-            cols = self.getInputData("cols")
+            cols = self.params["cols"]
             k = self.params["k"]
-            output_label = self.params["output_label"]
+            output_col = self.params["output_col"]
 
             assembler_lr = VectorAssembler() \
                 .setInputCols(cols) \
@@ -30,7 +30,7 @@ class SparkPCA(OperatorBase):
             # PCA
             pca = PCA().setK(k) \
                 .setInputCol("features_all") \
-                .setOutputCol(output_label)
+                .setOutputCol(output_col)
 
             # 建立管道
             pipeline = Pipeline(stages=[assembler_lr, pca])

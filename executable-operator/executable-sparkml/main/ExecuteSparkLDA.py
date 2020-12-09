@@ -1,6 +1,6 @@
+import Executor
 from basic.SparkOperatorFactory import SparkOperatorFactory
 from utils.SparkInitUtil import SparkInitUtil
-from utils.TopoTraversal import TopoTraversal
 from pyspark.conf import SparkConf
 import random
 import time
@@ -18,7 +18,6 @@ def RandID():
 
 
 if __name__ == "__main__":
-    # start = time.process_time()
     start = time.time()
 
     # 初始化OperatorFactory
@@ -38,19 +37,19 @@ if __name__ == "__main__":
 
     # 分词
     tokenizer = factory.createOperator("SparkRegexTokenizer", RandID(), ["data"], ["result"],
-                                       {"col": "documents", "pattern": r'\s+|[,.\"]'})
+                                       {"input_col": "documents", "output_col": "documents_token", "pattern": r'\s+|[,.\"]'})
 
     # 去停用词
     remover = factory.createOperator("SparkStopWordsRemover", RandID(), ["data"], ["result"],
-                                 {"col": "documents"})
+                                 {"input_col": "documents_token", "output_col": "documents_stop"})
 
     # 统计词频
     vectorizer = factory.createOperator("SparkCountVectorizer", RandID(), ["data"], ["result"],
-                                        {"col": "documents"})
+                                        {"input_col": "documents_stop", "output_col": "documents_count"})
 
     # LDA
     lda = factory.createOperator("SparkLDA", RandID(), ["data"], ["result"],
-                                 {"k": 2, "col": "documents", "optimizer": "online", "output_label": "LDA_res"})
+                                 {"k": 2, "col": "documents_count", "optimizer": "online", "output_label": "LDA_res"})
 
     # 手动构建DAG图
     source.connectTo("result", tokenizer, "data")
@@ -65,30 +64,10 @@ if __name__ == "__main__":
     vectorizer.connectTo("result", lda, "data")
     lda.connectFrom("data", vectorizer, "result")
 
-    # headNode
-    headOperators = [source]
-
     # 拓扑排序
-    topoTraversal = TopoTraversal(headOperators)
-    while topoTraversal.hasNextOpt():
-        curOpt = topoTraversal.nextOpt()
-        print('*' * 100 + '\n' + 'Current operator is ' + curOpt.name)
-        curOpt.execute()
-        try:
-            print('*' * 100 + '\n' + 'Current result: ' + curOpt.getOutputData("result").show(truncate=False))
-        except Exception as e:
-            print(e)
-        connections = curOpt.getOutputConnections()
-        for connection in connections:
-            targetOpt = connection.getTargetOpt()
-            topoTraversal.updateInDegree(targetOpt, -1)
-            keyPairs = connection.getKeys()
-            for keyPair in keyPairs:
-                result = curOpt.getOutputData(keyPair[0])
-                targetOpt.setInputData(keyPair[1], result)
+    Executor.execute([source])
 
     # 任务结束
-    # end = time.process_time()
     end = time.time()
     print("Finish!")
     print("Start: " + str(time.localtime(start)))

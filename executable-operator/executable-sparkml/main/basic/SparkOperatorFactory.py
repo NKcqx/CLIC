@@ -1,11 +1,13 @@
 from model.OperatorFactory import OperatorFactory
 from operators.DataframeColumns import DataframeColumns
 from operators.DataframeDrop import DataframeDrop
+from operators.DataframeFillNa import DataframeFillNa
+from operators.DataframeFilter import DataframeFilter
 from operators.DataframeLimit import DataframeLimit
 from operators.DataframeUnion import DataframeUnion
+from operators.DataframeWithColumn import DataframeWithColumn
 from operators.SparkLinearRegression import SparkLinearRegression
 from operators.SparkOneHotEncode import SparkOneHotEncode
-from operators.DataframeFillNa import DataframeFillNa
 from operators.SparkCountVectorizer import SparkCountVectorizer
 from operators.SparkLDA import SparkLDA
 from operators.SparkPCA import SparkPCA
@@ -13,6 +15,8 @@ from operators.SparkReadCSV import SparkReadCSV
 from operators.SparkRegexTokenizer import SparkRegexTokenizer
 from operators.SparkStandardScaler import SparkStandardScaler
 from operators.SparkStopWordsRemover import SparkStopWordsRemover
+from operators.SparkTransform import SparkTransform
+from operators.SparkVectorAssembler import SparkVectorAssembler
 
 """
 @ProjectName: CLIC
@@ -28,8 +32,10 @@ class SparkOperatorFactory(OperatorFactory):
             "DataframeColumns": DataframeColumns,
             "DataframeDrop": DataframeDrop,
             "DataframeFillNa": DataframeFillNa,
+            "DataframeFilter": DataframeFilter,
             "DataframeLimit": DataframeLimit,
             "DataframeUnion": DataframeUnion,
+            "DataframeWithColumn": DataframeWithColumn,
             "SparkCountVectorizer": SparkCountVectorizer,
             "SparkLinearRegression": SparkLinearRegression,
             "SparkOneHotEncode": SparkOneHotEncode,
@@ -38,7 +44,9 @@ class SparkOperatorFactory(OperatorFactory):
             "SparkReadCSV": SparkReadCSV,
             "SparkRegexTokenizer": SparkRegexTokenizer,
             "SparkStandardScaler": SparkStandardScaler,
-            "SparkStopWordsRemover": SparkStopWordsRemover
+            "SparkStopWordsRemover": SparkStopWordsRemover,
+            "SparkTransform": SparkTransform,
+            "SparkVectorAssembler": SparkVectorAssembler
         }
 
     def createOperator(self, name, id, inputKeys, outputKeys, params):

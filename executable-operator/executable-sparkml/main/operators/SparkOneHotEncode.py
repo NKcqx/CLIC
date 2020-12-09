@@ -8,7 +8,7 @@ from model.OperatorBase import OperatorBase
 @ProjectName: CLIC
 @Time       : 2020/11/25 15:07
 @Author     : jimmy
-@Description: pyspark对dataframe进行onehot编码
+@Description: Spark onehot编码
 """
 
 
@@ -19,7 +19,7 @@ class SparkOneHotEncode(OperatorBase):
     def execute(self):
         try:
             df = self.getInputData("data")
-            cols = self.getInputData("cols")
+            cols = self.params["cols"]
 
             indexers = [StringIndexer(inputCol=c, outputCol=c + '-idx') for c in cols]
             encoders = [OneHotEncoder(inputCol=c + '-idx', outputCol=c + "-onehot", dropLast=False) for c in cols]

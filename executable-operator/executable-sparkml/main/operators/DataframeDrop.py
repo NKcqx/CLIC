@@ -6,7 +6,7 @@ from model.OperatorBase import OperatorBase
 @ProjectName: CLIC
 @Time       : 2020/11/30 11:46
 @Author     : jimmy
-@Description: 
+@Description: 删除dataframe的指定列(可一次去除多个列，参数以列表形式传入)
 """
 
 
@@ -17,9 +17,12 @@ class DataframeDrop(OperatorBase):
     def execute(self):
         try:
             df = self.getInputData("data")
-            drop_col = self.params["drop_col"]
+            drop_cols = self.params["drop_cols"]
 
-            self.setOutputData("result", df.drop(drop_col))
+            for col in drop_cols:
+                df = df.drop(col)
+
+            self.setOutputData("result", df)
 
         except Exception as e:
             print(e.args)

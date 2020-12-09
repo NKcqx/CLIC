@@ -7,7 +7,7 @@ from pyspark.ml.feature import RegexTokenizer
 @ProjectName: CLIC
 @Time       : 2020/12/1 16:43
 @Author     : jimmy
-@Description: 分割字符串
+@Description: Spark 分割字符串
 """
 
 
@@ -18,14 +18,13 @@ class SparkRegexTokenizer(OperatorBase):
     def execute(self):
         try:
             df = self.getInputData("data")
-            col = self.params["col"]
+            input_col = self.params["input_col"]
             pattern = self.params["pattern"]
+            output_col = self.params["output_col"]
 
-            tokenizer = RegexTokenizer(inputCol=col, outputCol=col + '-arr', pattern=pattern)
+            tokenizer = RegexTokenizer(inputCol=input_col, outputCol=output_col, pattern=pattern)
 
-            self.setOutputData("result", tokenizer.transform(df)
-                               .drop(col)
-                               .withColumnRenamed(col + '-arr', col))
+            self.setOutputData("result", tokenizer.transform(df))
 
         except Exception as e:
             print(e.args)

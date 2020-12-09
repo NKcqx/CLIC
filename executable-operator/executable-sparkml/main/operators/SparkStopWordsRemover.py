@@ -18,14 +18,12 @@ class SparkStopWordsRemover(OperatorBase):
     def execute(self):
         try:
             df = self.getInputData("data")
-            col = self.params["col"]
-            # output_label = self.params["output_label"]
+            input_col = self.params["input_col"]
+            output_col = self.params["output_col"]
 
-            remover = StopWordsRemover(inputCol=col, outputCol=col + '-stop')
+            remover = StopWordsRemover(inputCol=input_col, outputCol=output_col)
 
-            self.setOutputData("result", remover.transform(df)
-                               .drop(col)
-                               .withColumnRenamed(col + '-stop', col))
+            self.setOutputData("result", remover.transform(df))
 
         except Exception as e:
             print(e.args)

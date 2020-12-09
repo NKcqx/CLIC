@@ -1,6 +1,5 @@
 import traceback
 
-from pyspark.ml.feature import VectorAssembler
 from pyspark.ml import Pipeline
 from pyspark.ml.regression import LinearRegression
 from model.OperatorBase import OperatorBase
@@ -19,37 +18,28 @@ class SparkLinearRegression(OperatorBase):
 
     def execute(self):
         try:
-            training_data = self.getInputData("training_data")
-            test_data = self.getInputData("test_data")
-            training_features = self.params["training_features"]
+            train_data = self.getInputData("train_data")
+            feature_col = self.params["feature_col"]
             label = self.params["label"]
-            # max_iter = self.params["max_iter"]
-            # predict_label = self.params["predict_label"]
-
-            # 将所有特征拼接成一个feature向量
-            assembler_lr = VectorAssembler() \
-                .setInputCols(training_features) \
-                .setOutputCol("features_lr")
 
             # 定义线性回归模型
             lr = LinearRegression() \
-                .setFeaturesCol("features_lr") \
-                .setPredictionCol(self.params["predict_label"]) \
+                .setFeaturesCol(feature_col) \
+                .setPredictionCol(self.params["predict_col"]) \
                 .setLabelCol(label) \
                 .setFitIntercept(True) \
                 .setMaxIter(self.params["max_iter"]) \
-                .setRegParam(0.3) \
-                .setElasticNetParam(0.8)
+                .setRegParam(self.params["reg_param"]) \
+                .setElasticNetParam(self.params["elastic_net_param"]) \
+                .setStandardization(self.params["standardization"])
 
             # 建立管道
-            pipeline_lr = Pipeline(stages=[assembler_lr, lr])
-            lr_model = pipeline_lr.fit(training_data)
+            # pipeline_lr = Pipeline(stages=[lr])
+            lr_model = lr.fit(train_data)
 
-            # 预测线性回归模型的值
-            predictions_lr = lr_model.transform(test_data) \
-                .drop("features_lr")
+            self.setOutputData("result", lr_model)
 
-            self.setOutputData("result", predictions_lr)
+            lr_model.transform(train_data)
 
         except Exception as e:
             print(e.args)

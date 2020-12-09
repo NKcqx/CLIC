@@ -10,7 +10,7 @@ from pyspark.sql.functions import split, regexp_replace
 @ProjectName: CLIC
 @Time       : 2020/11/25 18:44
 @Author     : jimmy
-@Description: 用pyspark对dataframe的指定列中的数值型列做标准化操作
+@Description: 对dataframe的指定列中的数值型列做标准化
 """
 
 
@@ -21,13 +21,13 @@ class SparkStandardScaler(OperatorBase):
     def execute(self):
         try:
             df = self.getInputData("data")
-            cols = self.getInputData("cols")
+            cols = self.params["cols"]
             numeric_types = ['int', 'long', 'double', 'float']  # TODO 待补充
             numeric_features = [item[0] for item in df.dtypes if item[1] in numeric_types and item[0] in cols]
 
             # 对数字类型的特征标准化
             for feature in numeric_features:
-                assembler = VectorAssembler(inputCols=[feature], outputCol=feature + '-ass')
+                assembler = VectorAssembler(inputCols=[feature], outputCol=feature + '-ass', handleInvalid='keep')
                 scaler = StandardScaler(inputCol=feature + '-ass', outputCol=feature + '-scaler', withMean=True)
                 pipeline = Pipeline(stages=[assembler, scaler])
                 df = pipeline.fit(df) \

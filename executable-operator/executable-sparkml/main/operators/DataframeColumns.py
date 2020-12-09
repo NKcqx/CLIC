@@ -6,7 +6,7 @@ from model.OperatorBase import OperatorBase
 @ProjectName: CLIC
 @Time       : 2020/11/30 11:35
 @Author     : jimmy
-@Description: 
+@Description: 获取dataframe的列名
 """
 
 
