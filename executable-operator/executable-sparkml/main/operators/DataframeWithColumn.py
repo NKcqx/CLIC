@@ -1,11 +1,12 @@
 import traceback
 
 from model.OperatorBase import OperatorBase
+from pyspark.sql.functions import *
 """
 @ProjectName: CLIC
 @Time       : 2020/12/9 15:01
 @Author     : jimmy
-@Description: 在Dataframe中添加新列
+@Description: 
 """
 
 
@@ -19,7 +20,7 @@ class DataframeWithColumn(OperatorBase):
             col_name = self.params["col_name"]
             col = self.params["col"]
 
-            self.setOutputData("result", df.withColumn(col_name, col))
+            self.setOutputData("result", df.withColumn(col_name, eval(col)))
 
         except Exception as e:
             print(e.args)

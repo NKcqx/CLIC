@@ -59,7 +59,7 @@ if __name__ == "__main__":
     # test新建一列
     with_column_test = factory.createOperator("DataframeWithColumn", RandID(), ["data"], ["result"],
                                               {"col_name": "SalePrice",
-                                               "col": functions.lit(0)})
+                                               "col": 'lit(0)'})
 
     # 合并两个Dataframe
     union = factory.createOperator("DataframeUnion", RandID(), ["data_1", "data_2"], ["result"], {})
