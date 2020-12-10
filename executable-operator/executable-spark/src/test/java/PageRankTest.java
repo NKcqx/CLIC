@@ -1,3 +1,4 @@
+import fdu.daslab.executable.spark.operators.FileSink;
 import fdu.daslab.executable.spark.operators.FileSource;
 import fdu.daslab.executable.spark.operators.PageRankOperator;
 import fdu.daslab.executable.spark.operators.RddToGraphOperator;
@@ -21,10 +22,11 @@ public class PageRankTest {
     private JavaSparkContext javaSparkContext;
     String filePath1 = PageRankTest.class.getClassLoader().
             getResource("0.edges").getPath();//读取
-
+    String filePath2= PageRankTest.class.getClassLoader().
+            getResource("").getPath()+"0.csv";//写入
     @Before
     public void before() {
-        SparkInitUtil.setSparkContext(new SparkConf().setMaster("local[*]").setAppName("CountByValueOperatorTest"));
+        SparkInitUtil.setSparkContext(new SparkConf().setMaster("local[*]").setAppName("PageRankTest"));
         javaSparkContext = SparkInitUtil.getDefaultSparkContext();
     }
 
@@ -76,8 +78,23 @@ public class PageRankTest {
         PageRankOperator pr = new PageRankOperator("1", in1, out1, params1);
         pr.setInputData("data", graph);
         pr.execute(null, null);
-        List<List<String>> res = pr.getOutputData("result").collect();
 
+//        JavaRDD<List<String>> respr = pr.getOutputData("result");
+//
+//        Map<String, String> params2 = new HashMap<String, String>();
+//        params2.put("isCombined", "true");
+//        params2.put("outputPath", filePath2);
+//        params2.put("separator", ",");
+//
+//        List<String> in2 = new LinkedList<String>();
+//        in.add("data");
+//        List<String> out2= new LinkedList<String>();
+//        out.add("result");
+//        FileSink fileSink = new FileSink("1", in2, out2, params2);
+//        fileSink.setInputData("data", respr);
+//        fileSink.execute(null, null);
+//        List<List<String>> res = pr.getOutputData("result").collect();
+//
 //        res.forEach(System.out::println);
     }
 

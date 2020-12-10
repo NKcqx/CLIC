@@ -7,7 +7,7 @@
     </platform>
 
     <parameters>
-        <parameter name="graphName" data_type="string" required="true"> </parameter>
+<!--        <parameter name="graphName" data_type="string" required="true"> </parameter>-->
         <parameter name="shardNum" data_type="string" default="1"> </parameter>
     </parameters>
 

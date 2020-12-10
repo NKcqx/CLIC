@@ -17,7 +17,7 @@
 
         <Property name="fileName">graphchi-operator.log</Property>
 
-        <Property name="backupFilePatch">logs/</Property>
+        <Property name="backupFilePatch">/data/logs</Property>
 
     </Properties>
 

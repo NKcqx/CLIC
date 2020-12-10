@@ -23,7 +23,7 @@ import java.util.Map;
 
 public class PageRankOperator extends OperatorBase<Graph<String, String>, JavaRDD<List<String>>> {
     public PageRankOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("SparkPageRank", id, inputKeys, outputKeys, params);
+        super("PageRankOperator", id, inputKeys, outputKeys, params);
     }
 
     @Override

@@ -19,9 +19,9 @@ import java.util.stream.Stream;
 public class FileSinkOperator extends OperatorBase<Stream<List<String>>, File> {
     Logger logger = LoggerFactory.getLogger(FileSinkOperator.class);
 
-    public FileSinkOperator(String name, String id, List<String> inputKeys,
+    public FileSinkOperator(String id, List<String> inputKeys,
                             List<String> outputKeys, Map<String, String> params) {
-        super(name, id, inputKeys, outputKeys, params);
+        super("FileSink", id, inputKeys, outputKeys, params);
     }
 
     @Override

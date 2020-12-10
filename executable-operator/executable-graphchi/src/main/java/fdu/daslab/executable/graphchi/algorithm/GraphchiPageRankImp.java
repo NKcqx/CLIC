@@ -34,13 +34,9 @@ public class GraphchiPageRankImp implements GraphChiProgram<Float, Float> {
 
     public void update(ChiVertex<Float, Float> vertex, GraphChiContext context) {
         if (context.getIteration() == 0) {
-            /* Initialize on first iteration */
             //因为采用的edgelist格式，所以顶点vertex的值为空，初始化此处赋值
             vertex.setValue(1.0f);
         } else {
-            /* On other iterations, set my value to be the weighted
-               average of my in-coming neighbors pageranks.
-             */
             float sum = 0.f;
             //收集入边
             for (int i = 0; i < vertex.numInEdges(); i++) {
@@ -48,7 +44,6 @@ public class GraphchiPageRankImp implements GraphChiProgram<Float, Float> {
             }
             vertex.setValue(0.15f + 0.85f * sum);
         }
-        /* Write my value (divided by my out-degree) to my out-edges so neighbors can read it. */
         float outValue = vertex.getValue() / vertex.numOutEdges();
         for (int i = 0; i < vertex.numOutEdges(); i++) {
             vertex.outEdge(i).setValue(outValue);
@@ -75,8 +70,6 @@ public class GraphchiPageRankImp implements GraphChiProgram<Float, Float> {
     }
 
     /**
-     * Initialize the sharder-program.
-     *
      * @param graphName
      * @param numShards
      * @return
@@ -107,11 +100,10 @@ public class GraphchiPageRankImp implements GraphChiProgram<Float, Float> {
 
         List<List<String>> res = new ArrayList<>();
         CompressedIO.disableCompression();
-        /* Create shards */
+
         FastSharder sharder = createSharder(graphName, shardNum);
         sharder.shard(inputStream, FastSharder.GraphInputFormat.EDGELIST);
 
-        /* Run GraphChi */
         GraphChiEngine<Float, Float> engine = new GraphChiEngine<Float, Float>(graphName, shardNum);
         engine.setEdataConverter(new FloatConverter());
         engine.setVertexDataConverter(new FloatConverter());
@@ -119,8 +111,6 @@ public class GraphchiPageRankImp implements GraphChiProgram<Float, Float> {
 
         engine.run(new GraphchiPageRankImp(), iterNum);
         logger.info("graphchi run");
-
-        /* Output results */
         //为了后面使用trans.backward将graphchi内部使用的vertex id 转换为原始图的vertex id
         VertexIdTranslate trans = engine.getVertexIdTranslate();
         //获取所有的rank值

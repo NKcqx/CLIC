@@ -27,7 +27,7 @@ import java.util.List;
  * @since 2020/11/23 16:06
  */
 @Parameters(separators = "=")
-public class ExecutableGraphchiOperator {
+public class ExecuteGraphchiOperator {
     @Parameter(names = {"--stageId", "-sid"})
     String stageId = null;    // stage的全局唯一标识
 
@@ -44,9 +44,9 @@ public class ExecutableGraphchiOperator {
     Integer masterPort = null; // master的thrift端口
 
     public static void main(String[] args) throws Exception {
-        Logger logger = LoggerFactory.getLogger(ExecutableGraphchiOperator.class);
+        Logger logger = LoggerFactory.getLogger(ExecuteGraphchiOperator.class);
         // 解析命令行参数
-        ExecutableGraphchiOperator entry = new ExecutableGraphchiOperator();
+        ExecuteGraphchiOperator entry = new ExecuteGraphchiOperator();
         JCommander.newBuilder()
                 .addObject(entry)
                 .build()

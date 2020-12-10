@@ -18,9 +18,9 @@ import java.util.Map;
 public class FileSourceOperator extends OperatorBase<File, InputStream> {
     Logger logger = LoggerFactory.getLogger(FileSourceOperator.class);
 
-    public FileSourceOperator(String name, String id, List<String> inputKeys,
+    public FileSourceOperator(String id, List<String> inputKeys,
                               List<String> outputKeys, Map<String, String> params) {
-        super(name, id, inputKeys, outputKeys, params);
+        super("FileSource", id, inputKeys, outputKeys, params);
     }
 
     @Override

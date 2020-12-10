@@ -45,7 +45,7 @@ public class WorkflowVisitor extends Visitor {
         if (curOptPlatform == null) {
             curOptPlatform = opt.getSelectedEntities();
             curStage = new Stage(String.valueOf(jobID),
-                    "Stage-" + opt.getOperatorName(),
+                    "Stage-" + opt.getOperatorName() + (int) (Math.random() * 900) + 100, //加上随机数防止stage名称重复
                     curOptPlatform.getEntityID(),
                     this.graph);
         }

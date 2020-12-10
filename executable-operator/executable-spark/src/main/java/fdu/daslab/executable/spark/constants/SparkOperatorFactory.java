@@ -41,7 +41,7 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("ToTableOperator", ToTableOperator.class);
         put("FromTableOperator", FromTableOperator.class);
         put("PageRankOperator", PageRankOperator.class);
-        put("RddToGraphOperator", RddToGraphOperator.class);
+        put("ConvertToGraphOperator", RddToGraphOperator.class);
     }};
 
     @Override

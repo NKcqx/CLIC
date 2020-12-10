@@ -54,6 +54,23 @@
     </pair>
 
     <pair>
+        <name>graphchi</name>
+        <platform>
+            <docker-image>java-env:v0</docker-image>
+
+            <execution>
+                <environment>/bin/sh -c</environment>
+                <executor>java -jar</executor>
+                <args>
+                    <!-- 平台级运行时参数 -->
+                    <arg name="package" required="true" with-name="false">/data/jars/executable-graphchi.jar</arg>
+                    <arg name="--udfPath" required="true" with-name="true"> </arg>
+                </args>
+            </execution>
+        </platform>
+    </pair>
+
+    <pair>
         <!-- 可以是随便一个C++的平台，以CMake构建的MPI工程为例 -->
         <name>alchemist</name>
         <platform>

@@ -6,7 +6,7 @@
             <path>Operator/PageRank/conf/GraphchiPageRankOperator.xml</path>
         </platform>
 
-        <platform ID="graphx">
+        <platform ID="spark">
             <path>Operator/PageRank/conf/GraphXPageRankOperator.xml</path>
         </platform>
     </platforms>

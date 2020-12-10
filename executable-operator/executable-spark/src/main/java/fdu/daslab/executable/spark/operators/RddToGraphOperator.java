@@ -19,7 +19,7 @@ import java.util.Map;
  */
 public class RddToGraphOperator extends OperatorBase<JavaRDD<List<String>>, Graph<String, String>> {
     public RddToGraphOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("RddToGraphOperator", id, inputKeys, outputKeys, params);
+        super("ConvertToGraphOperator", id, inputKeys, outputKeys, params);
     }
 
     @Override
