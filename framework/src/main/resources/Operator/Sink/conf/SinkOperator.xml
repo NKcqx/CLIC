@@ -9,6 +9,10 @@
         <platform ID="spark">
             <path>Operator/Sink/conf/SparkSinkOperator.xml</path>
         </platform>
+
+        <platform ID="graphchi">
+            <path>Operator/Sink/conf/GraphchiSinkOperator.xml</path>
+        </platform>
     </platforms>
 
     <parameters> <!-- 计算参数 -->

@@ -46,6 +46,8 @@ public class SparkOperatorFactory implements OperatorFactory {
         put("TProjectOperator", TProjectOperator.class);
         put("TRelationOperator", TRelationOperator.class);
         put("TAggregateOperator", TAggregateOperator.class);
+        put("PageRankOperator", PageRankOperator.class);
+        put("ConvertToGraphOperator", RddToGraphOperator.class);
     }};
 
     @Override
