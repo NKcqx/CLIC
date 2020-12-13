@@ -16,7 +16,7 @@ def RandomID():
 
 
 if __name__ == '__main__':
-     # 初始化OptFactory
+    # 初始化OptFactory
     Factory = PytorchOperatorFactory()
     # 手动初始化所有Operator
     # 根据path生成dataFrame
@@ -26,7 +26,7 @@ if __name__ == '__main__':
     #                                 {"input_Path": "/Users/jason/Documents/Study_Study/DASLab/Cross_Platform_Compute/practice/torch_example/data/MNIST/processed/test.pt"})
     
     mnist = Factory.createOperator("TorchNet", RandomID(), [], ["result"], {
-        "network": "operators.NNs.MNISTNet", # 相对路径，根目录为当前文件所在路径
+        "network": "operators.NNs.MNISTNet",  # 相对路径，根目录为当前文件所在路径
         "data-path": "/Users/zjchen/IdeaProjects/CLIC/executable-operator/executable-pytorch/data/",
         "train": True,
         "lr": 0.01,

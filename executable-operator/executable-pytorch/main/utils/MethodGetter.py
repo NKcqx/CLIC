@@ -6,7 +6,7 @@
 @Description: 传入一个Class，用列表的形式传出它所有的方法
 """
 import inspect
-from udf.TestUdf import TestUdf
+
 
 
 class MethodGetter:

@@ -94,4 +94,3 @@ class TorchNet(OperatorBase):
             print("=" * 20)
             print(traceback.format_exc())
 
-    

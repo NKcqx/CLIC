@@ -1,5 +1,5 @@
 import yaml
-import basic.PythonOperatorFactory as PythonOperatorFactory
+import basic.PytorchOperatorFactory as PytorchOperatorFactory
 
 def parse(file_path):
     with open(file_path) as file:
@@ -9,7 +9,7 @@ def parse(file_path):
     
 
 def parseOperator(opt_yaml_list):
-    factory = PythonOperatorFactory.PytorchOperatorFactory()
+    factory = PytorchOperatorFactory.PytorchOperatorFactory()
     opt_dict = {yaml_opt["id"]: factory.createOperator(
         yaml_opt["name"], 
         yaml_opt["id"], 

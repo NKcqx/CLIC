@@ -33,4 +33,3 @@ class Net(nn.Module):
         output = F.log_softmax(x, dim=1)
         return output
 
-Dataset = datasets.MNIST

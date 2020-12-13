@@ -9,7 +9,10 @@ from operators.PdStandardization import PdStandardization
 from operators.TensorConverter import TensorConverter
 from operators.TorchPCA import TorchPCA
 from operators.TorchNet import TorchNet
+from operators.PdGetSeries import PdGetSeries
+from operators.Word2Vec import Word2Vec
 from model.OperatorFactory import OperatorFactory
+
 """
 @ProjectName: CLIC
 @Time       : 2020/11/25 下午4:22
@@ -29,7 +32,9 @@ class PytorchOperatorFactory(OperatorFactory):
             "PdStandardization": PdStandardization,
             "TensorConverter": TensorConverter,
             "TorchPCA": TorchPCA,
-            "TorchNet": TorchNet
+            "TorchNet": TorchNet,
+            "PdGetSeries": PdGetSeries,
+            "Word2Vec": Word2Vec
         }
 
     def createOperator(self, name, id, inputKeys, outputKeys, params) -> OperatorBase:

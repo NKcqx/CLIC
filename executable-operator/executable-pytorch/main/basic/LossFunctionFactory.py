@@ -1,5 +1,6 @@
 import torch
 import torch.nn.functional
+from operators.Loss.SigmoidBinaryCrossEntropyLoss import SigmoidBinaryCrossEntropyLoss
 """
 @ProjectName: CLIC
 @Time       : 2020/12/3 下午9:42
@@ -14,6 +15,7 @@ class LossFunctionFactory:
             "MSELoss": torch.nn.MSELoss,
             "CrossEntropyLoss": torch.nn.CrossEntropyLoss,
             "nll_loss": torch.nn.functional.nll_loss,
+            "SigmoidBinaryCrossEntropyLoss": SigmoidBinaryCrossEntropyLoss,
         }
 
     def createLossFunction(self, name):
