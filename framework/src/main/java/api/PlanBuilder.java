@@ -128,7 +128,7 @@ public class PlanBuilder implements java.io.Serializable {
         Integer masterPort = Integer.valueOf(configuration.getProperty("clic-master-port"));
         TaskServiceClient taskClient = new TaskServiceClient(masterIp, masterPort);
         LOGGER.info("submit plan:" + planName + ", path:" + planDagPath);
-        taskClient.submitPlan(planName, planDagPath);
+        // taskClient.submitPlan(planName, planDagPath);
     }
 
     /**

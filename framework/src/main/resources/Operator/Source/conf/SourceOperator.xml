@@ -9,6 +9,11 @@
         <platform ID="spark">
             <path>Operator/Source/conf/SparkSourceOperator.xml</path>
         </platform>
+
+        <platform ID="pytorch">
+            <path>Operator/Source/conf/PytorchSourceOperator.xml</path>
+        </platform>
+
     </platforms>
 
     <parameters>

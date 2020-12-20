@@ -1,13 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="CollectionSinkOperator" name="CollectionSinkOperator" kind="supplier">
+<Operator ID="ConcatOperator" name="ConcatOperator" kind="supplier">
 
     <platforms>
-        <platform ID="java">
-            <path>Operator/CollectionSink/conf/JavaCollectionSinkOperator.xml</path>
-        </platform>
-
-        <platform ID="spark">
-            <path>Operator/CollectionSink/conf/SparkCollectionSinkOperator.xml</path>
+        <platform ID="pytorch">
+            <path>Operator/Concat/conf/PytorchConcatOperator.xml</path>
         </platform>
     </platforms>
 

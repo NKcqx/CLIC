@@ -48,9 +48,9 @@ if __name__ == "__main__":
                                                                                 "row_to": 100,
                                                                                 "col_from": 0,
                                                                                 "col_to": None})
-    iloc2 = Factory.createOperator("PdIloc", RandomID(), ["data"], ["result"], {"row_from": 0,
+    iloc2 = Factory.createOperator("PdIloc", RandomID(), ["data"], ["result"], {"row_from": None,
                                                                                 "row_to": 500,
-                                                                                "col_from": 0,
+                                                                                "col_from": None,
                                                                                 "col_to": -1})
 
     # 标准化

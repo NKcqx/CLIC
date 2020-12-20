@@ -9,6 +9,11 @@
         <platform ID="spark">
             <path>Operator/Sink/conf/SparkSinkOperator.xml</path>
         </platform>
+
+        <platform ID="pytorch">
+            <path>Operator/Sink/conf/PytorchSinkOperator.xml</path>
+        </platform>
+
     </platforms>
 
     <parameters> <!-- 计算参数 -->

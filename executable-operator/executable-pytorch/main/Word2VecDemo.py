@@ -40,7 +40,6 @@ if __name__ == '__main__':
         "num_workers": 0,
         "loss": "SigmoidBinaryCrossEntropyLoss",
         "embed_size": 8,
-        "network": "Word2VecNet",
         "lr": 0.025,
         "num_epochs": 10,
         "device": "cpu",

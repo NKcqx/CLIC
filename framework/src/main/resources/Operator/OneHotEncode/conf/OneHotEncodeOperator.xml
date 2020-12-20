@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="MapOperator" name="MapOperator" kind="shuffler">
+<Operator ID="OneHotEncodeOperator" name="OneHotEncodeOperator" kind="consumer">
 
     <platforms>
-        <platform ID="java">
-            <path>Operator/Map/conf/JavaMapOperator.xml</path>
-        </platform>
-
-        <platform ID="spark">
-            <path>Operator/Map/conf/SparkMapOperator.xml</path>
+        <platform ID="pytorch">
+            <path>Operator/OneHotEncode/conf/PytorchOneHotEncodeOperator.xml</path>
         </platform>
     </platforms>
-    <parameters>
-        <parameter name="udfName"  data_type="string" required="true"> </parameter>
-    </parameters>
 
+    <parameters>
+        <parameter kind="input" name="dummy_na" data_type="string" default="True"> </parameter>
+    </parameters>
     <inputs>  <!-- 输入数据 -->
         <input name="data" data_type="string" required="true"> </input>
     </inputs>
     <outputs> <!-- 计算结果 -->
         <output name="result" data_type="string"> </output>
     </outputs>
-
 
 </Operator>
