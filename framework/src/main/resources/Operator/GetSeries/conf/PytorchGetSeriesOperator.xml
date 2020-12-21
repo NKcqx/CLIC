@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="GetSeriesOperator" name="GetSeriesOperator" kind="shuffler">
+<Operator ID="PdGetSeries" name="PdGetSeries" kind="shuffler">
 
     <platform ID="pytorch">
         <language>python</language>

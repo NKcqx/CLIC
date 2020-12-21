@@ -62,7 +62,6 @@ public class PytorchDemo {
 
 
             planBuilder.addVertex(sourceNode);
-//            planBuilder.addVertex(concatNode);
             planBuilder.addVertex(dummiesNode);
             planBuilder.addVertex(fillnaNode);
             planBuilder.addVertex(ilocNode);

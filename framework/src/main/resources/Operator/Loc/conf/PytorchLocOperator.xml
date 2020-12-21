@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="LocOperator" name="LocOperator" kind="shuffler">
+<Operator ID="PdIloc" name="PdIloc" kind="shuffler">
 
     <platform ID="pytorch">
         <language>python</language>
