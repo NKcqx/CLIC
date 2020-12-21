@@ -56,7 +56,7 @@
     <pair>
         <name>pytorch</name>
         <platform>
-            <docker-image>pytorch:v0</docker-image>
+            <docker-image>pytorch/pytorch:latest</docker-image>
 
             <execution>
                 <environment>/bin/sh -c</environment>
@@ -64,7 +64,6 @@
                 <args>
                     <!-- 平台级运行时参数 -->
                     <arg name="package" required="true" with-name="false">/data/jars/pytorch/Executor.py</arg>
-                    <arg name="--udfPath" required="true" with-name="true"> </arg>
                 </args>
             </execution>
 
