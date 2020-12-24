@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 
-bin=`which $0`
-bin=`dirname ${bin}`
-bin=`cd "$bin"; pwd`
+bin=$(which $0)
+bin=$(dirname ${bin})
+bin=$(
+  cd "$bin"
+  pwd
+)
 
 echo ""
-function  print_usage() {
+function print_usage() {
   echo " Usage:"
   echo " clic -command Args[...]"
   echo " where command is one of:"
@@ -31,10 +34,10 @@ fi
 command=$1
 shift
 case $command in
-  --help|-help|-h)
-    print_usage
-    exit
-    ;;
+--help | -help | -h)
+  print_usage
+  exit
+  ;;
 esac
 #set PATH
 if [ -d "$CLIC_HOME/" ]; then
@@ -43,14 +46,14 @@ elif [ -d "/data/jars" ]; then
   CLIC_HOME="/data"
   PATH=$CLIC_HOME/jars
 else
-  echo  "Error: CLIC service is not found."
+  echo "Error: CLIC service is not found."
 fi
 #get conf
 if [ -f "$CLIC_HOME/conf/master-info.config" ]; then
   config="$CLIC_HOME/conf/master-info.config"
   . $config
 else
-   echo  "Error: CLIC config is not found."
+  echo "Error: CLIC config is not found."
 fi
 
 #set master ip&port
@@ -70,14 +73,14 @@ if [ "$command" = "-list_task" ]; then
 elif [ "$command" = "-version" ]; then
   CLASS=fdu.daslab.shellservice.ShellGetVersionInfo
 elif [ "$command" = "-submit" ]; then
-  if [[ $1 = *.jar ]]; then
+  if [[ $1 == *.jar ]]; then
     if [ -x $1 ]; then
-       echo "$1 has been submitted for execution"
-       echo ""
-       eval exec "$JAVA" -jar $1
+      echo "$1 has been submitted for execution"
+      echo ""
+      eval exec "$JAVA" -jar $1
     else
-       echo "$1 does not exist, please check and try again!"
-       echo ""
+      echo "$1 does not exist, please check and try again!"
+      echo ""
     fi
     exit 1
   else
@@ -102,6 +105,7 @@ else
 fi
 
 PATH=$PATH/"clic-shell-test.jar"
+#Xms 是指设定程序启动时占用内存大小。一般来讲，大点，程序会启动的快一点，但是也可能会导致机器暂时间变慢。
+#Xmx 是指设定程序运行期间最大可占用的内存大小。如果程序运行需要占用更多的内存，超出了这个设置值，就会抛出OutOfMemory异常。
 
-JAVA_HEAP_MAX=-Xmx1000m
-eval exec "$JAVA" $JAVA_HEAP_MAX -classpath $PATH $CLASS "$@" $master_host $master_port
+eval exec "$JAVA" -Xmx4096m -Xms4096m -classpath $PATH $CLASS "$@" $master_host $master_port

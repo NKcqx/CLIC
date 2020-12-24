@@ -48,6 +48,16 @@ public class TaskServiceImpl implements TaskService.Iface {
                     taskMap.put(FieldName.TASK_START_TIME, transToString((task.getStartTime())));
                     taskMap.put(FieldName.TASK_COMPLETE_TIME, transToString(task.getCompleteTime()));
                     taskMap.put(FieldName.TASK_STATUS, transToString(task.getTaskStatus()));
+                    //添加运行时间计算
+                    if ((task.getCompleteTime() != null) && (task.getStartTime() != null)) {
+                        long startTime = task.getStartTime().getTime();
+                        long copmleteTime = task.getCompleteTime().getTime();
+                        long diff = copmleteTime - startTime;
+                        long second = diff / 1000;
+                        taskMap.put(FieldName.TASK_RUNTIME, Long.toString(second));
+                    } else {
+                        taskMap.put(FieldName.TASK_RUNTIME, "");
+                    }
                     result.add(taskMap);
                 }
         );
@@ -75,6 +85,16 @@ public class TaskServiceImpl implements TaskService.Iface {
             int stageNum = stageIdList.size();
             result.put(FieldName.TASK_STAGE_NUM, Integer.toString(stageNum));
             result.put(FieldName.TASK_STAGE_LIST, transToString(stageIdList));
+            //添加运行时间计算
+            if ((task.getCompleteTime() != null) && (task.getStartTime() != null)) {
+                long startTime = task.getStartTime().getTime();
+                long copmleteTime = task.getCompleteTime().getTime();
+                long diff = copmleteTime - startTime;
+                long second = diff / 1000;
+                result.put(FieldName.TASK_RUNTIME, Long.toString(second));
+            } else {
+                result.put(FieldName.TASK_RUNTIME, "");
+            }
         }
         return result;
     }
@@ -101,6 +121,16 @@ public class TaskServiceImpl implements TaskService.Iface {
             result.put(FieldName.STAGE_COMPLETE_TIME, transToString(stage.getCompleteTime()));
             result.put(FieldName.STAGE_RETRY_COUNT, transToString(stage.getRetryCounts()));
             result.put(FieldName.STAGE_JOB_INFO, transToString(stage.getJobInfo()));
+            //添加运行时间计算
+            if ((stage.getCompleteTime() != null) && (stage.getStartTime() != null)) {
+                long startTime = stage.getStartTime().getTime();
+                long copmleteTime = stage.getCompleteTime().getTime();
+                long diff = copmleteTime - startTime;
+                long second = diff / 1000;
+                result.put(FieldName.STAGE_RUNTIME, Long.toString(second));
+            } else {
+                result.put(FieldName.STAGE_RUNTIME, "");
+            }
         }
         return result;
     }

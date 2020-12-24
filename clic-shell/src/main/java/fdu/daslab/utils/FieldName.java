@@ -12,6 +12,7 @@ public class FieldName {
     public final static String TASK_START_TIME = "start_time";
     public final static String TASK_COMPLETE_TIME = "complete_time";
     public final static String TASK_STATUS = "task_status";
+    public final static String TASK_RUNTIME = "task_runtime";
     public final static String TASK_STAGE_NUM = "task_stage_num";
     public final static String TASK_STAGE_LIST = "task_stage_list";
     public final static String STAGE_ID = "stage_id";
@@ -22,4 +23,5 @@ public class FieldName {
     public final static String STAGE_COMPLETE_TIME = "complete_time";
     public final static String STAGE_RETRY_COUNT = "retry_count";
     public final static String STAGE_JOB_INFO = "job_info";
+    public static final String STAGE_RUNTIME = "stage_runtime";
 }

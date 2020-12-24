@@ -79,7 +79,7 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>Demo</mainClass>
+                            <mainClass>GraphDemo</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
