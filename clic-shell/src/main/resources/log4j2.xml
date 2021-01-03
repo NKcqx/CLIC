@@ -74,7 +74,7 @@
 
             <!-- 在root中关联appender才会在对应的位置输出日志，定义一个输出到文件的appender也必须关联到此处才会保存日志到文件 -->
 
-<!--            <AppenderRef ref="Console"/>-->
+            <AppenderRef ref="Console"/>
             <AppenderRef ref="RollingFile" />
         </Root>
 
