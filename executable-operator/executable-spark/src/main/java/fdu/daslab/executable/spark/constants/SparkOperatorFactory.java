@@ -12,7 +12,6 @@ import java.util.HashMap;
  * @since 2020/9/3 10:36 上午
  */
 public class SparkOperatorFactory extends OperatorFactory {
-
     public SparkOperatorFactory() {
         operatorMap = new HashMap<String, Class>() {{
             put("SourceOperator", FileSource.class);
@@ -43,5 +42,4 @@ public class SparkOperatorFactory extends OperatorFactory {
             put("TAggregateOperator", TAggregateOperator.class);
         }};
     }
-
 }

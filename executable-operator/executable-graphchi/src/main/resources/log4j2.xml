@@ -15,7 +15,7 @@
 
     <Properties>
 
-        <Property name="fileName">clic-shell.log</Property>
+        <Property name="fileName">graphchi-operator.log</Property>
 
         <Property name="backupFilePatch">/data/logs</Property>
 

@@ -9,6 +9,11 @@
         <platform ID="spark">
             <path>Operator/Source/conf/SparkSourceOperator.xml</path>
         </platform>
+
+        <platform ID="graphchi">
+            <path>Operator/Source/conf/GraphchiSourceOperator.xml</path>
+        </platform>
+
     </platforms>
 
     <parameters>

@@ -38,6 +38,7 @@ public class ShellGetTaskList {
                     add(new Cell(FieldName.TASK_START_TIME));
                     add(new Cell(FieldName.TASK_COMPLETE_TIME));
                     add(new Cell(FieldName.TASK_STATUS));
+                    add(new Cell(FieldName.TASK_RUNTIME));
                 }
             };
             List<List<Cell>> body = new ArrayList<List<Cell>>();
@@ -64,6 +65,7 @@ public class ShellGetTaskList {
             taskInfo.add(task.get(FieldName.TASK_START_TIME));
             taskInfo.add(task.get(FieldName.TASK_COMPLETE_TIME));
             taskInfo.add(task.get(FieldName.TASK_STATUS));
+            taskInfo.add(task.get(FieldName.TASK_RUNTIME));
             taskListInfo.add(taskInfo);
         });
         return taskListInfo;

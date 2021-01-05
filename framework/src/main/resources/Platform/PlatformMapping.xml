@@ -15,7 +15,12 @@
                     <arg name="--deploy-mode" required="true" with-name="true">cluster</arg>
                     <arg name="--name" required="true" with-name="true">spark-running</arg>
                     <arg name="--class" required="true" with-name="true">fdu.daslab.executable.spark.ExecuteSparkOperator</arg>
-                    <arg name="--conf=spark.executor.instance" required="true" with-name="true">5</arg>
+                    <arg name="--num-executors" required="true" with-name="true">2</arg>
+                    <arg name="--driver-memory" required="true" with-name="true">32G</arg>
+                    <arg name="--executor-memory" required="true" with-name="true">32G</arg>
+<!--                    <arg name="&#45;&#45;conf=spark.default.parallelism" required="true" with-name="true">5</arg>-->
+<!--                    <arg name="&#45;&#45;conf=spark.cores.max" required="true" with-name="true">3</arg>-->
+                    <arg name="--conf=spark.executor.instance" required="true" with-name="true">2</arg>
                     <arg name="--conf=spark.kubernetes.container.image" required="true" with-name="true">spark:v0</arg>
                     <arg name="--conf=spark.kubernetes.namespace" required="true" with-name="true">argo</arg>
 <!--                    <arg name="&#45;&#45;conf=spark.driver.host" required="true" with-name="true">$POD_IP</arg>-->
@@ -50,6 +55,23 @@
                 </args>
             </execution>
 
+        </platform>
+    </pair>
+
+    <pair>
+        <name>graphchi</name>
+        <platform>
+            <docker-image>java-env:v0</docker-image>
+
+            <execution>
+                <environment>/bin/sh -c</environment>
+                <executor>java -jar</executor>
+                <args>
+                    <!-- 平台级运行时参数 -->
+                    <arg name="package" required="true" with-name="false">/data/jars/executable-graphchi.jar</arg>
+                    <arg name="--udfPath" required="true" with-name="true"> </arg>
+                </args>
+            </execution>
         </platform>
     </pair>
 

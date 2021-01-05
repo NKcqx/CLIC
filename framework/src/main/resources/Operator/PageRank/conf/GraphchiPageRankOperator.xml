@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="PageRankOperator" name="PageRankOperator" kind="compute">
+
+    <platform ID="graphchi">
+        <language>java</language>
+        <cost>3.1179</cost>
+    </platform>
+
+    <parameters>
+<!--        <parameter name="graphName" data_type="string" required="true"> </parameter>-->
+        <parameter name="shardNum" data_type="string" default="1"> </parameter>
+    </parameters>
+
+</Operator>

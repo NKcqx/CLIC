@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="PageRankOperator" name="PageRankOperator" kind="compute">
+
+    <platform ID="spark">
+        <language>java</language>
+        <cost>3.1179</cost>
+    </platform>
+
+</Operator>

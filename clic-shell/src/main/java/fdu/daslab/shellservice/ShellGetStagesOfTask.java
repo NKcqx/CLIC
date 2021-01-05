@@ -38,6 +38,7 @@ public class ShellGetStagesOfTask {
                     add(new Cell(FieldName.STAGE_START_TIME));
                     add(new Cell(FieldName.STAGE_COMPLETE_TIME));
                     add(new Cell(FieldName.STAGE_RETRY_COUNT));
+                    add(new Cell(FieldName.STAGE_RUNTIME));
                 }
             };
             List<List<Cell>> body = new ArrayList<List<Cell>>();
@@ -53,6 +54,7 @@ public class ShellGetStagesOfTask {
                             add(new Cell(PrintUtil.processOutLen(stageInfo.get(FieldName.STAGE_START_TIME))));
                             add(new Cell(PrintUtil.processOutLen(stageInfo.get(FieldName.STAGE_COMPLETE_TIME))));
                             add(new Cell(PrintUtil.processOutLen(stageInfo.get(FieldName.STAGE_RETRY_COUNT))));
+                            add(new Cell(PrintUtil.processOutLen(stageInfo.get(FieldName.STAGE_RUNTIME))));
                         }
                     };
                     body.add(row);

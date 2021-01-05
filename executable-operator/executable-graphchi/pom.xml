@@ -3,62 +3,37 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <artifactId>CLIC</artifactId>
+        <artifactId>executable-operator</artifactId>
         <groupId>fdu.daslab</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>framework</artifactId>
-
+    <artifactId>executable-graphchi</artifactId>
     <dependencies>
-        <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
-        <dependency>
-            <groupId>com.googlecode.json-simple</groupId>
-            <artifactId>json-simple</artifactId>
-            <version>1.1.1</version>
-        </dependency>
         <dependency>
             <groupId>fdu.daslab</groupId>
-            <artifactId>backend-executor</artifactId>
+            <artifactId>executable-basic</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.jgrapht/jgrapht-jdk1.5 -->
+        <!-- https://mvnrepository.com/artifact/org.graphchi/graphchi-java -->
         <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-core</artifactId>
-            <version>1.4.0</version>
+            <groupId>org.graphchi</groupId>
+            <artifactId>graphchi-java_2.11</artifactId>
+            <version>0.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-api</artifactId>
-            <version>2.7</version>
+            <version>2.2</version>
         </dependency>
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>2.13.2</version>
         </dependency>
-        <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-ext</artifactId>
-            <version>1.4.0</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.thrift</groupId>
-            <artifactId>libthrift</artifactId>
-            <version>0.13.0</version>
-        </dependency>
-        <!-- 荆老师组尚未将他们项目封装成我们可用的包 -->
-        <!-- 因此只能先用Spark SQL代替 -->
-        <!-- 这种逻辑计划与物理平台混淆的方法肯定不行 -->
-        <!-- 但现在为了对接，没办法 -->
-        <dependency>
-            <groupId>fdu.daslab</groupId>
-            <artifactId>executable-spark</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
     </dependencies>
+
 
     <build>
         <plugins>
@@ -72,14 +47,13 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
-                <version>2.6</version>
                 <configuration>
                     <descriptorRefs>
                         <descriptorRef>jar-with-dependencies</descriptorRef>
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>GraphDemo</mainClass>
+                            <mainClass>fdu.daslab.executable.graphchi.ExecuteGraphchiOperator</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -94,6 +68,8 @@
                 </executions>
             </plugin>
         </plugins>
+        <testSourceDirectory>src/test/java</testSourceDirectory>
     </build>
+
 
 </project>
