@@ -15,6 +15,8 @@ public class SparkOperatorFactory extends OperatorFactory {
 
     public SparkOperatorFactory() {
         operatorMap = new HashMap<String, Class>() {{
+            put("AlluxioSourceOperator", AlluxioFileSource.class);
+            put("AlluxioSinkOperator", AlluxioFileSink.class);
             put("SourceOperator", FileSource.class);
             put("SinkOperator", FileSink.class);
             put("FilterOperator", FilterOperator.class);

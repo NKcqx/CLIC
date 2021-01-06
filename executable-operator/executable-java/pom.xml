@@ -26,6 +26,11 @@
             <artifactId>logback-classic</artifactId>
             <version>1.2.3</version>
         </dependency>
+        <dependency>
+            <groupId>org.alluxio</groupId>
+            <artifactId>alluxio-core-client-fs</artifactId>
+            <version>2.4.0</version>
+        </dependency>
     </dependencies>
 
     <build>

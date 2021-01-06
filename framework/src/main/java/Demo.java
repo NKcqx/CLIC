@@ -22,7 +22,7 @@ public class Demo {
 
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
-                put("inputPath", "/data/datasets/dqh_test.csv");
+                put("inputPath", "/data/datasets/largeTest.csv");
             }}).withTargetPlatform("java");
 
             DataQuanta filterNode = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
