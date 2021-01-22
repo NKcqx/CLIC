@@ -47,7 +47,7 @@ public class TaskServiceClient {
             transport.close();
         } catch (TException e) {
             logger.error("An Error occur when CLIC shell get taskList");
-            e.getStackTrace();
+            e.printStackTrace();
         }
         return  allTaskList;
     }
@@ -66,7 +66,7 @@ public class TaskServiceClient {
             transport.close();
         } catch (TException e) {
             logger.error("An Error occur when CLIC shell submit plan");
-            e.getStackTrace();
+            e.printStackTrace();
         }
     }
 
@@ -84,7 +84,7 @@ public class TaskServiceClient {
             transport.close();
         } catch (TException e) {
             logger.error("An Error occur when CLIC shell get taskInfo by plan name");
-            e.getStackTrace();
+            e.printStackTrace();
         }
         return  taskInfo;
     }
@@ -102,7 +102,7 @@ public class TaskServiceClient {
             transport.close();
         } catch (TException e) {
             logger.error("An Error occur when CLIC shell get stageIdList by plan name");
-            e.getStackTrace();
+            e.printStackTrace();
         }
         return  stageIdList;
     }
@@ -120,7 +120,7 @@ public class TaskServiceClient {
             transport.close();
         } catch (TException e) {
             logger.error("An Error occur when CLIC shell get stage info by stage Id");
-            e.getStackTrace();
+            e.printStackTrace();
         }
         return  stageInfo;
     }
@@ -133,7 +133,7 @@ public class TaskServiceClient {
             transport.close();
         } catch (TException e) {
             logger.error("An Error occur when CLIC shell suspendStage by stage Id");
-            e.getStackTrace();
+            e.printStackTrace();
         }
         return isSucess;
     }
@@ -146,7 +146,7 @@ public class TaskServiceClient {
             transport.close();
         } catch (TException e) {
             logger.error("An Error occur when CLIC shell continueStage by stage Id");
-            e.getStackTrace();
+            e.printStackTrace();
         }
         return isSucess;
     }
@@ -159,7 +159,7 @@ public class TaskServiceClient {
             transport.close();
         } catch (TException e) {
             logger.error("An Error occur when CLIC shell getStageResult by stage Id");
-            e.getStackTrace();
+            e.printStackTrace();
         }
         return stageResPath;
     }

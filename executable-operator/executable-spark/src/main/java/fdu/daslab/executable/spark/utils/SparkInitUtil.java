@@ -35,7 +35,9 @@ public class SparkInitUtil {
 //                edu.daslab.executable.basic.model.FunctionModel.class
 //        });
         if (sparkContext == null) {
-            sparkContext = new JavaSparkContext(new SparkConf().setMaster("local[*]").setAppName("default"));
+            //本地测试采用local，其他情况要关闭
+//            sparkContext = new JavaSparkContext(new SparkConf().setMaster("local[*]").setAppName("default"));
+            sparkContext = new JavaSparkContext(new SparkConf().setAppName("default"));
         }
         return sparkContext;
     }

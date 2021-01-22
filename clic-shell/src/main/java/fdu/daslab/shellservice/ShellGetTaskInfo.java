@@ -43,6 +43,7 @@ public class ShellGetTaskInfo {
                     add(new Cell(FieldName.TASK_COMPLETE_TIME));
                     add(new Cell(FieldName.TASK_STATUS));
                     add(new Cell(FieldName.TASK_STAGE_NUM));
+                    add(new Cell(FieldName.TASK_RUNTIME));
                     add(new Cell(FieldName.TASK_STAGE_LIST));
                 }
             };
@@ -57,6 +58,7 @@ public class ShellGetTaskInfo {
                     row.add(new Cell(PrintUtil.processOutLen(taskInfo.get(FieldName.TASK_COMPLETE_TIME))));
                     row.add(new Cell(PrintUtil.processOutLen(taskInfo.get(FieldName.TASK_STATUS))));
                     row.add(new Cell(PrintUtil.processOutLen(taskInfo.get(FieldName.TASK_STAGE_NUM))));
+                    row.add(new Cell(PrintUtil.processOutLen(taskInfo.get(FieldName.TASK_RUNTIME))));
                 } else {
                     for (int j = 0; j < 6; j++) {
                         row.add(new Cell(""));

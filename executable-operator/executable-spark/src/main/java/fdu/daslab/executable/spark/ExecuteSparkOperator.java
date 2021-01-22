@@ -1,7 +1,4 @@
-
 package fdu.daslab.executable.spark;
-
-
 import fdu.daslab.executable.DagExecutor;
 import fdu.daslab.executable.spark.constants.SparkOperatorFactory;
 
@@ -13,7 +10,6 @@ import fdu.daslab.executable.spark.constants.SparkOperatorFactory;
  * @since 2020/7/6 1:55 PM
  */
 public class ExecuteSparkOperator {
-
     public static void main(String[] args) {
         DagExecutor executor = new DagExecutor(args, new SparkOperatorFactory());
         executor.execute();
