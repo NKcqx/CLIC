@@ -154,6 +154,39 @@ kubectl create -f clic-master.yaml -n argo
 kubectl create -f clic-master-svc.yaml -n argo
 ```
 
+###clic-shell环境
+clic-shell为用户提供一个与clic交互的方式，用户可以使用clic-shell去提交任务、查看任务状态等。
+为用户提供的命令如下所示：
+```shell script
+clic  -submit <planName> <planDagPath>         #通过提交yaml的方式提交一个任务
+clic  -submit <planJarPath>                    #通过提交jar的方式提交一个任务
+clic  -list_task                               #获得所有任务的列表
+clic  -task <taskName>                         #通过指定taskName获取相关任务的信息
+clic  -task_stage <taskName>                   #通过指定taskName获取相关task的所有stage信息
+clic  -stage <stageId>                         #通过指定stageId获取相关satge的信息
+clic  -stage_result <stageId> [<lineNum>]      #通过指定stageId获取相关satge的结果，lineNum用于指定显示的行数，默认行数为10.
+clic  -suspend_stage <stageId>                 #暂停某个指定是stage(包括所有依赖该stage的其他stage)
+clic  -continue_stage <stageId>                #继续某个指定是stage(包括所有依赖该stage的其他stage)
+clic  -version                                 #打印version信息
+clic  -help                                    #打印使用信息
+```
+部署方式：
+1. 目前阶段：需要将clic-shell模块打包成jar，放到jars目录下即可，然后在集群启动一个常驻pod作为交互端；
+2. 将clic.sh放在用于交互端集群pod下的/bin目录下。
+   注意：clic脚本在clic-shell模块的shell目录下，将其移动到相关目录下即可（pod可访问即可）。
+3. 在clic-shell脚本可读的conf目录下放置master-info.config配置文件：
+```shell script
+#供clic-shell使用
+# Clic-Master的thrift服务的ip
+ip=clic-master-svc
+# Clic-Master的thrift服务的port
+port=7777
+```
+4.通过上面的命令去使用clic-shell查看信息。注意：需要clic-master等已部署完成。
+
+
+
+
 ## 问题修复
 
 ### 重启集群
