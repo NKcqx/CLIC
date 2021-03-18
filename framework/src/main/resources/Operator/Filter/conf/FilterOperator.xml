@@ -15,6 +15,10 @@
         </platform>
     </platforms>
 
+    <parameters>
+        <parameter name="udfName" data_type="string" required="true"> </parameter>
+    </parameters>
+
     <inputs>  <!-- 输入数据 -->
         <input name="data" data_type="string" required="true"> </input>
     </inputs>

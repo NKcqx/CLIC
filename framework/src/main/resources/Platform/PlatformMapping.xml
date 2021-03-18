@@ -59,6 +59,40 @@
     </pair>
 
     <pair>
+        <name>pytorch</name>
+        <platform>
+            <docker-image>pytorch:v1</docker-image>
+
+            <execution>
+                <environment>/bin/sh -c</environment>
+                <executor>python</executor>
+                <args>
+                    <!-- 平台级运行时参数 -->
+                    <arg name="package" required="true" with-name="false">/data/jars/clic-pytorch/Executor.py</arg>
+                </args>
+            </execution>
+
+        </platform>
+    </pair>
+
+    <pair>
+        <name>spark-ml</name>
+        <platform>
+            <docker-image>spark-ml:v1</docker-image>
+
+            <execution>
+                <environment>/bin/sh -c</environment>
+                <executor>python</executor>
+                <args>
+                    <!-- 平台级运行时参数 -->
+                    <arg name="package" required="true" with-name="false">/data/jars/clic-pytorch/Executor.py</arg> <!-- 这里还没改成sparkML执行文件的目录  -->
+                </args>
+            </execution>
+
+        </platform>
+    </pair>
+
+    <pair>
         <name>graphchi</name>
         <platform>
             <docker-image>java-env:v0</docker-image>

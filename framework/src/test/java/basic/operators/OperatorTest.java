@@ -1,12 +1,8 @@
 package basic.operators;
 
 import basic.Param;
-import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
-import org.junit.rules.ExpectedException;
 import org.mockito.Mockito;
 
 import java.util.*;
@@ -44,7 +40,7 @@ public class OperatorTest {
 
     @Test
     public void inputDataListTest() {
-
+        // TODO: 如果将 operator 配置文件中的 parameters 标签放到具体平台的配置文件中，该测试不通过，需要修改
         String name = "udfName2";
         String dataType = "string";
         String defaultValue = null;
