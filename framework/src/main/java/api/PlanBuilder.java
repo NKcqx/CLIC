@@ -130,7 +130,7 @@ public class PlanBuilder implements java.io.Serializable {
         Integer masterPort = Integer.valueOf(configuration.getProperty("clic-master-port"));
         TaskServiceClient taskClient = new TaskServiceClient(masterIp, masterPort);
         LOGGER.info("submit plan:" + planName + ", path:" + planDagPath);
-        taskClient.submitPlan(planName, planDagPath);
+//        taskClient.submitPlan(planName, planDagPath);
     }
 
     /**
@@ -197,7 +197,7 @@ public class PlanBuilder implements java.io.Serializable {
         Workflow argoWorkflow = new Workflow(new ArgoAdapter(), stages);
         // 生成优化好的dag的plan，然后提交给master进行调度和运行
         String argoPath = argoWorkflow.execute();
-        submit(argoPath); // TODO：暂时使用异步的提交，driver和master之间并没有实现实时的交互，调度
+//        submit(argoPath); // TODO：暂时使用异步的提交，driver和master之间并没有实现实时的交互，调度
     }
 
     /**
