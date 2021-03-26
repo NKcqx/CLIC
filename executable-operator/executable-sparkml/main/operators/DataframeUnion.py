@@ -6,7 +6,7 @@ from model.OperatorBase import OperatorBase
 @ProjectName: CLIC
 @Time       : 2020/11/26 15:05
 @Author     : jimmy
-@Description: 横向合并两个dataframe
+@Description: 
 """
 
 

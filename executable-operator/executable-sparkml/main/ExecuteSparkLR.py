@@ -5,6 +5,7 @@ from pyspark.conf import SparkConf
 from pyspark.sql import functions
 import random
 import time
+import datetime
 
 """
 @ProjectName: CLIC
@@ -19,7 +20,7 @@ def RandID():
 
 
 if __name__ == "__main__":
-    start = time.time()
+    program_start_time = datetime.datetime.now()
     cols = ['MSSubClass', 'MSZoning', 'LotFrontage', 'LotArea', 'Street', 'Alley', 'LotShape', 'LandContour',
             'Utilities', 'LotConfig', 'LandSlope', 'Neighborhood', 'Condition1', 'Condition2', 'BldgType', 'HouseStyle',
             'OverallQual', 'OverallCond', 'YearBuilt', 'YearRemodAdd', 'RoofStyle', 'RoofMatl', 'Exterior1st',
@@ -148,11 +149,10 @@ if __name__ == "__main__":
     Executor.execute([source_train, source_test])
 
     # 任务结束
-    end = time.time()
+    program_end_time = datetime.datetime.now()
     res = lr_predict.getOutputData("result")
     res.show()
     print(res.count())
 
     print("Finish!")
-    print("Start: " + str(time.localtime(start)))
-    print("End: " + str(time.localtime(end)))
+    print("Total time in program: {} s.".format(str((program_end_time - program_start_time).total_seconds())))

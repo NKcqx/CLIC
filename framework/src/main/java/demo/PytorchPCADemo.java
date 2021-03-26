@@ -10,7 +10,7 @@ import java.util.HashMap;
 
 /**
  * @ClassName demo.PytorchDemo
- * @Description TODO
+ * @Description
  * @Author zjchen
  * @Date 2020/12/19 下午7:35
  * @Version 1.0

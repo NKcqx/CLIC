@@ -4,6 +4,7 @@ from utils.SparkInitUtil import SparkInitUtil
 from pyspark.conf import SparkConf
 import random
 import time
+import datetime
 
 """
 @ProjectName: CLIC
@@ -18,13 +19,13 @@ def RandID():
 
 
 if __name__ == "__main__":
-    start = time.time()
-    cols = "hotel, is_canceled, lead_time, arrival_date_year, arrival_date_month, arrival_date_week_number," \
-           "arrival_date_day_of_month, stays_in_weekend_nights, stays_in_week_nights, adults, children," \
-           "babies, meal, country, market_segment, distribution_channel, is_repeated_guest," \
-           "previous_cancellations, previous_bookings_not_canceled, reserved_room_type, assigned_room_type," \
-           "booking_changes, deposit_type, agent, company, days_in_waiting_list, customer_type," \
-           "adr, required_car_parking_spaces, total_of_special_requests, reservation_status"
+    program_start_time = datetime.datetime.now()
+    cols = "hotel,is_canceled,lead_time,arrival_date_year,arrival_date_month,arrival_date_week_number," \
+           "arrival_date_day_of_month,stays_in_weekend_nights,stays_in_week_nights,adults,children," \
+           "babies,meal,country,market_segment,distribution_channel,is_repeated_guest," \
+           "previous_cancellations,previous_bookings_not_canceled,reserved_room_type,assigned_room_type," \
+           "booking_changes,deposit_type,agent,company,days_in_waiting_list,customer_type," \
+           "adr,required_car_parking_spaces,total_of_special_requests,reservation_status"
 
     # 初始化OperatorFactory
     factory = SparkOperatorFactory()
@@ -92,13 +93,12 @@ if __name__ == "__main__":
     Executor.execute([source])
 
     # 任务结束
-    end = time.time()
+    program_end_time = datetime.datetime.now()
     res = pca.getOutputData("result")
     res.show()
     print(res.count())
 
     print("Finish!")
-    print("Start: " + str(time.localtime(start)))
-    print("End: " + str(time.localtime(end)))
+    print("Total time in program: {} s.".format(str((program_end_time - program_start_time).total_seconds())))
 
 

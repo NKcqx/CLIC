@@ -56,12 +56,3 @@ def parseYAML(file_path):
                     source_opt, 
                     dependency["sourceKey"])     
     return head_opt
-
-    
-
-"""
-with open("/Users/jason/Downloads/tmp/physical_pytorch.yml") as file:
-    job = yaml.load(file, Loader=yaml.FullLoader)
-opts = parseOperator(job["operator"])
-head = parseEdge(job["dag"], opts)  
-"""

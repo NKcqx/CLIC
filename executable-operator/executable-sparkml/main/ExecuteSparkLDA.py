@@ -5,6 +5,7 @@ from utils.SparkInitUtil import SparkInitUtil
 from pyspark.conf import SparkConf
 import random
 import time
+import datetime
 
 """
 @ProjectName: CLIC
@@ -19,7 +20,7 @@ def RandID():
 
 
 if __name__ == "__main__":
-    start = time.time()
+    program_start_time = datetime.datetime.now()
 
     # 初始化OperatorFactory
     factory = SparkOperatorFactory()
@@ -76,10 +77,9 @@ if __name__ == "__main__":
     Executor.execute([source])
 
     # 任务结束
-    end = time.time()
+    program_end_time = datetime.datetime.now()
     print("Finish!")
-    print("Start: " + str(time.localtime(start)))
-    print("End: " + str(time.localtime(end)))
+    print("Total time in program: {} s.".format(str((program_end_time - program_start_time).total_seconds())))
 
     res = lda.getOutputData("result")
     res.show(truncate=False)

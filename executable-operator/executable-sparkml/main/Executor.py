@@ -18,10 +18,9 @@ def parseYAML(yaml_path):
 
 
 def execute(heads):
-    conf = SparkConf().setAppName("CLIC_LDA").setMaster("local")
+    conf = SparkConf().setAppName("CLIC_demo").setMaster("local")
     spark = SparkInitUtil(conf=conf)
     start = time.process_time()
-    print("Finish! " + str(time.localtime(time.time())))
     topoTraversal = TopoTraversal(heads)
     while topoTraversal.hasNextOpt():
         curOpt = topoTraversal.nextOpt()
@@ -44,7 +43,6 @@ def execute(heads):
 
     # 任务结束，输出信息
     end = time.process_time()
-    print("Finish! " + str(time.localtime(time.time())))
     print("Stage(SparkML) ———— Running hold time:： " + str(end - start) + "s")
     print("Stage(SparkML) ———— End The Current SparkML Stage")
 
