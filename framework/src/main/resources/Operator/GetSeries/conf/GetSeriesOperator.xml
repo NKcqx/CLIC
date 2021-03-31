@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="GetSeriesOperator" name="GetSeriesOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="pytorch">
+            <path>Operator/GetSeries/conf/PytorchGetSeriesOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter kind="input" name="value" data_type="string" required="true"> </parameter>
+    </parameters>
+    <inputs>
+        <input name="data" data_type="string"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+</Operator>

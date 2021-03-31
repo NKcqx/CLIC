@@ -5,6 +5,8 @@
         <language>java</language>
         <cost>3.1179</cost>
     </platform>
-    
 
+<!--    <parameters>-->
+<!--        <parameter name="udfName" data_type="string" required="true"> </parameter>-->
+<!--    </parameters>-->
 </Operator>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="TransformOperator" name="TransformOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="spark-ml">
+            <path>Operator/Transform/conf/SparkMLTransformOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <inputs>
+        <input name="data" data_type="string"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+</Operator>

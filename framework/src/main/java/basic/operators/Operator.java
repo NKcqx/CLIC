@@ -1,6 +1,5 @@
 package basic.operators;
 
-
 import basic.Param;
 import basic.visitors.Visitor;
 import org.slf4j.Logger;
@@ -82,6 +81,8 @@ public class Operator implements Visitable, Serializable {
             for (Param param : this.selectedEntity.getParams()) {
                 this.addParameter(param);
             }
+            // 更改运算符名称为physical name
+            this.operatorName = selectedEntity.getEntityName();
         } else {
             throw new FileNotFoundException("未找到与 %s 匹配的实体，请使用配置文件中platform的ID属性");
         }

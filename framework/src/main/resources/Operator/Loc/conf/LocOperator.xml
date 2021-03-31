@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="LocOperator" name="LocOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="pytorch">
+            <path>Operator/Loc/conf/PytorchLocOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter kind="input" name="row_from" data_type="string" default="0"> </parameter>
+        <parameter kind="input" name="row_to" data_type="string" default="None"> </parameter>
+        <parameter kind="input" name="col_from" data_type="string" default="0"> </parameter>
+        <parameter kind="input" name="col_to" data_type="string" default="None"> </parameter>
+    </parameters>
+    <inputs>
+        <input name="data" data_type="string"> </input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+</Operator>

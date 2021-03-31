@@ -133,7 +133,7 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
 
     public void disconnectFrom(Connection connection) {
         if (this.inputConnections.contains(connection)) {
-            this.inputConnections.add(connection);
+            this.inputConnections.remove(connection);
             this.updateInDegree(-1);
         }
     }

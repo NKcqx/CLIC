@@ -12,12 +12,14 @@ import java.util.List;
  */
 public class OperatorEntity implements Serializable {
     String entityID;
+    String entityName;
     String language;
     Double cost;
     List<Param> params;
 
-    public OperatorEntity(String entityID, String language, Double cost, List<Param> params) {
+    public OperatorEntity(String entityID, String entityName, String language, Double cost, List<Param> params) {
         this.entityID = entityID;
+        this.entityName = entityName;
         this.language = language;
         this.cost = cost;
         this.params = params;
@@ -52,6 +54,14 @@ public class OperatorEntity implements Serializable {
 
     public void setEntityID(String entityID) {
         this.entityID = entityID;
+    }
+
+    public String getEntityName() {
+        return entityName;
+    }
+
+    public void setEntityName(String entityName) {
+        this.entityName = entityName;
     }
 
     public String getLanguage() {

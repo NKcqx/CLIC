@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="SparkOneHotEncode" name="SparkOneHotEncode" kind="shuffler">
+
+    <platform ID="spark-ml">
+        <language>python</language>
+        <!--            cost是该operator的cost，此处先简单设定-->
+        <cost>25.9901</cost>
+    </platform>
+    <parameters>
+        <parameter kind="input" name="cols" data_type="string" required="true"> </parameter>
+    </parameters>
+</Operator>

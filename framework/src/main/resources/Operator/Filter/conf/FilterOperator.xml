@@ -9,6 +9,10 @@
         <platform ID="spark">
             <path>Operator/Filter/conf/SparkFilterOperator.xml</path>
         </platform>
+
+        <platform ID="spark-ml">
+            <path>Operator/Filter/conf/SparkMLFilterOperator.xml</path>
+        </platform>
     </platforms>
 
     <parameters>

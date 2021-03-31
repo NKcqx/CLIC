@@ -13,6 +13,14 @@
         <platform ID="graphchi">
             <path>Operator/Sink/conf/GraphchiSinkOperator.xml</path>
         </platform>
+
+        <platform ID="pytorch">
+            <path>Operator/Sink/conf/PytorchSinkOperator.xml</path>
+        </platform>
+
+        <platform ID="spark-ml">
+            <path>Operator/Sink/conf/SparkMLSinkOperator.xml</path>
+        </platform>
     </platforms>
 
     <parameters> <!-- 计算参数 -->

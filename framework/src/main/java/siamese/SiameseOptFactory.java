@@ -2,7 +2,6 @@ package siamese;
 
 import basic.operators.Operator;
 import basic.operators.OperatorFactory;
-import org.apache.spark.sql.catalyst.expressions.Attribute;
 import org.apache.spark.sql.catalyst.expressions.Expression;
 import org.apache.spark.sql.catalyst.expressions.NamedExpression;
 import org.apache.spark.sql.catalyst.plans.logical.*;

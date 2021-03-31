@@ -1,6 +1,7 @@
 package basic.operators;
 
 import basic.Param;
+import basic.Util;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -94,7 +95,7 @@ public final class OperatorFactory {
         // 1. 先载入Opt的基本信息，如ID、name、kind
         // TODO: 光靠Date().hashCode()无法保证operator的id独一无二
         //  这会造成yaml文件中数个operator的id出现重复，物理阶段无法识别正确的DAG
-        String code = (String.valueOf(new Date().hashCode()));
+        String code = String.valueOf(Util.generateID());
         Operator operator = new Operator(root.getAttribute("ID") + code,
                 root.getAttribute("name"),
                 root.getAttribute("kind"));
@@ -156,13 +157,15 @@ public final class OperatorFactory {
                     .parse(pltConfigStream);
             config.getDocumentElement().normalize();
             Element pltRoot = config.getDocumentElement();
+            // Entity 可以有不同的名字
+            String entityName = pltRoot.getAttribute("name");
             Optional<Element> pltEle = getElementByTag(pltRoot, "platform");
             String language = getElementContentByTag(pltEle, "language");
             Double cost = Double.valueOf(getElementContentByTag(pltEle, "cost"));
             List<Param> pltParams = getParams(pltRoot, "parameters", "parameter");
 
             // String id = pltEle.map(element -> element.getAttribute("ID")).orElse(""); // 用根XML里得到的ID
-            operatorEntities.add(new OperatorEntity(platform, language, cost, pltParams));
+            operatorEntities.add(new OperatorEntity(platform, entityName, language, cost, pltParams));
         }
         return operatorEntities;
     }

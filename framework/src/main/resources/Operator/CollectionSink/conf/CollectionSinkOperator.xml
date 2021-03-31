@@ -20,5 +20,4 @@
         <output name="result" data_type="string"> </output>
     </outputs>
 
-
 </Operator>
