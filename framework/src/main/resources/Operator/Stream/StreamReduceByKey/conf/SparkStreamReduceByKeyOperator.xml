@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="StreamReduceByKeyOperator" name="StreamReduceByKeyOperator" kind="transformer">
+
+    <platform ID="spark">
+        <language>java</language>
+        <cost>22</cost>
+    </platform>
+
+</Operator>

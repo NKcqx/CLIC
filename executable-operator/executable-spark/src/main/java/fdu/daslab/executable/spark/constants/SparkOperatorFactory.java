@@ -2,6 +2,7 @@ package fdu.daslab.executable.spark.constants;
 
 import fdu.daslab.executable.basic.model.OperatorFactory;
 import fdu.daslab.executable.spark.operators.*;
+import fdu.daslab.executable.spark.operators.streaming.*;
 import fdu.daslab.executable.spark.operators.table.*;
 
 import java.util.HashMap;
@@ -40,6 +41,14 @@ public class SparkOperatorFactory extends OperatorFactory {
             put("TProjectOperator", TProjectOperator.class);
             put("TRelationOperator", TRelationOperator.class);
             put("TAggregateOperator", TAggregateOperator.class);
+            put("StreamSourceOperator", StreamSource.class);
+            put("StreamSinkOperator", StreamSink.class);
+            put("StreamFilterOperator", StreamFilter.class);
+            put("StreamMapToPairOperator", StreamMapToPair.class);
+            put("StreamReduceByKeyOperator", StreamReduceByKey.class);
+            put("StreamWindowOperator", StreamWindow.class);
+            put("StreamSortOperator", StreamSort.class);
+            put("StreamShoppingOperator", StreamShopping.class);
         }};
     }
 }

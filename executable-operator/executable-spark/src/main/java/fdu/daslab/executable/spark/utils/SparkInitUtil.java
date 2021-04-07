@@ -3,6 +3,8 @@ package fdu.daslab.executable.spark.utils;
 import org.apache.spark.SparkConf;
 import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.streaming.Durations;
+import org.apache.spark.streaming.api.java.JavaStreamingContext;
 
 /**
  * 初始化spark需要的一些方法
@@ -18,7 +20,10 @@ public class SparkInitUtil {
 
     //TODO: SparkContext其实包含在SparkSession内
     // 后续必须把二者整合起来，否则maven编译相关单元测试类时会有冲突
+    // SparkSession是Spark SQL的执行环境
     private static SparkSession sparkSession = null;
+
+    private static JavaStreamingContext streamingContext = null;
 
     /**
      * 初始化JavaSparkContext
@@ -49,7 +54,7 @@ public class SparkInitUtil {
 
     public static SparkSession getDefaultSparkSession() {
         if (sparkSession == null) {
-            sparkSession = SparkSession.builder().master("local").appName("SparkSQLStage").getOrCreate();
+            sparkSession = SparkSession.builder().master("local[*]").appName("SparkSQLStage").getOrCreate();
         }
         return sparkSession;
     }
@@ -57,5 +62,19 @@ public class SparkInitUtil {
     public static SparkSession setSparkSession(String master, String appName) {
         sparkSession = SparkSession.builder().master(master).appName(appName).getOrCreate();
         return sparkSession;
+    }
+
+    /**
+     * 初始化StreamingContext
+     * @return
+     */
+    public static JavaStreamingContext getDefaultStreamingContext() {
+        if (streamingContext == null) {
+            streamingContext = new JavaStreamingContext(
+                    new SparkConf().setMaster("local[*]").setAppName("SparkStreamingStage"),
+                    Durations.seconds(3)
+            );
+        }
+        return streamingContext;
     }
 }

@@ -116,6 +116,18 @@ public class PlanBuilder implements java.io.Serializable {
         return dataQuanta;
     }
 
+    /**
+     * 读取数据流
+     * @param params
+     * @return
+     * @throws Exception
+     */
+    public DataQuanta readStreamFrom(Map<String, String> params) throws Exception {
+        DataQuanta dataQuanta = DataQuanta.createInstance("stream-source", params);
+        this.headDataQuantas.add(dataQuanta);
+        return dataQuanta;
+    }
+
     public List<DataQuanta> getHeadDataQuanta() {
         return headDataQuantas;
     }

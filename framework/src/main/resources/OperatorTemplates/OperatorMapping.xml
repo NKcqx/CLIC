@@ -178,4 +178,36 @@
         <ability>with-column</ability>
         <template>Operator/WithColumn/conf/WithColumnOperator.xml</template>
     </pair>
+    <pair>
+        <ability>stream-source</ability>
+        <template>Operator/Stream/StreamSource/conf/StreamSourceOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-sink</ability>
+        <template>Operator/Stream/StreamSink/conf/StreamSinkOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-filter</ability>
+        <template>Operator/Stream/StreamFilter/conf/StreamFilterOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-map-to-pair</ability>
+        <template>Operator/Stream/StreamMapToPair/conf/StreamMapToPairOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-reduce</ability>
+        <template>Operator/Stream/StreamReduceByKey/conf/StreamReduceByKeyOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-window</ability>
+        <template>Operator/Stream/StreamWindow/conf/StreamWindowOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-sort</ability>
+        <template>Operator/Stream/StreamSort/conf/StreamSortOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-shopping</ability>
+        <template>Operator/Stream/StreamShopping/conf/StreamShoppingOperator.xml</template>
+    </pair>
 </mappings>

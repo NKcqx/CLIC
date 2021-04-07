@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="StreamSourceOperator" name="StreamSourceOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="spark">
+            <path>Operator/Stream/StreamSource/conf/SparkStreamSourceOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters>
+        <parameter kind="input" name="kind" data_type="string"> </parameter>
+        <parameter kind="input" name="inputPath" data_type="string"> </parameter>
+        <parameter kind="input" name="ip" data_type="string" default="localhost"> </parameter>
+        <parameter kind="input" name="port" data_type="string" default="9999"> </parameter>
+        <parameter kind="input" name="separator" data_type="string" default=","> </parameter> <!--参数默认值怎么做?-->
+    </parameters>
+    <inputs>  </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"> </output>
+    </outputs>
+
+
+</Operator>

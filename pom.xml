@@ -79,6 +79,12 @@
             <artifactId>spark-graphx_2.11</artifactId>
             <version>2.4.5</version>
         </dependency>
+        <!-- Spark Streaming -->
+        <dependency>
+            <groupId>org.apache.spark</groupId>
+            <artifactId>spark-streaming_2.11</artifactId>
+            <version>2.4.5</version>
+        </dependency>
 
         <dependency>
             <groupId>org.javatuples</groupId>
