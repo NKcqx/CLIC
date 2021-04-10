@@ -13,6 +13,11 @@
         <platform ID="graphchi">
             <path>Operator/Sink/conf/GraphchiSinkOperator.xml</path>
         </platform>
+
+        <platform ID="flink">
+            <path>Operator/Sink/conf/FlinkSinkOperator.xml</path>
+        </platform>
+
     </platforms>
 
     <parameters> <!-- 计算参数 -->

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="CollectionSourceOperator" name="CollectionSourceOperator" kind="shuffler">
+
+    <platform ID="spark">
+        <language>spark</language>
+<!--            cost是该operator的cost，此处先简单设定-->
+        <cost>26.9901</cost>
+    </platform>
+</Operator>

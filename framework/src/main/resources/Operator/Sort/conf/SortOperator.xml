@@ -9,6 +9,10 @@
         <platform ID="spark">
             <path>Operator/Sort/conf/SparkSortOperator.xml</path>
         </platform>
+
+        <platform ID="flink">
+            <path>Operator/Sort/conf/FlinkSortOperator.xml</path>
+        </platform>
     </platforms>
 
     <parameters>

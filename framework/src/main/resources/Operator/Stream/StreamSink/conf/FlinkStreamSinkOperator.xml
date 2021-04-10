@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="StreamSinkOperator" name="StreamSinkOperator" kind="shuffler">
+
+    <platform ID="flink">
+        <language>java</language>
+        <cost>27.8976</cost>
+    </platform>
+
+
+</Operator>

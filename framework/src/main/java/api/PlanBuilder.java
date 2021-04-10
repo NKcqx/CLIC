@@ -13,8 +13,9 @@ import basic.visitors.PrintVisitor;
 import basic.visitors.WorkflowVisitor;
 import channel.Channel;
 import fdu.daslab.backend.executor.model.Workflow;
-import org.apache.thrift.TException;
 import fdu.daslab.backend.executor.utils.YamlUtil;
+import fdu.daslab.service.client.TaskServiceClient;
+import org.apache.thrift.TException;
 import org.javatuples.Pair;
 import org.jgrapht.Graphs;
 import org.jgrapht.graph.DefaultListenableGraph;
@@ -23,13 +24,15 @@ import org.jgrapht.traverse.TopologicalOrderIterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
-import fdu.daslab.service.client.TaskServiceClient;
 import siamese.SiameseDocking;
 
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
 import java.io.Writer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * @author 陈齐翔，刘丰艺
@@ -114,6 +117,12 @@ public class PlanBuilder implements java.io.Serializable {
         DataQuanta dataQuanta = DataQuanta.createInstance("table-source", params);
         this.headDataQuantas.add(dataQuanta);
         return dataQuanta;
+    }
+
+    public DataQuanta readStreamDataFrom(Map<String, String> params) throws Exception {
+        DataQuanta dataQuanta = DataQuanta.createInstance("stream-source", params);
+        this.headDataQuantas.add(dataQuanta);
+        return dataQuanta; // 不需要connectTo
     }
 
     public List<DataQuanta> getHeadDataQuanta() {

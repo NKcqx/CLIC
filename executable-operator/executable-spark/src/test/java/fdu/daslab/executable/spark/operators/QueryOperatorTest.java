@@ -4,13 +4,11 @@ import fdu.daslab.executable.basic.model.FunctionModel;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import fdu.daslab.executable.basic.utils.ReflectUtil;
-import fdu.daslab.executable.spark.utils.SparkInitUtil;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 import org.apache.spark.sql.types.Metadata;
 import org.apache.spark.sql.types.StructField;
 import org.apache.spark.sql.types.StructType;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 

@@ -93,4 +93,33 @@
         <ability>convert-to-graph</ability>
         <template>Operator/ConvertToGraph/conf/ConvertToGraphOperator.xml</template>
     </pair>
+
+    <pair>
+        <ability>stream-source</ability>
+        <template>Operator/Stream/StreamSource/conf/StreamSourceOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-map</ability>
+        <template>Operator/Stream/StreamMap/conf/StreamMapOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-filter</ability>
+        <template>Operator/Stream/StreamFilter/conf/StreamFilterOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-reduce-by-key-in-window</ability>
+        <template>Operator/Stream/StreamReduceByKeyInWindow/conf/StreamReduceByKeyInWindow.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-sink</ability>
+        <template>Operator/Stream/StreamSink/conf/StreamSinkOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-assign-timestamp</ability>
+        <template>Operator/Stream/StreamAssignTimestamp/conf/StreamAssignTimestampOperator.xml</template>
+    </pair>
+    <pair>
+        <ability>stream-topN-by-key-in-window</ability>
+        <template>Operator/Stream/StreamTopNByKeyInWindow/conf/StreamTopNByKeyInWindow.xml</template>
+    </pair>
 </mappings>

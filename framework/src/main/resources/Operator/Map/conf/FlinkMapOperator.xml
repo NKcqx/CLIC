@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="MapOperator" name="MapOperator" kind="shuffler">
+
+    <platform ID="flink">
+        <language>java</language>
+<!--            此处先用jar做image测试-->
+        <implementation>/resources/Operator/Map/FlinkMap.jar</implementation>
+        <command>
+            java -jar ./resources/Operator/Map/FlinkMap.jar
+            -Dinput_data_path={$input_file_path}
+            -Doutput_data_path={$output_file_path}
+            -Ddelimiter={$delimiter}
+            -Dis_reverse={$is_reverse}
+        </command>
+<!--            cost是该operator的cost，此处先简单设定-->
+        <cost>3.99901</cost>
+    </platform>
+
+
+</Operator>

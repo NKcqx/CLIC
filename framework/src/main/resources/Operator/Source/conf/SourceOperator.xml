@@ -14,6 +14,10 @@
             <path>Operator/Source/conf/GraphchiSourceOperator.xml</path>
         </platform>
 
+        <platform ID="flink">
+            <path>Operator/Source/conf/FlinkSourceOperator.xml</path>
+        </platform>
+
     </platforms>
 
     <parameters>
