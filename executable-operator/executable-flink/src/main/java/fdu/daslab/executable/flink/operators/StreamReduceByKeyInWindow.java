@@ -56,7 +56,7 @@ public class StreamReduceByKeyInWindow extends OperatorBase<DataStream<List<Stri
                 })
                 // 根据时间窗口分配数据
                 // todo: 后续把时间作为用户定义参数传递
-                .timeWindow(Time.hours(1), Time.minutes(5))
+                .timeWindow(Time.minutes(8), Time.minutes(4))
                 // 对于每个窗口中的相同key做reduce操作
                 .reduce((ReduceFunction<List<String>>) (record1, record2) -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel

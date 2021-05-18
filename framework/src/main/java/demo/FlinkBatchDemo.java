@@ -21,7 +21,6 @@ public class FlinkBatchDemo {
             planBuilder.setPlatformUdfPath("spark", "D:/study/code/Java/CLIC/executable-operator/executable-basic/target/classes/fdu/daslab/executable/udf/TestCrimeDataFunc.class");
             planBuilder.setPlatformUdfPath("flink", "D:/study/code/Java/CLIC/executable-operator/executable-basic/target/classes/fdu/daslab/executable/udf/TestCrimeDataFunc.class");
 
-
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
                 put("inputPath", "D:/study/code/Scala/FlinkTutorial/target/classes/london_crime_small.csv");

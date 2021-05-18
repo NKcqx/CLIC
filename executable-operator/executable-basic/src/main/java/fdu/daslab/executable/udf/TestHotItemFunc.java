@@ -32,6 +32,8 @@ public class TestHotItemFunc {
     public boolean filterFunc(List<String> record) {
         boolean flag = false;
         try {
+//            String type = record.get(1);
+//            System.out.println(type);
             if ("view".equals(record.get(1))) {
                 flag = true;
             }

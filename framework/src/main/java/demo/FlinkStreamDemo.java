@@ -25,7 +25,7 @@ public class FlinkStreamDemo {
 
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readStreamDataFrom(new HashMap<String, String>() {{
-                put("inputPath", "D:/study/code/Java/Dataset/Data/2019-Dec.csv");
+                put("inputPath", "D:/study/data/2019-Dec.csv");
             }}).withTargetPlatform("flink");
 
             DataQuanta filterNode = DataQuanta.createInstance("stream-filter", new HashMap<String, String>() {{

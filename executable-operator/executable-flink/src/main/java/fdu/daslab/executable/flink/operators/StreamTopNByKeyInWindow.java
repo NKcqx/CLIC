@@ -26,6 +26,8 @@ import java.util.Map;
  * @version 1.0
  * @since 2021/3/31 21:51
  */
+
+// 测试用，先不删
 public class StreamTopNByKeyInWindow extends OperatorBase<DataStream<List<String>>, DataStream<String>> {
     public StreamTopNByKeyInWindow(String id,
                                    List<String> inputKeys,
@@ -35,6 +37,7 @@ public class StreamTopNByKeyInWindow extends OperatorBase<DataStream<List<String
     }
 
     @Override
+    // QUESTION: 如果输入数据大小太大，会报java.lang.OutOfMemoryError: Java heap space
     public void execute(ParamsModel inputArgs,
                         ResultModel<DataStream<String>> result) {
         // ReduceByKeyOperator reduceArgs = (ReduceByKeyOperator) inputArgs.getOperatorParam();
@@ -84,7 +87,7 @@ public class StreamTopNByKeyInWindow extends OperatorBase<DataStream<List<String
 
 
                         // 将排名信息格式化为字符串,
-                        // todo: 目前为了展示所以做成了比较user-defined的style，后面改成general的style
+                        // todo: 目前为了展示所以做成了控制台输出，后面改成文件输出
                         FunctionModel functionModel = inputArgs.getFunctionModel();
                         StringBuilder resultBuilder = new StringBuilder();
                         resultBuilder.append("=====================================\n");
