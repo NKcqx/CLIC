@@ -1,5 +1,6 @@
 //package fdu.daslab.redis;
 //
+//import fdu.daslab.scheduler.model.KubernetesStage;
 //import org.junit.Test;
 //import redis.clients.jedis.Jedis;
 //
@@ -18,4 +19,12 @@
 //        assert jedis.get("tzw").equals("handsome");
 //        jedis.close();
 //    }
+//
+//    @Test
+//    public void testCreateStage(){
+//        KubernetesStage stage = new KubernetesStage("testStageName");
+//        StageRepository stageRepository = new StageRepository();
+//        stageRepository.addOrUpdateStage(stage);
+//    }
+//
 //}
