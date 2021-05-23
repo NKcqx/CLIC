@@ -11,8 +11,7 @@ import java.util.HashMap;
  * @since 2021/3/10 17:00
  */
 
-// QUESTION(SOLVED): 在实现Spark的时候是根据什么来确定要实现哪些算子的？只看到了单元测试，除了单元测试以外，最终要能通过什么流处理的测试程序吗？
-    // 实现主要的算子即可，最终需要写一个demo程序，调用系统的算子，参考framework/src/main/java/demo
+
 public class FlinkOperatorFactory extends OperatorFactory {
     public FlinkOperatorFactory(){
         operatorMap = new HashMap<String, Class>() {{
@@ -20,8 +19,8 @@ public class FlinkOperatorFactory extends OperatorFactory {
             put("SinkOperator", FileSink.class);
             put("FilterOperator", FilterOperator.class);
             put("MapOperator", MapOperator.class);
-//            put("FlatMapOperator"), FlatMapOperator.class); // QUESTION: 为什么Spark没有FlatMapOperator?
-//            put("JoinOperator", JoinOperator.class); // QUESTION: 为什么这边Spark的JoinOperator报错？
+//            put("FlatMapOperator"), FlatMapOperator.class);
+//            put("JoinOperator", JoinOperator.class);
             put("ReduceByKeyOperator", ReduceByKeyOperator.class);
             put("SortOperator", SortOperator.class);
 //            put("SocketSourceOperator", SocketSource.class);

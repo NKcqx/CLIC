@@ -13,7 +13,6 @@
         <platform ID="flink">
             <path>Operator/Map/conf/FlinkMapOperator.xml</path>
         </platform>
-<!--        QUESTION：为什么这里和OperatorMapping.xml都要写路径？-->
 
     </platforms>
 

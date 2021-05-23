@@ -45,7 +45,6 @@ public class StreamFileSink extends OperatorBase<DataStream<String>, DataStream<
 
         dataStream.print();
         final StreamExecutionEnvironment fsEnv = dataStream.getExecutionEnvironment();
-        // QUESTION(WAIT): 流处理最后必须执行env.execute(), 这样获取到的是否是FileSource里面的fsEnv? 单例模式？
 
         try {
             fsEnv.execute();
@@ -75,7 +74,6 @@ public class StreamFileSink extends OperatorBase<DataStream<String>, DataStream<
 //                        fileWritter.close();
 //                    });
 //        } else {
-            // 一个partition写入一个文件. QUESTION(WAIT): DataStream/Flink没有类似forEach的迭代的方法，是否直接通过设置并行度实现？
 //        this.getInputData("data")
 //                .map(line -> StringUtils.join(line, this.params.get("separator")))
 //                .writeAsText(this.params.get("outputPath"));

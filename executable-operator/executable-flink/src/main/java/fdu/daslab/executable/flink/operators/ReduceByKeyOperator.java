@@ -46,7 +46,8 @@ public class ReduceByKeyOperator extends OperatorBase<DataSet<List<String>>, Dat
                 });
         this.setOutputData("result", nextStream);
 
-        final DataSet<List<String>> res = this.getOutputData("result");
+        // 调试代码
+//        final DataSet<List<String>> res = this.getOutputData("result");
 
 //        try {
 //            res.print();

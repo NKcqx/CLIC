@@ -34,7 +34,6 @@
             </execution>
 
 
-<!--            QUESTION: 这个平台自定义属性是什么意思？-->
             <!-- 平台自定义属性，framework仅负责传递，不进去看都有什么 -->
 <!--            <properties>-->
 <!--                <property name="master">local[2]</property>-->

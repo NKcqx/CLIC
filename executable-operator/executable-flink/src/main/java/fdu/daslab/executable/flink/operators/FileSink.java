@@ -57,7 +57,7 @@ public class FileSink  extends OperatorBase<DataSet<List<String>>, DataSet<List<
         }
 
 
-        // QUESTION(WAIT): Flink 没有partition, 可能需要用setParallelism间接实现
+        // TODO: 设置并行度
 
 //        boolean isCombined = this.params.get("isCombined").equals("true"); // todo 之后会根据数据类型在外面自动转换
 //        if (isCombined) {

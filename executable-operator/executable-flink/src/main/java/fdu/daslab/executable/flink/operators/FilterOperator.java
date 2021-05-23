@@ -21,7 +21,6 @@ import java.util.Map;
 public class FilterOperator extends OperatorBase<DataSet<List<String>>, DataSet<List<String>>> {
 
     // 通过指定路径来获取代码的udf
-    // QUESTION(WAIT): 这个注解起作用了吗？
     @Parameter(names = {"--udfName"})
     String filterFunctionName;
 
@@ -36,17 +35,6 @@ public class FilterOperator extends OperatorBase<DataSet<List<String>>, DataSet<
         final String udfName = this.params.get("udfName");
         final DataSet<List<String>> inputData = this.getInputData("data");
 
-//        try {
-//            inputData.print();
-//        } catch (Exception e){
-//            e.printStackTrace();
-//        }
-//        inputData.filter(new RichFilterFunction<List<String>>() {
-//            @Override
-//            public boolean filter(List<String> value) throws Exception {
-//                return (boolean)
-//            }
-//        })
         final DataSet<List<String>> nextStream = inputData
                 .filter((FilterFunction<List<String>>) data -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel
@@ -55,7 +43,9 @@ public class FilterOperator extends OperatorBase<DataSet<List<String>>, DataSet<
                 });
 
         this.setOutputData("result", nextStream);
-        final DataSet<List<String>> res = this.getOutputData("result");
+
+        // 调试代码
+//        final DataSet<List<String>> res = this.getOutputData("result");
 
 //        try {
 //            res.print();

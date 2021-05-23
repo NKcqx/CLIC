@@ -25,7 +25,8 @@ public class TestHotItemFunc {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern(pattern);
         LocalDateTime localDateTime = LocalDateTime.from(formatter.parse(timestampAsString));
         Timestamp timestamp = Timestamp.valueOf(localDateTime);
-        return timestamp.getTime();
+        long timestampTime = timestamp.getTime();
+        return timestampTime;
     }
 
     // filter筛选出用户行为为"pv"的行为记录
@@ -60,7 +61,7 @@ public class TestHotItemFunc {
     }
 
     // reduce的func: 以商品ID为key，聚合每个商品ID的点击次数
-    // QUESTION: reduce的两条List数据长度可以不同吗？
+
     public List<String> reduceFunc(List<String> record1, List<String> record2) {
         List<String> res = new ArrayList<>(record1);
         res.set(1, String.valueOf(new Integer(record1.get(1)) + new Integer(record2.get(1))));

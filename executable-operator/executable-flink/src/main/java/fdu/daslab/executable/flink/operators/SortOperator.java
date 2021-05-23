@@ -43,8 +43,7 @@ public class SortOperator extends OperatorBase<DataSet<List<String>>, DataSet<Li
                         ResultModel<DataSet<List<String>>> result) {
         // SortOperator sortOperator = (SortOperator) inputArgs.getOperatorParam();
 
-        // QUESTION(WAIT): Spark的sortBy的partitionNum参数是什么含义? 是全局排序后又分成partitionNum份吗？ Flink没有类似的全局排序，要通过设置并行度为1排序
-        // QUESTION: spark的sortBy第一个参数应该是keySelector吧？返回的应该是一个key吧？为什么会返回一个SerializableComparator对象？
+
         final String udfName = this.params.get("udfName");
 
         final DataSet<List<String>> nextStream = this.getInputData("data")
@@ -53,7 +52,8 @@ public class SortOperator extends OperatorBase<DataSet<List<String>>, DataSet<Li
                 .setParallelism(1); // sort in one partition: global sort;
         this.setOutputData("result", nextStream);
 
-        final DataSet<List<String>> res = this.getOutputData("result");
+        // 调试代码
+//        final DataSet<List<String>> res = this.getOutputData("result");
 
 //        try {
 //            res.print();
@@ -64,7 +64,6 @@ public class SortOperator extends OperatorBase<DataSet<List<String>>, DataSet<Li
     }
 
     // 默认的比较器Comparable是不能序列化的，因此需要重新定义一个
-    // QUESTION(WAIT): 不能序列化，就重新定义一个？
     static class SerializableComparator implements Serializable, Comparable<SerializableComparator> {
         private List<String> data;
         private ParamsModel inputArgs;

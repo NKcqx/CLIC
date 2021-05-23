@@ -17,11 +17,7 @@ public class FlinkStreamDemo {
     public static void main(String[] args) throws IOException, SAXException, ParserConfigurationException {
         try {
             PlanBuilder planBuilder = new PlanBuilder("test-stream");
-//            planBuilder.setPlatformUdfPath("java", "D:/study/code/Java/CLIC/executable-operator/executable-basic/target/classes/fdu/daslab/executable/udf/TestCrimeDataFunc.class");
-//            planBuilder.setPlatformUdfPath("spark", "D:/study/code/Java/CLIC/executable-operator/executable-basic/target/classes/fdu/daslab/executable/udf/TestCrimeDataFunc.class");
-//            planBuilder.setPlatformUdfPath("flink", "D:/study/code/Java/CLIC/executable-operator/executable-basic/target/classes/fdu/daslab/executable/udf/TestWordCountsFunc.class");
-            planBuilder.setPlatformUdfPath("flink", "D:/study/code/Java/CLIC/executable-operator/executable-basic/target/classes/fdu/daslab/executable/udf/TestHotItemFunc.class");
-
+            planBuilder.setPlatformUdfPath("flink", "D:/study/data/udf/TestHotItemFunc.class");
 
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readStreamDataFrom(new HashMap<String, String>() {{
@@ -44,6 +40,8 @@ public class FlinkStreamDemo {
                 put("udfName", "reduceFunc");
                 put("keyName", "reduceKey");
                 put("winFunc", "windowFunc");
+                put("timeInterval", "8");
+                put("timeStep", "4");
             }}).withTargetPlatform("flink");
 
             DataQuanta topNNode = DataQuanta.createInstance("stream-topN-by-key-in-window", new HashMap<String, String>() {{
@@ -75,9 +73,7 @@ public class FlinkStreamDemo {
             planBuilder.addEdge(topNNode, sinkNode);
 
             planBuilder.execute();
-            // QUESTION(SOLVED): 生成的java-template正确吗？下一步怎么提交给CLIC后台运行？
-            // 1. 正确，但是那只是template，我们真正需要的是logical plan的yaml文件, 在default-config的yaml-output-path路径下，一个以job开头的yaml文件
-            // 2. 用clic-shell，但是非常复杂，因为clic-shell是一个k8s的pod, 需要针对clic-shell去配置k8s，但是clic的k8s环境hen nan pei，具体参考deployment下的README.md
+
         } catch (Exception e) {
             e.printStackTrace();
         }

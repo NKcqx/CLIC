@@ -48,6 +48,8 @@ public class StreamReduceByKeyInWindow extends OperatorBase<DataStream<List<Stri
         final String keyName = this.params.get("keyName");
         final String udfName = this.params.get("udfName");
         final String winFunc = this.params.get("winFunc");
+        final String timeInterval = this.params.get("timeInterval");
+        final String timeStep = this.params.get("timeStep");
         final DataStream<List<String>> nextStream = this.getInputData("data")
                 .keyBy((KeySelector<List<String>, String>) data -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel
@@ -56,7 +58,7 @@ public class StreamReduceByKeyInWindow extends OperatorBase<DataStream<List<Stri
                 })
                 // 根据时间窗口分配数据
                 // todo: 后续把时间作为用户定义参数传递
-                .timeWindow(Time.minutes(8), Time.minutes(4))
+                .timeWindow(Time.minutes(1), Time.minutes(1))
                 // 对于每个窗口中的相同key做reduce操作
                 .reduce((ReduceFunction<List<String>>) (record1, record2) -> {
                     // 因为无法序列化，只能传入可序列化的ParamsModel

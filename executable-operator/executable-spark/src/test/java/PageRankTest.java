@@ -1,3 +1,4 @@
+import fdu.daslab.executable.spark.operators.FileSink;
 import fdu.daslab.executable.spark.operators.FileSource;
 import fdu.daslab.executable.spark.operators.PageRankOperator;
 import fdu.daslab.executable.spark.operators.RddToGraphOperator;
@@ -10,10 +11,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author Qinghua Du

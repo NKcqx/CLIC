@@ -35,10 +35,10 @@ public class FileSource extends OperatorBase<DataSet<List<String>>, DataSet<List
 
         // FileSource sourceArgs = (FileSource) inputArgs.getOperatorParam();
         // 读取文件，并按照分割符分隔开来
-        // QUESTION(WAIT): 是否需要设置并行度？通过传入的参数设置？spark中的partition是全局的并行度设置吗？
-        // TODO: 设置并行度
+        // TODO: 没有像Spark一样的partition，考虑用setParallelism设置并行度
 
-        // QUESTION: 把split方法的参数换成常字符串就可以打印输出了？
+        // 直接向split方法传入this.params.get("separator")会出问题
+        // 先用final String存一下再传入就正常了
         final String separator = this.params.get("separator");
         final DataSet<List<String>> listDataSet = fbEnv
                 .readTextFile(this.params.get("inputPath"))
@@ -53,8 +53,9 @@ public class FileSource extends OperatorBase<DataSet<List<String>>, DataSet<List
 //        } catch (Exception e){
 //
 //        }
-        final DataSet<List<String>> res = this.getOutputData("result");
+//        final DataSet<List<String>> res = this.getOutputData("result");
 
+        // 调试代码
 //        output.put("result", listDataSet);
 //        final DataSet<List<String>> res = output.get("result");
 

@@ -10,6 +10,8 @@
         <parameter name="udfName" data_type="string" required="true"> </parameter>
         <parameter name="keyName" data_type="string" required="true"> </parameter>
         <parameter name="winFunc" data_type="string" required="true"> </parameter>
+        <parameter name="timeInterval" data_type="string" required="true"> </parameter>
+        <parameter name="timeStep" data_type="string" required="true"> </parameter>
     </parameters>
     <inputs>  <!-- 输入数据 -->
         <input name="data" data_type="string" required="true"> </input>
