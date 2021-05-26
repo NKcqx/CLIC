@@ -24,6 +24,7 @@ class DagExecutor(object):
         """
         self.initArgs(args)
         self.initOperator(operatorFactory)
+        self.initMasterClient()
         self.logger = Logger('ExecutorLogger', logging.DEBUG).logger
         self.dagHook = dagHook
 

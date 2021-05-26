@@ -10,7 +10,7 @@ class Logger(object):
         1. name: Logger的名字
         2. level: logger的级别
     """
-    def __init__(self, name, level):
+    def __init__(self, name, level=logging.DEBUG):
         self.logger = logging.getLogger(name)
         self.logger.setLevel(level)
         ch = logging.StreamHandler()
