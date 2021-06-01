@@ -18,7 +18,7 @@ import java.util.stream.Stream;
 public class CountOperator extends OperatorBase<Stream<List<String>>, Stream<Long>> {
 
     public CountOperator(String id, List<String> inputKeys, List<String> outputKeys,
-                            Map<String, String> params) {
+                         Map<String, String> params) {
         super("CountOperator", id, inputKeys, outputKeys, params);
     }
 

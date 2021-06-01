@@ -66,7 +66,8 @@ public class ShellGetTaskInfo {
                 }
                 row.add(new Cell(stageId.get(i)));
                 body.add(row);
-            };
+            }
+            ;
             new ConsoleTable.ConsoleTableBuilder().addHeaders(header).addRows(body).build().print();
         }
         System.out.format("\n");

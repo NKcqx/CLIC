@@ -16,8 +16,8 @@ import java.util.Map;
  * SparkSQL平台的sql语句执行算子
  *
  * @author 刘丰艺
- * @since 2020/10/27 9:30 PM
  * @version 1.0
+ * @since 2020/10/27 9:30 PM
  */
 public class QueryOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> {
 

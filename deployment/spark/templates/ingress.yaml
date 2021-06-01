@@ -11,7 +11,7 @@ metadata:
     {{- end }}
     {{- range $key, $value := .Values.ingress.annotations }}
     {{ $key }}: {{ $value | quote }}
-{{- end }}
+  {{- end }}
 spec:
   rules:
     {{- range .Values.ingress.hosts }}
@@ -26,11 +26,11 @@ spec:
   {{- if .Values.ingress.tls }}
   tls:
   {{- range $i, $tls := .Values.ingress.tls }}
-    - hosts:
-      {{- range $e, $host := $tls.hosts }}
-        - {{ $host }}
-      {{ end -}}
-      secretName: {{ $tls.secretName }}
+  - hosts:
+    {{- range $e, $host := $tls.hosts }}
+    - {{ $host }}
+    {{ end -}}
+    secretName: {{ $tls.secretName }}
   {{ end -}}
   {{- end -}}
-{{- end }}
+  {{- end }}

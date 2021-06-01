@@ -8,7 +8,6 @@ import redis.clients.jedis.JedisPoolConfig;
 import java.io.FileNotFoundException;
 
 /**
- *
  * redis客户端相关的使用方法
  *
  * @author 唐志伟

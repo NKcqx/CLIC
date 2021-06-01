@@ -130,6 +130,7 @@ public class KubernetesUtil {
 
     /**
      * 使用java api 创建job
+     *
      * @param v1Job job
      */
     public static void submitJobStage(V1Job v1Job) {
@@ -172,31 +173,31 @@ public class KubernetesUtil {
                                              String containerImage, String containerArgs) {
         return new V1JobBuilder()
                 .withNewMetadata()
-                    .withName(stageId)
-                    .withNamespace(defaultNamespaceName)
+                .withName(stageId)
+                .withNamespace(defaultNamespaceName)
                 .endMetadata()
                 .withNewSpec()
-                    .withNewTemplate()
-                        .withNewSpec()
-                            .addNewContainer()
-                                .withName(containerName)
-                                .withImage(containerImage)
-                                .withImagePullPolicy("IfNotPresent")
-                                .withCommand("/bin/sh", "-c")
-                                .withArgs(containerArgs)
-                                .addNewVolumeMount()
-                                    .withName("nfs-volume")
-                                    .withMountPath("/data")
-                                .endVolumeMount()
-                            .endContainer()
-                            .withRestartPolicy("Never")
-                            .addNewVolume()
-                                .withName("nfs-volume")
-                                .withPersistentVolumeClaim(new V1PersistentVolumeClaimVolumeSourceBuilder()
-                                        .withClaimName("pvc-nfs").build())
-                            .endVolume()
-                        .endSpec()
-                    .endTemplate()
+                .withNewTemplate()
+                .withNewSpec()
+                .addNewContainer()
+                .withName(containerName)
+                .withImage(containerImage)
+                .withImagePullPolicy("IfNotPresent")
+                .withCommand("/bin/sh", "-c")
+                .withArgs(containerArgs)
+                .addNewVolumeMount()
+                .withName("nfs-volume")
+                .withMountPath("/data")
+                .endVolumeMount()
+                .endContainer()
+                .withRestartPolicy("Never")
+                .addNewVolume()
+                .withName("nfs-volume")
+                .withPersistentVolumeClaim(new V1PersistentVolumeClaimVolumeSourceBuilder()
+                        .withClaimName("pvc-nfs").build())
+                .endVolume()
+                .endSpec()
+                .endTemplate()
                 .endSpec()
                 .build();
     }
@@ -222,7 +223,7 @@ public class KubernetesUtil {
     /**
      * 将argo的yaml适配生成kubernetes client的meta信息
      *
-     * @param planName plan的全局唯一的名称
+     * @param planName     plan的全局唯一的名称
      * @param argoYamlPath argo yaml的路径
      * @return 所有该plan下的stage
      */
@@ -267,10 +268,10 @@ public class KubernetesUtil {
     /**
      * 构建KubernetesStage
      *
-     * @param resultStages 需要返回的stages
+     * @param resultStages       需要返回的stages
      * @param stageNameToStageId stage的name到全局唯一的stageId的映射
-     * @param templateToImage containerName到对应的image的映射
-     * @param stageTemplate yaml描述上的每一个template
+     * @param templateToImage    containerName到对应的image的映射
+     * @param stageTemplate      yaml描述上的每一个template
      */
     @SuppressWarnings("unchecked")
     private static void buildKubernetesPods(Map<String, KubernetesStage> resultStages,

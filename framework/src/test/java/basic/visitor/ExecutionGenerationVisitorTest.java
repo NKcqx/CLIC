@@ -41,15 +41,15 @@ public class ExecutionGenerationVisitorTest {
         try {
             Operator op1 = OperatorFactory.createOperator("map");
             spyVisitor.visit(op1);
-            Assert.assertEquals(((List) field.get(spyVisitor)).size(),1);
+            Assert.assertEquals(((List) field.get(spyVisitor)).size(), 1);
 
             Operator op2 = OperatorFactory.createOperator("sort");
             spyVisitor.visit(op2);
-            Assert.assertEquals(((List) field.get(spyVisitor)).size(),2);
+            Assert.assertEquals(((List) field.get(spyVisitor)).size(), 2);
 
             // 重复访问operator
             spyVisitor.visit(op2);
-            Assert.assertEquals(((List) field.get(spyVisitor)).size(),2);
+            Assert.assertEquals(((List) field.get(spyVisitor)).size(), 2);
         } catch (Exception e) {
             e.printStackTrace();
         }

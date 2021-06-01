@@ -9,10 +9,10 @@ import java.util.Map;
 
 /**
  * 每个平台的参数，这些参数要求构建时均需要传入,
- *  其中：
- *      - dagPath：维护这个stage的dag的描述的文件
- *      - udfPath：udf的路径（少数平台可能没有）
- *      - stageId，masterHost，masterPort：需要和master交互需要的参数
+ * 其中：
+ * - dagPath：维护这个stage的dag的描述的文件
+ * - udfPath：udf的路径（少数平台可能没有）
+ * - stageId，masterHost，masterPort：需要和master交互需要的参数
  *
  * @author 唐志伟
  * @version 1.0

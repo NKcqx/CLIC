@@ -32,6 +32,7 @@ public class Header {
     public List<Cell> getCells() {
         return cells;
     }
+
     /**
      * print header including top and bottom sep
      *

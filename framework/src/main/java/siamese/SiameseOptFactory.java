@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  * 工厂类，用于根据Siamese返回的树的节点创建CLIC的逻辑算子
- *
+ * <p>
  * Siamese还没有封装好他们的包给我们用，所以先用真正的Spark SQL代替
  * 逻辑阶段与物理阶段混淆，这是对接的锅，没办法
  *
@@ -52,8 +52,9 @@ public class SiameseOptFactory {
      * 对多数LogicalPlan节点来说
      * 其所带的udf参数还需要先处理一下，再写进yaml文件
      * 再传给物理平台的DataFrame API使用
+     *
      * @param condition 原udf语句
-     * @param ability 有时候需要对特定类型的算子进行特定处理
+     * @param ability   有时候需要对特定类型的算子进行特定处理
      * @return
      */
     private static String processConditionStr(String condition, String ability) {
@@ -95,7 +96,7 @@ public class SiameseOptFactory {
                 }
                 i++;
             }
-            condition = condition.substring(bracketsIndex+1, equalSignIndex);
+            condition = condition.substring(bracketsIndex + 1, equalSignIndex);
         }
         // 对aggregate节点，它有group by的udf以及aggregate的udf
         // 其中的aggregate udf需要特别处理
@@ -121,6 +122,7 @@ public class SiameseOptFactory {
     /**
      * 根据树节点的schema获取字段名称
      * 暂无用途
+     *
      * @param schema
      * @return
      */
@@ -128,7 +130,7 @@ public class SiameseOptFactory {
         StructType structType = schema;
         StructField[] structFields = structType.fields();
         StringBuilder fieldNames = new StringBuilder();
-        for (int i = 0; i<structFields.length; i++) {
+        for (int i = 0; i < structFields.length; i++) {
             fieldNames.append(structFields[i].name());
             fieldNames.append(",");
         }
@@ -138,6 +140,7 @@ public class SiameseOptFactory {
 
     /**
      * 创建一个t-filter类型的Operator，并设置相关参数
+     *
      * @param node
      * @return
      */
@@ -154,6 +157,7 @@ public class SiameseOptFactory {
 
     /**
      * 创建一个t-relation类型的Operator，并设置相关参数
+     *
      * @param node
      * @return
      */
@@ -170,6 +174,7 @@ public class SiameseOptFactory {
 
     /**
      * 创建一个t-join类型的Operator，并设置相关参数
+     *
      * @param node
      * @return
      */
@@ -186,6 +191,7 @@ public class SiameseOptFactory {
 
     /**
      * 创建一个t-project类型的Operator，并设置相关参数
+     *
      * @param node
      * @return
      */
@@ -206,6 +212,7 @@ public class SiameseOptFactory {
      * 聚合操作可能带有group by，也可能没有
      * 聚合操作可能带有having，也可能没有
      * 经过Siamese对语法树的解析和优化，有having相比没有having只是在Aggregate节点上多一层Filter和Project节点
+     *
      * @param node
      * @return
      */

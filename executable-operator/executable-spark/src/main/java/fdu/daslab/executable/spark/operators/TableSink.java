@@ -13,8 +13,8 @@ import java.util.Map;
  * 将table写入文件的算子
  *
  * @author 刘丰艺
- * @since 2020/10/27 9:30 PM
  * @version 1.0
+ * @since 2020/10/27 9:30 PM
  */
 public class TableSink extends OperatorBase<Dataset<Row>, Dataset<Row>> {
 

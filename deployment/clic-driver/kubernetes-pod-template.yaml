@@ -5,17 +5,17 @@ metadata:
   namespace: argo
 spec:
   containers:
-  - name: spark-template
-    image: executable/java:v1
-    imagePullPolicy: IfNotPresent
-    command:
-    - /bin/sh
-    - -c
-    args:
-    - java -jar executable-java.jar --udfPath=/data/TestSmallWebCaseFunc.class --dagPath=/data/physical-dag--552427391.yml
-    volumeMounts:
-      - name: nfs-volume
-        mountPath: /data
+    - name: spark-template
+      image: executable/java:v1
+      imagePullPolicy: IfNotPresent
+      command:
+        - /bin/sh
+        - -c
+      args:
+        - java -jar executable-java.jar --udfPath=/data/TestSmallWebCaseFunc.class --dagPath=/data/physical-dag--552427391.yml
+      volumeMounts:
+        - name: nfs-volume
+          mountPath: /data
   volumes:
     - name: nfs-volume
       persistentVolumeClaim:

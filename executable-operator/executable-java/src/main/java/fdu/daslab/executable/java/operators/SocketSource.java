@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.stream.Stream;
 
 /**
- *  java平台socket source，启动后直接从远程的路径下读取数据到stream中
+ * java平台socket source，启动后直接从远程的路径下读取数据到stream中
  *
  * @author 唐志伟
  * @version 1.0

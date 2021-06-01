@@ -31,16 +31,16 @@ public class QueryOperatorTest {
     public void before() throws AnalysisException {
         //sparkSession = SparkInitUtil.getDefaultSparkSession();
 
-        StructField[] studentFields = new StructField[] {
-          new StructField("id", DataTypes.StringType, true, Metadata.empty()),
-          new StructField("name", DataTypes.StringType, true, Metadata.empty())
+        StructField[] studentFields = new StructField[]{
+                new StructField("id", DataTypes.StringType, true, Metadata.empty()),
+                new StructField("name", DataTypes.StringType, true, Metadata.empty())
         };
-        StructField[] gradeFields = new StructField[] {
+        StructField[] gradeFields = new StructField[]{
                 new StructField("id", DataTypes.StringType, true, Metadata.empty()),
                 new StructField("cid", DataTypes.StringType, true, Metadata.empty()),
                 new StructField("grade", DataTypes.StringType, true, Metadata.empty())
         };
-        StructField[] courseFields = new StructField[] {
+        StructField[] courseFields = new StructField[]{
                 new StructField("cid", DataTypes.StringType, true, Metadata.empty()),
                 new StructField("cname", DataTypes.StringType, true, Metadata.empty())
         };

@@ -34,7 +34,7 @@ public class LoopOperatorTest {
     private final JavaSparkContext javaSparkContext = SparkInitUtil.getDefaultSparkContext();
 
     @Before
-    public void before(){
+    public void before() {
         List<String> inputValue = Arrays.asList("1", "2", "3", "4", "5");
         List<List<String>> inputValueBox = new ArrayList<>();
         inputValueBox.add(inputValue);
@@ -90,7 +90,7 @@ public class LoopOperatorTest {
     }
 
     @Test
-    public void testLoop(){ // 检查 fileSink 的inputData
+    public void testLoop() { // 检查 fileSink 的inputData
         try {
             final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("TestLoopFunc.class");
             ParamsModel inputArgs = new ParamsModel(functionModel);
@@ -98,7 +98,7 @@ public class LoopOperatorTest {
             Queue<OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>> bfsQueue = new LinkedList<>();
             bfsQueue.add(this.loopOperator);
             while (!bfsQueue.isEmpty()) {
-                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>  curOpt = bfsQueue.poll();
+                OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> curOpt = bfsQueue.poll();
                 curOpt.execute(inputArgs, null);
 
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
@@ -107,7 +107,7 @@ public class LoopOperatorTest {
                     bfsQueue.add(targetOpt);
 
                     List<Pair<String, String>> keyPairs = connection.getKeys();
-                    for (Pair<String, String> keyPair : keyPairs){
+                    for (Pair<String, String> keyPair : keyPairs) {
                         JavaRDD<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
@@ -122,7 +122,7 @@ public class LoopOperatorTest {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
             String line = bufferedReader.readLine();
             assertEquals(line, "5 6 7 8 9");
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
         }
 
     }

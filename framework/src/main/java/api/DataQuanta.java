@@ -54,6 +54,7 @@ public final class DataQuanta implements Serializable {
 
     /**
      * 直接为当前对象指定要运行的平台，同一对象可重复调用
+     *
      * @param platformName 平台名称的取值范围需要查阅具体Operator配置文件中的 `platforms.platform.ID` 属性
      * @return this
      */

@@ -22,7 +22,7 @@ import java.util.Map;
  * @version 1.0
  * @since 2020/9/23 3:40 PM
  */
-public class SocketSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>  {
+public class SocketSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
 
     public SocketSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
         super("SocketSink", id, inputKeys, outputKeys, params);

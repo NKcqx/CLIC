@@ -6,9 +6,9 @@ description: The Apache Hadoop software library is a framework that allows for t
 home: https://hadoop.apache.org/
 icon: http://hadoop.apache.org/images/hadoop-logo.jpg
 maintainers:
-- email: cgiraldo@gradiant.org
-  name: cgiraldo
+  - email: cgiraldo@gradiant.org
+    name: cgiraldo
 name: hdfs
 sources:
-- https://github.com/apache/hadoop
+  - https://github.com/apache/hadoop
 version: 0.1.9

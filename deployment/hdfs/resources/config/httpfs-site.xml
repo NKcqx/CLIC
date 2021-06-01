@@ -2,6 +2,9 @@
 <?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
 <configuration>
     {{- range $key, $value := index .Values.conf "httpfsSite" }}
-    <property><name>{{ $key }}</name><value>{{ $value }}</value></property>
+    <property>
+        <name>{{ $key }}</name>
+        <value>{{ $value }}</value>
+    </property>
     {{- end }}
 </configuration>

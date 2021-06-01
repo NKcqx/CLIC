@@ -7,6 +7,6 @@
     </platform>
 
     <parameters>
-        <parameter name="tableName"  data_type="string" required="true"></parameter>
+        <parameter name="tableName" data_type="string" required="true"></parameter>
     </parameters>
 </Operator>

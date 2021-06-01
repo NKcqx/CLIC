@@ -17,7 +17,6 @@ import static fdu.daslab.executable.serialize.schema.SchemaUtil.buildAvroElement
  */
 public class ElementDeserialize<T> {
     /**
-     *
      * @param matrix
      * @param clazz
      * @return

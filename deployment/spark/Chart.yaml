@@ -6,13 +6,13 @@ description: Spark is a fast and general-purpose cluster computing system.
 home: https://github.com/bitnami/charts/tree/master/bitnami/spark
 icon: https://bitnami.com/assets/stacks/spark/img/spark-stack-220x234-1ea65541e9e427ca5b93300e61d4778576c7f679ae02addb86a2641b0ca70476.png
 keywords:
-- apache
-- spark
+  - apache
+  - spark
 maintainers:
-- email: containers@bitnami.com
-  name: Bitnami
+  - email: containers@bitnami.com
+    name: Bitnami
 name: spark
 sources:
-- https://github.com/bitnami/bitnami-docker-spark
-- https://spark.apache.org/
+  - https://github.com/bitnami/bitnami-docker-spark
+  - https://spark.apache.org/
 version: 3.0.1

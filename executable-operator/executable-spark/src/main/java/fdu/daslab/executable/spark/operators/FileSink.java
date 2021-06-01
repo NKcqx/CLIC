@@ -17,11 +17,11 @@ import java.util.Map;
  * 写入文件的算子
  *
  * @author 唐志伟
- * @since 2020/7/6 1:52 PM
  * @version 1.0
+ * @since 2020/7/6 1:52 PM
  */
 @Parameters(separators = "=")
-public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
+public class FileSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
 //    // 输入路径
 //    @Parameter(names = {"--output"}, required = true)
 //    String outputFileName;

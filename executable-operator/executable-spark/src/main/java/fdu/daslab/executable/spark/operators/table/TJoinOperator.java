@@ -13,8 +13,8 @@ import java.util.Map;
  * table的join算子
  *
  * @author 刘丰艺
- * @since 2020/11/20 9:30 PM
  * @version 1.0
+ * @since 2020/11/20 9:30 PM
  */
 public class TJoinOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> {
     public TJoinOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {

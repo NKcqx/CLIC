@@ -12,8 +12,8 @@ import java.util.stream.Stream;
  * Java平台sort算子
  *
  * @author 唐志伟，陈齐翔
- * @since 2020/7/6 1:48 PM
  * @version 1.0
+ * @since 2020/7/6 1:48 PM
  */
 @Parameters(separators = "=")
 public class SortOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {

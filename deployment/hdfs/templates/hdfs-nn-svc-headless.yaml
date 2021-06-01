@@ -9,11 +9,11 @@ metadata:
     {{- include "hdfs.labels" . | nindent 4 }}
 spec:
   ports:
-  - name: dfs
-    port: {{ .Values.nameNode.port }}
-    protocol: TCP
-  - name: webhdfs
-    port: 50070
+    - name: dfs
+      port: {{ .Values.nameNode.port }}
+      protocol: TCP
+    - name: webhdfs
+      port: 50070
   clusterIP: None
   publishNotReadyAddresses: true
   selector:

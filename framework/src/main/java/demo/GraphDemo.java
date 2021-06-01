@@ -24,7 +24,7 @@ public class GraphDemo {
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{
                 put("inputPath", "/data/datasets/graph_test_dqh/0.csv");
                 put("separator", ",");
-                put("partitionNum","2");
+                put("partitionNum", "2");
             }}).withTargetPlatform("spark");
             //在使用时，注意设置默认Separate为空格，注意graphchi的edglist格式要求
 

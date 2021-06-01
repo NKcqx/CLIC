@@ -14,6 +14,7 @@ import java.util.*;
 
 /**
  * 与 task service连接获取信息的client
+ *
  * @author Du Qinghua
  * @version 1.0
  * @since 2020/10/22 16:47
@@ -24,8 +25,8 @@ public class TaskServiceClient {
     private TTransport transport;
 
     /**
-     * @param masterHost    driver的hostip信息
-     * @param masterPort    driver的port信息
+     * @param masterHost driver的hostip信息
+     * @param masterPort driver的port信息
      */
     public TaskServiceClient(String masterHost, Integer masterPort) {
         this.transport = new TSocket(masterHost, masterPort);
@@ -37,10 +38,11 @@ public class TaskServiceClient {
 
     /**
      * 获取所有task列表信息
+     *
      * @return tasklistmap
      */
     public List<Map<String, String>> getTaskList() {
-        List<Map<String, String>>  allTaskList = new ArrayList<>();
+        List<Map<String, String>> allTaskList = new ArrayList<>();
         try {
             transport.open();
             allTaskList = client.listAllTask();
@@ -49,13 +51,13 @@ public class TaskServiceClient {
             logger.error("An Error occur when CLIC shell get taskList");
             e.printStackTrace();
         }
-        return  allTaskList;
+        return allTaskList;
     }
 
     /**
      * 提交任务，异步
      *
-     * @param planName plan名称
+     * @param planName    plan名称
      * @param planDagPath plan的Dag的yaml文件的路径
      * @throws TException thrift异常
      */
@@ -77,7 +79,7 @@ public class TaskServiceClient {
      * @return taskInfo
      */
     public Map<String, String> getTaskInfo(String planName) {
-        Map<String, String>  taskInfo = new HashMap<>();
+        Map<String, String> taskInfo = new HashMap<>();
         try {
             transport.open();
             taskInfo = client.getTaskInfo(planName);
@@ -86,8 +88,9 @@ public class TaskServiceClient {
             logger.error("An Error occur when CLIC shell get taskInfo by plan name");
             e.printStackTrace();
         }
-        return  taskInfo;
+        return taskInfo;
     }
+
     /**
      * 根据plan name获取task下的所有stage id信息。
      *
@@ -95,7 +98,7 @@ public class TaskServiceClient {
      * @return stageIdList
      */
     public List<String> getStageIdOfTask(String planName) {
-        List<String>  stageIdList = new ArrayList<>();
+        List<String> stageIdList = new ArrayList<>();
         try {
             transport.open();
             stageIdList = client.getStageIdOfTask(planName);
@@ -104,16 +107,17 @@ public class TaskServiceClient {
             logger.error("An Error occur when CLIC shell get stageIdList by plan name");
             e.printStackTrace();
         }
-        return  stageIdList;
+        return stageIdList;
     }
+
     /**
      * 根据stage id获取stage的信息
      *
-     * @param stageId  stage id
+     * @param stageId stage id
      * @return tasklistmap
      */
     public Map<String, String> getStageInfo(String stageId) {
-        Map<String, String>  stageInfo = new HashMap<>();
+        Map<String, String> stageInfo = new HashMap<>();
         try {
             transport.open();
             stageInfo = client.getStageInfo(stageId);
@@ -122,7 +126,7 @@ public class TaskServiceClient {
             logger.error("An Error occur when CLIC shell get stage info by stage Id");
             e.printStackTrace();
         }
-        return  stageInfo;
+        return stageInfo;
     }
 
     public boolean suspendStage(String stageId) {
@@ -163,7 +167,6 @@ public class TaskServiceClient {
         }
         return stageResPath;
     }
-
 
 
 }

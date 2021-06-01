@@ -19,12 +19,12 @@ public class JoinDemo {
             // 第一条路 左表
             DataQuanta sourceNode1 = planBuilder.readDataFrom(new HashMap<String, String>() {{
                 put("inputPath", "D:/2020project/join/webCompany.csv");
-            //}}).withTargetPlatform("java");
+                //}}).withTargetPlatform("java");
             }}).withTargetPlatform("spark");
 
             DataQuanta filterNode1 = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
                 put("udfName", "filterWebCompanyFunc");
-            //}}).withTargetPlatform("java");
+                //}}).withTargetPlatform("java");
             }}).withTargetPlatform("spark");
 
             // 第二条路 右表
@@ -33,7 +33,7 @@ public class JoinDemo {
             }}).withTargetPlatform("spark");
             DataQuanta filterNode2 = DataQuanta.createInstance("filter", new HashMap<String, String>() {{
                 put("udfName", "filterCompanyInfoFunc");
-            //}}).withTargetPlatform("java");
+                //}}).withTargetPlatform("java");
             }}).withTargetPlatform("spark");
 
             // join
@@ -42,13 +42,13 @@ public class JoinDemo {
                 put("rightKey", "rightKey");
 //                put("leftCols", "leftCols");
 //                put("rightCols", "rightCols");
-            //}}).withTargetPlatform("java");
+                //}}).withTargetPlatform("java");
             }}).withTargetPlatform("spark");
 
             // 最终结果的输出路径   例如该map的value值是本项目output.csv的绝对路径
             DataQuanta sinkNode = DataQuanta.createInstance("sink", new HashMap<String, String>() {{
                 put("outputPath", "D:/2020project/join/output.csv"); // 具体resources的路径通过配置文件获得
-            //}}).withTargetPlatform("java");
+                //}}).withTargetPlatform("java");
             }}).withTargetPlatform("spark");
 
             planBuilder.addVertex(sourceNode1);

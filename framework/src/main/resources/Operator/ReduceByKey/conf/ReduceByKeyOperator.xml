@@ -11,16 +11,15 @@
         </platform>
     </platforms>
     <parameters>
-        <parameter name="udfName" data_type="string" required="true"> </parameter>
-        <parameter name="keyName" data_type="string" required="true"> </parameter>
+        <parameter name="udfName" data_type="string" required="true"></parameter>
+        <parameter name="keyName" data_type="string" required="true"></parameter>
     </parameters>
     <inputs>  <!-- 输入数据 -->
-        <input name="data" data_type="string" required="true"> </input>
+        <input name="data" data_type="string" required="true"></input>
     </inputs>
     <outputs> <!-- 计算结果 -->
-        <output name="result" data_type="string"> </output>
+        <output name="result" data_type="string"></output>
     </outputs>
-
 
 
 </Operator>

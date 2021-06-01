@@ -53,7 +53,8 @@
                     </descriptorRefs>
                     <archive>
                         <manifest>
-                            <mainClass>fdu.daslab.executable.graphchi.ExecuteGraphchiOperator</mainClass>
+                            <mainClass>fdu.daslab.executable.graphchi.ExecuteGraphchiOperator
+                            </mainClass>
                         </manifest>
                     </archive>
                 </configuration>

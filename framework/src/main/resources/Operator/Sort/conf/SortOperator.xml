@@ -12,13 +12,13 @@
     </platforms>
 
     <parameters>
-        <parameter name="udfName" data_type="string" required="true"> </parameter>
+        <parameter name="udfName" data_type="string" required="true"></parameter>
     </parameters>
     <inputs>  <!-- 输入数据 只是key -->
-        <input name="data" data_type="string"> </input>
+        <input name="data" data_type="string"></input>
     </inputs>
     <outputs> <!-- 计算结果 只是key-->
-        <output name="result" data_type="string"> </output>
+        <output name="result" data_type="string"></output>
     </outputs>
 
 </Operator>

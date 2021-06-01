@@ -20,7 +20,7 @@ public class ChannelTest {
     public Channel channelByString;
 
     @Before
-    public void before(){
+    public void before() {
         testPair = new Pair<>("testKey", "testValue");
         testList.add(testPair);
         testListByDefault.add(new Pair<>("result", "data"));
@@ -28,7 +28,7 @@ public class ChannelTest {
     }
 
     @Test
-    public void testConstruct(){
+    public void testConstruct() {
         channelByDefault = new Channel();
         channelByPair = new Channel(testPair);
         channelByList = new Channel(testList);
@@ -36,7 +36,7 @@ public class ChannelTest {
     }
 
     @Test
-    public void testGetter(){
+    public void testGetter() {
         testConstruct();
         assertEquals(new Pair<>("result", "data"), channelByDefault.getKeyPair());
         assertEquals(testPair, channelByPair.getKeyPair());

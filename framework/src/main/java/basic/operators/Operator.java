@@ -187,7 +187,7 @@ public class Operator implements Visitable, Serializable {
      * 如果是，则让Siamese先读取这些表，获取表名以及表的schema信息
      * 这里暂时只能硬编码，没想到好的解决方法
      */
-    private void checkKeyOfSQL(String key, String value, String optName){
+    private void checkKeyOfSQL(String key, String value, String optName) {
         if (key.equals("inputPath") && optName.equals("TableSourceOperator")) {
             addTableToSiamese(value);
         }
@@ -196,6 +196,7 @@ public class Operator implements Visitable, Serializable {
     /**
      * 要让Siamese优化SQL语句，需要让他们先读一下每一个table
      * 获取每一个table的表名和schema信息
+     *
      * @param value
      */
     private void addTableToSiamese(String value) {

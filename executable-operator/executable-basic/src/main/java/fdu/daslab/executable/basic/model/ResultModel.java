@@ -4,10 +4,9 @@ package fdu.daslab.executable.basic.model;
  * 平台的运行结果
  *
  * @param <MODEL> 每个平台定义流转的数据模型，比如Stream、RDD
- *
  * @author 唐志伟
- * @since 2020/7/6 1:35 PM
  * @version 1.0
+ * @since 2020/7/6 1:35 PM
  */
 public interface ResultModel<MODEL> {
 

@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 public class DistinctOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 
     public DistinctOperator(String id, List<String> inputKeys, List<String> outputKeys,
-                       Map<String, String> params) {
+                            Map<String, String> params) {
         super("DistinctOperator", id, inputKeys, outputKeys, params);
     }
 

@@ -44,7 +44,7 @@ public class SchedulerServiceImpl implements SchedulerService.Iface {
     }
 
     @Override
-    public ServiceBaseResult postDataPrepared(String stageId)  {
+    public ServiceBaseResult postDataPrepared(String stageId) {
         ServiceBaseResult serviceResult = new ServiceBaseResult();
         try {
             clicScheduler.post(new StageDataPreparedEvent(stageId));

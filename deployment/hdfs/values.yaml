@@ -11,7 +11,7 @@ antiAffinity: "soft"
 
 conf:
   coreSite:
-    # fs.trash.interval: "10080"  # trash auto purge in minutes
+  # fs.trash.interval: "10080"  # trash auto purge in minutes
   hdfsSite:
     dfs.replication: 3  # when changing this value ensure that dataNode.replicas is equal or higher than this value
     # dfs.datanode.du.reserved: "4294967296"  # number of bytes to reserve on disk to block hitting disk full, must be quoted for large numbers, because of gotemplate converting large numbers to float with scientific notation
@@ -52,7 +52,7 @@ ingress:
     labels: {}
     path: /
     hosts:
-    - "hdfs-namenode.local"
+      - "hdfs-namenode.local"
   dataNode:
     enabled: false
     annotations: {}
@@ -61,7 +61,7 @@ ingress:
     labels: {}
     path: /
     hosts:
-    - "hdfs-datanode.local"
+      - "hdfs-datanode.local"
   httpfs:
     enabled: false
     annotations: {}
@@ -70,7 +70,7 @@ ingress:
     labels: {}
     path: /
     hosts:
-    - "httpfs.local"
+      - "httpfs.local"
 
 persistence:
   nameNode:

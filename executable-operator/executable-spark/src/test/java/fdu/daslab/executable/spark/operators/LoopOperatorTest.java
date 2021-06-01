@@ -152,7 +152,7 @@ public class LoopOperatorTest {
                     "id",
                     Collections.singletonList("data"),
                     Collections.singletonList("result"),
-                    new HashMap<String, String>(){{
+                    new HashMap<String, String>() {{
                         put("udfName", "loopBodyMapFunc");
                     }}
             );
@@ -162,7 +162,7 @@ public class LoopOperatorTest {
                     "id",
                     Collections.singletonList("data"),
                     Collections.singletonList("result"),
-                    new HashMap<String, String>(){{
+                    new HashMap<String, String>() {{
                         put("udfName", "loopBodyMapFunc");
                     }}
             );

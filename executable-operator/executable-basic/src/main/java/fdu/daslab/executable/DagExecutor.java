@@ -19,23 +19,22 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
  * 所有java平台需要的执行器，传入参数 和 解析好的dag，以及operator的实现逻辑，可直接实现执行
- *
+ * <p>
  * 理想情况：引入新平台(java)，只需要完成以下工作
- *  1.定义好平台可能需要的固有参数
- *  2.继承/实现接口，去实现operator，operator的形式应该是: resultType operator(dependencyResults, operatorArgs)
- *  3.构造一个入口，实现以下形式：
- *  // 准备好的参数
- *  args =
- *  // operator的factory
- *  factory =
- *  // 构造DagExecutor
- *  executor = new DagExecutor(args, factory);
- *  // 执行，可以选择同步还是异步
- *  executor.execute();
+ * 1.定义好平台可能需要的固有参数
+ * 2.继承/实现接口，去实现operator，operator的形式应该是: resultType operator(dependencyResults, operatorArgs)
+ * 3.构造一个入口，实现以下形式：
+ * // 准备好的参数
+ * args =
+ * // operator的factory
+ * factory =
+ * // 构造DagExecutor
+ * executor = new DagExecutor(args, factory);
+ * // 执行，可以选择同步还是异步
+ * executor.execute();
  *
- *  <b>以后我们只需要维护各个语言的core，引入新的平台做的工作只是实现对应的operator而已</b>
+ * <b>以后我们只需要维护各个语言的core，引入新的平台做的工作只是实现对应的operator而已</b>
  *
  * @author 唐志伟
  * @version 1.0
@@ -96,7 +95,7 @@ public class DagExecutor {
     /**
      * 实现初始化逻辑
      *
-     * @param args 命令行的参数
+     * @param args    命令行的参数
      * @param factory 所有operator的工厂类
      */
     public DagExecutor(String[] args, OperatorFactory factory) {
@@ -111,7 +110,7 @@ public class DagExecutor {
     /**
      * 初始化逻辑，平台可以实现一些preHandler， postHandler方法
      *
-     * @param args 命令行的参数
+     * @param args    命令行的参数
      * @param factory 所有operator的工厂类
      * @param dagHook 平台实现的方法
      */

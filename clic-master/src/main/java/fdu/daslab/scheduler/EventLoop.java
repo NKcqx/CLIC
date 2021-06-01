@@ -41,7 +41,7 @@ public abstract class EventLoop<E> {
                     // 处理event
                     try {
                         onReceive(event);
-                    } catch (Exception  e) {
+                    } catch (Exception e) {
                         // 某个事件的执行不能影响其他的事件
                         e.printStackTrace();
                     }

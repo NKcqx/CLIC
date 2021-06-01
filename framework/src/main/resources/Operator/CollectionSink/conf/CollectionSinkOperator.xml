@@ -14,10 +14,10 @@
     <parameters>
     </parameters>
     <inputs>
-        <input name="data" data_type="string"> </input>
+        <input name="data" data_type="string"></input>
     </inputs>
     <outputs> <!-- 计算结果 -->
-        <output name="result" data_type="string"> </output>
+        <output name="result" data_type="string"></output>
     </outputs>
 
 

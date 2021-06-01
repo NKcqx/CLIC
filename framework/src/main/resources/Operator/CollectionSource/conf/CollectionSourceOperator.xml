@@ -12,11 +12,11 @@
     </platforms>
 
     <parameters>
-        <parameter kind="input" name="inputList" data_type="array" required="true"> </parameter>
+        <parameter kind="input" name="inputList" data_type="array" required="true"></parameter>
     </parameters>
-    <inputs>  </inputs>
+    <inputs></inputs>
     <outputs> <!-- 计算结果 -->
-        <output name="result" data_type="string"> </output>
+        <output name="result" data_type="string"></output>
     </outputs>
 
 

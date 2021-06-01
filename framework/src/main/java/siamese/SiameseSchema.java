@@ -14,7 +14,7 @@ import java.util.Map;
 /**
  * Siamese优化SQL语句之前需要知道table的表名和schema
  * 本类为他们提供所需要的表名和schema
- *
+ * <p>
  * Siamese还没有封装好他们的包给我们用，所以先用真正的Spark SQL代替
  * 逻辑阶段与物理阶段混淆，这是对接的锅，没办法
  *
@@ -84,6 +84,7 @@ public class SiameseSchema {
 
     /**
      * 针对Relation算子，获取其对应的table表名
+     *
      * @param logicalPlan
      * @return
      */

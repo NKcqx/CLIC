@@ -9,8 +9,8 @@ metadata:
     {{- include "hdfs.labels" . | nindent 4 }}
 spec:
   ports:
-  - name: webhdfs
-    port: 50075
+    - name: webhdfs
+      port: 50075
   clusterIP: None
   publishNotReadyAddresses: true
   selector:

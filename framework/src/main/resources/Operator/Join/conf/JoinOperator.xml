@@ -12,19 +12,19 @@
     </platforms>
 
     <parameters>
-        <parameter name="leftKey" data_type="string" required="true"> </parameter>
-        <parameter name="leftCols" data_type="string"> </parameter>
-        <parameter name="rightKey" data_type="string" required="true"> </parameter>
-        <parameter name="rightCols" data_type="string"> </parameter>
+        <parameter name="leftKey" data_type="string" required="true"></parameter>
+        <parameter name="leftCols" data_type="string"></parameter>
+        <parameter name="rightKey" data_type="string" required="true"></parameter>
+        <parameter name="rightCols" data_type="string"></parameter>
     </parameters>
 
     <inputs>  <!-- 输入数据 -->
-        <input name="leftTable" data_type="string" required="true"> </input>
-        <input name="rightTable" data_type="string" required="true"> </input>
+        <input name="leftTable" data_type="string" required="true"></input>
+        <input name="rightTable" data_type="string" required="true"></input>
     </inputs>
 
     <outputs> <!-- 计算结果 -->
-        <output name="result" data_type="string"> </output>
+        <output name="result" data_type="string"></output>
     </outputs>
 
 </Operator>

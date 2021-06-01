@@ -15,8 +15,8 @@ import java.util.Map;
  * table的aggregate算子
  *
  * @author 刘丰艺
- * @since 2020/12/2 7:30 PM
  * @version 1.0
+ * @since 2020/12/2 7:30 PM
  */
 public class TAggregateOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> {
     public TAggregateOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {

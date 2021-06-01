@@ -52,9 +52,9 @@ public class OperatorEntityTest {
     }
 
     @Test
-    public void testGetterAndSetter() throws Exception{
-        for(Operator opt: operatorList){
-            for(OperatorEntity optEntity: opt.getEntities().values()){
+    public void testGetterAndSetter() throws Exception {
+        for (Operator opt : operatorList) {
+            for (OperatorEntity optEntity : opt.getEntities().values()) {
                 optEntity.setEntityID("test" + optEntity.entityID);
                 assertEquals(optEntity.getEntityID(), optEntity.entityID);
                 optEntity.setLanguage("test" + optEntity.language);
@@ -65,9 +65,9 @@ public class OperatorEntityTest {
     }
 
     @Test
-    public void testToString() throws Exception{
-        for(Operator opt: operatorList) {
-            for(OperatorEntity optEntity: opt.getEntities().values()) {
+    public void testToString() throws Exception {
+        for (Operator opt : operatorList) {
+            for (OperatorEntity optEntity : opt.getEntities().values()) {
                 assertEquals("OperatorEntity{"
                         + "language='" + optEntity.language + '\''
                         + ", cost=" + optEntity.cost

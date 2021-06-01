@@ -21,31 +21,31 @@ spec:
         app.kubernetes.io/instance: {{ .Release.Name | quote }}
     spec:
       containers:
-      - name: httpfs
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-        env:
-          - name: HTTPFS_HTTP_PORT
-            value: {{ .Values.httpfs.port | quote }}
-          - name: HTTPFS_ADMIN_PORT
-            value: {{ .Values.httpfs.adminPort | quote }}
-          - name: CATALINA_OPTS
-            value: -Dhttpfs.admin.hostname=0.0.0.0
-        command:
-        - "/opt/hadoop/sbin/httpfs.sh"
-        - "run"
-        resources:
-{{ toYaml .Values.nameNode.resources | indent 10 }}
-        #livenessProbe:
-        #  httpGet:
-        #    path: /
-        #    port: 50070
-        #  initialDelaySeconds: 10
-        #  timeoutSeconds: 2
-        volumeMounts:
-        - name: hadoop-config
-          mountPath: /opt/hadoop/etc/hadoop
-      volumes:
-      - name: hadoop-config
-        configMap:
-          name: {{ include "hdfs.fullname" . }}-hadoop
+        - name: httpfs
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          env:
+            - name: HTTPFS_HTTP_PORT
+              value: {{ .Values.httpfs.port | quote }}
+            - name: HTTPFS_ADMIN_PORT
+              value: {{ .Values.httpfs.adminPort | quote }}
+            - name: CATALINA_OPTS
+              value: -Dhttpfs.admin.hostname=0.0.0.0
+          command:
+            - "/opt/hadoop/sbin/httpfs.sh"
+            - "run"
+          resources:
+  {{ toYaml .Values.nameNode.resources | indent 10 }}
+#livenessProbe:
+#  httpGet:
+#    path: /
+#    port: 50070
+#  initialDelaySeconds: 10
+#  timeoutSeconds: 2
+volumeMounts:
+  - name: hadoop-config
+    mountPath: /opt/hadoop/etc/hadoop
+volumes:
+  - name: hadoop-config
+    configMap:
+      name: {{ include "hdfs.fullname" . }}-hadoop

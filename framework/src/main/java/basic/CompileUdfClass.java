@@ -5,8 +5,8 @@ import java.io.InputStreamReader;
 
 /**
  * @author 刘丰艺
- * @since 2020/7/6 14:05
  * @version 1.0
+ * @since 2020/7/6 14:05
  */
 public class CompileUdfClass {
 

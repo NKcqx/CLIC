@@ -75,7 +75,7 @@ public class StageRepository {
      */
     public void updateStageSelective(KubernetesStage stage) throws IntrospectionException,
             InvocationTargetException, IllegalAccessException {
-            // 查询stage信息
+        // 查询stage信息
         KubernetesStage oldStage = getStageInfo(stage.getStageId());
         if (oldStage != null) {
             // 只更新有值的字段
@@ -128,7 +128,7 @@ public class StageRepository {
      * 只修改stage的状态
      *
      * @param stageId stageId
-     * @param status 状态
+     * @param status  状态
      */
     public void updateStageStatus(String stageId, StageStatus status) {
         // 查询stage信息

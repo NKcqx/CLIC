@@ -10,8 +10,8 @@ import java.util.Map;
  * 封装JavaRDD的ResultModel
  *
  * @author 唐志伟
- * @since 2020/7/6 1:52 PM
  * @version 1.0
+ * @since 2020/7/6 1:52 PM
  */
 public class RddResult<Type> implements ResultModel<JavaRDD<Type>> {
 

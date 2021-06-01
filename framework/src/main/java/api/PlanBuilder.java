@@ -106,6 +106,7 @@ public class PlanBuilder implements java.io.Serializable {
 
     /**
      * 读取用户提供的数据源，可以是csv, json, txt等格式
+     *
      * @param
      * @return
      * @throws Exception
@@ -204,6 +205,7 @@ public class PlanBuilder implements java.io.Serializable {
      * 判断该DAG中是否有要与Siamese对接的query算子
      * 有的话，需要将这个算子展开成一个子DAG，再加到大DAG中
      * 这里的判断得用硬编码，没想到更好的解决办法，对接的锅
+     *
      * @return
      */
     private void checkOfSiamese() {
@@ -351,6 +353,7 @@ public class PlanBuilder implements java.io.Serializable {
             }
         }
     }
+
     /**
      * 把PlanBuilder代表的Graph转为Yaml格式的字符串
      */

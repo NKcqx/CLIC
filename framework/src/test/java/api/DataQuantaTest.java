@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import static org.junit.Assert.*;
+
 import java.util.HashMap;
 import java.util.NoSuchElementException;
 
@@ -24,6 +25,7 @@ public class DataQuantaTest {
     public Configuration configuration;
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
     @Before
     public void before() throws Exception {
         configuration = new Configuration();
@@ -43,7 +45,7 @@ public class DataQuantaTest {
     }
 
     @Test
-    public void testEquals(){
+    public void testEquals() {
         assertFalse(dataQuanta1.equals(dataQuanta2));
         assertTrue(dataQuanta1.equals(dataQuanta1));
     }
@@ -89,7 +91,7 @@ public class DataQuantaTest {
 //    }
 
     @Test
-    public void testWithTargetPlatform(){
+    public void testWithTargetPlatform() {
         try {
             DataQuanta dq1 = DataQuanta.createInstance("filter", null).withTargetPlatform("java");
             Assert.assertNotNull(dq1.getOperator().getSelectedEntities());
@@ -107,10 +109,10 @@ public class DataQuantaTest {
     }
 
     @Test
-    public void testThrowExceptionWhenSelectPlatform(){
+    public void testThrowExceptionWhenSelectPlatform() {
         try {
             DataQuanta dq3 = DataQuanta.createInstance("filter", null);
-            assertThrows(NoSuchElementException.class, ()->dq3.withTargetPlatform("invalid-platform"));
+            assertThrows(NoSuchElementException.class, () -> dq3.withTargetPlatform("invalid-platform"));
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -14,8 +14,8 @@ import java.util.Map;
  * spark平台的sort算子，可执行
  *
  * @author 唐志伟
- * @since 2020/7/6 1:53 PM
  * @version 1.0
+ * @since 2020/7/6 1:53 PM
  */
 @Parameters(separators = "=")
 public class SortOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
@@ -54,7 +54,7 @@ public class SortOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Li
         private String sortFuncName;
 
         SerializableComparator(List<String> data, ParamsModel inputArgs,
-                                      String sortFuncName) {
+                               String sortFuncName) {
             this.data = data;
             this.inputArgs = inputArgs;
             this.sortFuncName = sortFuncName;

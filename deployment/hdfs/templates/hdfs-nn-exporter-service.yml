@@ -7,13 +7,13 @@ metadata:
     app.kubernetes.io/name: {{ include "hdfs.name" . }}
     app.kubernetes.io/component: namenode
     {{- include "hdfs.labels" . | nindent 4 }}
-spec: 
+spec:
   selector:
     app.kubernetes.io/name: {{ include "hdfs.name" . }}
     app.kubernetes.io/component: namenode
     app.kubernetes.io/instance: {{ .Release.Name }}
   ports:
-  - port: {{ .Values.prometheus.exporter.port }}
-    name: metrics
-    targetPort: {{ .Values.prometheus.exporter.port }}
-{{- end }}
+    - port: {{ .Values.prometheus.exporter.port }}
+      name: metrics
+      targetPort: {{ .Values.prometheus.exporter.port }}
+  {{- end }}

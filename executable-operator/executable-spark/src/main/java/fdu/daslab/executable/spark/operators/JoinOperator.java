@@ -14,8 +14,8 @@ import java.util.*;
  * spark平台的join算子
  *
  * @author 刘丰艺
- * @since 2020/8/22 4:50 PM
  * @version 1.0
+ * @since 2020/8/22 4:50 PM
  */
 @Parameters(separators = "=")
 public class JoinOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {

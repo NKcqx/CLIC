@@ -9,9 +9,9 @@ metadata:
     {{- include "hdfs.labels" . | nindent 4 }}
 spec:
   ports:
-  - name: httpfs
-    port: {{ .Values.httpfs.port }}
-    protocol: TCP
+    - name: httpfs
+      port: {{ .Values.httpfs.port }}
+      protocol: TCP
   selector:
     app.kubernetes.io/name: {{ include "hdfs.name" . }}
     app.kubernetes.io/component: httpfs

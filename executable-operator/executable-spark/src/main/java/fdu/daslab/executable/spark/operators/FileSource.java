@@ -1,6 +1,7 @@
 package fdu.daslab.executable.spark.operators;
 
 //import com.beust.jcommander.Parameter;
+
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
@@ -17,8 +18,8 @@ import java.util.Map;
  * Spark平台的文件读取source
  *
  * @author 唐志伟
- * @since 2020/7/6 1:52 PM
  * @version 1.0
+ * @since 2020/7/6 1:52 PM
  */
 @Parameters(separators = "=")
 public class FileSource extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {

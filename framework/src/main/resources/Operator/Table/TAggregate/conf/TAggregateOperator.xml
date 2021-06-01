@@ -8,15 +8,15 @@
     </platforms>
 
     <parameters>
-        <parameter name="schema"  data_type="string"></parameter>
-        <parameter name="groupCondition"  data_type="string"></parameter>
-        <parameter name="aggregateCondition"  data_type="string"></parameter>
+        <parameter name="schema" data_type="string"></parameter>
+        <parameter name="groupCondition" data_type="string"></parameter>
+        <parameter name="aggregateCondition" data_type="string"></parameter>
     </parameters>
 
     <inputs>  <!-- 输入数据 -->
-        <input name="data" data_type="string" required="true"> </input>
+        <input name="data" data_type="string" required="true"></input>
     </inputs>
     <outputs> <!-- 计算结果 -->
-        <output name="result" data_type="string"> </output>
+        <output name="result" data_type="string"></output>
     </outputs>
 </Operator>

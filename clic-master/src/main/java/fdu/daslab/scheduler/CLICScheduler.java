@@ -107,13 +107,13 @@ public class CLICScheduler extends EventLoop<SchedulerEvent> {
 
     /**
      * 根据一定的调度策略，调度该stage去执行。
-     *
+     * <p>
      * step1: 根据该任务，评估该任务所需要的请求资源（cpu、gpu、memory、pod numbers）和任务时间
-     *        【策略：算法进行模型估计】
+     * 【策略：算法进行模型估计】
      * step2: 将所有的数据保存到 存储 中，以便底层kubernetes调度时需要
      * step3: 直接创建pod提交到kubernetes上
      * step4: kubernetes会底层维护一个SchedulerQueue，并根据调度队列调度指定的pod
-     *        【需要基于kubernetes的Scheduler Framework来扩展一个scheduler算法】
+     * 【需要基于kubernetes的Scheduler Framework来扩展一个scheduler算法】
      *
      * @param nextStageId 即将被调度的stageId
      */

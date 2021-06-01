@@ -2,14 +2,14 @@ package fdu.daslab.scheduler.model;
 
 /**
  * stage的状态，这里的状态信息都是直接由各个子平台上报
- *
+ * <p>
  * stage的状态转移图
- *
+ * <p>
  * WAITING  ====> RUNNING  ====> PREPARED ====> COMPLETED
- *   ||             ||
- *   ||             ||     ====> FAILED
- *   ||
- *   ||     ====> SUSPEND  ====> WAITING
+ * ||             ||
+ * ||             ||     ====> FAILED
+ * ||
+ * ||     ====> SUSPEND  ====> WAITING
  *
  * @author 唐志伟
  * @version 1.0

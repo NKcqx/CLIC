@@ -26,7 +26,7 @@ spec:
       affinity:
         podAntiAffinity:
         {{- if eq .Values.antiAffinity "hard" }}
-          requiredDuringSchedulingIgnoredDuringExecution:
+        requiredDuringSchedulingIgnoredDuringExecution:
           - topologyKey: "kubernetes.io/hostname"
             labelSelector:
               matchLabels:
@@ -34,7 +34,7 @@ spec:
                 app.kubernetes.io/component: datanode
                 {{- include "hdfs.labels" . | nindent 16 }}
         {{- else if eq .Values.antiAffinity "soft" }}
-          preferredDuringSchedulingIgnoredDuringExecution:
+        preferredDuringSchedulingIgnoredDuringExecution:
           - weight: 5
             podAffinityTerm:
               topologyKey: "kubernetes.io/hostname"
@@ -47,57 +47,57 @@ spec:
       securityContext:
         fsGroup: 114
       initContainers:
-      - name: "chown"
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-        command:
-        - /bin/bash
-        - -c
-        - chown -R hdfs:hadoop /dfs &&
-          chmod g+s /dfs
-        securityContext:
-          runAsUser: 0
-        volumeMounts:
-        - mountPath: /dfs
-          name: dfs
+        - name: "chown"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          command:
+            - /bin/bash
+            - -c
+            - chown -R hdfs:hadoop /dfs &&
+              chmod g+s /dfs
+          securityContext:
+            runAsUser: 0
+          volumeMounts:
+            - mountPath: /dfs
+              name: dfs
       containers:
-      - name: datanode
-        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-        imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
-        command:
-           - "/bin/bash"
-           - "/tmp/hadoop-config/bootstrap.sh"
-           - "-d"
-           - "datanode"
-        resources:
-{{ toYaml .Values.dataNode.resources | indent 10 }}
-        readinessProbe:
-          httpGet:
-            path: /
-            port: 50075
-          initialDelaySeconds: 5
-          timeoutSeconds: 2
-        livenessProbe:
-          httpGet:
-            path: /
-            port: 50075
-          initialDelaySeconds: 10
-          timeoutSeconds: 2
-        volumeMounts:
-        - name: hadoop-config
-          mountPath: /tmp/hadoop-config
-        - name: dfs
-          mountPath: /dfs
-      volumes:
-      - name: hadoop-config
-        configMap:
-          name: {{ include "hdfs.fullname" . }}-hadoop
-       {{- if not .Values.persistence.dataNode.enabled }}
-      - name: dfs
-        emptyDir: {}
-      {{- end }}
+        - name: datanode
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          command:
+            - "/bin/bash"
+            - "/tmp/hadoop-config/bootstrap.sh"
+            - "-d"
+            - "datanode"
+          resources:
+  {{ toYaml .Values.dataNode.resources | indent 10 }}
+readinessProbe:
+  httpGet:
+    path: /
+    port: 50075
+  initialDelaySeconds: 5
+  timeoutSeconds: 2
+livenessProbe:
+  httpGet:
+    path: /
+    port: 50075
+  initialDelaySeconds: 10
+  timeoutSeconds: 2
+volumeMounts:
+  - name: hadoop-config
+    mountPath: /tmp/hadoop-config
+  - name: dfs
+    mountPath: /dfs
+volumes:
+  - name: hadoop-config
+    configMap:
+      name: {{ include "hdfs.fullname" . }}-hadoop
+  {{- if not .Values.persistence.dataNode.enabled }}
+  - name: dfs
+emptyDir: {}
+  {{- end }}
   {{- if .Values.persistence.dataNode.enabled }}
-  volumeClaimTemplates:
+volumeClaimTemplates:
   - metadata:
       name: dfs
     spec:

@@ -26,7 +26,7 @@ public class ArgoNodeTest {
 
         String path = YamlUtil.getResPltDagPath() + "physical-dag-" + argoNode.getId() + ".yml";
         argoNode.setParameters(new HashMap<String, String>() {{
-                 put("--dagPath", path);
+            put("--dagPath", path);
         }});
     }
 
