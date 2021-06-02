@@ -2,3 +2,6 @@ thrift:
   port: 7000
 
 mode: local # 表示执行的方式，默认是kubernetes
+
+dag:
+  prefix: /data

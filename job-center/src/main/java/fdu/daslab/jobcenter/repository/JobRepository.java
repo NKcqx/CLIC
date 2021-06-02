@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  *  对Job信息进行CRUD，目前先使用内存存储，为了开发方便
@@ -25,10 +26,18 @@ public class JobRepository {
     public Job findJob(String jobName) {
         return jobList.stream()
                 .filter(job -> job.jobName.equals(jobName))
-                .c
+                .collect(Collectors.toList()).get(0);
     }
 
     public void updateJob(Job job) {
-
+        jobList = jobList.stream()
+                .map(oldJob -> {
+                    if (job.jobName.equals(oldJob.jobName)) {
+                        return job;
+                    } else {
+                        return oldJob;
+                    }
+                })
+                .collect(Collectors.toList());
     }
 }

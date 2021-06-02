@@ -1,5 +1,6 @@
 package fdu.daslab.executorcenter.executor;
 
+import fdu.daslab.executorcenter.adapter.ParamAdapter;
 import fdu.daslab.executorcenter.client.OperatorClient;
 import fdu.daslab.thrift.base.Plan;
 import fdu.daslab.thrift.base.Platform;
@@ -22,12 +23,16 @@ public class KubernetesExecutor implements Executor {
     @Autowired
     private OperatorClient operatorClient;
 
-    // 提交单个
+    @Autowired
+    private ParamAdapter paramAdapter;
+
+    // 提交单个pod
     private void submitSinglePod(Plan plan, Platform platformInfo) {
 
     }
 
     // 提交kubernetes operator
+    // 这么多的operator，如何每次做新的operator的适配
     private void submitOperator(Plan plan, Platform platformInfo) {
 
     }
@@ -45,6 +50,9 @@ public class KubernetesExecutor implements Executor {
         }
 
         // 创建 pod 或者 创建 operator
+        assert platform != null;
+        // 都是需要先获取容器相关参数
+
         if (platform.useOperator) {
             submitSinglePod(stage.planInfo, platform);
         } else {

@@ -30,7 +30,9 @@ struct Operator {
     4: OperatorStructure operatorStructure // 算子的结构
     5: string operatorType // 算子的计算类型
     6: string computeComplex // 算子的计算复杂度
-    16: map<string, string> params // 算子所需要的补充信息
+    7: list<string> inputKeys // 输入参数，只作为下游实现时使用，和用户无关
+    8: list<string> outputKeys // 输出参数，只作为下游实现时使用，和用户无关
+    16: map<string, string> params // 算子所需要的参数
 }
 
 // 执行计划的节点
@@ -65,6 +67,7 @@ struct Stage {
     6: ExecutionStatus stageStatus // stage的运行状态
     7: string startTime // stage的开始时间
     8: string endTime // stage的结束时间
+    9: string jobName // 所属的job名称
 }
 
 // 描述一个优化好的plan，其由若干subplan组成

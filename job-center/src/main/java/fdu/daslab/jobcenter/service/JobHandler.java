@@ -57,12 +57,12 @@ public class JobHandler implements JobService.Iface{
 
     @Override
     public Job findJob(String jobName) throws TException {
-        return jobRepository.f;
+        return jobRepository.findJob(jobName);
     }
 
     @Override
     public void updateJob(Job job) throws TException {
-
+        jobRepository.updateJob(job);
     }
 
 

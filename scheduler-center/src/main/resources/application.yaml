@@ -1,2 +1,5 @@
 thrift:
   port: 6000
+  executor:
+    host: localhost
+    port: 7000
