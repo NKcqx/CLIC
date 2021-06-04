@@ -16,9 +16,9 @@ public class Demo {
         try {
             PlanBuilder planBuilder = new PlanBuilder("test-web-case");
             // 设置udf路径   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
-            planBuilder.setPlatformUdfPath("java", "/data/udfs/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("java", "executable-operator/executable-basic/target/classes/fdu/daslab/executable/udf/TestSmallWebCaseFunc.class");
             //供测试生成文件使用   例如udfPath值是TestSmallWebCaseFunc.class的绝对路径
-            planBuilder.setPlatformUdfPath("spark", "/data/udfs/TestSmallWebCaseFunc.class");
+            planBuilder.setPlatformUdfPath("spark", "executable-operator/executable-basic/target/classes/fdu/daslab/executable/udf/TestSmallWebCaseFunc.class");
 
             // 创建节点   例如该map的value值是本项目test.csv的绝对路径
             DataQuanta sourceNode = planBuilder.readDataFrom(new HashMap<String, String>() {{

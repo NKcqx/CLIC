@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<Operator ID="MapOperator" name="MapOperator" kind="shuffler">
+<Operator ID="MapOperator" name="MapOperator" kind="transformer">
 
     <platforms>
         <platform ID="java">
@@ -9,6 +9,11 @@
         <platform ID="spark">
             <path>Operator/Map/conf/SparkMapOperator.xml</path>
         </platform>
+
+        <platform ID="flink">
+            <path>Operator/Map/conf/FlinkMapOperator.xml</path>
+        </platform>
+
     </platforms>
 
     <parameters>

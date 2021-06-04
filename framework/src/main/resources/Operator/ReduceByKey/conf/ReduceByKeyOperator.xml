@@ -9,6 +9,10 @@
         <platform ID="spark">
             <path>Operator/ReduceByKey/conf/SparkReduceByKeyOperator.xml</path>
         </platform>
+
+        <platform ID="flink">
+            <path>Operator/ReduceByKey/conf/FlinkReduceByKeyOperator.xml</path>
+        </platform>
     </platforms>
     <parameters>
         <parameter name="udfName" data_type="string" required="true"> </parameter>

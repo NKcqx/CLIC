@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author Du Qinghua
+ * @author Du Qinghua, 李姜辛
  * @version 1.0
  * @since 2020/09/18 19:27
  */
@@ -22,7 +22,7 @@ public class DistinctOperator extends OperatorBase<JavaRDD<List<String>>, JavaRD
     Integer partitionNum = 5;
 
     public DistinctOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
-        super("SparkCountOperator", id, inputKeys, outputKeys, params);
+        super("SparkDistinctOperator", id, inputKeys, outputKeys, params);
     }
 
     @Override

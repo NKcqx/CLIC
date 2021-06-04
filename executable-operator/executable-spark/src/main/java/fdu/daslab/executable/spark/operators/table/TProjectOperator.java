@@ -6,7 +6,6 @@ import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 

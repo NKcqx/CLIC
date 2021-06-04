@@ -83,6 +83,7 @@ public class DagExecutor {
         } catch (Exception e) {
             // TODO: 错误需要上报，并直接中止结束
             logger.error(e.getMessage());
+            e.printStackTrace();
         }
     }
 
@@ -171,6 +172,7 @@ public class DagExecutor {
             hook.postHandler(platformArgs);
         } catch (Exception e) {
             // TODO: 错误信息上报给master
+            e.printStackTrace();
             logger.error(e.getMessage());
         }
     }

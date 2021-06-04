@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="FilterOperator" name="FilterOperator" kind="shuffler">
+
+    <platform ID="flink">
+        <language>java</language>
+        <cost>2.0028</cost>
+    </platform>
+
+
+</Operator>
