@@ -11,4 +11,6 @@ import org.apache.thrift.transport.TTransportException;
 public interface Executor {
 
     void execute(Stage stage) throws TTransportException;
+
+//    Stage findStageStatus(Stage stage) throws TTransportException;
 }

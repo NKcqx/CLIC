@@ -3,3 +3,6 @@ thrift:
   executor:
     host: localhost
     port: 7000
+  job:
+    host: localhost
+    port: 4000

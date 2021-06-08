@@ -5,7 +5,9 @@ import fdu.daslab.thrift.base.Platform;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -18,28 +20,23 @@ import java.util.stream.Collectors;
 @Repository
 public class OperatorRepository {
 
-    private List<Operator> operatorList = new ArrayList<>();
-    private List<Platform> platformList = new ArrayList<>();
+    // TODO: Operator的设计还有很大的问题，需要考虑如何设计logical 和 physical的
+    private Map<String, Operator> operators = new HashMap<>();
+    private Map<String, Platform> platforms = new HashMap<>();
 
     public void addPlatform(Platform platform) {
-        platformList.add(platform);
+        platforms.put(platform.name, platform);
     }
 
     public Platform findPlatformInfo(String platformName) {
-        return platformList.stream()
-                .filter(platform -> platform.name.equals(platformName))
-                .collect(Collectors.toList())
-                .get(0);
+        return platforms.get(platformName);
     }
 
     public void addOperator(Operator operator) {
-        operatorList.add(operator);
+        operators.put(operator.name, operator);
     }
 
     public Operator findOperatorInfo(String operatorName) {
-        return operatorList.stream()
-                .filter(operator -> operator.name.equals(operatorName))
-                .collect(Collectors.toList())
-                .get(0);
+        return operators.get(operatorName);
     }
 }

@@ -1,11 +1,13 @@
 package fdu.daslab.operatorcenter.service;
 
+import fdu.daslab.operatorcenter.repository.OperatorRepository;
 import fdu.daslab.thrift.base.Operator;
 import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.operatorcenter.OperatorCenter;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -18,25 +20,26 @@ import org.springframework.stereotype.Service;
 @Service
 public class OperatorHandler implements OperatorCenter.Iface {
 
-    private static Logger logger = LoggerFactory.getLogger(OperatorCenter.class);
+    @Autowired
+    private OperatorRepository operatorRepository;
 
     @Override
     public void addPlatform(Platform platform) throws TException {
-        logger.info("add platform!");
+        operatorRepository.addPlatform(platform);
     }
 
     @Override
     public Platform findPlatformInfo(String platformName) throws TException {
-        return null;
+        return operatorRepository.findPlatformInfo(platformName);
     }
 
     @Override
     public void addOperator(Operator operator) throws TException {
-        logger.info("add operator!");
+        operatorRepository.addOperator(operator);
     }
 
     @Override
     public Operator findOperatorInfo(String operatorName, String platformName) throws TException {
-        return null;
+        return operatorRepository.findOperatorInfo(operatorName);
     }
 }

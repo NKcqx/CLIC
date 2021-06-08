@@ -1,0 +1,39 @@
+# TODO: 资源描述 如何 决定
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: $name # 填入stage的名称
+spec:
+  type: Scala
+  mode: cluster
+  image: $image # 填入image的地址
+  imagePullPolicy: IfNotPresent
+  mainClass: $mainClass # 填入主函数
+  mainApplicationFile: $mainJar # 填入jar包地址
+  sparkVersion: $sparkVersion # 填入spark的版本
+  arguments: ["$argument"] # 传入的参数
+  restartPolicy:
+    type: Never
+  volumes:
+  - name: nfs-volume
+    persistentVolumeClaim:
+      claimName: pvc-nfs
+  driver:
+    cores: 1
+    coreLimit: "1200m"
+    memory: "512m"
+    labels:
+      version: $sparkVersion # 填入spark的版本
+    serviceAccount: spark
+    volumeMounts:
+    - name: nfs-volume
+      mountPath: /data
+  executor:
+    cores: 6
+    instances: 3
+    memory: "512m"
+    labels:
+      version: $sparkVersion # 填入spark的版本
+    volumeMounts:
+    - name: nfs-volume
+      mountPath: /data

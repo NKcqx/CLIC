@@ -2,13 +2,15 @@ package fdu.daslab.executorcenter.executor;
 
 import fdu.daslab.executorcenter.adapter.ParamAdapter;
 import fdu.daslab.executorcenter.client.OperatorClient;
-import fdu.daslab.thrift.base.Plan;
+import fdu.daslab.executorcenter.kubernetes.StrategyFactory;
 import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.base.Stage;
 import org.apache.thrift.TException;
 import org.apache.thrift.transport.TTransportException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 /**
  * 在kubernetes上执行
@@ -26,16 +28,8 @@ public class KubernetesExecutor implements Executor {
     @Autowired
     private ParamAdapter paramAdapter;
 
-    // 提交单个pod
-    private void submitSinglePod(Plan plan, Platform platformInfo) {
-
-    }
-
-    // 提交kubernetes operator
-    // 这么多的operator，如何每次做新的operator的适配
-    private void submitOperator(Plan plan, Platform platformInfo) {
-
-    }
+    @Autowired
+    private StrategyFactory strategyFactory;
 
     @Override
     public void execute(Stage stage) throws TTransportException {
@@ -52,17 +46,20 @@ public class KubernetesExecutor implements Executor {
         // 创建 pod 或者 创建 operator
         assert platform != null;
         // 都是需要先获取容器相关参数
-
-        if (platform.useOperator) {
-            submitSinglePod(stage.planInfo, platform);
-        } else {
-            submitOperator(stage.planInfo, platform);
-        }
-
-        // 保存stage的状态为已经条件
+        List<String> params = paramAdapter.wrapperExecutionArguments(stage);
+        // 调用kubernetes的rest接口去创建对应的任务
+        strategyFactory.getStrategyForPlatform(platform.name)
+                .create(stage, platform, params);
 
     }
 
-    // todo: 设置watch的方式 或者 轮训的方式，去获取对应的stage的状态，stage状态更新的同时可能更新job的状态
-    // stage状态更新的同时，还可能触发新的调度，如何实现？
+
+//    // 如果是内部的kubernetes，可能通过轮询方法获取状态；但是对于外部的环境，只能通过获取
+//    @Override
+//    public Stage findStageStatus(Stage stage) {
+//        return strategyFactory.getStrategyForPlatform(stage.platformName)
+//                .findStatus(stage);
+//    }
+
+
 }

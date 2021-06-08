@@ -7,4 +7,5 @@ include 'base.thrift'
 // 用户可以使用stageId，查询到这一个stage的状态
 service ExecutorService {
     void executeStage(1: base.Stage stage)
+//    base.Stage findStageStatus(1: base.Stage stage)
 }
