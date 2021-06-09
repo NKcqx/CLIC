@@ -7,7 +7,9 @@ import fdu.daslab.executable.basic.model.OperatorFactory;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.utils.ArgsUtil;
 import fdu.daslab.executable.basic.utils.TopoTraversal;
-import fdu.daslab.service.client.SchedulerServiceClient;
+import fdu.daslab.service.client.NotifyServiceClient;
+import fdu.daslab.thrift.notifyservice.StageSnapshot;
+import fdu.daslab.thrift.notifyservice.StageStatus;
 import org.javatuples.Pair;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +60,8 @@ public class DagExecutor {
     // 一些平台特殊的处理逻辑
     private DagHook hook = new DagHook();
 
-    // 连接master所需要的客户端
-    private SchedulerServiceClient masterClient = null;
+    // 用于通知的client
+    private NotifyServiceClient notifyServiceClient = null;
 
     // 初始化参数
     private void initArgs(String[] args) {
@@ -86,10 +89,10 @@ public class DagExecutor {
     }
 
     // 初始化thrift client
-    private void initMasterClient() {
+    private void initNotifyClient() {
         // 创建一个thrift client，用于和master进行交互
-        masterClient = new SchedulerServiceClient(basicArgs.stageId,
-                basicArgs.masterHost, basicArgs.masterPort);
+        notifyServiceClient = new NotifyServiceClient(basicArgs.stageId,
+                basicArgs.jobName, basicArgs.notifyHost, basicArgs.notifyPort);
     }
 
     /**
@@ -102,7 +105,7 @@ public class DagExecutor {
         // 解析参数，分别获取basicArgs和platformArgs
         initArgs(args);
         // 初始化master的客户端
-        initMasterClient();
+        initNotifyClient();
         // 读取dag文件，解析生成所有的operator的列表
         initOperators(factory);
     }
@@ -131,7 +134,6 @@ public class DagExecutor {
         while (topoTraversal.hasNextOpt()) {
             OperatorBase<Object, Object> curOpt = topoTraversal.nextOpt();
             // 每个operator内部设置一个client，方便和master进行交互
-            curOpt.setMasterClient(masterClient);
             curOpt.execute(inputArgs, null);
             // 把计算结果传递到每个下一跳opt
             List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
@@ -158,18 +160,19 @@ public class DagExecutor {
             hook.preHandler(platformArgs);
             // 开始stage
             logger.info("Stage(" + basicArgs.stageId + ")" + " started!");
-            masterClient.postStarted();
+            notifyServiceClient.notify(new StageSnapshot(StageStatus.RUNNING, "", new HashMap<>()));
 
             // 运行dag
             executeDag();
 
             // 结束stage
-            masterClient.postCompleted();
+            notifyServiceClient.notify(new StageSnapshot(StageStatus.COMPLETED, "", new HashMap<>()));
             logger.info("Stage(" + basicArgs.stageId + ")" + " completed!");
             // 后处理方法
             hook.postHandler(platformArgs);
         } catch (Exception e) {
-            // TODO: 错误信息上报给master
+            // 错误信息上报
+            notifyServiceClient.notify(new StageSnapshot(StageStatus.FAILURE, e.getMessage(), new HashMap<>()));
             logger.error(e.getMessage());
         }
     }

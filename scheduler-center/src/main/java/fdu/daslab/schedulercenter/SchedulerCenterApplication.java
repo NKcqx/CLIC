@@ -1,7 +1,9 @@
 package fdu.daslab.schedulercenter;
 
 import fdu.daslab.common.thrift.ThriftServer;
+import fdu.daslab.schedulercenter.service.NotifyHandler;
 import fdu.daslab.schedulercenter.service.SchedulerHandler;
+import fdu.daslab.thrift.notifyservice.NotifyService;
 import fdu.daslab.thrift.schedulercenter.SchedulerService;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,9 +24,11 @@ public class SchedulerCenterApplication {
         ApplicationContext context = SpringApplication.run(SchedulerCenterApplication.class, args);
         try {
             SchedulerHandler schedulerHandler = context.getBean(SchedulerHandler.class);
+            NotifyHandler notifyHandler = context.getBean(NotifyHandler.class);
             int port = Integer.parseInt(context.getEnvironment().getRequiredProperty("thrift.port"));
-            SchedulerService.Processor<SchedulerService.Iface> processor = new SchedulerService.Processor<>(schedulerHandler);
-            ThriftServer.start(port, processor);
+            SchedulerService.Processor<SchedulerService.Iface> schedulerProcessor = new SchedulerService.Processor<>(schedulerHandler);
+            NotifyService.Processor<NotifyService.Iface> notifyProcessor = new NotifyService.Processor<>(notifyHandler);
+            ThriftServer.start(port, schedulerProcessor, notifyProcessor);
         } catch (Exception e) {
             e.printStackTrace();
         }

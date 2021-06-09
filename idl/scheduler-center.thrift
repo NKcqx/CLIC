@@ -28,7 +28,6 @@ struct SchedulerModel {
 service SchedulerService {
     void registerScheduler(1: SchedulerModel schedulerInfo) // 添加一个调度器
     void schedule(1: base.Job job) // 对任务进行调度并执行
-    void postStatus(1: string jobName, 2: i32 stageId, 3: base.ExecutionStatus status) // 更新当前任务的状态
 }
 
 // 定义一个实现插件式的拓展调度器的基础service

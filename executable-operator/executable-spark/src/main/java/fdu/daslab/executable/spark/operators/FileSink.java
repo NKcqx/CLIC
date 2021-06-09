@@ -6,7 +6,6 @@ import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.thrift.TException;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -76,12 +75,6 @@ public class FileSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<S
             this.getInputData("data")
                     .map(line -> StringUtils.join(line, this.params.get("separator")))
                     .saveAsTextFile(this.params.get("outputPath"));
-        }
-        try {
-            // 数据准备好
-            this.getMasterClient().postDataPrepared();
-        } catch (TException e) {
-            e.printStackTrace();
         }
     }
 }

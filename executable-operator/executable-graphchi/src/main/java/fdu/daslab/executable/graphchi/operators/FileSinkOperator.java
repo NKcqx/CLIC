@@ -53,8 +53,6 @@ public class FileSinkOperator extends OperatorBase<Stream<List<String>>, File> {
                     });
             out.close();
             fileWritter.close();
-            // 数据准备好
-            this.getMasterClient().postDataPrepared();
         } catch (Exception e) {
             e.printStackTrace();
         }

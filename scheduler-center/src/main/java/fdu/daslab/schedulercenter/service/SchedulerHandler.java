@@ -42,10 +42,4 @@ public class SchedulerHandler implements SchedulerService.Iface {
         stageScheduling.cacheJob(job);
         stageScheduling.schedule(sourceStages);
     }
-
-    @Override
-    public void postStatus(String jobName, int stageId, ExecutionStatus status) throws TException {
-        // 更新stage状态，为了可以做成事件驱动
-        stageScheduling.updateStatus(jobName, stageId, status);
-    }
 }

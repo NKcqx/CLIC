@@ -6,14 +6,14 @@ import fdu.daslab.schedulercenter.repository.SchedulerRepository;
 import fdu.daslab.thrift.base.ExecutionStatus;
 import fdu.daslab.thrift.base.Job;
 import fdu.daslab.thrift.base.Stage;
+import fdu.daslab.thrift.notifyservice.StageSnapshot;
+import fdu.daslab.thrift.notifyservice.StageStatus;
 import fdu.daslab.thrift.schedulercenter.PluginType;
 import fdu.daslab.thrift.schedulercenter.SchedulerModel;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.*;
@@ -107,14 +107,20 @@ public class StageScheduling {
     }
 
     // 更新stage状态，同时有可能触发调度
-    public void updateStatus(String jobName, int stageId, ExecutionStatus status) {
+    public void updateStatus(String jobName, int stageId, StageSnapshot snapshot) {
         List<Stage> willScheduling = new ArrayList<>();
         Job job = jobCache.get(jobName);
         Stage stage = job.subplans.get(stageId);
-        stage.stageStatus = status;
-        cacheStage(stage); // 更新stage状态
-        if (ExecutionStatus.COMPLETED.equals(status)) {
+        if (StageStatus.RUNNING.equals(snapshot.status)) { // 任务开始
+            stage.setStageStatus(ExecutionStatus.RUNNING);
+            stage.setStartTime(new Date().toString());
+        } else if (StageStatus.FAILURE.equals(snapshot.status)) { // 任务失败
+            stage.setStageStatus(ExecutionStatus.FAILURE);
+            logger.error("job: {}, stageId: {} failed, message: {}", jobName, stageId, snapshot.message);
+        } else if (StageStatus.COMPLETED.equals(snapshot.status)) {
             // 如果已经完成，则判断是否后继的节点的前驱都已经 触发后继节点的调度
+            stage.setEndTime(new Date().toString());
+            stage.setStageStatus(ExecutionStatus.COMPLETED);
             for (int outputId : stage.outputStageId) {
                 Stage outStage = job.subplans.get(outputId);
                 if (checkDependencies(job, outStage)) {
@@ -122,9 +128,17 @@ public class StageScheduling {
                 }
             }
         }
+        handlerOthers(snapshot.others); // 其他需要处理的情况
+        cacheStage(stage); // 更新stage状态
         if (!willScheduling.isEmpty()) {
             schedule(willScheduling);
         }
         // TODO: 批量更新job的状态，在job-center中维护的是所有的状态，作为stage和job的统一管理
+    }
+
+    // 处理下游传来的其他参数
+    private void handlerOthers(Map<String, String> others) {
+        // 暂时仅仅输出
+        others.forEach((key, val) -> logger.info(key + ":" + val));
     }
 }

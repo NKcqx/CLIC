@@ -11,7 +11,7 @@ spec:
       command: ["$commands"] # 填入参数
       volumeMounts:
       - name: nfs-volume
-        mountPath: /datax
+        mountPath: /data
       restartPolicy: Never
       volumes:
       - name: nfs-volume

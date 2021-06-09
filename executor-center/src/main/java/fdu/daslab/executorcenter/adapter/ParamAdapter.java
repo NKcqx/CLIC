@@ -35,14 +35,19 @@ public class ParamAdapter {
     @Value("${dag.prefix}")
     private String dagPrefix; // 输出的dag描述文件的文件存放路径
 
+    @Value("${thrift.notify.host}")
+    private String notifyHost;
+
+    @Value("${thrift.notify.port}")
+    private int notifyPort;
+
     // 生成运行的相关参数
-    // TODO: 修改参数，添加stage、master等相关信息
     public List<String> wrapperExecutionArguments(Stage stage) {
         // dagPath
         String dagPath = generateYamlForPlan(stage.planInfo);
         // udf
         String udfPath = stage.others.getOrDefault("udfPath", "");
-        // stage相关，包含stageId、jobName、masterId、masterPort
+        // stage相关，包含stageId、jobName、notifyHost、notifyPort
         int stageId = stage.stageId;
         String jobName = stage.jobName;
         // 其他用户传入的参数
@@ -57,6 +62,8 @@ public class ParamAdapter {
                 "--udfPath=" + udfPath,
                 "--stageId=" + stageId,
                 "--jobName=" + jobName,
+                "--notifyHost" + notifyHost,
+                "--notifyPort" + notifyPort,
                 otherParams.toString()
         );
     }
