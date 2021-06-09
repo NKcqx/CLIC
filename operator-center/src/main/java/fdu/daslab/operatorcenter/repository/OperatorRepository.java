@@ -1,6 +1,7 @@
 package fdu.daslab.operatorcenter.repository;
 
 import fdu.daslab.operatorcenter.init.OperatorInit;
+import fdu.daslab.operatorcenter.init.PlatformInit;
 import fdu.daslab.thrift.base.Operator;
 import fdu.daslab.thrift.base.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,12 +21,13 @@ import java.util.Map;
 public class OperatorRepository {
 
     private Map<String, Operator> operators;
-    private Map<String, Platform> platforms = new HashMap<>();
+    private Map<String, Platform> platforms;
 
     @Autowired
-    public OperatorRepository(OperatorInit operatorInit) {
+    public OperatorRepository(OperatorInit operatorInit, PlatformInit platformInit) {
         // 默认先加载项目中的logical的operator
         operators = operatorInit.init();
+        platforms = platformInit.init();
     }
 
     public void addPlatform(Platform platform) {
