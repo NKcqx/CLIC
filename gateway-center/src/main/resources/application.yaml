@@ -1,0 +1,10 @@
+thrift:
+  job:
+    host: localhost
+    port: 4000
+  optimizer:
+    host: localhost
+    port: 5000
+  scheduler:
+    host: localhost
+    port: 6000

@@ -20,6 +20,11 @@
     <dependencyManagement>
         <dependencies>
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>2.3.4.RELEASE</version>
+            </dependency>
+            <dependency>
                 <groupId>org.apache.thrift</groupId>
                 <artifactId>libthrift</artifactId>
                 <version>0.13.0</version>
@@ -118,5 +123,6 @@
         <module>optimizer-plugins/example-optimizer</module>
         <module>executor-center</module>
         <module>scheduler-plugins</module>
+        <module>gateway-center</module>
     </modules>
 </project>
