@@ -16,6 +16,9 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
+      - name: Build the parent
+        run:
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/pom.xml
       - name: Build the basic
         run:
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/executable-basic/pom.xml
