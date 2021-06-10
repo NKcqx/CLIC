@@ -58,7 +58,7 @@ public class JobCreateTest {
         operator1.setOutputKeys(Arrays.asList("result"));
         PlanNode node1 = new PlanNode(1, operator1, null,
                 new ArrayList<>(Collections.singletonList(2)),
-                "java");
+                "Java");
         Operator operator2 = new Operator();
         operator2.setName("MapOperator");
         operator2.setOperatorStructure(OperatorStructure.MAP);
@@ -66,14 +66,14 @@ public class JobCreateTest {
         operator2.setOutputKeys(Arrays.asList("result"));
         PlanNode node2 = new PlanNode(2, operator2, new ArrayList<>(Collections.singletonList(1)),
                 new ArrayList<>(Collections.singletonList(3)),
-                "java");
+                "Java");
         Operator operator3 = new Operator();
         operator3.setName("SinkOperator");
         operator3.setOperatorStructure(OperatorStructure.SINK);
         operator3.setInputKeys(Arrays.asList("data"));
         operator3.setOutputKeys(new ArrayList<>());
         PlanNode node3 = new PlanNode(2, operator3, new ArrayList<>(Collections.singletonList(2)),null,
-                "java");
+                "Java");
         plan.setNodes(new HashMap<Integer, PlanNode>(){{
             put(1, node1); put(2, node2); put(3, node3);
         }});
@@ -81,7 +81,7 @@ public class JobCreateTest {
         stage.planInfo = plan;
         stage.stageId = 100;
         stage.outputStageId = Arrays.asList(200, 300);
-        stage.platformName = "java";
+        stage.platformName = "Java";
         stage.jobName = "planA";
         try {
             transport.open();
