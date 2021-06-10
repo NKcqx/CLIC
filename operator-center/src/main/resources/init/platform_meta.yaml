@@ -2,13 +2,13 @@
 # 这个只是为了测试方便，为了通过动态的方式来增添
 platforms:
   - name: Java
-    defaultImage: edwardtang/executable-java:v0
+    defaultImage: edwardtang/executable-java:latest
     useOperator: false
     execCommand: /bin/sh -c java -jar executable-java.jar
   - name: Spark
-    defaultImage: spark-env:v0
+    defaultImage: edwardtang/executable-spark:latest
     useOperator: true
     params:
       mainClass: fdu.daslab.executable.spark.ExecuteSparkOperator
-      mainJar: /data/jars/executable-spark.jar
+      mainJar: executable-spark.jar
       sparkVersion: 4.0.0

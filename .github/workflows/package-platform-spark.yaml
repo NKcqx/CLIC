@@ -1,7 +1,7 @@
 on:
   push:
     path:
-      - 'executable-operator/executable-java/**'
+      - 'executable-operator/executable-spark/**'
       - 'executable-operator/executable-basic/**'
     branches:
       - main
@@ -24,15 +24,15 @@ jobs:
           mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/executable-basic/pom.xml
       - name: Build the java
         run:
-          mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/executable-java/pom.xml
+          mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/executable-spark/pom.xml
       - name: Publish Docker
         uses: elgohr/Publish-Docker-Github-Action@2.11
         with:
           # The name of the image you would like to push
-          name: edwardtang/executable-java
+          name: edwardtang/executable-spark
           # The login username for the registry
           username: edwardtang
           # The login password for the registry
           password: daslab_system_group
-          dockerfile: executable-operator/executable-java/Dockerfile
+          dockerfile: executable-operator/executable-spark/Dockerfile
           tag_names: false
