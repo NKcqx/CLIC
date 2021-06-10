@@ -2,9 +2,9 @@
 # 这个只是为了测试方便，为了通过动态的方式来增添
 platforms:
   - name: Java
-    defaultImage: java-env:v0
+    defaultImage: edwardtang/executable-java:v0
     useOperator: false
-    execCommand: /bin/sh -c java -jar /data/jars/executable-java.jar
+    execCommand: /bin/sh -c java -jar executable-java.jar
   - name: Spark
     defaultImage: spark-env:v0
     useOperator: true
