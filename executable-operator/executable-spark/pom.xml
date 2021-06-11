@@ -24,6 +24,10 @@
             <groupId>org.apache.spark</groupId>
             <artifactId>spark-graphx_2.11</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.javatuples</groupId>
+            <artifactId>javatuples</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

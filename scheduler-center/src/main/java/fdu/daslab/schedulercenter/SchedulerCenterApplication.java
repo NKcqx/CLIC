@@ -26,9 +26,12 @@ public class SchedulerCenterApplication {
             SchedulerHandler schedulerHandler = context.getBean(SchedulerHandler.class);
             NotifyHandler notifyHandler = context.getBean(NotifyHandler.class);
             int port = Integer.parseInt(context.getEnvironment().getRequiredProperty("thrift.port"));
+            int notifyPort = Integer.parseInt(context.getEnvironment().getRequiredProperty("thrift.notify-port"));
             SchedulerService.Processor<SchedulerService.Iface> schedulerProcessor = new SchedulerService.Processor<>(schedulerHandler);
             NotifyService.Processor<NotifyService.Iface> notifyProcessor = new NotifyService.Processor<>(notifyHandler);
-            ThriftServer.start(port, schedulerProcessor, notifyProcessor);
+            // 使用一个线程去先启动
+            new Thread(() -> ThriftServer.start(notifyPort, notifyProcessor)).start();
+            ThriftServer.start(port, schedulerProcessor);
         } catch (Exception e) {
             e.printStackTrace();
         }

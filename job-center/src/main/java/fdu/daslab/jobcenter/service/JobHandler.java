@@ -47,6 +47,7 @@ public class JobHandler implements JobService.Iface{
         // 将plan的信息传递到job和stage中，因为后续运行时可能需要，比如udf TODO: 维护一个context来做这些事
         job.setOthers(plan.others);
         for (Stage stage : job.subplans.values()) {
+            stage.setJobName(job.jobName);
             stage.setOthers(plan.others);
         }
         jobRepository.saveJob(job);

@@ -39,7 +39,8 @@ public class ThriftServer {
         }
     }
 
-    // 启动多个handler
+    // 启动多个handler，这个方法被废弃，不允许使用，因为上下游调用负担变重
+    @Deprecated
     public static void start(int port, TProcessor ...processors) {
         try {
             TServerTransport transport = new TServerSocket(port);

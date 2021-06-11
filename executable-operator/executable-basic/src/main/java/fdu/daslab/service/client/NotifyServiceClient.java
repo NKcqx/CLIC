@@ -4,8 +4,6 @@ import fdu.daslab.thrift.notifyservice.NotifyService;
 import fdu.daslab.thrift.notifyservice.StageSnapshot;
 import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
-import org.apache.thrift.protocol.TMultiplexedProtocol;
-import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;
@@ -38,10 +36,8 @@ public class NotifyServiceClient {
             isDebug = true;
         } else {
             this.transport = new TSocket(host, port);
-            TProtocol protocol = new TBinaryProtocol(transport);
-            // 由于多个服务绑定一个端口，需要使用multiplex的协议
-            TMultiplexedProtocol tMultiplexedProtocol = new TMultiplexedProtocol(protocol, "NotifyService");
-            this.client = new NotifyService.Client(tMultiplexedProtocol);
+            TBinaryProtocol tBinaryProtocol = new TBinaryProtocol(transport);
+            this.client = new NotifyService.Client(tBinaryProtocol);
             this.stageId = stageId;
             this.jobName = jobName;
         }

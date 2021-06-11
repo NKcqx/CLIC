@@ -1,2 +1,6 @@
 thrift:
   port: 5000
+
+  operator:
+    host: localhost
+    port: 4000
