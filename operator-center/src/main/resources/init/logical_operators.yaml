@@ -4,8 +4,8 @@
 operators:
   - name: SimpleOperator # 作为一个算子的示例
     params: [params1] # 参数，相对用户而言，因此默认都使用string类型即可
-    inputKeys: [data]# 输入数据的key，不填时默认为["data"]
-    outputKeys: [result]# 输出数据的key，不填时默认为["result"]
+    inputKeys: [data] # 输入数据的key，不填时默认为["data"]
+    outputKeys: [result] # 输出数据的key，不填时默认为["result"]
     operatorStructure: SOURCE # 算子类型
   - name: CollectionSinkOperator
     operatorStructure: SINK
