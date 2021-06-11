@@ -1,6 +1,44 @@
 {
   "jobName": "testPlan",
-  "plan": {
-
-  }
+  "plan": [
+    {
+      "nodeId": 1,
+      "operatorName": "source",
+      "dependencies": null,
+      "arguments": {
+        "operatorParams": [
+          {
+            "name": "param1",
+            "value": "value1"
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": 2,
+      "operatorName": "map",
+      "dependenciesNodes": [1],
+      "arguments": {
+        "operatorParams": [
+          {
+            "name": "param1",
+            "value": "value1"
+          }
+        ]
+      }
+    },
+    {
+      "nodeId": 3,
+      "operatorName": "map",
+      "dependenciesNodes": [1],
+      "arguments": {
+        "operatorParams": [
+          {
+            "name": "param1",
+            "value": "value1"
+          }
+        ]
+      }
+    }
+  ]
 }
