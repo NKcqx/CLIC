@@ -1,10 +1,13 @@
 package fdu.daslab.jobcenter.repository;
 
 import fdu.daslab.thrift.base.Job;
+import fdu.daslab.thrift.base.Stage;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -17,27 +20,23 @@ import java.util.stream.Collectors;
 @Repository
 public class JobRepository {
 
-    private List<Job> jobList = new ArrayList<>();
+    private Map<String, Job> jobs = new HashMap<>();
 
     public void saveJob(Job job) {
-        jobList.add(job);
+        jobs.put(job.jobName, job);
     }
 
     public Job findJob(String jobName) {
-        return jobList.stream()
-                .filter(job -> job.jobName.equals(jobName))
-                .collect(Collectors.toList()).get(0);
+        return jobs.get(jobName);
     }
 
     public void updateJob(Job job) {
-        jobList = jobList.stream()
-                .map(oldJob -> {
-                    if (job.jobName.equals(oldJob.jobName)) {
-                        return job;
-                    } else {
-                        return oldJob;
-                    }
-                })
-                .collect(Collectors.toList());
+        saveJob(job);
+    }
+
+    public void updateStage(Stage stage) {
+        Job job = findJob(stage.jobName);
+        job.subplans.put(stage.getStageId(), stage);
+        saveJob(job);
     }
 }

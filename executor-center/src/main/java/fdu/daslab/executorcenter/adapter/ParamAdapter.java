@@ -3,8 +3,10 @@ package fdu.daslab.executorcenter.adapter;
 import fdu.daslab.thrift.base.Operator;
 import fdu.daslab.thrift.base.Plan;
 import fdu.daslab.thrift.base.PlanNode;
+import fdu.daslab.thrift.base.Stage;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
@@ -33,13 +35,46 @@ public class ParamAdapter {
     @Value("${dag.prefix}")
     private String dagPrefix; // 输出的dag描述文件的文件存放路径
 
+    @Value("${thrift.notify.host}")
+    private String notifyHost;
+
+    @Value("${thrift.notify.port}")
+    private int notifyPort;
+
+    // 生成运行的相关参数
+    public List<String> wrapperExecutionArguments(Stage stage) {
+        // dagPath
+        String dagPath = generateYamlForPlan(stage.planInfo);
+        // udf
+        String udfPath = stage.others.getOrDefault("udfPath", "");
+        // stage相关，包含stageId、jobName、notifyHost、notifyPort
+        int stageId = stage.stageId;
+        String jobName = stage.jobName;
+        // 其他用户传入的参数
+        StringBuilder otherParams = new StringBuilder();
+        for (String key : stage.others.keySet()) {
+            if (!key.equals("udfPath")) {
+                otherParams.append("--D").append(key).append("=").append(stage.others.get(key));
+            }
+        }
+        return Arrays.asList(
+                "--dagPath=" + dagPath,
+                "--udfPath=" + udfPath,
+                "--stageId=" + stageId,
+                "--jobName=" + jobName,
+                "--notifyHost" + notifyHost,
+                "--notifyPort" + notifyPort,
+                otherParams.toString()
+        );
+    }
+
     /**
      * 把plan的信息以Yaml文件的格式生成，并保存，返回对应的路径地址
      *
      * @param planInfo 该平台的计算信息
      * @return 对应的路径地址
      */
-    public String generateYamlForPlan(Plan planInfo) {
+    private String generateYamlForPlan(Plan planInfo) {
         // 遍历 子DAG，把所有opt转为Map保存
         Map<String, Object> yamlMap = graph2Yaml(planInfo);
         String path = dagPrefix + "/physical-dag-" + UUID.randomUUID().toString() + ".yml";
@@ -89,7 +124,7 @@ public class ParamAdapter {
     private Map<String, Object> operatorDependency2Map(PlanNode nodeInfo, Map<Integer, PlanNode> operators) {
         Map<String, Object> dependencyMap = new HashMap<>(); // 当前Opt的依赖对象
         dependencyMap.put("id", nodeInfo.nodeId);
-        if (!nodeInfo.inputNodeId.isEmpty()) {  // head Operator
+        if (!CollectionUtils.isEmpty(nodeInfo.inputNodeId)) {  // head Operator
             List<Map<String, String>> dependencies = new ArrayList<>(); // denpendencies字段，是一个List<Map> 每个元素是其中一个依赖
             for (int i = 0; i < nodeInfo.inputNodeId.size(); i++) {
                 int inputId = nodeInfo.inputNodeId.get(i);
@@ -97,8 +132,10 @@ public class ParamAdapter {
                 dependencies.add(new HashMap<String, String>() {{
                     put("id", String.valueOf(inputId));
                     // 恶心的东西，暂时使用上下游的key表示
-                    put("sourceKey", operators.get(inputId).operatorInfo.inputKeys.get(0));
-                    put("targetKey", nodeInfo.operatorInfo.inputKeys.get(index));
+                    List<String> inputOutputKeys = operators.get(inputId).operatorInfo.outputKeys;
+                    put("sourceKey", CollectionUtils.isEmpty(inputOutputKeys) ? "" : inputOutputKeys.get(0));
+                    List<String> targetKeys = nodeInfo.operatorInfo.inputKeys;
+                    put("targetKey", CollectionUtils.isEmpty(targetKeys) ? "" : targetKeys.get(index));
                 }});
             }
             dependencyMap.put("dependencies", dependencies);

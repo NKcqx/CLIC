@@ -3,6 +3,7 @@ package fdu.daslab.executorcenter.client;
 import fdu.daslab.common.thrift.ThriftClient;
 import fdu.daslab.thrift.operatorcenter.OperatorCenter;
 import org.apache.thrift.protocol.TBinaryProtocol;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
@@ -12,18 +13,25 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class OperatorClient extends ThriftClient<OperatorCenter.Client> {
+
+    @Value("${thrift.operator.host}")
+    private String host;
+
+    @Value("${thrift.operator.port}")
+    private int port;
+
     @Override
     protected OperatorCenter.Client createClient(TBinaryProtocol protocol) {
-        return null;
+        return new OperatorCenter.Client(protocol);
     }
 
     @Override
     protected String getHost() {
-        return null;
+        return host;
     }
 
     @Override
     protected int getPort() {
-        return 0;
+        return port;
     }
 }

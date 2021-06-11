@@ -1,4 +1,4 @@
-xxxpackage fdu.daslab.executable.spark.operators;
+package fdu.daslab.executable.spark.operators;
 
 import com.beust.jcommander.Parameters;
 import fdu.daslab.executable.basic.model.OperatorBase;

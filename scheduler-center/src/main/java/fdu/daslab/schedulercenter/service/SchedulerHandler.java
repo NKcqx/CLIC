@@ -2,6 +2,7 @@ package fdu.daslab.schedulercenter.service;
 
 import fdu.daslab.schedulercenter.repository.SchedulerRepository;
 import fdu.daslab.schedulercenter.scheduling.StageScheduling;
+import fdu.daslab.thrift.base.ExecutionStatus;
 import fdu.daslab.thrift.base.Job;
 import fdu.daslab.thrift.base.Stage;
 import fdu.daslab.thrift.schedulercenter.SchedulerModel;
@@ -38,6 +39,7 @@ public class SchedulerHandler implements SchedulerService.Iface {
         // 获取初始的stage
         List<Stage> sourceStages = new ArrayList<>();
         job.getSourceStages().forEach(sourceId -> sourceStages.add(job.subplans.get(sourceId)));
+        stageScheduling.cacheJob(job);
         stageScheduling.schedule(sourceStages);
     }
 }
