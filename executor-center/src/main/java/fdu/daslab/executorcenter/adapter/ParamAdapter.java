@@ -57,13 +57,15 @@ public class ParamAdapter {
                 otherParams.append("--D").append(key).append("=").append(stage.others.get(key));
             }
         }
+        // TODO: 通过文件耦合太严重，比如超算等情况，没法使用本地文件处理
+        // 使用什么样的格式描述最方便？
         return Arrays.asList(
                 "--dagPath=" + dagPath,
                 "--udfPath=" + udfPath,
                 "--stageId=" + stageId,
                 "--jobName=" + jobName,
-                "--notifyHost" + notifyHost,
-                "--notifyPort" + notifyPort,
+                "--notifyHost=" + notifyHost,
+                "--notifyPort=" + notifyPort,
                 otherParams.toString()
         );
     }

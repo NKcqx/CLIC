@@ -74,6 +74,31 @@
                 <artifactId>parquet-hadoop</artifactId>
                 <version>1.11.1</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-common</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-hdfs -->
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-hdfs</artifactId>
+                <version>3.0.0</version>
+                <scope>test</scope>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-hdfs-client -->
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-client</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+            <!-- https://mvnrepository.com/artifact/org.apache.hadoop/hadoop-hdfs-client -->
+            <dependency>
+                <groupId>org.apache.hadoop</groupId>
+                <artifactId>hadoop-hdfs-client</artifactId>
+                <version>3.0.0</version>
+            </dependency>
+
             <!-- https://mvnrepository.com/artifact/junit/junit -->
             <dependency>
                 <groupId>junit</groupId>
@@ -91,6 +116,7 @@
                 <artifactId>spark-graphx_2.11</artifactId>
                 <version>2.4.5</version>
             </dependency>
+            <!-- https://mvnrepository.com/artifact/org.graphchi/graphchi-java -->
             <dependency>
                 <groupId>org.graphchi</groupId>
                 <artifactId>graphchi-java_2.11</artifactId>

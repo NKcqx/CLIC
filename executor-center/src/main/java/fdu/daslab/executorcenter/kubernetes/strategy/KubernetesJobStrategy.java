@@ -6,6 +6,7 @@ import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.base.Stage;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,7 +18,6 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * kubernetes job
@@ -43,11 +43,13 @@ public class KubernetesJobStrategy implements KubernetesResourceStrategy {
         try {
             File templateFile = new ClassPathResource("templates/job-template.yaml").getFile();
             String templateYaml = FileUtils.readFileToString(templateFile, StandardCharsets.UTF_8);
-            String jobYaml = templateYaml.replace("$name", stage.platformName + "-" + stage.stageId)
-                    .replace("$platform", stage.platformName)
+
+            String jobYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
+                    .replace("$platform", stage.platformName.toLowerCase())
                     .replace("$image", platformInfo.defaultImage)
-                    .replace("$commands", platformInfo.execCommand + " " + StringUtils.join(params));
+                    .replace("$commands", platformInfo.execCommand + " " + StringUtils.joinWith(" ", params.toArray()));
             HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
+            // 可能会执行失败，需要加一些错误处理
             httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createJobUrl, yaml.load(jobYaml)));
         } catch (IOException e) {
             e.printStackTrace();

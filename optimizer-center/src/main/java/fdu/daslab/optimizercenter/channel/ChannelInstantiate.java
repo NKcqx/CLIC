@@ -1,11 +1,12 @@
 package fdu.daslab.optimizercenter.channel;
 
+import fdu.daslab.optimizercenter.client.OperatorClient;
 import fdu.daslab.thrift.base.Operator;
-import fdu.daslab.thrift.base.OperatorStructure;
 import fdu.daslab.thrift.base.PlanNode;
+import org.apache.thrift.TException;
 import org.springframework.stereotype.Component;
 
-import java.util.HashMap;
+import javax.annotation.Resource;
 import java.util.UUID;
 
 /**
@@ -17,6 +18,9 @@ import java.util.UUID;
  */
 @Component
 public class ChannelInstantiate {
+
+    @Resource
+    private OperatorClient operatorClient;
 
     /**
      * 将 channel_source 和 channel_sink 实例化为 最优的 sink / source 节点；
@@ -31,13 +35,20 @@ public class ChannelInstantiate {
     public void instantiateSourceSink(PlanNode sourceNode, PlanNode sinkNode) {
         // 如果是文件的话，就需要将文件匹配起来
         String filePath = UUID.randomUUID().toString();
-        Operator sourceOperator = new Operator("FileSource", null,
-                OperatorStructure.SOURCE, null, null,
-                new HashMap<String, String>(){{put("inputPath", filePath);}});
+
+        Operator sourceOperator = new Operator(), sinkOperator = new Operator();
+        try {
+            operatorClient.open();
+            sourceOperator = operatorClient.getClient().findOperatorInfo("SourceOperator", null);
+            sinkOperator = operatorClient.getClient().findOperatorInfo("SinkOperator", null);
+        } catch (TException e) {
+            e.printStackTrace();
+        } finally {
+            operatorClient.close();
+        }
+        sourceOperator.params.put("inputPath", filePath);
+        sinkOperator.params.put("outputPath", filePath);
         sourceNode.setOperatorInfo(sourceOperator);
-        Operator sinkOperator = new Operator("FileSink", null,
-                OperatorStructure.SINK, null, null,
-                new HashMap<String, String>(){{put("outputPath", filePath);}});
         sinkNode.setOperatorInfo(sinkOperator);
     }
 }

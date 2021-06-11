@@ -5,8 +5,9 @@ thrift:
     port: 4000
   notify: # 用于下游向上游通信的地址
     host: localhost
-    port: 6000
-mode: kubernetes # 表示执行的方式，默认是kubernetes
+    port: 8888
+mode: local # 表示执行的方式，默认是kubernetes
+mvnDir: /Users/edward/.m2/repository/fdu/daslab/
 dag:
   prefix: /Users/edward/Code/Lab/data
 kubernetes:

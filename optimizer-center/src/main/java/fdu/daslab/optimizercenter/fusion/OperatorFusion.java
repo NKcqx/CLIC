@@ -66,9 +66,13 @@ public class OperatorFusion {
                 channelToStage.put(curNodeId, stageId);
             }
         }
-        Plan subPlan = new Plan(subPlanNodes, sourceId);
-        return new Stage(stageId, subPlan, sourcePlan.platformName,
-                new ArrayList<>(), new ArrayList<>());
+        Plan subPlan = new Plan(subPlanNodes, sourceId, new HashMap<>());
+        Stage stage = new Stage();
+        stage.setStageId(stageId);
+        stage.setPlanInfo(subPlan);
+        String platform = ((PlanNode) subPlan.nodes.values().toArray()[0]).platformName;
+        stage.setPlatformName(platform);
+        return stage;
     }
 
     // 连接stage

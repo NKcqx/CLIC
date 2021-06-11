@@ -39,7 +39,7 @@ public class SparkOperatorStrategy implements KubernetesResourceStrategy {
         try {
             File templateFile = new ClassPathResource("templates/spark-template.yaml").getFile();
             String templateYaml = FileUtils.readFileToString(templateFile, StandardCharsets.UTF_8);
-            String sparkYaml = templateYaml.replace("$name", stage.platformName + "-" + stage.stageId)
+            String sparkYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
                     .replace("$image", platformInfo.defaultImage)
                     .replace("$mainClass", platformInfo.params.get("mainClass"))
                     .replace("$mainJar", platformInfo.params.get("mainJar"))

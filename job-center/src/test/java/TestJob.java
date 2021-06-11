@@ -19,7 +19,7 @@ public class TestJob {
 
     @Test
     public void test() throws TException {
-        TSocket transport = new TSocket("localhost", 4000);
+        TSocket transport = new TSocket("localhost", 3000);
         TBinaryProtocol protocol = new TBinaryProtocol(transport);
         final JobService.Client client = new JobService.Client(protocol);
         if (!transport.isOpen()) transport.open();
