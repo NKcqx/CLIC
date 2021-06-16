@@ -30,4 +30,4 @@ jobs:
           # The login password for the registry
           password: daslab_system_group
           dockerfile: job-center/Dockerfile
-          tags: 'latest'
+          tag_names: 'latest'
