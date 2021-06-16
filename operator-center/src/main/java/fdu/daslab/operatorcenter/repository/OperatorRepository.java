@@ -7,8 +7,11 @@ import fdu.daslab.thrift.base.Platform;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * 算子和平台的存储和读写，暂时使用内存，后面都需要使用其他的存储方式
@@ -31,11 +34,15 @@ public class OperatorRepository {
     }
 
     public void addPlatform(Platform platform) {
-        platforms.put(platform.name, platform);
+        platforms.put(platform.name.toLowerCase(), platform);
     }
 
     public Platform findPlatformInfo(String platformName) {
-        return platforms.get(platformName);
+        return platforms.get(platformName.toLowerCase());
+    }
+
+    public Map<String, Platform> listPlatforms() {
+        return platforms;
     }
 
     public void addOperator(Operator operator) {

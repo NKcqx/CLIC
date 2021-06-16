@@ -34,8 +34,8 @@ public class KubernetesExecutor implements Executor {
     @Override
     public void execute(Stage stage) throws TTransportException {
         Platform platform = null;
-        operatorClient.open();
         try {
+            operatorClient.open();
             platform = operatorClient.getClient().findPlatformInfo(stage.platformName);
         } catch (TException e) {
             e.printStackTrace();
@@ -46,7 +46,7 @@ public class KubernetesExecutor implements Executor {
         // 创建 pod 或者 创建 operator
         assert platform != null;
         // 都是需要先获取容器相关参数
-        List<String> params = paramAdapter.wrapperExecutionArguments(stage);
+        List<String> params = paramAdapter.wrapperExecutionArguments(stage, platform);
         // 调用kubernetes的rest接口去创建对应的任务
         strategyFactory.getStrategyForPlatform(platform.name)
                 .create(stage, platform, params);

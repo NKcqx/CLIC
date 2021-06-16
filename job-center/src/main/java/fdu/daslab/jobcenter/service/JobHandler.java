@@ -1,5 +1,6 @@
 package fdu.daslab.jobcenter.service;
 
+import fdu.daslab.thrift.base.ExecutionStatus;
 import fdu.daslab.thrift.base.Job;
 import fdu.daslab.thrift.base.Plan;
 import fdu.daslab.thrift.base.Stage;
@@ -44,7 +45,8 @@ public class JobHandler implements JobService.Iface{
 
         // 2.保存任务，先使用中间状态保存
         job.setJobName(jobName);
-        // 将plan的信息传递到job和stage中，因为后续运行时可能需要，比如udf TODO: 维护一个context来做这些事
+        job.jobStatus = ExecutionStatus.PENDING;
+        // 将plan的信息传递到job和stage中，因为后续运行时可能需要，比如udf TODO: 维护一个context来保存这些信息
         job.setOthers(plan.others);
         for (Stage stage : job.subplans.values()) {
             stage.setJobName(job.jobName);
@@ -70,6 +72,12 @@ public class JobHandler implements JobService.Iface{
     @Override
     public void updateJob(Job job) throws TException {
         jobRepository.updateJob(job);
+    }
+
+    @Override
+    public void updateStage(Stage stage) throws TException {
+        // 更新stage状态
+        jobRepository.updateStage(stage);
     }
 
 

@@ -8,4 +8,5 @@ service JobService {
     void submit(1: base.Plan plan, 2: string jobName) // 提交一个任务
     base.Job findJob(1: string jobName) // 查询job目前的状态
     void updateJob(1: base.Job job) // 更新job状态
+    void updateStage(1: base.Stage stage) // 更新stage
 }

@@ -31,7 +31,7 @@ public class SchedulerCenterApplication {
             NotifyService.Processor<NotifyService.Iface> notifyProcessor = new NotifyService.Processor<>(notifyHandler);
             // 使用一个线程去先启动
             new Thread(() -> ThriftServer.start(notifyPort, notifyProcessor)).start();
-            ThriftServer.start(port, schedulerProcessor);
+            new Thread(() -> ThriftServer.start(port, schedulerProcessor)).start();
         } catch (Exception e) {
             e.printStackTrace();
         }
