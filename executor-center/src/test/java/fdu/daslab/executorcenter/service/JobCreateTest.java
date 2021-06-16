@@ -51,6 +51,7 @@ public class JobCreateTest {
         ExecutorService.Client client = new ExecutorService.Client(protocol);
         Stage stage = new Stage();
         Plan plan = new Plan();
+
         Operator operator1 = new Operator();
         operator1.setName("SourceOperator");
         operator1.setOperatorStructure(OperatorStructure.SOURCE);
@@ -59,6 +60,7 @@ public class JobCreateTest {
         PlanNode node1 = new PlanNode(1, operator1, null,
                 new ArrayList<>(Collections.singletonList(2)),
                 "Java");
+
         Operator operator2 = new Operator();
         operator2.setName("MapOperator");
         operator2.setOperatorStructure(OperatorStructure.MAP);
@@ -67,6 +69,7 @@ public class JobCreateTest {
         PlanNode node2 = new PlanNode(2, operator2, new ArrayList<>(Collections.singletonList(1)),
                 new ArrayList<>(Collections.singletonList(3)),
                 "Java");
+
         Operator operator3 = new Operator();
         operator3.setName("SinkOperator");
         operator3.setOperatorStructure(OperatorStructure.SINK);
@@ -74,6 +77,7 @@ public class JobCreateTest {
         operator3.setOutputKeys(new ArrayList<>());
         PlanNode node3 = new PlanNode(2, operator3, new ArrayList<>(Collections.singletonList(2)),null,
                 "Java");
+
         plan.setNodes(new HashMap<Integer, PlanNode>(){{
             put(1, node1); put(2, node2); put(3, node3);
         }});

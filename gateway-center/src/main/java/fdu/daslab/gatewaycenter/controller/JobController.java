@@ -27,6 +27,4 @@ public class JobController {
 //        jobWebService.submit();
         return R.ok();
     }
-
-
 }

@@ -1,63 +1,54 @@
 {
   "planName": "templatePlan",
   "planParams": {
-    "resource": {
-      "cpu": "",
-      "memory": ""
-    }
   },
   "planEntity": [
     {
       "nodeId": 1,
       "operatorName": "CollectionSourceOperator",
       "dependencies": [],
-      "arguments": {
-        "operatorParams": [
-          {
-            "name": "data",
-            "value": "value1"
-          }
-        ]
-      }
+      "operatorParams": [
+        {
+          "name": "data",
+          "value": "value1"
+        }
+      ]
     },
     {
       "nodeId": 2,
       "operatorName": "map",
       "dependenciesNodes": [1],
-      "arguments": {
-        "operatorParams": [
-          {
-            "name": "param1",
-            "value": "value1"
-          }
-        ]
+      "operatorParams": [
+        {
+          "name": "param1",
+          "value": "value1"
+        }
+      ],
+      "dataParams": {
+        "inputKeys": ["leftTable", "rightTable"]
       }
     },
     {
       "nodeId": 3,
       "operatorName": "map",
       "dependenciesNodes": [1],
-      "arguments": {
-        "operatorParams": [
-          {
-            "name": "param1",
-            "value": "value1"
-          }
-        ]
-      }
+      "operatorParams": [
+        {
+          "name": "param1",
+          "value": "value1"
+        }
+      ]
     },
     {
       "nodeId": 4,
       "operatorName": "CollectionSinkOperator",
       "dependenciesNodes": [2, 3],
-      "arguments": {
-        "operatorParams": [
-          {
-            "name": "param1",
-            "value": "value1"
-          }
-        ]
-      }
+      "operatorParams": [
+        {
+          "name": "param1",
+          "value": "value1"
+        }
+      ]
     }
   ]
 }
