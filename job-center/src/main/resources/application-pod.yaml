@@ -1,0 +1,8 @@
+thrift:
+  port: 3000
+  optimizer:
+    host: clic-optimizer-svc
+    port: 5000
+  scheduler:
+    host: clic-scheduler-svc
+    port: 6000

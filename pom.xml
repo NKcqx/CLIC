@@ -79,7 +79,6 @@
         <module>scheduler-center</module>
         <module>common-utils</module>
         <module>optimizer-plugins</module>
-        <module>optimizer-plugins/example-optimizer</module>
         <module>executor-center</module>
         <module>scheduler-plugins</module>
     </modules>
