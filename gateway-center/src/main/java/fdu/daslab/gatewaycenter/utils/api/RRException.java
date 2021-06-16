@@ -1,5 +1,5 @@
 
-package fdu.daslab.gatewaycenter.utils;
+package fdu.daslab.gatewaycenter.utils.api;
 
 /**
  * @author zjchenn

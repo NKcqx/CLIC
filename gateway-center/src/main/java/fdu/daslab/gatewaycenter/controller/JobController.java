@@ -1,7 +1,7 @@
 package fdu.daslab.gatewaycenter.controller;
 
 import fdu.daslab.gatewaycenter.service.JobWebService;
-import fdu.daslab.gatewaycenter.utils.R;
+import fdu.daslab.gatewaycenter.utils.api.R;
 import org.apache.thrift.TException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;

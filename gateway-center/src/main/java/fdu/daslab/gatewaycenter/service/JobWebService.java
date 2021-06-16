@@ -12,14 +12,17 @@ import org.springframework.stereotype.Service;
  * @since 2021/6/10 上午10:06
  * @description
  */
+
 @Service
 public class JobWebService {
 
     @Autowired
-    private JobClient jobService;
+    public JobClient jobService;
+
+    @Autowired
+    public PlanBuilder planBuilder;
 
     public void submit(String jobName, String planJsonString) throws TException {
-        PlanBuilder planBuilder = new PlanBuilder();
         Plan plan = planBuilder.parseJson(planJsonString);
         jobService.open();
         try {

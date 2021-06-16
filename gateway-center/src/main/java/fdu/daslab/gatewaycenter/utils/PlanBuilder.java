@@ -7,6 +7,7 @@ import org.json.JSONArray;
 
 import fdu.daslab.thrift.base.Plan;
 import org.json.JSONObject;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,9 +20,8 @@ import java.util.stream.Collectors;
  * @description 解析构建plan的Json字符串
  */
 
+@Component
 public class PlanBuilder {
-
-
     public Plan parseJson(String jsonString){
         Plan plan = new Plan();
         JSONObject planObject = new JSONObject(jsonString);

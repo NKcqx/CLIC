@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
  * @since 2021/6/9 上午11:12
  * @description
  */
+
 @Component
 public class JobClient extends ThriftClient<JobService.Client> {
 
