@@ -2,6 +2,7 @@ package fdu.daslab.gatewaycenter.controller;
 
 import fdu.daslab.gatewaycenter.service.JobWebService;
 import fdu.daslab.gatewaycenter.utils.R;
+import org.apache.thrift.TException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -22,9 +23,8 @@ public class JobController {
     private JobWebService jobWebService;
 
     @PostMapping("/submit")
-    public R submitJob(@RequestParam String jobName, @RequestBody String plan){
-        System.out.println(jobName+plan);
-//        jobWebService.submit();
+    public R submitJob(@RequestParam String jobName, @RequestBody String planJsonString) throws TException {
+        jobWebService.submit(jobName, planJsonString);
         return R.ok();
     }
 }

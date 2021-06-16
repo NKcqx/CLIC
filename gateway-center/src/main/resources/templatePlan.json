@@ -1,54 +1,60 @@
 {
-  "planName": "templatePlan",
   "planParams": {
   },
-  "planEntity": [
+  "nodes": [
     {
       "nodeId": 1,
-      "operatorName": "CollectionSourceOperator",
-      "dependencies": [],
-      "operatorParams": [
-        {
-          "name": "data",
-          "value": "value1"
-        }
-      ]
+      "outputNodeId": [2, 3],
+      "platformName": "",
+      "operatorInfo": {
+        "operatorName": "CollectionSourceOperator",
+        "operatorParams": [
+          {
+            "name": "data1",
+            "value": "value1"
+          },
+          {
+            "name": "data2",
+            "value": "value2"
+          }
+        ],
+        "inputKeys": [],
+        "outputKeys": []
+      }
     },
     {
       "nodeId": 2,
-      "operatorName": "map",
-      "dependenciesNodes": [1],
-      "operatorParams": [
-        {
-          "name": "param1",
-          "value": "value1"
-        }
-      ],
-      "dataParams": {
-        "inputKeys": ["leftTable", "rightTable"]
+      "inputNodeId": [],
+      "outputNodeId": [2, 3],
+      "platformName": "spark",
+      "operatorInfo": {
+        "operatorName": "CollectionSourceOperator",
+        "operatorParams": [
+          {
+            "name": "data",
+            "value": "value1"
+          }
+        ],
+        "inputKeys": [],
+        "outputKeys": []
       }
     },
     {
       "nodeId": 3,
-      "operatorName": "map",
-      "dependenciesNodes": [1],
-      "operatorParams": [
-        {
-          "name": "param1",
-          "value": "value1"
-        }
-      ]
-    },
-    {
-      "nodeId": 4,
-      "operatorName": "CollectionSinkOperator",
-      "dependenciesNodes": [2, 3],
-      "operatorParams": [
-        {
-          "name": "param1",
-          "value": "value1"
-        }
-      ]
+      "inputNodeId": [],
+      "outputNodeId": [2, 3],
+      "platformName": "",
+      "operatorInfo": {
+        "operatorName": "CollectionSourceOperator",
+        "operatorParams": [
+          {
+            "name": "data",
+            "value": "value1"
+          }
+        ],
+        "inputKeys": [],
+        "outputKeys": []
+      }
     }
   ]
 }
