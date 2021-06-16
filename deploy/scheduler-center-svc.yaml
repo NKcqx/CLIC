@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: clic-scheduler-svc
+spec:
+  selector:
+    clic: scheduler-center
+  ports:
+    - name: scheduler
+      protocol: TCP
+      port: 6666
+      targetPort: 6666
+    - name: notify
+      protocol: TCP
+      port: 8888
+      targetPort: 8888

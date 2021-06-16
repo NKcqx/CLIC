@@ -1,10 +1,10 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: clic-job-svc
+  name: clic-operator-svc
 spec:
   selector:
-    clic: job-center
+    clic: operator-center
   ports:
     - protocol: TCP
       port: 6666

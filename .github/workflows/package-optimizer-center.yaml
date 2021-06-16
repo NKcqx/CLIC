@@ -3,7 +3,7 @@ on:
     path:
       - 'thrift-gen/**'
       - 'common-utils/**'
-      - 'job-center/**'
+      - 'optimizer-center/**'
 
 jobs:
   build:
@@ -21,10 +21,10 @@ jobs:
         uses: elgohr/Publish-Docker-Github-Action@2.11
         with:
           # The name of the image you would like to push
-          name: edwardtang/job-center
+          name: edwardtang/optimizer-center
           # The login username for the registry
           username: edwardtang
           # The login password for the registry
           password: daslab_system_group
-          dockerfile: job-center/Dockerfile
+          dockerfile: optimizer-center/Dockerfile
           tag_names: 'latest'

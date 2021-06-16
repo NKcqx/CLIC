@@ -1,31 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: clic-job-center
+  name: clic-scheduler-center
 spec:
   replicas: 1
   selector:
     matchLabels:
-      clic: job-center
+      clic: scheduler-center
   template:
     metadata:
       labels:
-        clic: job-center
+        clic: scheduler-center
     spec:
       containers:
-        - name: job-template
-          image: edwardtang/job-center:micro-service-rebuild
+        - name: scheduler-template
+          image: edwardtang/scheduler-center:micro-service-rebuild
           imagePullPolicy: IfNotPresent
           command:
             - /bin/sh
             - -c
           args:
-            - java -jar job-center.jar --spring.profiles.active=pod
+            - java -jar scheduler-center.jar --spring.profiles.active=pod
           volumeMounts:
             - name: nfs-volume
               mountPath: /data
           ports:
-            - containerPort: 6666
+            - name: scheduler
+              containerPort: 6666
+            - name: notify
+              containerPort: 8888
       volumes:
         - name: nfs-volume
           persistentVolumeClaim:
