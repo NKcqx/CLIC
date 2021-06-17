@@ -9,7 +9,7 @@ spec:
   image: $image # 填入image的地址
   imagePullPolicy: IfNotPresent
   mainClass: $mainClass # 填入主函数
-  mainApplicationFile: $mainJar # 填入jar包地址
+  mainApplicationFile: "local:///$mainJar" # 填入jar包地址
   sparkVersion: $sparkVersion # 填入spark的版本
   arguments: ["$argument"] # 传入的参数
   restartPolicy:
