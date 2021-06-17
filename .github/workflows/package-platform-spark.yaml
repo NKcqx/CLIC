@@ -3,9 +3,6 @@ on:
     path:
       - 'executable-operator/executable-spark/**'
       - 'executable-operator/executable-basic/**'
-    branches:
-      - main
-      - micro-service-rebuild
 
 jobs:
   build:
@@ -35,4 +32,4 @@ jobs:
           # The login password for the registry
           password: daslab_system_group
           dockerfile: executable-operator/executable-spark/Dockerfile
-          tags: 'latest'
+          tag_names: 'latest'

@@ -1,0 +1,9 @@
+thrift:
+  port: 6666
+  operator:
+    host: clic-operator-svc
+    port: 6666
+
+# 中间文件的输出路径
+output:
+  dir: /data/system/inter_files
