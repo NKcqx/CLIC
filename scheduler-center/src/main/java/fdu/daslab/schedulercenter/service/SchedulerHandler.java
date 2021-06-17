@@ -2,7 +2,6 @@ package fdu.daslab.schedulercenter.service;
 
 import fdu.daslab.schedulercenter.repository.SchedulerRepository;
 import fdu.daslab.schedulercenter.scheduling.StageScheduling;
-import fdu.daslab.thrift.base.ExecutionStatus;
 import fdu.daslab.thrift.base.Job;
 import fdu.daslab.thrift.base.Stage;
 import fdu.daslab.thrift.schedulercenter.SchedulerModel;

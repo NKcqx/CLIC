@@ -1,6 +1,7 @@
 package fdu.daslab.schedulercenter.scheduling;
 
 import fdu.daslab.schedulercenter.client.ExecutorClient;
+import fdu.daslab.schedulercenter.client.JobClient;
 import fdu.daslab.schedulercenter.client.SortPluginClient;
 import fdu.daslab.schedulercenter.repository.SchedulerRepository;
 import fdu.daslab.thrift.base.ExecutionStatus;
@@ -13,9 +14,9 @@ import fdu.daslab.thrift.schedulercenter.SchedulerModel;
 import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.*;
 
 /**
@@ -30,11 +31,14 @@ public class StageScheduling {
 
     private Logger logger = LoggerFactory.getLogger(StageScheduling.class);
 
-    @Autowired
+    @Resource
     private SchedulerRepository schedulerRepository;
 
-    @Autowired
+    @Resource
     private ExecutorClient executorClient;
+
+    @Resource
+    private JobClient jobClient;
 
     // 还在等待调度被提交的stage
     private List<Stage> pendingStages = new ArrayList<>();
@@ -50,6 +54,15 @@ public class StageScheduling {
         Job job = jobCache.get(stage.jobName);
         job.subplans.put(stage.stageId, stage);
         cacheJob(job);
+        // 批量更新job的状态，在job-center中维护的是所有的状态，作为stage和job的统一管理
+        try {
+            jobClient.open();
+            jobClient.getClient().updateStage(stage);
+        } catch (TException e) {
+            e.printStackTrace();
+        } finally {
+            jobClient.close();
+        }
     }
 
     // 调度逻辑：触发动作主要有两块，一个是新的stage过来，一个是老的stage执行完成
@@ -59,12 +72,13 @@ public class StageScheduling {
 
         // 提交给scheduler plugin执行调度
         // 优化器可以有多层，但是调度器应该是固定的（互斥），应该类似Kubernetes，实现不同的拓展点
-        // 这里需要考虑多个拓展点的不同实现
+        // TODO:这里需要考虑多个拓展点的不同实现
         final Optional<SchedulerModel> sortModel = schedulerRepository.findAllScheduler().stream()
                 .filter(scheduler -> scheduler.pluginType.equals(PluginType.SORT_PLUGIN))
                 .max(Comparator.comparingInt(scheduler -> scheduler.priority));
+        pendingStages.addAll(stageList);
         List<Stage> needScheduling = new ArrayList<>(pendingStages);
-        needScheduling.addAll(stageList);
+        // 调度之后，不一定所有的stage都能被调度，如果调度器没有返回，那么该stage暂时不被调度
         if (sortModel.isPresent()) {
             SortPluginClient client = new SortPluginClient(sortModel.get());
             try {
@@ -83,7 +97,7 @@ public class StageScheduling {
                 executorClient.open();
                 // 更新状态
                 stage.stageStatus = ExecutionStatus.PENDING;
-                cacheStage(stage);
+                 cacheStage(stage);
                 executorClient.getClient().executeStage(stage);
                 pendingStages.remove(stage);
             } catch (TException e) {
@@ -133,7 +147,6 @@ public class StageScheduling {
         if (!willScheduling.isEmpty()) {
             schedule(willScheduling);
         }
-        // TODO: 批量更新job的状态，在job-center中维护的是所有的状态，作为stage和job的统一管理
     }
 
     // 处理下游传来的其他参数

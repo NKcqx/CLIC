@@ -5,10 +5,10 @@ import fdu.daslab.thrift.base.Operator;
 import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.operatorcenter.OperatorCenter;
 import org.apache.thrift.TException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * 算子中心的服务
@@ -32,6 +32,12 @@ public class OperatorHandler implements OperatorCenter.Iface {
     public Platform findPlatformInfo(String platformName) throws TException {
         return operatorRepository.findPlatformInfo(platformName);
     }
+
+    @Override
+    public Map<String, Platform> listPlatforms() throws TException {
+        return operatorRepository.listPlatforms();
+    }
+
 
     @Override
     public void addOperator(Operator operator) throws TException {

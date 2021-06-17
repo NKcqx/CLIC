@@ -33,11 +33,12 @@ public class PlatformInit {
             for (Map<String, Object> platformInfo : platformList) {
                 Platform platform = new Platform();
                 platform.setName((String) platformInfo.get("name"));
+                platform.setLanguage((String) platformInfo.get("language"));
                 platform.setDefaultImage((String) platformInfo.get("defaultImage"));
                 platform.setUseOperator((boolean) platformInfo.get("useOperator"));
                 platform.setExecCommand((String) platformInfo.getOrDefault("execCommand", ""));
                 platform.setParams((Map<String, String>) platformInfo.getOrDefault("params", new HashMap<>()));
-                result.put(platform.name, platform);
+                result.put(platform.name.toLowerCase(), platform);
             }
         } catch (IOException e) {
             e.printStackTrace();

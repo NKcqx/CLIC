@@ -1,9 +1,12 @@
 package fdu.daslab.executorcenter.executor;
 
 import fdu.daslab.executorcenter.adapter.ParamAdapter;
+import fdu.daslab.executorcenter.client.OperatorClient;
 import fdu.daslab.executorcenter.local.LocalJars;
+import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.base.Stage;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.thrift.TException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,14 +34,29 @@ public class LocalExecutor implements Executor {
     @Autowired
     private ParamAdapter paramAdapter;
 
+    @Autowired
+    private OperatorClient operatorClient;
+
     @Override
     public void execute(Stage stage) {
         // 直接将参数传入，调用指定的jar包
+        Platform platform = null;
         String jar = localJars.getJarForPlatform(stage.platformName);
-        List<String> params = paramAdapter.wrapperExecutionArguments(stage);
         try {
-            final Process process = Runtime.getRuntime().exec("java -jar " + jar + " " +
-                    StringUtils.joinWith(" ", params.toArray()));
+            operatorClient.open();
+            platform = operatorClient.getClient().findPlatformInfo(stage.platformName);
+        } catch (TException e) {
+            e.printStackTrace();
+        } finally {
+            operatorClient.close();
+        }
+        assert platform != null;
+        List<String> params = paramAdapter.wrapperExecutionArguments(stage, platform);
+        try {
+            String execCommand = "java -jar " + jar + " " +
+                    StringUtils.joinWith(" ", params.toArray());
+            logger.info("执行：{}", execCommand);
+            final Process process = Runtime.getRuntime().exec(execCommand);
             SequenceInputStream sis = new SequenceInputStream(process.getInputStream(), process.getErrorStream());
             BufferedReader br =  new BufferedReader( new InputStreamReader(sis));
             String line;

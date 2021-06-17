@@ -1,19 +1,23 @@
 package fdu.daslab.optimizercenter.service;
 
 import fdu.daslab.optimizercenter.channel.ChannelEnrich;
+import fdu.daslab.optimizercenter.client.OperatorClient;
 import fdu.daslab.optimizercenter.client.OptimizerPluginClient;
 import fdu.daslab.optimizercenter.fusion.OperatorFusion;
 import fdu.daslab.optimizercenter.repository.OptimizerRepository;
 import fdu.daslab.thrift.base.Job;
 import fdu.daslab.thrift.base.Plan;
+import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.optimizercenter.OptimizerModel;
 import fdu.daslab.thrift.optimizercenter.OptimizerService;
 import org.apache.thrift.TException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
-import java.util.Comparator;
-import java.util.List;
+import javax.annotation.Resource;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * @author 唐志伟
@@ -31,6 +35,9 @@ public class OptimizerHandler implements OptimizerService.Iface {
 
     @Autowired
     private OperatorFusion operatorFusion;
+
+    @Resource
+    private OperatorClient operatorClient;
 
     // 将优化器的信息保存到注册中心
     @Override
@@ -54,17 +61,39 @@ public class OptimizerHandler implements OptimizerService.Iface {
      */
     @Override
     public Job optimize(Plan plan) throws TException {
+        // 查询所有可能的优化器
         List<OptimizerModel> optimizerModelList = optimizerRepository.filterPossibleOptimizers(plan);
+        // 首先对优化器按照优先级排序，然后对具有相同优化器的
         optimizerModelList.sort(Comparator.comparingInt(OptimizerModel::getPriority));
+        TreeMap<Integer, List<OptimizerModel>> sortedGroupedModel = optimizerModelList.stream()
+                .collect(Collectors.groupingBy(OptimizerModel::getPriority, TreeMap::new, Collectors.toList()));
+        // 先需要查询所有的可能的platform信息，相当于给优化器提供一个候选
+        Map<String, Platform> platforms;
+        try {
+            operatorClient.open();
+            platforms = operatorClient.getClient().listPlatforms();
+        } finally {
+            operatorClient.close();
+        }
+
         // optimize
-        // TODO: 对于相同优先级的，只会使用其中一个调度器，优先使用规定了平台的
-        for (OptimizerModel optimizerModel : optimizerModelList) {
-            // 后期改成增量的方式，或者注入一个plugin数组
+        // 对于相同优先级的，只会使用其中一个优化器，优先使用规定了平台的，如果都满足，使用负载均衡策略打到不同的优化器
+        for (List<OptimizerModel> modelList : sortedGroupedModel.values()) {
+            // 优先选择指定了平台的
+            List<OptimizerModel> specModels = modelList.stream().filter(optimizerModel ->
+                    !CollectionUtils.isEmpty(optimizerModel.allowedPlatforms)).collect(Collectors.toList());
+            // 如果有指定了平台的，就从指定平台中选择一个
+            OptimizerModel optimizerModel;
+            if (!CollectionUtils.isEmpty(specModels)) {
+                optimizerModel = loadBalanceOptimizer(specModels);
+            } else {
+                // 否则，从所有的中选择一个
+                optimizerModel = loadBalanceOptimizer(modelList);
+            }
             OptimizerPluginClient pluginClient = new OptimizerPluginClient(optimizerModel);
-            pluginClient.open();
             try {
-                // TODO: 先需要查询所有的可能的platform信息，相当于给优化器提供一个候选
-                plan = pluginClient.getClient().optimize(plan, null);
+                pluginClient.open();
+                plan = pluginClient.getClient().optimize(plan, platforms);
             } finally {
                 pluginClient.close();
             }
@@ -75,5 +104,12 @@ public class OptimizerHandler implements OptimizerService.Iface {
         return operatorFusion.fusion(enrichedPlan);
     }
 
+
+    // 使用不同的负载均衡策略来执行优化器，这里简单使用轮训的策略
+    private OptimizerModel loadBalanceOptimizer(List<OptimizerModel> optimizerModels) {
+        OptimizerModel optimizerModel = optimizerRepository.getLeastFreq(optimizerModels);
+        optimizerRepository.addCallFreq(optimizerModel);
+        return optimizerModel;
+    }
 
 }

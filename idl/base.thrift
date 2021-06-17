@@ -8,6 +8,7 @@ struct Platform {
     2: string defaultImage // 默认使用的image
     3: bool useOperator // 是否使用kubernetes operator的方式创建平台
     4: string execCommand // 执行的命令
+    5: string language // 表示这个平台的语言
     16: map<string, string> params = {}// 平台所需要的补充的信息，比如平台的配置信息
 }
 
@@ -50,6 +51,7 @@ struct Plan {
     1: map<i32, PlanNode> nodes = {}// 保存该计划的所有节点，key=nodeId
     2: list<i32> sourceNodes = {}// 所有开始节点的id
     16: map<string, string> others = {}// 用户提供的其他参数
+    // 包含： udfPath, platforms, 等
 }
 
 enum ExecutionStatus {

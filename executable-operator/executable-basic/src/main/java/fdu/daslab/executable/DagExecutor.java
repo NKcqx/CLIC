@@ -83,8 +83,9 @@ public class DagExecutor {
                     ArgsUtil.parseArgs(yamlStream, factory);
             headOperators = headAndEndOperators.getValue0();
         } catch (Exception e) {
-            // TODO: 错误需要上报，并直接中止结束
             logger.error(e.getMessage());
+            notifyServiceClient.notify(new StageSnapshot(StageStatus.FAILURE, e.getMessage(), new HashMap<>()));
+            System.exit(-1);
         }
     }
 

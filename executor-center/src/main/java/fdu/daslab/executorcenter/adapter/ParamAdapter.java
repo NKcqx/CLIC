@@ -1,9 +1,6 @@
 package fdu.daslab.executorcenter.adapter;
 
-import fdu.daslab.thrift.base.Operator;
-import fdu.daslab.thrift.base.Plan;
-import fdu.daslab.thrift.base.PlanNode;
-import fdu.daslab.thrift.base.Stage;
+import fdu.daslab.thrift.base.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -42,18 +39,18 @@ public class ParamAdapter {
     private int notifyPort;
 
     // 生成运行的相关参数
-    public List<String> wrapperExecutionArguments(Stage stage) {
+    public List<String> wrapperExecutionArguments(Stage stage, Platform platform) {
         // dagPath
         String dagPath = generateYamlForPlan(stage.planInfo);
-        // udf
-        String udfPath = stage.others.getOrDefault("udfPath", "");
+        // udf，使用不同语言的文件来进行描述
+        String udfPath = stage.others.getOrDefault("udfPath-" + platform.language, "");
         // stage相关，包含stageId、jobName、notifyHost、notifyPort
         int stageId = stage.stageId;
         String jobName = stage.jobName;
         // 其他用户传入的参数
         StringBuilder otherParams = new StringBuilder();
         for (String key : stage.others.keySet()) {
-            if (!key.equals("udfPath")) {
+            if (!key.startsWith("udfPath")) {
                 otherParams.append("--D").append(key).append("=").append(stage.others.get(key));
             }
         }
@@ -114,18 +111,18 @@ public class ParamAdapter {
     private Map<String, Object> operator2Map(PlanNode nodeInfo) {
         Operator opt = nodeInfo.operatorInfo;
         return new HashMap<String, Object>() {{
-            put("name", opt.name);
-            put("id", nodeInfo.nodeId);
-            put("params", opt.params);
-            put("inputKeys", opt.inputKeys);
-            put("outputKeys", opt.outputKeys);
+            put("name", opt.name == null ? "" : opt.name);
+            put("id", String.valueOf(nodeInfo.nodeId));
+            put("params", CollectionUtils.isEmpty(opt.params) ? new HashMap<>() : opt.params);
+            put("inputKeys", CollectionUtils.isEmpty(opt.inputKeys) ? new ArrayList<>() : opt.inputKeys);
+            put("outputKeys", CollectionUtils.isEmpty(opt.outputKeys) ? new ArrayList<>() : opt.outputKeys);
         }};
     }
 
     // 将operator之间的依赖转化为dag
     private Map<String, Object> operatorDependency2Map(PlanNode nodeInfo, Map<Integer, PlanNode> operators) {
         Map<String, Object> dependencyMap = new HashMap<>(); // 当前Opt的依赖对象
-        dependencyMap.put("id", nodeInfo.nodeId);
+        dependencyMap.put("id", String.valueOf(nodeInfo.nodeId));
         if (!CollectionUtils.isEmpty(nodeInfo.inputNodeId)) {  // head Operator
             List<Map<String, String>> dependencies = new ArrayList<>(); // denpendencies字段，是一个List<Map> 每个元素是其中一个依赖
             for (int i = 0; i < nodeInfo.inputNodeId.size(); i++) {
@@ -135,9 +132,11 @@ public class ParamAdapter {
                     put("id", String.valueOf(inputId));
                     // 恶心的东西，暂时使用上下游的key表示
                     List<String> inputOutputKeys = operators.get(inputId).operatorInfo.outputKeys;
-                    put("sourceKey", CollectionUtils.isEmpty(inputOutputKeys) ? "" : inputOutputKeys.get(0));
+                    put("sourceKey", CollectionUtils.isEmpty(inputOutputKeys) ? "" :
+                            inputOutputKeys.get(0));
                     List<String> targetKeys = nodeInfo.operatorInfo.inputKeys;
-                    put("targetKey", CollectionUtils.isEmpty(targetKeys) ? "" : targetKeys.get(index));
+                    put("targetKey", CollectionUtils.isEmpty(targetKeys) ? "" :
+                            targetKeys.get(index));
                 }});
             }
             dependencyMap.put("dependencies", dependencies);
@@ -145,4 +144,5 @@ public class ParamAdapter {
 
         return dependencyMap;
     }
+
 }

@@ -4,6 +4,7 @@ import fdu.daslab.optimizercenter.client.OperatorClient;
 import fdu.daslab.thrift.base.Operator;
 import fdu.daslab.thrift.base.PlanNode;
 import org.apache.thrift.TException;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -22,6 +23,9 @@ public class ChannelInstantiate {
     @Resource
     private OperatorClient operatorClient;
 
+    @Value("${output.dir}")
+    private String outputDir;
+
     /**
      * 将 channel_source 和 channel_sink 实例化为 最优的 sink / source 节点；
      *      首先 需要选择两个平台共有的source / sink算子；
@@ -34,7 +38,7 @@ public class ChannelInstantiate {
      */
     public void instantiateSourceSink(PlanNode sourceNode, PlanNode sinkNode) {
         // 如果是文件的话，就需要将文件匹配起来
-        String filePath = UUID.randomUUID().toString();
+        String filePath = outputDir + "/" + UUID.randomUUID().toString();
 
         Operator sourceOperator = new Operator(), sinkOperator = new Operator();
         try {
@@ -47,7 +51,9 @@ public class ChannelInstantiate {
             operatorClient.close();
         }
         sourceOperator.params.put("inputPath", filePath);
+        sourceOperator.params.put("separator", ",");
         sinkOperator.params.put("outputPath", filePath);
+        sinkOperator.params.put("separator", ",");
         sourceNode.setOperatorInfo(sourceOperator);
         sinkNode.setOperatorInfo(sinkOperator);
     }

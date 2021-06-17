@@ -2,10 +2,12 @@
 # 这个只是为了测试方便，为了通过动态的方式来增添
 platforms:
   - name: Java
+    language: Java
     defaultImage: edwardtang/executable-java:micro-service-rebuild
     useOperator: false
     execCommand: /bin/sh -c java -jar executable-java.jar
   - name: Spark
+    language: Java
     defaultImage: edwardtang/executable-spark:micro-service-rebuild
     useOperator: true
     params:
