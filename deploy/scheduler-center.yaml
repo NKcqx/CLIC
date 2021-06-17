@@ -15,7 +15,7 @@ spec:
       containers:
         - name: scheduler-template
           image: edwardtang/scheduler-center:micro-service-rebuild
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - /bin/sh
             - -c

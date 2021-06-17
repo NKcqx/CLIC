@@ -15,7 +15,7 @@ spec:
       containers:
         - name: optimizer-template
           image: edwardtang/optimizer-center:micro-service-rebuild
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
           command:
             - /bin/sh
             - -c

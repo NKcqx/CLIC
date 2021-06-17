@@ -4,6 +4,6 @@
 # 版本更新
 
 更新对应deployment的镜像即可
-kubectl set image deployment/clic-scheduler-center edwardtang/scheduler-center=edwardtang/scheduler-center:1.0--record
+kubectl set image deployment/clic-job-center job-template=edwardtang/job-center:micro-service-rebuild --record
 
 
