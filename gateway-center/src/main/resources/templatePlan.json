@@ -1,12 +1,14 @@
 {
-  "planParams": {
-    "udfPath-Java": "/data/xxx"
-  },
+  "planParams": [
+    {
+      "name": "udfPath-Java",
+      "value": "/data/xxx"
+    }
+  ],
   "nodes": [
     {
       "nodeId": 1,
-      "inputNodeId": [],
-      "outputNodeId": [2],
+      "dependencies": [],
       "platformName": "spark",
       "operatorInfo": {
         "operatorName": "CollectionSourceOperator",
@@ -26,8 +28,7 @@
     },
     {
       "nodeId": 2,
-      "inputNodeId": [1],
-      "outputNodeId": [3],
+      "dependencies": [1],
       "platformName": "spark",
       "operatorInfo": {
         "operatorName": "CollectionSourceOperator",
@@ -43,7 +44,7 @@
     },
     {
       "nodeId": 3,
-      "inputNodeId": [2],
+      "dependencies": [2],
       "platformName": "spark",
       "operatorInfo": {
         "operatorName": "SourceOperator",
