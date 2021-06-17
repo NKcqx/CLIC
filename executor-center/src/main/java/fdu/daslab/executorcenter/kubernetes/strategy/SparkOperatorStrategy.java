@@ -11,10 +11,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
@@ -37,8 +39,8 @@ public class SparkOperatorStrategy implements KubernetesResourceStrategy {
     @Override
     public void create(Stage stage, Platform platformInfo, List<String> params) {
         try {
-            File templateFile = new ClassPathResource("templates/spark-template.yaml").getFile();
-            String templateYaml = FileUtils.readFileToString(templateFile, StandardCharsets.UTF_8);
+            final InputStream inputStream = new ClassPathResource("templates/spark-template.yaml").getInputStream();
+            String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
             String sparkYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
                     .replace("$image", platformInfo.defaultImage)
                     .replace("$mainClass", platformInfo.params.get("mainClass"))
