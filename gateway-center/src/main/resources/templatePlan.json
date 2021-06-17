@@ -1,11 +1,13 @@
 {
   "planParams": {
+    "udfPath-Java": "/data/xxx"
   },
   "nodes": [
     {
       "nodeId": 1,
-      "outputNodeId": [2, 3],
-      "platformName": "",
+      "inputNodeId": [],
+      "outputNodeId": [2],
+      "platformName": "spark",
       "operatorInfo": {
         "operatorName": "CollectionSourceOperator",
         "operatorParams": [
@@ -18,14 +20,14 @@
             "value": "value2"
           }
         ],
-        "inputKeys": [],
-        "outputKeys": []
+        "inputKeys": ["data"],
+        "outputKeys": ["result"]
       }
     },
     {
       "nodeId": 2,
-      "inputNodeId": [],
-      "outputNodeId": [2, 3],
+      "inputNodeId": [1],
+      "outputNodeId": [3],
       "platformName": "spark",
       "operatorInfo": {
         "operatorName": "CollectionSourceOperator",
@@ -35,25 +37,24 @@
             "value": "value1"
           }
         ],
-        "inputKeys": [],
-        "outputKeys": []
+        "inputKeys": ["data"],
+        "outputKeys": ["result"]
       }
     },
     {
       "nodeId": 3,
-      "inputNodeId": [],
-      "outputNodeId": [2, 3],
-      "platformName": "",
+      "inputNodeId": [2],
+      "platformName": "spark",
       "operatorInfo": {
-        "operatorName": "CollectionSourceOperator",
+        "operatorName": "SourceOperator",
         "operatorParams": [
           {
-            "name": "data",
-            "value": "value1"
+            "name": "inputPath",
+            "value": "/data/xxx"
           }
         ],
-        "inputKeys": [],
-        "outputKeys": []
+        "inputKeys": ["data"],
+        "outputKeys": ["result"]
       }
     }
   ]
