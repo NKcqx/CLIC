@@ -1,13 +1,13 @@
 package fdu.daslab.operatorcenter.init;
 
 import fdu.daslab.thrift.base.Platform;
-import org.apache.commons.io.FileUtils;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StreamUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -25,8 +25,8 @@ public class PlatformInit {
     public Map<String, Platform> init() {
         Map<String, Platform> result = new HashMap<>();
         try {
-            File templateFile = new ClassPathResource("init/platform_meta.yaml").getFile();
-            String templateYaml = FileUtils.readFileToString(templateFile, StandardCharsets.UTF_8);
+            InputStream fileInputStream = new ClassPathResource("init/platform_meta.yaml").getInputStream();
+            String templateYaml = StreamUtils.copyToString(fileInputStream, StandardCharsets.UTF_8);
             Yaml yaml = new Yaml();
             Map<String, List<Map<String, Object>>> loaded = yaml.load(templateYaml);
             List<Map<String, Object>> platformList = loaded.get("platforms");
