@@ -19,7 +19,7 @@ public class StrategyFactory {
 
     // 根据对应的平台，选择不同的创建方式
     public KubernetesResourceStrategy getStrategyForPlatform(String platform) {
-        KubernetesResourceStrategy strategy = strategyMap.get(platform + "Operator");
+        KubernetesResourceStrategy strategy = strategyMap.get(platform.toLowerCase() + "Operator");
         if (strategy == null) {
             // 默认的情况，走创建job
             strategy = strategyMap.get("kubernetesJob");

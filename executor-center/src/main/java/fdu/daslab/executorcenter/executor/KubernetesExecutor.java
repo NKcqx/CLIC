@@ -6,7 +6,8 @@ import fdu.daslab.executorcenter.kubernetes.StrategyFactory;
 import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.base.Stage;
 import org.apache.thrift.TException;
-import org.apache.thrift.transport.TTransportException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +23,8 @@ import java.util.List;
 @Component
 public class KubernetesExecutor implements Executor {
 
+    private Logger logger = LoggerFactory.getLogger(KubernetesExecutor.class);
+
     @Autowired
     private OperatorClient operatorClient;
 
@@ -32,7 +35,7 @@ public class KubernetesExecutor implements Executor {
     private StrategyFactory strategyFactory;
 
     @Override
-    public void execute(Stage stage) throws TTransportException {
+    public void execute(Stage stage) {
         Platform platform = null;
         try {
             operatorClient.open();
@@ -48,8 +51,12 @@ public class KubernetesExecutor implements Executor {
         // 都是需要先获取容器相关参数
         List<String> params = paramAdapter.wrapperExecutionArguments(stage, platform);
         // 调用kubernetes的rest接口去创建对应的任务
-        strategyFactory.getStrategyForPlatform(platform.name)
-                .create(stage, platform, params);
+        try {
+            strategyFactory.getStrategyForPlatform(platform.name)
+                    .create(stage, platform, params);
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+        }
 
     }
 

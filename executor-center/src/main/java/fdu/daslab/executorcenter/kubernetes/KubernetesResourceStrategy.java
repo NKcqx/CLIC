@@ -21,5 +21,5 @@ public interface KubernetesResourceStrategy {
      * @param platformInfo 平台相关配置信息
      * @param params       动态的参数信息
      */
-    void create(Stage stage, Platform platformInfo, List<String> params);
+    void create(Stage stage, Platform platformInfo, List<String> params) throws Exception;
 }

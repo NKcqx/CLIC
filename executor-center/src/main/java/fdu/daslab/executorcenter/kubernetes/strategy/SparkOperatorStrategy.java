@@ -4,7 +4,6 @@ import fdu.daslab.executorcenter.kubernetes.KubernetesResourceStrategy;
 import fdu.daslab.executorcenter.kubernetes.KubernetesRestClient;
 import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.base.Stage;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -37,20 +34,17 @@ public class SparkOperatorStrategy implements KubernetesResourceStrategy {
     private String createSparkUrl;
 
     @Override
-    public void create(Stage stage, Platform platformInfo, List<String> params) {
-        try {
-            final InputStream inputStream = new ClassPathResource("templates/spark-template.yaml").getInputStream();
-            String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-            String sparkYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
-                    .replace("$image", platformInfo.defaultImage)
-                    .replace("$mainClass", platformInfo.params.get("mainClass"))
-                    .replace("$mainJar", platformInfo.params.get("mainJar"))
-                    .replace("$sparkVersion", platformInfo.params.get("sparkVersion"))
-                    .replace("$argument", StringUtils.join(params));
-            HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
-            httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createSparkUrl, yaml.load(sparkYaml)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public void create(Stage stage, Platform platformInfo, List<String> params) throws Exception {
+        final InputStream inputStream = new ClassPathResource("templates/spark-template.yaml").getInputStream();
+        String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        String sparkYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
+                .replace("$image", platformInfo.defaultImage)
+                .replace("$mainClass", platformInfo.params.get("mainClass"))
+                .replace("$mainJar", platformInfo.params.get("mainJar"))
+                .replace("$sparkVersion", platformInfo.params.get("sparkVersion"))
+                .replace("$argument", StringUtils.join(params));
+        HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
+        httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createSparkUrl, yaml.load(sparkYaml)));
+
     }
 }

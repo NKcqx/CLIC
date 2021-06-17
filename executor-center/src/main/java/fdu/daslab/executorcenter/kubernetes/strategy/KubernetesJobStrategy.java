@@ -13,7 +13,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StreamUtils;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -37,22 +36,18 @@ public class KubernetesJobStrategy implements KubernetesResourceStrategy {
     private Yaml yaml = new Yaml();
 
     @Override
-    public void create(Stage stage, Platform platformInfo, List<String> params) {
+    public void create(Stage stage, Platform platformInfo, List<String> params) throws Exception {
         // 读取job的模版文件，然后使用对应的替换
-        try {
-            final InputStream inputStream = new ClassPathResource("templates/job-template.yaml").getInputStream();
-            String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
+        final InputStream inputStream = new ClassPathResource("templates/job-template.yaml").getInputStream();
+        String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
 
-            String jobYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
-                    .replace("$platform", stage.platformName.toLowerCase())
-                    .replace("$image", platformInfo.defaultImage)
-                    .replace("$commands", platformInfo.execCommand + " " + StringUtils.joinWith(" ", params.toArray()));
-            HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
-            // 可能会执行失败，需要加一些错误处理
-            httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createJobUrl, yaml.load(jobYaml)));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String jobYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
+                .replace("$platform", stage.platformName.toLowerCase())
+                .replace("$image", platformInfo.defaultImage)
+                .replace("$commands", platformInfo.execCommand + " " + StringUtils.joinWith(" ", params.toArray()));
+        HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
+        // 可能会执行失败，需要加一些错误处理
+        httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createJobUrl, yaml.load(jobYaml)));
     }
 
 }
