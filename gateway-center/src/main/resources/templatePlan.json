@@ -1,0 +1,60 @@
+{
+  "planParams": {
+  },
+  "nodes": [
+    {
+      "nodeId": 1,
+      "outputNodeId": [2, 3],
+      "platformName": "",
+      "operatorInfo": {
+        "operatorName": "CollectionSourceOperator",
+        "operatorParams": [
+          {
+            "name": "data1",
+            "value": "value1"
+          },
+          {
+            "name": "data2",
+            "value": "value2"
+          }
+        ],
+        "inputKeys": [],
+        "outputKeys": []
+      }
+    },
+    {
+      "nodeId": 2,
+      "inputNodeId": [],
+      "outputNodeId": [2, 3],
+      "platformName": "spark",
+      "operatorInfo": {
+        "operatorName": "CollectionSourceOperator",
+        "operatorParams": [
+          {
+            "name": "data",
+            "value": "value1"
+          }
+        ],
+        "inputKeys": [],
+        "outputKeys": []
+      }
+    },
+    {
+      "nodeId": 3,
+      "inputNodeId": [],
+      "outputNodeId": [2, 3],
+      "platformName": "",
+      "operatorInfo": {
+        "operatorName": "CollectionSourceOperator",
+        "operatorParams": [
+          {
+            "name": "data",
+            "value": "value1"
+          }
+        ],
+        "inputKeys": [],
+        "outputKeys": []
+      }
+    }
+  ]
+}
