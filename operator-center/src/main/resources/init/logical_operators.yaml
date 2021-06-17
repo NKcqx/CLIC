@@ -39,6 +39,3 @@ operators:
   - name: SourceOperator
     params: [inputPath, separator]
     operatorStructure: SOURCE
-  - name: TestOperator
-    params: [xxx]
-    operatorStructure: MAP
