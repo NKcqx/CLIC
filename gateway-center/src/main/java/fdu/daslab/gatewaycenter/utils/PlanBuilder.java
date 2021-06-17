@@ -25,6 +25,7 @@ public class PlanBuilder {
     public Plan parseJson(String jsonString){
         Plan plan = new Plan();
         JSONObject planObject = new JSONObject(jsonString);
+        setPlanParamsFromJsonArray(plan, planObject.getJSONArray("planParams"));
         JSONArray nodeArray = planObject.getJSONArray("nodes");
         for(int i = 0; i < nodeArray.length(); i++){
             JSONObject nodeInfo = nodeArray.getJSONObject(i);
@@ -32,19 +33,32 @@ public class PlanBuilder {
             plan.nodes.put(planNode.nodeId, planNode);
             if(planNode.inputNodeId.size() == 0) plan.sourceNodes.add(planNode.nodeId);
         }
+        setOutputNode(plan);
         return plan;
+    }
+
+    private void setPlanParamsFromJsonArray(Plan plan, JSONArray jsonArray){
+        for(int i = 0; i < jsonArray.length(); i++){
+            JSONObject param = jsonArray.getJSONObject(i);
+            plan.others.put(param.getString("name"), param.getString("value"));
+        }
+    }
+
+    private void setOutputNode(Plan plan){
+        plan.nodes.forEach((nodeId, operator)->{
+            operator.inputNodeId.forEach((integer -> {
+                plan.nodes.get(integer).outputNodeId.add(nodeId);
+            }));
+        });
     }
 
     private PlanNode getPlanNodeFromJsonObj(JSONObject nodeInfo){
         int nodeId = nodeInfo.getInt("nodeId");
         List<Integer> inputNodeId = new ArrayList<>();
         List<Integer> outputNodeId = new ArrayList<>();
-        if (nodeInfo.has("inputNodeId")){ inputNodeId = nodeInfo.getJSONArray("inputNodeId").toList().stream().
+        if (nodeInfo.has("dependencies")){ inputNodeId = nodeInfo.getJSONArray("dependencies").toList().stream().
                     map(x->(Integer)x).
-                    collect(Collectors.toList()); }
-        if (nodeInfo.has("outputNodeId")){ outputNodeId = nodeInfo.getJSONArray("outputNodeId").toList().stream().
-                map(x->(Integer)x).
-                collect(Collectors.toList());}
+                    collect(Collectors.toList());}
         String platformName = nodeInfo.getString("platformName");
         Operator operator = getOptFromJsonObj(nodeInfo.getJSONObject("operatorInfo"));
         return new PlanNode(nodeId, operator, inputNodeId, outputNodeId, platformName);
@@ -66,7 +80,6 @@ public class PlanBuilder {
             JSONObject param = operatorParams.getJSONObject(i);
             paramMap.put(param.getString("name"), param.getString("value"));
         }
-
         operator.setName(operatorName);
         operator.setInputKeys(inputKeys);
         operator.setOutputKeys(outputKeys);
