@@ -1,6 +1,6 @@
 on:
   push:
-    path:
+    paths:
       - 'thrift-gen/**'
       - 'common-utils/**'
       - 'executor-center/**'

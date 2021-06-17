@@ -1,6 +1,6 @@
 on:
   push:
-    path:
+    paths:
       - 'executable-operator/executable-java/**'
       - 'executable-operator/executable-basic/**'
 

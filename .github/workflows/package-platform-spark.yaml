@@ -1,6 +1,6 @@
 on:
   push:
-    path:
+    paths:
       - 'executable-operator/executable-spark/**'
       - 'executable-operator/executable-basic/**'
 
