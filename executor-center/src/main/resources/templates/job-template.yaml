@@ -9,7 +9,7 @@ spec:
       - name: $platform # 填入平台名称
         image: $image # 填入image的地址
         command: ["$commands"] # 填入参数
-        imagePullPolicy: Always # 暂时更新比较频繁，为了稳定了之后使用version进行迭代
+        imagePullPolicy: $imagePolicy
         volumeMounts:
         - name: nfs-volume
           mountPath: /data
