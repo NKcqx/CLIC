@@ -25,7 +25,7 @@ spec:
     labels:
       version: $sparkVersion$ # 填入spark的版本
     serviceAccount: spark # 意味着要创建一个spark的sa
-    javaOptions: "-Dlog4j.configuration=file:/etc/spark/conf/log4j.properties"
+    javaOptions: "-Dlog4j.configuration=file:/opt/spark/conf/log4j.properties"
     volumeMounts:
     - name: nfs-volume
       mountPath: /data
@@ -33,7 +33,7 @@ spec:
     cores: 6
     instances: 3
     memory: "512m"
-    javaOptions: "-Dlog4j.configuration=file:/etc/spark/conf/log4j.properties"
+    javaOptions: "-Dlog4j.configuration=file:/opt/spark/conf/log4j.properties"
     labels:
       version: $sparkVersion$ # 填入spark的版本
     volumeMounts:
