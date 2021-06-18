@@ -50,7 +50,8 @@ public class ParamAdapter {
         // 其他用户传入的参数
         StringBuilder otherParams = new StringBuilder();
         for (String key : stage.others.keySet()) {
-            if (!key.startsWith("udfPath")) {
+            // dev参数表示为了开发方便透传给执行时用的参数，下游一般不需要
+            if (!key.startsWith("udfPath") && !key.startsWith("dev")) {
                 otherParams.append("--D").append(key).append("=").append(stage.others.get(key));
             }
         }
