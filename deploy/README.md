@@ -13,10 +13,6 @@ kubectl set image deployment/clic-job-center job-template=edwardtang/job-center:
 
 推荐使用 operator的方式部署
 
-### spark
-
-为了方便查看日志，修改spark内部的log4j配置
-- kubectl create configmap spark-conf-map --from-file log4j.properties
 
 
 
