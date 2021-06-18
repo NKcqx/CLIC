@@ -41,11 +41,11 @@ public class KubernetesJobStrategy implements KubernetesResourceStrategy {
         final InputStream inputStream = new ClassPathResource("templates/job-template.yaml").getInputStream();
         String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
 
-        String jobYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
-                .replace("$platform", stage.platformName.toLowerCase())
-                .replace("$image", platformInfo.defaultImage)
-                .replace("$imagePolicy", stage.others.getOrDefault("imagePolicy", "IfNotPresent"))
-                .replace("$commands", platformInfo.execCommand + " " + StringUtils.joinWith(" ", params.toArray()));
+        String jobYaml = templateYaml.replace("$name$", kubernetesRestClient.generateKubernetesName(stage))
+                .replace("$platform$", stage.platformName.toLowerCase())
+                .replace("$image$", platformInfo.defaultImage)
+                .replace("$imagePolicy$", stage.others.getOrDefault("imagePolicy", "IfNotPresent"))
+                .replace("$commands$", platformInfo.execCommand + " " + StringUtils.joinWith(" ", params.toArray()));
         HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
         // 可能会执行失败，需要加一些错误处理
         httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createJobUrl, yaml.load(jobYaml)));

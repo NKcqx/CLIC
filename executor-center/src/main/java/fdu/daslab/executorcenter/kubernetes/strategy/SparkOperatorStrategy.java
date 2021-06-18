@@ -37,13 +37,13 @@ public class SparkOperatorStrategy implements KubernetesResourceStrategy {
     public void create(Stage stage, Platform platformInfo, List<String> params) throws Exception {
         final InputStream inputStream = new ClassPathResource("templates/spark-template.yaml").getInputStream();
         String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
-        String sparkYaml = templateYaml.replace("$name", kubernetesRestClient.generateKubernetesName(stage))
-                .replace("$image", platformInfo.defaultImage)
-                .replace("$mainClass", platformInfo.params.get("mainClass"))
-                .replace("$mainJar", platformInfo.params.get("mainJar"))
-                .replace("$imagePolicy", stage.others.getOrDefault("imagePolicy", "IfNotPresent"))
-                .replace("$sparkVersion", platformInfo.params.get("sparkVersion"))
-                .replace("$argument", StringUtils.join(params));
+        String sparkYaml = templateYaml.replace("$name$", kubernetesRestClient.generateKubernetesName(stage))
+                .replace("$image$", platformInfo.defaultImage)
+                .replace("$mainClass$", platformInfo.params.get("mainClass"))
+                .replace("$mainJar$", platformInfo.params.get("mainJar"))
+                .replace("$imagePolicy$", stage.others.getOrDefault("imagePolicy", "IfNotPresent"))
+                .replace("$sparkVersion$", platformInfo.params.get("sparkVersion"))
+                .replace("$argument$", StringUtils.join(params));
         HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
         httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createSparkUrl, yaml.load(sparkYaml)));
 
