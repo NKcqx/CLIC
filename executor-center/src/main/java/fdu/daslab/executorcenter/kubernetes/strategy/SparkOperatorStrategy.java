@@ -43,7 +43,7 @@ public class SparkOperatorStrategy implements KubernetesResourceStrategy {
                 .replace("$mainJar$", platformInfo.params.get("mainJar"))
                 .replace("$imagePolicy$", stage.others.getOrDefault("dev-imagePolicy", "IfNotPresent"))
                 .replace("$sparkVersion$", platformInfo.params.get("sparkVersion"))
-                .replace("$argument$", StringUtils.joinWith(" ", params.toArray()));
+                .replace("$argument$", StringUtils.joinWith(",", params.toArray()));
         HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
         httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createSparkUrl, yaml.load(sparkYaml)));
 
