@@ -14,7 +14,7 @@ spec:
   arguments: ["$argument$"] # 传入的参数
   sparkConf:
     "spark.eventLog.enabled": "true"
-    "spark.eventLog.dir": "file:/data/logs" # spark的日志存放路径
+    "spark.eventLog.dir": "file:///data/logs" # spark的日志存放路径
 #  sparkConfigMap: spark-conf-map # 指定configmap，这里为了方便查看日志
   restartPolicy:
     type: Never
