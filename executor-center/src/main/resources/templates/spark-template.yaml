@@ -4,7 +4,7 @@ kind: SparkApplication
 metadata:
   name: $name$ # 填入stage的名称
 spec:
-  type: Scala
+  type: Java
   mode: cluster
   image: $image$ # 填入image的地址
   imagePullPolicy: $imagePolicy$ # 平台每次需要更新成本较高，测试阶段使用Always
