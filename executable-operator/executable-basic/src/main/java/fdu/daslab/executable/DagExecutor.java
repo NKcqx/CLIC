@@ -174,7 +174,8 @@ public class DagExecutor {
         } catch (Exception e) {
             // 错误信息上报
             notifyServiceClient.notify(new StageSnapshot(StageStatus.FAILURE, e.getMessage(), new HashMap<>()));
-            logger.error(e.getMessage());
+            e.printStackTrace();
+//            logger.error(e.printStackTrace(););
         }
     }
 }

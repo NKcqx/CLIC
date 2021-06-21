@@ -49,7 +49,7 @@ public class FileSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<S
 //                .map(line -> StringUtils.join(line, this.params.get("separator")))
 //                .saveAsTextFile(this.params.get("outputPath"));
 
-        boolean isCombined = this.params.get("isCombined").equals("true"); // todo 之后会根据数据类型在外面自动转换
+        boolean isCombined = this.params.getOrDefault("isCombined", "true").equals("true"); // todo 之后会根据数据类型在外面自动转换
         if (isCombined) {
             // 为了方便其他的节点交互，提供将所有Partition写入一个文件的可能性
             this.getInputData("data")

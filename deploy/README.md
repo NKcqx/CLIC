@@ -21,6 +21,15 @@
   
 - 3.系统底层需要不同的执行引擎，比如spark、flink、tensorflow，需要先在k8s上安装对应的环境的operator
     - 参考网络的解决方案，建议使用helm的方式
+    - spark安装：
+        ```shell script
+        # 需要先创建一个spark的service account
+        helm repo add spark-operator https://googlecloudplatform.github.io/spark-on-k8s-operator
+        # 使用最新的版本，否则有bug，registry.ap-southeast-1.aliyuncs.com/sparkonk8/sparkonk8s:1.0
+        # 重命名gcr.io/spark-operator/spark-operator:latest或者下面参数指定 
+        helm install spark spark-operator/spark-operator --set webhook.enable=true --set serviceAccounts.spark.name=spark 
+        # --set image.repository=registry.ap-southeast-1.aliyuncs.com/sparkonk8/sparkonk8s --set image.tag=1.0
+        ```
 
 ## 微服务部署
 
