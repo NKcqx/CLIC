@@ -87,6 +87,7 @@ public class ParamAdapter {
             OutputStreamWriter writer = new OutputStreamWriter(outputStream);
             Yaml yaml = new Yaml(dumperOptions);
             yaml.dump(yamlMap, writer);
+            // 立即刷新
             writer.flush();
             writer.close();
             outputStream.close();
