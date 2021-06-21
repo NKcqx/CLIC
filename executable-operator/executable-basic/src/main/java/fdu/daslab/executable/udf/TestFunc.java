@@ -14,22 +14,33 @@ import java.util.regex.Pattern;
 public class TestFunc implements Serializable {
 
     public List<String> mapFunc(List<String> record) {
+        // 先输出
+        for (String s : record) System.out.print(s + ":");
+        System.out.println();
         try {
             String url = record.get(1); // 合法网址
             String[] urlSegments = url.split("/");
             String primaryDomainName = urlSegments[2]; // 一级域名（此处索引取2是因为https:后面的//）
-            return Arrays.asList(primaryDomainName, "1");
+            return Arrays.asList("https://" + primaryDomainName, "1");
         } catch (Exception e) {
-            //e.printStackTrace();
+            e.printStackTrace();
         }
         return Arrays.asList("dummy", "1");
     }
 
     public boolean filterFunc(List<String> record) {
+        for (String s : record) System.out.print(s + ",");
+        System.out.println();
         // 只保留网址符合以下正则表达式的网站
-        String pattern = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
-        Pattern r = Pattern.compile(pattern);
-        Matcher m = r.matcher(record.get(1));
-        return m.find();
+        try {
+            String pattern = "^(https?|ftp|file)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+            Pattern r = Pattern.compile(pattern);
+            Matcher m = r.matcher(record.get(0));
+            return m.find();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return true;
     }
+
 }
