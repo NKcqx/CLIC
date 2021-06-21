@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: spring-configmap
+  name: executor-configmap
 data:
   application-pro.yaml: |
     thrift:

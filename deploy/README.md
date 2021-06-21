@@ -5,6 +5,11 @@
 - 1.系统依赖nfs（或者其他分布式存储）进行部署，因此需要先部署nfs，再部署k8s访问的pv和pvc
    - nfs的部署脚本在nfs路径下
    - nfs的pv和pvc可以根据情况更改（比如挂载路径）
+   - 需要在挂载路径下创建我们需要的文件夹：
+     - 目前元信息存放位置：挂载目录为 /nfs/data
+        - dag：/data/system/dags
+        - 中间结果： /data/system/inter_files
+     - 用户的udf和输入文件，建议存放到 /data/user
    
 - 2.系统需要依赖k8s的高权限的service account的token去创建job、operator。下面直接获取了kube-system的admin的权限，
     实际并不太好，只是为了方便，最好自己根据需求创建对应的sa，然后获取token
@@ -22,6 +27,9 @@
 每一个微服务包含三个部分，分别是config、deployment、service。所有平台部署均使用CRD的方式，本仓库维护了基本的部署文件。
 其中：config保存了spring的生产环境的配置文件的configmap、deployment是部署的文件、service是对外的服务。
 依次执行每一个微服务应用的config、deployment、service即可。
+- 1.创建config：`kubectl create -f xxx-config.yaml`
+- 2.创建deployment: `kubectl create -f xxx.yaml`
+- 3.创建service：`kubectl create -f xxx-svc.yaml`
 - 当需要更改config的时候，直接通过`kubectl edit configmap xxx`来更新对应的配置
 
 ## 版本更新

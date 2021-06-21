@@ -20,22 +20,19 @@ spec:
             - /bin/sh
             - -c
           args:
-            - java -jar executor-center.jar --spring.config.location=application-pro.yaml
+            - java -jar executor-center.jar --spring.config.location=/config/application-pro.yaml
           volumeMounts:
-            - name: spring-config
-              mountPath: /application-pro.yaml
+            - name: executor-config
+              mountPath: /config # 挂载在当前目录的config下优先级最高
             - name: nfs-volume
               mountPath: /data
           ports:
             - name: tcp
               containerPort: 6666
       volumes:
-        - name: spring-config
+        - name: executor-config
           configMap:
-            name: spring-configmap
-            items:
-              - key: application-pro.yaml
-              - path: application-pro.yaml
+            name: executor-configmap
         - name: nfs-volume
           persistentVolumeClaim:
             claimName: pvc-nfs
