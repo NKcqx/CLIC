@@ -7,8 +7,8 @@ import org.springframework.util.CollectionUtils;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.util.*;
 
@@ -83,9 +83,14 @@ public class ParamAdapter {
             dumperOptions.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
             dumperOptions.setDefaultScalarStyle(DumperOptions.ScalarStyle.PLAIN);
             dumperOptions.setPrettyFlow(false);
+            FileOutputStream outputStream = new FileOutputStream(path);
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream);
             Yaml yaml = new Yaml(dumperOptions);
-            yaml.dump(yamlMap, new OutputStreamWriter((new FileOutputStream(path))));
-        } catch (FileNotFoundException e) {
+            yaml.dump(yamlMap, writer);
+            writer.flush();
+            writer.close();
+            outputStream.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return path;
