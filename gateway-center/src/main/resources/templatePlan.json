@@ -2,7 +2,11 @@
   "planParams": [
     {
       "name": "udfPath-Java",
-      "value": "/data/xxx"
+      "value": "/data/user/TestFunc.class"
+    },
+    {
+      "name": "dev-imagePolicy",
+      "value": "Always"
     }
   ],
   "nodes": [
@@ -11,51 +15,93 @@
       "dependencies": [],
       "platformName": "spark",
       "operatorInfo": {
-        "operatorName": "CollectionSourceOperator",
-        "operatorParams": [
-          {
-            "name": "data1",
-            "value": "value1"
-          },
-          {
-            "name": "data2",
-            "value": "value2"
-          }
-        ],
-        "inputKeys": ["data"],
-        "outputKeys": ["result"]
-      }
-    },
-    {
-      "nodeId": 2,
-      "dependencies": [1],
-      "platformName": "spark",
-      "operatorInfo": {
-        "operatorName": "CollectionSourceOperator",
-        "operatorParams": [
-          {
-            "name": "data",
-            "value": "value1"
-          }
-        ],
-        "inputKeys": ["data"],
-        "outputKeys": ["result"]
-      }
-    },
-    {
-      "nodeId": 3,
-      "dependencies": [2],
-      "platformName": "spark",
-      "operatorInfo": {
         "operatorName": "SourceOperator",
         "operatorParams": [
           {
             "name": "inputPath",
-            "value": "/data/xxx"
+            "value": "/data/user/test.csv"
+          },
+          {
+            "name": "separator",
+            "value": ","
           }
         ],
-        "inputKeys": ["data"],
-        "outputKeys": ["result"]
+        "inputKeys": [
+          "data"
+        ],
+        "outputKeys": [
+          "result"
+        ]
+      }
+    },
+    {
+      "nodeId": 2,
+      "dependencies": [
+        1
+      ],
+      "platformName": "spark",
+      "operatorInfo": {
+        "operatorName": "MapOperator",
+        "operatorParams": [
+          {
+            "name": "udfName",
+            "value": "mapFunc"
+          }
+        ],
+        "inputKeys": [
+          "data"
+        ],
+        "outputKeys": [
+          "result"
+        ]
+      }
+    },
+    {
+      "nodeId": 3,
+      "dependencies": [
+        2
+      ],
+      "platformName": "spark",
+      "operatorInfo": {
+        "operatorName": "FilterOperator",
+        "operatorParams": [
+          {
+            "name": "udfName",
+            "value": "filterFunc"
+          }
+        ],
+        "inputKeys": [
+          "data"
+        ],
+        "outputKeys": [
+          "result"
+        ]
+      }
+    },
+    {
+      "nodeId": 4,
+      "dependencies": [
+        3
+      ],
+      "platformName": "java",
+      "operatorInfo": {
+        "operatorName": "SinkOperator",
+        "operatorParams": [
+          {
+            "name": "separator",
+            "value": ","
+          },
+          {
+            "name": "outputPath",
+            "value": "/data/user/output.csv"
+          }
+        ],
+        "inputKeys": [
+          "data"
+        ],
+        "outputKeys": [
+          "result"
+        ]
       }
     }
   ]

@@ -3,23 +3,68 @@
 ## 前置部署
 
 - 1.系统依赖nfs（或者其他分布式存储）进行部署，因此需要先部署nfs，再部署k8s访问的pv和pvc
-   - nfs的部署脚本在nfs路径下
+   - nfs的部署脚本在nfs路径下（nfs-client中需要修改server）
    - nfs的pv和pvc可以根据情况更改（比如挂载路径）
    - 需要在挂载路径下创建我们需要的文件夹：
      - 目前元信息存放位置：挂载目录为 /nfs/data
         - dag：/data/system/dags
         - 中间结果： /data/system/inter_files
+        - 日志文件： /data/logs
      - 用户的udf和输入文件，建议存放到 /data/user
-   
+ 
+  补充：
+     - 这里有个坑需要对logs和system（system内的dags和inter_files也要）进行权限修改，方法为`chmod 777 file`，否则spark-context初始化对时候会报permission denied的错误
 - 2.系统需要依赖k8s的高权限的service account的token去创建job、operator。下面直接获取了kube-system的admin的权限，
-    实际并不太好，只是为了方便，最好自己根据需求创建对应的sa，然后获取token
+  实际并不太好，只是为了方便，最好自己根据需求创建对应的sa，然后获取token
 
   ```shell script
     # 获取最高权限的token，后面executor-center的configmap的配置token需要使用这一个token
     $(kubectl get secret $(kubectl get serviceaccount admin -n kube-system -o jsonpath='{.secrets[0].name}') -n kube-system -o jsonpath='{.data.token}' | base64 --decode )
   ```
-  
+  补充先创建service account再获取token的方法
+
+  - 创建admin-role.yaml
+
+  ```yaml
+  kind: ClusterRoleBinding
+  apiVersion: rbac.authorization.k8s.io/v1beta1
+  metadata:
+    name: admin
+    annotations:
+      rbac.authorization.kubernetes.io/autoupdate: "true"
+  roleRef:
+    kind: ClusterRole
+    name: cluster-admin
+    apiGroup: rbac.authorization.k8s.io
+  subjects:
+  - kind: ServiceAccount
+    name: admin
+    namespace: kube-system
+  ---
+  apiVersion: v1
+  kind: ServiceAccount
+  metadata:
+    name: admin
+    namespace: kube-system
+    labels:
+      kubernetes.io/cluster-service: "true"
+      addonmanager.kubernetes.io/mode: Reconcile
+  ```
+
+  - 执行`kubectl create -f admin-role.yaml`
+
+  - 获取token
+
+  ```yaml
+    # 获取admin-token的secret名字
+    $ kubectl -n kube-system get secret|grep admin-token
+    admin-token-nwphb          kubernetes.io/service-account-token    3     6m
+    # 获取token的值
+    $ kubectl -n kube-system get secret admin-token-nwphb -o jsonpath={.data.token} | base64 -d
+  ```
+
 - 3.系统底层需要不同的执行引擎，比如spark、flink、tensorflow，需要先在k8s上安装对应的环境的operator
+    - 这一步需要先拉取spark-operator的镜像
     - 参考网络的解决方案，建议使用helm的方式
     - [spark安装](https://github.com/GoogleCloudPlatform/spark-on-k8s-operator/tree/master/charts/spark-operator-chart)：
         ```shell script
@@ -59,7 +104,7 @@ kubectl set image deployment/clic-job-center job-template=edwardtang/job-center:
     echo "ExecStartPost=/sbin/iptables -P FORWARD ACCEPT" >> /etc/systemd/system/docker.service.d/exec_start.conf
     systemctl daemon-reload
     systemctl restart docker
-    ```
+   ```
     如何docker正在运行，或者直接执行：`/sbin/iptables -P FORWARD ACCEPT`，然后按照上面命令重启docker
 - 3.iptable需要设置，见[链接](https://imroc.cc/post/202105/why-enable-bridge-nf-call-iptables/)
 - 4.检查防火墙是否关闭：
