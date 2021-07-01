@@ -90,7 +90,6 @@ public class KubernetesRestClient {
             }
         }
         return result;
-
     }
 
     // kubernetes中资源名称需要符合[数字/字母/-]的规范

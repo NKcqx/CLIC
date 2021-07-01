@@ -1,5 +1,5 @@
 namespace java fdu.daslab.thrift.notifyservice
-namespace py fdu.daslab.thrift.notifyservice
+namespace py thrift.notifyservice
 
 /*
     定义一个接口，用于下游向上层同步调度状态

@@ -47,8 +47,7 @@ public class KubernetesJobStrategy implements KubernetesResourceStrategy {
                 .replace("$imagePolicy$", stage.others.getOrDefault("imagePolicy", "IfNotPresent"))
                 .replace("$commands$", platformInfo.execCommand + " " + StringUtils.joinWith(" ", params.toArray()));
         HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
-        // 可能会执行失败，需要加一些错误处理
+        // TODO:可能会执行失败，需要加一些错误处理
         httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createJobUrl, yaml.load(jobYaml)));
     }
-
 }

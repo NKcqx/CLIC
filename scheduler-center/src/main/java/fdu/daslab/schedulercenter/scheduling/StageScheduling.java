@@ -76,6 +76,7 @@ public class StageScheduling {
         final Optional<SchedulerModel> sortModel = schedulerRepository.findAllScheduler().stream()
                 .filter(scheduler -> scheduler.pluginType.equals(PluginType.SORT_PLUGIN))
                 .max(Comparator.comparingInt(scheduler -> scheduler.priority));
+        // 所有source都是待调度stage
         pendingStages.addAll(stageList);
         List<Stage> needScheduling = new ArrayList<>(pendingStages);
         // 调度之后，不一定所有的stage都能被调度，如果调度器没有返回，那么该stage暂时不被调度
@@ -97,7 +98,7 @@ public class StageScheduling {
                 executorClient.open();
                 // 更新状态
                 stage.stageStatus = ExecutionStatus.PENDING;
-                 cacheStage(stage);
+                cacheStage(stage);
                 executorClient.getClient().executeStage(stage);
                 pendingStages.remove(stage);
             } catch (TException e) {
@@ -106,7 +107,6 @@ public class StageScheduling {
                 executorClient.close();
             }
         }
-
     }
 
     // 判断节点依赖(前置)是否都已经满足

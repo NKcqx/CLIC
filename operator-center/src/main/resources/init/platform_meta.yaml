@@ -14,3 +14,8 @@ platforms:
       mainClass: fdu.daslab.executable.spark.ExecuteSparkOperator
       mainJar: executable-spark.jar
       sparkVersion: 4.0.0
+  - name: Pytorch
+    language: Python
+    defaultImage:
+    useOperator: false
+    execCommand: python executable-pytorch/main/pytorch/ExecutePytorchOperator.py

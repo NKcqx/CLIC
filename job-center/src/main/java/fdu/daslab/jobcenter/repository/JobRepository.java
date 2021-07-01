@@ -36,7 +36,7 @@ public class JobRepository {
         Job job = findJob(stage.jobName);
         /*
             更新job状态，所有任务都完成，则任务完成
-            存在一个任务失败，则任务失败
+            存在一个stage失败，则job失败
             存在一个任务开始，则任务开始，开始时间为最早的stage的开始时间；
             暂时假设当前任务的消息上报是及时的，也就是系统保证顺序一致性，第一个开始的stage的开始时间一定是最早的，
             最后一个结束的stage的结束时间一定是最晚的
@@ -48,7 +48,7 @@ public class JobRepository {
         } else if (ExecutionStatus.FAILURE.equals(stage.stageStatus)){
             job.jobStatus = ExecutionStatus.FAILURE;
         } else if (ExecutionStatus.COMPLETED.equals(stage.stageStatus)) {
-            // check是否所有任务都执行完成，未来【完成几个stage】的信息也会被存在job中，防止任务被重复check
+            // check是否所有任务都执行完成，TODO：未来【完成几个stage】的信息也会被存在job中，防止任务被重复check
             boolean allCompleted = true;
             for (Stage otherStage : job.subplans.values()) {
                 if (!ExecutionStatus.COMPLETED.equals(otherStage.stageStatus)) {

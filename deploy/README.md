@@ -11,7 +11,7 @@
         - 中间结果： /data/system/inter_files
         - 日志文件： /data/logs
      - 用户的udf和输入文件，建议存放到 /data/user
- 
+
   补充：
      - 这里有个坑需要对logs和system（system内的dags和inter_files也要）进行权限修改，方法为`chmod 777 file`，否则spark-context初始化对时候会报permission denied的错误
 - 2.系统需要依赖k8s的高权限的service account的token去创建job、operator。下面直接获取了kube-system的admin的权限，

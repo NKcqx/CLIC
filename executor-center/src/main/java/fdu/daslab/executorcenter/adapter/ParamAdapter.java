@@ -40,7 +40,7 @@ public class ParamAdapter {
 
     // 生成运行的相关参数
     public List<String> wrapperExecutionArguments(Stage stage, Platform platform) {
-        // dagPath
+        // dagPath，这一步会先生成plan的yaml文件，再把yaml文件的路径返回，所以是dagpath
         String dagPath = generateYamlForPlan(stage.planInfo);
         // udf，使用不同语言的文件来进行描述
         String udfPath = stage.others.getOrDefault("udfPath-" + platform.language, "");

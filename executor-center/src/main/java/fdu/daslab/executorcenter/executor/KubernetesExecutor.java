@@ -36,6 +36,7 @@ public class KubernetesExecutor implements Executor {
 
     @Override
     public void execute(Stage stage) {
+        // 先去获得当前stage的platform信息
         Platform platform = null;
         try {
             operatorClient.open();
@@ -57,7 +58,6 @@ public class KubernetesExecutor implements Executor {
         } catch (Exception e) {
             logger.error(e.getMessage());
         }
-
     }
 
 

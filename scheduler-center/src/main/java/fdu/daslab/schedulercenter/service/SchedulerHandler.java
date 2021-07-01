@@ -39,6 +39,7 @@ public class SchedulerHandler implements SchedulerService.Iface {
         List<Stage> sourceStages = new ArrayList<>();
         job.getSourceStages().forEach(sourceId -> sourceStages.add(job.subplans.get(sourceId)));
         stageScheduling.cacheJob(job);
+        // 对所有的source stage进行调度
         stageScheduling.schedule(sourceStages);
     }
 }

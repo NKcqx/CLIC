@@ -6,7 +6,7 @@ thrift:
   notify: # 用于下游向上游通信的地址
     host: localhost
     port: 8888
-mode: local # 表示执行的方式，默认是kubernetes
+mode: local # 表示执行的方式，使用configMap的方式挂载的配置文件是kubernetes，本地文件中仍然是local模式
 mvnDir: /Users/zjchen/.m2/repository
 dag:
   prefix: /Users/zjchen/Desktop/CLIC/dag
