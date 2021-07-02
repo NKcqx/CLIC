@@ -1,0 +1,106 @@
+operators:
+- inputKeys:
+  - data
+  name: PdIloc
+  id: LocOperator61390596
+  outputKeys:
+  - result
+  params:
+    row_from: '0'
+    col_to: '-1'
+    row_to: None
+    col_from: None
+- inputKeys:
+  - data
+  name: PdStandardization
+  id: StandardizationOperator1044691564
+  outputKeys:
+  - result
+  params: {}
+- inputKeys:
+  - data
+  name: PdFillNa
+  id: FillNaOperator121111112
+  outputKeys:
+  - result
+  params:
+    value: '0'
+- inputKeys:
+  - data
+  name: PdDummies
+  id: OneHotEncodeOperator-187373739
+  outputKeys:
+  - result
+  params:
+    dummy_na: 'True'
+- inputKeys:
+  - data
+  name: TensorConverter
+  id: ToTensorOperator-1820409893
+  outputKeys:
+  - result
+  params:
+    dtype: float
+- inputKeys:
+  - data
+  name: TorchPCA
+  id: PCAOperator-475458278
+  outputKeys:
+  - result
+  params:
+    center: 'True'
+    k: '10'
+- inputKeys:
+  - data
+  name: SinkOperator
+  id: SinkOperator1183179810
+  outputKeys: []
+  params:
+    type: tensor
+    separator: ','
+    outputPath: /CLIC_Pytorch/stage-1-output@-347202139.csv
+- inputKeys: []
+  name: SourceOperator
+  id: SourceOperator624368463
+  outputKeys:
+  - result
+  params:
+    separator: ','
+    inputPath: /CLIC_Pytorch/hotel_bookings.csv
+dag:
+- id: LocOperator61390596
+  dependencies:
+  - sourceKey: result
+    id: SourceOperator624368463
+    targetKey: data
+- id: StandardizationOperator1044691564
+  dependencies:
+  - sourceKey: result
+    id: LocOperator61390596
+    targetKey: data
+- id: FillNaOperator121111112
+  dependencies:
+  - sourceKey: result
+    id: StandardizationOperator1044691564
+    targetKey: data
+- id: OneHotEncodeOperator-187373739
+  dependencies:
+  - sourceKey: result
+    id: FillNaOperator121111112
+    targetKey: data
+- id: ToTensorOperator-1820409893
+  dependencies:
+  - sourceKey: result
+    id: OneHotEncodeOperator-187373739
+    targetKey: data
+- id: PCAOperator-475458278
+  dependencies:
+  - sourceKey: result
+    id: ToTensorOperator-1820409893
+    targetKey: data
+- id: SinkOperator1183179810
+  dependencies:
+  - sourceKey: result
+    id: PCAOperator-475458278
+    targetKey: data
+- id: SourceOperator624368463

@@ -49,7 +49,7 @@ if __name__ == "__main__":
     parser.add_argument("--jobName", type=str, default=None)
     parser.add_argument("--notifyHost", type=str, default=None)
     parser.add_argument("--notifyPort", type=int, default=None)
-    # args = parser.parse_known_args(["--dagPath=/Users/zjchen/Desktop/CLIC/ClicYamlOutput/physical-dag-1710586742.yml",
+    # args = parser.parse_known_args(["--dagPath=/CLIC_Pytorch/physical-dag-1710586742.yml",
     #                                 "--stageId=17",
     #                                 "--jobName=testPytorch",
     #                                 "--notifyHost=127.0.0.1",

@@ -16,6 +16,6 @@ platforms:
       sparkVersion: 4.0.0
   - name: Pytorch
     language: Python
-    defaultImage:
+    defaultImage: zjchenn/executable-pytorch:v1.0
     useOperator: false
-    execCommand: python executable-pytorch/main/pytorch/ExecutePytorchOperator.py
+    execCommand: python ExecutePytorchOperator.py

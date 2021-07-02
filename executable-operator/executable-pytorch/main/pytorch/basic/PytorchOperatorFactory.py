@@ -32,7 +32,7 @@ class PytorchOperatorFactory(OperatorFactory):
             "PdIloc": PdIloc,
             "PdStandardization": PdStandardization,
             "TensorConverter": TensorConverter,
-            "PcaOperator": TorchPCA,
+            "TorchPCA": TorchPCA,
             "TorchNet": TorchNet,
             "PdGetSeries": PdGetSeries,
             "Word2Vec": Word2Vec,
