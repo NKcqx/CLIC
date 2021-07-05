@@ -9,7 +9,7 @@ spec:
       - name: $platform$ # 填入平台名称
         image: $image$ # 填入image的地址
         command:
-          - /bin/sh
+          - /bin/bash
           - -c
         args: ["$commands$"] # 填入运行命令
         imagePullPolicy: $imagePolicy$
