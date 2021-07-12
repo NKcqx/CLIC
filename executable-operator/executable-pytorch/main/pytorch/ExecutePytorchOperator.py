@@ -56,5 +56,4 @@ if __name__ == "__main__":
     #                                 "--notifyPort=8888"])
     args = parser.parse_known_args()
     executor = DagExecutor(args, PytorchOperatorFactory())
-
     executor.execute()

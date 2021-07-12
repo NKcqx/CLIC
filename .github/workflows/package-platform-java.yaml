@@ -23,7 +23,7 @@ jobs:
         run:
           mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/executable-java/pom.xml
       - name: Publish Docker
-        uses: elgohr/Publish-Docker-Github-Action@2.11
+        uses: elgohr/Publish-Docker-Github-Action@c
         with:
           # The name of the image you would like to push
           name: edwardtang/executable-java

@@ -7,9 +7,9 @@ COPY /executable-basic-python/* ./
 COPY /executable-pytorch/* ./
 RUN mkdir CLIC-Conda && tar -zxvf CLIC.tar.gz -C CLIC-Conda
 RUN echo 'export PYTHONPATH=$PYTHONPATH:/CLIC_Pytorch' >> /root/.bashrc \
-# && echo 'conda activate CLIC-Conda' >> /root/.bashrc \
  && echo 'source /CLIC_Pytorch/CLIC-Conda/bin/activate' >> /root/.bashrc
 WORKDIR /CLIC_Pytorch/pytorch
+
 #CMD ["/bin/bash","-c", "source /CLIC_Pytorch/CLIC-Conda/bin/activate"]
 #SHELL ["/bin/bash", "-c"]
 #RUN source CLIC-Conda/bin/activate \
