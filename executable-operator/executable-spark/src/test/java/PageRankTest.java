@@ -22,8 +22,9 @@ public class PageRankTest {
     private JavaSparkContext javaSparkContext;
     String filePath1 = PageRankTest.class.getClassLoader().
             getResource("0.edges").getPath();//读取
-    String filePath2= PageRankTest.class.getClassLoader().
-            getResource("").getPath()+"0.csv";//写入
+    String filePath2 = PageRankTest.class.getClassLoader().
+            getResource("").getPath() + "0.csv";//写入
+
     @Before
     public void before() {
         SparkInitUtil.setSparkContext(new SparkConf().setMaster("local[*]").setAppName("PageRankTest"));
@@ -32,6 +33,7 @@ public class PageRankTest {
 
     /**
      * 测试RddToGraphOperator以及PageRankOperator
+     *
      * @throws Exception
      */
     @Test

@@ -21,8 +21,8 @@ import java.util.stream.Stream;
  * 目前与FileSource的区别是从第二行开始读
  *
  * @author 刘丰艺
- * @since 2020/10/27 9:30 PM
  * @version 1.0
+ * @since 2020/10/27 9:30 PM
  */
 public class TableSource extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
 

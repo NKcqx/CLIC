@@ -10,8 +10,8 @@ import java.net.URL;
  * 从本地加载文件成class对象的classLoader
  *
  * @author 唐志伟
- * @since 2020/7/6 1:36 PM
  * @version 1.0
+ * @since 2020/7/6 1:36 PM
  */
 public class DiskClassLoader extends ClassLoader {
     private String mLibPath;

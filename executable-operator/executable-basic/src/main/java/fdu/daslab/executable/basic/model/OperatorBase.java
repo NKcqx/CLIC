@@ -1,7 +1,5 @@
 package fdu.daslab.executable.basic.model;
 
-import fdu.daslab.service.client.SchedulerServiceClient;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,17 +36,6 @@ public abstract class OperatorBase<InputType, OutputType> implements ExecutionOp
 
     public void setOperatorState(OperatorState operatorState) {
         this.operatorState = operatorState;
-    }
-
-    // 添加master client，方便各个operator和master交互
-    private transient SchedulerServiceClient masterClient;
-
-    public SchedulerServiceClient getMasterClient() {
-        return masterClient;
-    }
-
-    public void setMasterClient(SchedulerServiceClient masterClient) {
-        this.masterClient = masterClient;
     }
 
     public List<Connection> getOutputConnections() {

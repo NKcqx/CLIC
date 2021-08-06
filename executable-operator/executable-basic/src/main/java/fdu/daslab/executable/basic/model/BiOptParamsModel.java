@@ -6,8 +6,8 @@ import java.io.Serializable;
 
 /**
  * @author 唐志伟，刘丰艺
- * @since 2020/7/6 14:05
  * @version 1.0
+ * @since 2020/7/6 14:05
  */
 public class BiOptParamsModel<MODEL> implements Serializable {
 

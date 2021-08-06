@@ -1,0 +1,9 @@
+thrift:
+  port: 6666
+  notify-port: 8888
+  executor:
+    host: clic-executor-svc
+    port: 6666
+  job:
+    host: clic-job-svc
+    port: 6666

@@ -22,7 +22,7 @@ import java.util.Map;
  * @version 1.0
  * @since 2020/9/23 3:40 PM
  */
-public class SocketSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>  {
+public class SocketSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
 
     public SocketSink(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {
         super("SocketSink", id, inputKeys, outputKeys, params);
@@ -36,7 +36,6 @@ public class SocketSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List
         // 先发送通知告诉下一跳可以准备接收数据了，然后不同partition分别发送数据
         // TODO: 1.是否需要控制数据的发送顺序 2.是否所有数据都发送到一个节点？
         try {
-            this.getMasterClient().postDataPrepared();
             // 接下来发送数据
             ServerSocket server = new ServerSocket(Integer.parseInt(this.params.get("socketPort")));
             // 阻塞，等待客户端连接上来就发送数据

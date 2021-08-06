@@ -12,12 +12,12 @@ import java.util.HashMap;
  */
 public class GraphchiOperatorFactory extends OperatorFactory {
 
-        // 初始化所有的operator的映射关系
+    // 初始化所有的operator的映射关系
     public GraphchiOperatorFactory() {
-            operatorMap = new HashMap<String, Class>() {{
-                put("PageRankOperator", PageRankOperator.class);
-                put("SourceOperator", FileSourceOperator.class);
-                put("SinkOperator", FileSinkOperator.class);
-            }};
-        }
+        operatorMap = new HashMap<String, Class>() {{
+            put("PageRankOperator", PageRankOperator.class);
+            put("SourceOperator", FileSourceOperator.class);
+            put("SinkOperator", FileSinkOperator.class);
+        }};
+    }
 }

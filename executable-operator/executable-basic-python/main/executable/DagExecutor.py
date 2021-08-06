@@ -1,11 +1,13 @@
 import logging
+import sys
 import time
 from executable.DagHook import DagHook
 from executable.DagArgs import DagArgs
 from executable.basic.utils.Logger import Logger
 from executable.basic.utils.ArgUtil import parse_args
 from executable.basic.utils.TopoTraversal import TopoTraversal
-from service.client.SchedulerServiceClient import SchedulerServiceClient
+from service.client.NotifyServiceClient import NotifyServiceClient
+from thriftGen.notifyservice.NotifyService import StageSnapshot, StageStatus
 
 
 class DagExecutor(object):
@@ -23,6 +25,7 @@ class DagExecutor(object):
             3. dagHook: execute前后执行函数
         """
         self.initArgs(args)
+        self.initNotifyClient()
         self.initOperator(operatorFactory)
         self.logger = Logger('ExecutorLogger', logging.DEBUG).logger
         self.dagHook = dagHook
@@ -42,13 +45,15 @@ class DagExecutor(object):
             self.headOperators = parse_args(self.basicArgs.dagPath, factory)
         except Exception as e:
             self.logger.error(e)
+            self.notifyServiceClient.notify(StageSnapshot(StageStatus.FAILURE, e, dict()))
+            sys.exit(-1)
 
-    def initMasterClient(self):
+    def initNotifyClient(self):
         """创建一个masterClient的连接，每个operator都将使用这个client"""
-        self.masterClient = SchedulerServiceClient(self.basicArgs.stageId,
-                                                   self.basicArgs.masterHost,
-                                                   self.basicArgs.masterPort)
-
+        self.notifyServiceClient = NotifyServiceClient(self.basicArgs.stageId,
+                                                       self.basicArgs.jobName,
+                                                       self.basicArgs.notifyHost,
+                                                       self.basicArgs.notifyPort)
     def execute(self):
         """
         Description:
@@ -58,13 +63,14 @@ class DagExecutor(object):
         """
         try:
             self.dagHook.pre_handler(self.platformArgs)
-            self.logger.info("Stage(" + self.basicArgs.stageId + ")" + " started!")
-            self.masterClient.postStarted()
+            self.logger.info("Stage(" + str(self.basicArgs.stageId) + ")" + " started!")
+            self.notifyServiceClient.notify(StageSnapshot(StageStatus.RUNNING, "", dict()))
             self.executeDag()
-            self.masterClient.postCompleted()
-            self.logger.info("Stage(" + self.basicArgs.stageId + ")" + " completed!")
+            self.notifyServiceClient.notify(StageSnapshot(StageStatus.COMPLETED, "", dict()))
+            self.logger.info("Stage(" + str(self.basicArgs.stageId) + ")" + " completed!")
             self.dagHook.post_handler(self.platformArgs)
         except Exception as e:
+            self.notifyServiceClient.notify(StageSnapshot(StageStatus.FAILURE, e, dict()))
             self.logger.error(e)
 
     def executeDag(self):
@@ -73,7 +79,6 @@ class DagExecutor(object):
         while topoTraversal.hasNextOpt():
             curOpt = topoTraversal.nextOpt()
             self.logger.info("Stage({}) ———— Current Operator is ".format(self.basicArgs.stageId) + curOpt.name)
-            curOpt.setMasterClient(self.masterClient)
             curOpt.execute()
             self.logger.info("Stage({}) ———— Current Result:\n {}".format(self.basicArgs.stageId, curOpt.getOutputData("result")))
             connections = curOpt.getOutputConnections()

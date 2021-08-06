@@ -1,0 +1,35 @@
+on:
+  push:
+    paths:
+      - 'executable-operator/executable-spark/**'
+      - 'executable-operator/executable-basic/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - name: Set up JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+      - name: Build the parent
+        run:
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/pom.xml
+      - name: Build the basic
+        run:
+          mvn clean install -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/executable-basic/pom.xml
+      - name: Build the java
+        run:
+          mvn clean package -DskipTests=true -Dmaven.javadoc.skip=true -B -V -f executable-operator/executable-spark/pom.xml
+      - name: Publish Docker
+        uses: elgohr/Publish-Docker-Github-Action@2.11
+        with:
+          # The name of the image you would like to push
+          name: edwardtang/executable-spark
+          # The login username for the registry
+          username: edwardtang
+          # The login password for the registry
+          password: daslab_system_group
+          dockerfile: executable-operator/executable-spark/Dockerfile
+          tag_names: 'latest'

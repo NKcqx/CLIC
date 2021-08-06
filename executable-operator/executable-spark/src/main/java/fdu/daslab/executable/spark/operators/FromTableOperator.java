@@ -16,8 +16,8 @@ import java.util.Map;
  * 将Dataset<Row>转换成JavaRDD<List<String>>
  *
  * @author 刘丰艺
- * @since 2020/11/3 3:30 PM
  * @version 1.0
+ * @since 2020/11/3 3:30 PM
  */
 public class FromTableOperator extends OperatorBase<Dataset<Row>, JavaRDD<List<String>>> {
 
@@ -28,8 +28,9 @@ public class FromTableOperator extends OperatorBase<Dataset<Row>, JavaRDD<List<S
     /**
      * 类型转换步骤：
      * Dataset<Row> -> JavaRDD<Row> -> JavaRDD<List<String>>
+     *
      * @param inputArgs 参数列表
-     * @param result 返回的结果
+     * @param result    返回的结果
      */
     @Override
     public void execute(ParamsModel inputArgs, ResultModel<JavaRDD<List<String>>> result) {

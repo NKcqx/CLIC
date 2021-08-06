@@ -24,7 +24,7 @@ public class CountOperator extends OperatorBase<JavaRDD<List<String>>, Long> {
 
     @Override
     public void execute(ParamsModel inputArgs, ResultModel<Long> result) {
-         final long countValue = this.getInputData("data")
+        final long countValue = this.getInputData("data")
                 .count();
         this.setOutputData("result", countValue);
     }

@@ -75,7 +75,6 @@ public class SchemaUtil {
         templateHeader.deleteCharAt(templateHeader.length() - 1);
 
 
-
         String templateFooter = "  ]\n" + "}";
         StringBuffer template = templateHeader.append(templateFooter);
         return template;

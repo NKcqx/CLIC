@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="SortOperator" name="SortOperator" kind="shuffler">
+
+    <platform ID="spark">
+        <language>java</language>
+        <cost>7.9928</cost>
+    </platform>
+
+    <parameters>
+        <parameter name="ascending" data_type="boolean" default="true"></parameter>
+        <parameter name="partitionNum" data_type="integer" default="5"></parameter>
+    </parameters>
+
+    <execute>
+        <target_platform>null</target_platform>
+        <params>
+            <!-- 一定要严格遵守 `command` 里变量的名字（和相对顺序？用正则可能就不需要了，param是matcher，command是str）！！ -->
+            <!-- <param ID="implementation"> </param> -->
+            <param ID="input_file_path">./resources/sort/data_list.txt</param>
+            <param ID="output_file_path">./resources/sort/output_list.txt</param>
+            <param ID="delimiter">,</param>
+            <param ID="is_reverse">true</param>
+        </params>
+    </execute>
+
+</Operator>

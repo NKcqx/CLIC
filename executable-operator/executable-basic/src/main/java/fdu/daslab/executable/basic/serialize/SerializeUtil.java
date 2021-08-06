@@ -15,7 +15,7 @@ public class SerializeUtil implements Serializable {
      * 序列化
      *
      * @param serializeMethod 序列化的方式
-     * @param obj 需要序列化的对象
+     * @param obj             需要序列化的对象
      * @return 字节数据
      */
     public static byte[] serialize(String serializeMethod, Object obj) {
@@ -29,8 +29,8 @@ public class SerializeUtil implements Serializable {
      * 反序列化
      *
      * @param deserializeMethod 反序列化的方式
-     * @param bytes 需要反序列化的字节数据
-     * @param len 长度
+     * @param bytes             需要反序列化的字节数据
+     * @param len               长度
      * @return 序列化对象
      */
     public static Object deserialize(String deserializeMethod, byte[] bytes, int len) {

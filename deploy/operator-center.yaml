@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clic-operator-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      clic: operator-center
+  template:
+    metadata:
+      labels:
+        clic: operator-center
+    spec:
+      containers:
+        - name: operator-template
+          image: edwardtang/operator-center:micro-service-rebuild
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - java -jar operator-center.jar --spring.profiles.active=pod
+          volumeMounts:
+            - name: nfs-volume
+              mountPath: /data
+          ports:
+            - containerPort: 6666
+      volumes:
+        - name: nfs-volume
+          persistentVolumeClaim:
+            claimName: pvc-nfs

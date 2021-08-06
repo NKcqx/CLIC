@@ -13,20 +13,20 @@ import java.util.NoSuchElementException;
  */
 public abstract class OperatorFactory {
 
-       protected Map<String, Class> operatorMap;
+    protected Map<String, Class> operatorMap;
 
-       // 构建operator
-       public OperatorBase createOperator(String name, String id, List<String> inputKeys,
-                                                  List<String> outputKeys, Map<String, String> params)
-               throws NoSuchMethodException,
-               IllegalAccessException, InvocationTargetException, InstantiationException {
-              if (!operatorMap.containsKey(name)) {
-                     throw new NoSuchElementException();
-              }
-              Class<?> optCls = operatorMap.get(name);
-              // 构造函数的所有参数的参数类型
-              Class[] type = {String.class, List.class, List.class, Map.class};
-              Constructor constructor = optCls.getConstructor(type);
-              return (OperatorBase) constructor.newInstance(id, inputKeys, outputKeys, params);
-       }
+    // 构建operator
+    public OperatorBase createOperator(String name, String id, List<String> inputKeys,
+                                       List<String> outputKeys, Map<String, String> params)
+            throws NoSuchMethodException,
+            IllegalAccessException, InvocationTargetException, InstantiationException {
+        if (!operatorMap.containsKey(name)) {
+            throw new NoSuchElementException();
+        }
+        Class<?> optCls = operatorMap.get(name);
+        // 构造函数的所有参数的参数类型
+        Class[] type = {String.class, List.class, List.class, Map.class};
+        Constructor constructor = optCls.getConstructor(type);
+        return (OperatorBase) constructor.newInstance(id, inputKeys, outputKeys, params);
+    }
 }

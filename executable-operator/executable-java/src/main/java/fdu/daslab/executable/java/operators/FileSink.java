@@ -25,7 +25,7 @@ import java.util.stream.Stream;
  */
 @Parameters(separators = "=")
 public class FileSink extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {
-    Logger logger = LoggerFactory.getLogger(FileSource.class);
+    Logger logger = LoggerFactory.getLogger(FileSink.class);
     // 输入路径
     @Parameter(names = {"--output"}, required = true)
     String outputFileName;
@@ -54,6 +54,7 @@ public class FileSink extends OperatorBase<Stream<List<String>>, Stream<List<Str
             this.getInputData("data")
                     // result.getInnerResult("data")
                     .forEach(record -> {
+                        System.out.println();
                         StringBuilder writeLine = new StringBuilder();
                         record.forEach(field -> {
                             writeLine.append(field);
@@ -70,7 +71,6 @@ public class FileSink extends OperatorBase<Stream<List<String>>, Stream<List<Str
             out.close();
             fileWritter.close();
             // 数据准备好
-            this.getMasterClient().postDataPrepared();
         } catch (Exception e) {
             e.printStackTrace();
         }

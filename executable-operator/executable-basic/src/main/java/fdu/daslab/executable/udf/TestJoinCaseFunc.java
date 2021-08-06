@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 /**
  * @author 唐志伟，刘丰艺
- * @since 2020/7/6 14:05
  * @version 1.0
+ * @since 2020/7/6 14:05
  */
 public class TestJoinCaseFunc {
 
@@ -24,6 +24,7 @@ public class TestJoinCaseFunc {
         Matcher m = r.matcher(record.get(0));
         return m.find();
     }
+
     // companyInfo.csv中将“公司领域”是“US”的过滤掉
     public boolean filterCompanyInfoFunc(List<String> record) {
         return (!record.get(3).equals("US"));
@@ -35,6 +36,7 @@ public class TestJoinCaseFunc {
     public String leftKey(List<String> record) {
         return record.get(2);
     }
+
     public String rightKey(List<String> record) {
         return record.get(0);
     }
@@ -43,6 +45,7 @@ public class TestJoinCaseFunc {
     public List<String> leftCols(List<String> record) {
         return Arrays.asList(record.get(0), record.get(1));
     }
+
     // 自定义join之后右表中要select的属性
     public List<String> rightCols(List<String> record) {
         return Arrays.asList(record.get(1), record.get(2), record.get(3));

@@ -1,4 +1,11 @@
 
+def parserArgD(d):
+    """将platformArg解析成字典"""
+    result = {}
+    for pair in d:
+        arg, value = pair.split("=")
+        result[arg.lstrip("-")] = value
+    return result
 
 class DagArgs(object):
     """
@@ -7,21 +14,18 @@ class DagArgs(object):
     Attributes:
         1. stageId      : 唯一的stageId
         2. dagPath      : 需要创建dag的Yaml文件路径
-        3. masterHost   : clic-master的地址，提供给thrift实现远程调用
-        4. masterPort   : clic-master启动的端口，提供给thrift实现远程调用
+        3. notifyHost   : master的地址，提供给thrift实现远程调用
+        4. notifyPort   : master启动的端口，提供给thrift实现远程调用
         5. platformArgs : 不同平台可能需要的参数，提供给DagHook执行额外的操作
+        6. jobName      : 任务名称
     """
     def __init__(self, args):
-        self.stageId = args[0].stageId
-        self.dagPath = args[0].dagPath
-        self.masterHost = args[0].masterHost  # master的thrift地址
-        self.masterPort = args[0].masterPort  # master的thrift端口
-        self.platformArgs = self.parserArgD(args[1]) if args[1] is not None else None  # 如果有未知参数，那么全都解析给platformArgs
+        self.stageId = int(args[0].stageId)
+        self.jobName = str(args[0].jobName)
+        self.udfPath = str(args[0].udfPath)
+        self.dagPath = str(args[0].dagPath)
+        self.notifyHost = str(args[0].notifyHost)  # master的thrift地址
+        self.notifyPort = int(args[0].notifyPort)  # master的thrift端口
+        self.platformArgs = parserArgD(args[1]) if args[1] is not None else None  # 如果有未知参数，那么全都解析给platformArgs
 
-    def parserArgD(self, d):
-        """将platformArg解析成字典"""
-        result = {}
-        for pair in d:
-            arg, value = pair.split("=")
-            result[arg.lstrip("-")] = value
-        return result
+

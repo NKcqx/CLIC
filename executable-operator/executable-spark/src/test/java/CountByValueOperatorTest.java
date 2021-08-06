@@ -28,7 +28,7 @@ public class CountByValueOperatorTest {
     private JavaSparkContext javaSparkContext;
 
     @Before
-    public void before(){
+    public void before() {
         SparkInitUtil.setSparkContext(new SparkConf().setMaster("local[*]").setAppName("CountByValueOperatorTest"));
         javaSparkContext = SparkInitUtil.getDefaultSparkContext();
     }
@@ -92,7 +92,7 @@ public class CountByValueOperatorTest {
     }
 
     @After
-    public void after(){
+    public void after() {
         SparkInitUtil.getDefaultSparkContext().close();
     }
 

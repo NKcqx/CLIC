@@ -17,6 +17,7 @@ import org.apache.parquet.hadoop.ParquetFileReader;
 import org.apache.parquet.hadoop.metadata.ParquetMetadata;
 import org.apache.parquet.schema.MessageType;
 import org.apache.parquet.schema.PrimitiveType;
+
 import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
@@ -56,16 +57,16 @@ public class ParquetFileToColumnSource extends OperatorBase<Stream<List<String>>
                     List<ColumnDescriptor> descriptorList = schemas.getColumns();
 
                     //for each column
-                    for (ColumnDescriptor colDescriptor:descriptorList) {
+                    for (ColumnDescriptor colDescriptor : descriptorList) {
                         //获取 column的数据类型
                         PrimitiveType.PrimitiveTypeName type = colDescriptor.getType();
                         colReader = colReadStore.getColumnReader(colDescriptor);
-                        long totalValuesInColumnChunk =  rowGroup.getPageReader(colDescriptor).getTotalValueCount();
-                        List<String>  tmp = new LinkedList<>();
+                        long totalValuesInColumnChunk = rowGroup.getPageReader(colDescriptor).getTotalValueCount();
+                        List<String> tmp = new LinkedList<>();
                         //every cell in the column chunk
                         for (int i = 0; i < totalValuesInColumnChunk; i++) {
-                           tmp.add(getColumn(colReader, type));
-                           colReader.consume();
+                            tmp.add(getColumn(colReader, type));
+                            colReader.consume();
                         }
                         resultList.add(tmp);
                     }
@@ -83,10 +84,10 @@ public class ParquetFileToColumnSource extends OperatorBase<Stream<List<String>>
             e.printStackTrace();
         }
     }
+
     /**
-     *
      * @param colReader reader
-     * @param type  column类型
+     * @param type      column类型
      * @return 返回cell结果
      */
     private String getColumn(ColumnReader colReader, PrimitiveType.PrimitiveTypeName type) {

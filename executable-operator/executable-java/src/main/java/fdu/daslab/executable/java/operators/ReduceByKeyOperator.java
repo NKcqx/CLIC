@@ -17,8 +17,8 @@ import java.util.stream.Stream;
  * Java平台的reduce函数
  *
  * @author 唐志伟，陈齐翔
- * @since 2020/7/6 1:47 PM
  * @version 1.0
+ * @since 2020/7/6 1:47 PM
  */
 @Parameters(separators = "=")
 public class ReduceByKeyOperator extends OperatorBase<Stream<List<String>>, Stream<List<String>>> {

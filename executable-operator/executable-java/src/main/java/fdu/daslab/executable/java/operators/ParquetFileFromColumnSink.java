@@ -13,6 +13,7 @@ import org.apache.parquet.hadoop.ParquetWriter;
 import org.apache.parquet.hadoop.example.ExampleParquetWriter;
 import org.apache.parquet.hadoop.metadata.CompressionCodecName;
 import org.apache.parquet.schema.*;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
@@ -77,10 +78,12 @@ public class ParquetFileFromColumnSink extends OperatorBase<Stream<List<String>>
             e.printStackTrace();
         }
     }
+
     /**
      * 根据schema的类型进行写入
-     * @param group group数据
-     * @param type  类型信息
+     *
+     * @param group      group数据
+     * @param type       类型信息
      * @param fieldValue 需要存储的field值
      * @return 返回写入后的group
      */

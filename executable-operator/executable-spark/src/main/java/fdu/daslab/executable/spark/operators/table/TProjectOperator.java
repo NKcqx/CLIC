@@ -13,8 +13,8 @@ import java.util.Map;
  * table的select算子
  *
  * @author 刘丰艺
- * @since 2020/11/20 9:30 PM
  * @version 1.0
+ * @since 2020/11/20 9:30 PM
  */
 public class TProjectOperator extends OperatorBase<Dataset<Row>, Dataset<Row>> {
     public TProjectOperator(String id, List<String> inputKeys, List<String> outputKeys, Map<String, String> params) {

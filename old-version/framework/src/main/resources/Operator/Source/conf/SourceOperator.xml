@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="SourceOperator" name="SourceOperator" kind="supplier">
+
+    <platforms>
+        <platform ID="java">
+            <path>Operator/Source/conf/JavaSourceOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>Operator/Source/conf/SparkSourceOperator.xml</path>
+        </platform>
+
+        <platform ID="graphchi">
+            <path>Operator/Source/conf/GraphchiSourceOperator.xml</path>
+        </platform>
+
+        <platform ID="flink">
+            <path>Operator/Source/conf/FlinkSourceOperator.xml</path>
+        </platform>
+
+    </platforms>
+
+    <parameters>
+        <parameter kind="input" name="inputPath" data_type="string" required="true"></parameter>
+        <parameter kind="input" name="separator" data_type="string"
+                   default=","></parameter> <!--参数默认值怎么做?-->
+    </parameters>
+    <inputs></inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"></output>
+    </outputs>
+
+
+</Operator>

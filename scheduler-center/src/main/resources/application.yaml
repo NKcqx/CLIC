@@ -1,0 +1,9 @@
+thrift:
+  port: 6000
+  notify-port: 8888
+  executor:
+    host: localhost
+    port: 7000
+  job:
+    host: localhost
+    port: 3000

@@ -11,7 +11,6 @@ class OperatorBase(metaclass=ABCMeta):
         2. inDegree(int)          : opt在Dag图中的入度
         3. inputConnections(list) : 传入数据到这个opt的connection列表
         4. inputData(dict)        : 输入数据字典
-        5. masterClient           : 该opt的Client，用来实现master的远程调用
         6. name(str)              : opt的名字
         7. outputConnections(list): 当前opt传出数据的connection列表
         8. outputData(dict)       : 输出数据字典
@@ -26,13 +25,6 @@ class OperatorBase(metaclass=ABCMeta):
         self.outputConnections = []
         self.inputConnections = []
         self.inDegree = 0
-        self.masterClient = None
-
-    def setMasterClient(self, masterClient):
-        self.masterClient = masterClient
-
-    def getMasterClient(self):
-        return self.masterClient
 
     def setParams(self, key, value):
         self.params[key] = value

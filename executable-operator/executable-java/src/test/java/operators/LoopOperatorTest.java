@@ -79,7 +79,7 @@ public class LoopOperatorTest {
     }
 
     @Test
-    public void testLoop(){ // 检查 fileSink 的inputData
+    public void testLoop() { // 检查 fileSink 的inputData
         try {
             final FunctionModel functionModel = ReflectUtil.createInstanceAndMethodByPath("TestLoopFunc.class");
             ParamsModel inputArgs = new ParamsModel(functionModel);
@@ -87,7 +87,7 @@ public class LoopOperatorTest {
             Queue<OperatorBase<Stream<List<String>>, Stream<List<String>>>> bfsQueue = new LinkedList<>();
             bfsQueue.add(this.loopOperator);
             while (!bfsQueue.isEmpty()) {
-                OperatorBase<Stream<List<String>>, Stream<List<String>>>  curOpt = bfsQueue.poll();
+                OperatorBase<Stream<List<String>>, Stream<List<String>>> curOpt = bfsQueue.poll();
                 curOpt.execute(inputArgs, null);
 
                 List<Connection> connections = curOpt.getOutputConnections(); // curOpt没法明确泛化类型
@@ -96,7 +96,7 @@ public class LoopOperatorTest {
                     bfsQueue.add(targetOpt);
 
                     List<Pair<String, String>> keyPairs = connection.getKeys();
-                    for (Pair<String, String> keyPair : keyPairs){
+                    for (Pair<String, String> keyPair : keyPairs) {
                         Stream<List<String>> sourceResult = curOpt.getOutputData(keyPair.getValue0());
                         // 将当前opt的输出结果传入下一跳的输入数据
                         targetOpt.setInputData(keyPair.getValue1(), sourceResult);
@@ -109,7 +109,7 @@ public class LoopOperatorTest {
             List<String> expectedResult = Arrays.asList("5", "6", "7", "8", "9");
             Assert.assertFalse(result.isEmpty());
             Assert.assertEquals(expectedResult, result);
-        }catch (Exception ignored){
+        } catch (Exception ignored) {
         }
 
     }

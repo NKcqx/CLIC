@@ -13,6 +13,7 @@ import java.util.stream.Stream;
 
 /**
  * Java平台 max算子
+ *
  * @author Du Qinghua
  * @version 1.0
  * @since 2020/09/10 10:20

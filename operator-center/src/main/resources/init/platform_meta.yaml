@@ -1,0 +1,21 @@
+# 保存已有平台的meta信息
+# 这个只是为了测试方便，为了通过动态的方式来增添
+platforms:
+  - name: Java
+    language: Java
+    defaultImage: edwardtang/executable-java:micro-service-rebuild
+    useOperator: false
+    execCommand: java -jar executable-java.jar
+  - name: Spark
+    language: Java
+    defaultImage: edwardtang/executable-spark:micro-service-rebuild
+    useOperator: true
+    params:
+      mainClass: fdu.daslab.executable.spark.ExecuteSparkOperator
+      mainJar: executable-spark.jar
+      sparkVersion: 4.0.0
+  - name: Pytorch
+    language: Python
+    defaultImage: zjchenn/executable-pytorch:v1.0
+    useOperator: false
+    execCommand: source /root/.bashrc && python ExecutePytorchOperator.py

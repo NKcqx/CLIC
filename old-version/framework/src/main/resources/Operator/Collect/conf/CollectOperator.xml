@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="CollectOperator" name="CollectOperator" kind="consumer">
+
+    <platforms>
+        <platform ID="java">
+            <path>Operator/Collect/conf/JavaCollectOperator.xml</path>
+        </platform>
+
+        <platform ID="spark">
+            <path>Operator/Collect/conf/SparkCollectOperator.xml</path>
+        </platform>
+    </platforms>
+
+    <parameters></parameters>
+    <inputs>  <!-- 输入数据 -->
+        <input name="data" data_type="string" required="true"></input>
+    </inputs>
+    <outputs> <!-- 计算结果 -->
+        <output name="result" data_type="string"></output>
+    </outputs>
+
+</Operator>

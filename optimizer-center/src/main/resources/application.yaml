@@ -1,0 +1,10 @@
+thrift:
+  port: 5000
+
+  operator:
+    host: localhost
+    port: 4000
+
+# 中间文件的输出路径
+output:
+  dir: /Users/edward/Code/Lab/data

@@ -15,7 +15,10 @@
         <dependency>
             <groupId>org.javatuples</groupId>
             <artifactId>javatuples</artifactId>
-            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
         </dependency>
     </dependencies>
 

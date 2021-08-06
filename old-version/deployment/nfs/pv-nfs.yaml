@@ -1,0 +1,14 @@
+# nfs的持久化卷部署
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-nfs
+spec:
+  capacity:
+    storage: 10Gi
+  accessModes:
+    - ReadWriteMany
+  persistentVolumeReclaimPolicy: Retain
+  nfs:
+    server: 10.141.221.217
+    path: /nfs/data

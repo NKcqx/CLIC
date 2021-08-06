@@ -1,0 +1,26 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: executor-configmap
+data:
+  application-pro.yaml: |
+    thrift:
+      port: 6666
+      operator:
+        host: clic-operator-svc
+        port: 6666
+      notify: # 用于下游向上游通信的地址
+        host: clic-scheduler-svc
+        port: 8888
+    mode: kubernetes # 表示执行的方式，默认是kubernetes
+    mvnDir: ''
+    dag:
+      prefix: /data/system/dags
+    kubernetes:
+      api-server: kubernetes.default.svc
+      token: eyJhbGciOiJSUzI1NiIsImtpZCI6IkpkSVRhNXN2SVR0Z0VlNmIwNjBubnpyOGItRFdxeDU0X1RPWFVzUXpSbE0ifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJrdWJlLXN5c3RlbSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VjcmV0Lm5hbWUiOiJhZG1pbi10b2tlbi1jdmp4biIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50Lm5hbWUiOiJhZG1pbiIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6ImNjN2Q3NDU5LTE0Y2YtNDY0Mi1hYTE2LWYzOTZiOWFjMWVjNyIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDprdWJlLXN5c3RlbTphZG1pbiJ9.cMs3y4ad3BxBZEVuzdwA7ValYb4VVDaWjaHH370cgDyoOqfpmr0xc1ym1XZiYaUMmfxg_caVhe-atRyTQiBDf1ICaQw-kZK41RznJmfQDNdiZBGIs6e2kDHh1IbH4CAilELTzXXHq09vKEWJNWRkKBMb1-q1KItYPphyGtyre-A6XCGE5I2W0AXjTeJIkFLX3YxmkCBmdeyW9u5vFsKNE-NXKA4mN6IXWPAIz3Qiaf3zF3N0PtGdXLG4hzwOrFDnKJU8WK_qeztGISfhNHaYy2Li1orkQsXJTqIopvJ0QjSd9yKaffqGUEl72Bn2SNiTrbzPULbgEiuYRyVQLnnfLw
+      job:
+        create: "/apis/batch/v1/namespaces/default/jobs"
+      spark:
+        create: "/apis/sparkoperator.k8s.io/v1beta2/namespaces/default/sparkapplications"
+#    志伟学长直接把整个配置文件当做一个config了，在本地运行的时候这部分配置在在application.yaml中

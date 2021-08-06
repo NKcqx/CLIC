@@ -6,7 +6,6 @@ import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
 import org.apache.commons.lang.StringUtils;
 import org.apache.spark.api.java.JavaRDD;
-import org.apache.thrift.TException;
 
 import java.io.FileWriter;
 import java.io.PrintWriter;
@@ -17,11 +16,11 @@ import java.util.Map;
  * 写入文件的算子
  *
  * @author 唐志伟
- * @since 2020/7/6 1:52 PM
  * @version 1.0
+ * @since 2020/7/6 1:52 PM
  */
 @Parameters(separators = "=")
-public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
+public class FileSink extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>> {
 //    // 输入路径
 //    @Parameter(names = {"--output"}, required = true)
 //    String outputFileName;
@@ -50,7 +49,7 @@ public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<
 //                .map(line -> StringUtils.join(line, this.params.get("separator")))
 //                .saveAsTextFile(this.params.get("outputPath"));
 
-        boolean isCombined = this.params.get("isCombined").equals("true"); // todo 之后会根据数据类型在外面自动转换
+        boolean isCombined = this.params.getOrDefault("isCombined", "true").equals("true"); // todo 之后会根据数据类型在外面自动转换
         if (isCombined) {
             // 为了方便其他的节点交互，提供将所有Partition写入一个文件的可能性
             this.getInputData("data")
@@ -76,12 +75,6 @@ public class FileSink  extends OperatorBase<JavaRDD<List<String>>, JavaRDD<List<
             this.getInputData("data")
                     .map(line -> StringUtils.join(line, this.params.get("separator")))
                     .saveAsTextFile(this.params.get("outputPath"));
-        }
-        try {
-            // 数据准备好
-            this.getMasterClient().postDataPrepared();
-        } catch (TException e) {
-            e.printStackTrace();
         }
     }
 }

@@ -1,0 +1,8 @@
+thrift:
+  port: 3000
+  optimizer:
+    host: localhost
+    port: 5000
+  scheduler:
+    host: localhost
+    port: 6000

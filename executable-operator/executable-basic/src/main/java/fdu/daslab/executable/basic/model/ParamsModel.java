@@ -7,10 +7,9 @@ import java.io.Serializable;
 /**
  * 平台的参数模型
  *
- *
  * @author 唐志伟
- * @since 2020/7/6 1:35 PM
  * @version 1.0
+ * @since 2020/7/6 1:35 PM
  */
 public class ParamsModel implements Serializable {
 

@@ -43,7 +43,8 @@ public class ElementSerialize<T> {
 
     /**
      * This function serialize an element to an file
-     * @param element element to be serialized, supporting String,Integer,Long, Double, Float type
+     *
+     * @param element  element to be serialized, supporting String,Integer,Long, Double, Float type
      * @param filePath serialize element to this path
      * @throws Exception
      */

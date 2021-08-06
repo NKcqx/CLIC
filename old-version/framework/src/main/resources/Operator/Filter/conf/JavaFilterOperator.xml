@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<Operator ID="FilterOperator" name="FilterOperator" kind="shuffler">
+
+    <platform ID="java">
+        <language>java</language>
+        <cost>3.1179</cost>
+    </platform>
+
+
+</Operator>

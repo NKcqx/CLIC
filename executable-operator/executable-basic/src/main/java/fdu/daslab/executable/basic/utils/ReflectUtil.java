@@ -10,13 +10,14 @@ import java.util.Map;
  * 反射需要的工具类，如访问获取FunctionModel
  *
  * @author 唐志伟
- * @since 2020/7/6 1:39 PM
  * @version 1.0
+ * @since 2020/7/6 1:39 PM
  */
 public class ReflectUtil {
 
     /**
      * 根据指定路径，加载class，构造对象，以及其中声明的方法
+     *
      * @param path class文件的路径
      * @return function实体
      */
@@ -30,7 +31,7 @@ public class ReflectUtil {
             Class<?> c = diskLoader.loadClass("fdu.daslab.executable.udf." + className);
             if (c != null) {
                 try {
-                    Object obj =  c.newInstance();
+                    Object obj = c.newInstance();
                     // 存在多个函数
                     Map<String, Method> functions = new HashMap<>();
                     for (Method method : c.getDeclaredMethods()) {

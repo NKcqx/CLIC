@@ -1,0 +1,38 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clic-executor-center
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      clic: executor-center
+  template:
+    metadata:
+      labels:
+        clic: executor-center
+    spec:
+      containers:
+        - name: executor-template
+          image: edwardtang/executor-center:micro-service-rebuild
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - java -jar executor-center.jar --spring.config.location=/config/application-pro.yaml
+          volumeMounts:
+            - name: executor-config
+              mountPath: /config # 挂载在当前目录的config下优先级最高
+            - name: nfs-volume
+              mountPath: /data
+          ports:
+            - name: tcp
+              containerPort: 6666
+      volumes:
+        - name: executor-config
+          configMap:
+            name: executor-configmap
+        - name: nfs-volume
+          persistentVolumeClaim:
+            claimName: pvc-nfs

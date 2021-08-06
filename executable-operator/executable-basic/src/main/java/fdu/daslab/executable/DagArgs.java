@@ -9,10 +9,10 @@ import java.util.Map;
 
 /**
  * 每个平台的参数，这些参数要求构建时均需要传入,
- *  其中：
- *      - dagPath：维护这个stage的dag的描述的文件
- *      - udfPath：udf的路径（少数平台可能没有）
- *      - stageId，masterHost，masterPort：需要和master交互需要的参数
+ * 其中：
+ * - dagPath：维护这个stage的dag的描述的文件
+ * - udfPath：udf的路径（少数平台可能没有）
+ * - stageId，masterHost，masterPort：需要和master交互需要的参数
  *
  * @author 唐志伟
  * @version 1.0
@@ -21,23 +21,23 @@ import java.util.Map;
 @Parameters(separators = "=")
 public class DagArgs {
 
-    @Parameter(names = {"--stageId", "-sid"})
-    String stageId = null;    // stage的全局唯一标识
+    @Parameter(names = {"--stageId"})
+    int stageId = 0;    // stage的全局唯一标识
 
-    @Parameter(names = {"--udfPath", "-udf"})
+    @Parameter(names = {"--jobName"})
+    String jobName = null;
+
+    @Parameter(names = {"--udfPath"})
     String udfPath = null;
 
-    @Parameter(names = {"--dagPath", "-dag"})
+    @Parameter(names = {"--dagPath"})
     String dagPath = null;
 
-    // @Parameter(names = {"--port", "-p"})
-    // Integer thriftPort; // 本server启动的thrift端口
+    @Parameter(names = {"--notifyHost"})
+    String notifyHost = null;
 
-    @Parameter(names = {"--masterHost", "-mh"})
-    String masterHost = null; // master的thrift地址
-
-    @Parameter(names = {"--masterPort", "-mp"})
-    Integer masterPort = null; // master的thrift端口
+    @Parameter(names = {"--notifyPort"})
+    int notifyPort = 0;
 
     // 其他的参数，使用--D开头
     @DynamicParameter(names = {"--D"})
