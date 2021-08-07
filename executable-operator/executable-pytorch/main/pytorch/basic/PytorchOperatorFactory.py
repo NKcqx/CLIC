@@ -1,17 +1,18 @@
-from pytorch.operators.PdConcat import PdConcat
-from pytorch.operators.PdCsvSource import PdCsvSource
-from pytorch.operators.PdDummies import PdDummies
-from pytorch.operators.PdFillNa import PdFillNa
-from pytorch.operators.PdIloc import PdIloc
-from pytorch.operators.PdStandardization import PdStandardization
-from pytorch.operators.TensorConverter import TensorConverter
-from pytorch.operators.TorchPCA import TorchPCA
-from pytorch.operators.TorchNet import TorchNet
-from pytorch.operators.PdGetSeries import PdGetSeries
-from pytorch.operators.Word2Vec import Word2Vec
-from pytorch.operators.FileSink import FileSink
+from pytorch.operators.SourceOperator import SourceOperator
+from pytorch.operators.SinkOperator import SinkOperator
+from pytorch.operators.TrainOperator import TrainOperator
+from pytorch.operators.EvaluateOperator import EvaluateOperator
+from pytorch.operators.DataLoadOperator import DataLoadOperator
+from pytorch.operators.nlp.TokenizedOperator import TokenizedOperator
+from pytorch.operators.nlp.GetVocabOperator import GetVocabOperator
+from pytorch.operators.nlp.NetPreprocessOperator import NetProcessOperator
+from pytorch.operators.nlp.PreprocessImdbOperator import PreprocessImdbOperator
+from pytorch.operators.nlp.GetWordDictOperator import GetWordDictOperator
+
 from executable.basic.model.OperatorFactory import OperatorFactory
 from executable.basic.model.OperatorBase import OperatorBase
+
+
 
 
 """
@@ -25,18 +26,16 @@ from executable.basic.model.OperatorBase import OperatorBase
 class PytorchOperatorFactory(OperatorFactory):
     def __init__(self):
         self.operatorMap = {
-            "PdConcat": PdConcat,
-            "SourceOperator": PdCsvSource,
-            "PdDummies": PdDummies,
-            "PdFillNa": PdFillNa,
-            "PdIloc": PdIloc,
-            "PdStandardization": PdStandardization,
-            "TensorConverter": TensorConverter,
-            "TorchPCA": TorchPCA,
-            "TorchNet": TorchNet,
-            "PdGetSeries": PdGetSeries,
-            "Word2Vec": Word2Vec,
-            "SinkOperator": FileSink,
+            "SinkOperator": SinkOperator,
+            "SourceOperator": SourceOperator,
+            "TrainOperator": TrainOperator,
+            "EvaluateOperator": EvaluateOperator,
+            "DataLoadOperator": DataLoadOperator,
+            "TokenizedOperator": TokenizedOperator,
+            "GetVocabOperator": GetVocabOperator,
+            "NetProcessOperator": NetProcessOperator,
+            "PreprocessImdbOperator": PreprocessImdbOperator,
+            "GetWordDictOperator": GetWordDictOperator,
         }
 
     def createOperator(self, name, id, inputKeys, outputKeys, params) -> OperatorBase:

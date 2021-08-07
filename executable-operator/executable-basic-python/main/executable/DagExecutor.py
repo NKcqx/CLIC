@@ -24,10 +24,11 @@ class DagExecutor(object):
             2. operatorFactory: 一个Factory对象
             3. dagHook: execute前后执行函数
         """
+        self.logger = Logger('ExecutorLogger', logging.DEBUG).logger
         self.initArgs(args)
         self.initNotifyClient()
         self.initOperator(operatorFactory)
-        self.logger = Logger('ExecutorLogger', logging.DEBUG).logger
+
         self.dagHook = dagHook
 
     def initArgs(self, args):

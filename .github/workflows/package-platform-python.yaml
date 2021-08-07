@@ -18,7 +18,7 @@ jobs:
           username: edwardtang
           # The login password for the registry
           password: daslab_system_group
-          context: executable-operator
+          context: CLIC/executable-operator
           dockerfile: executable-pytorch/main/pytorch/Dockerfile
           default_branch: micro-service-rebuild
           tags: "latest"

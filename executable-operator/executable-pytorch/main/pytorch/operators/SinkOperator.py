@@ -15,9 +15,9 @@ from executable.basic.utils.Logger import Logger
 logger = Logger('OperatorLogger').logger
 
 
-class FileSink(OperatorBase):
+class SinkOperator(OperatorBase):
     def __init__(self, ID, inputKeys, outputKeys, Params):
-        super().__init__("FileSink", ID, inputKeys, outputKeys, Params)
+        super().__init__("SinkOperator", ID, inputKeys, outputKeys, Params)
 
     def execute(self):
         try:

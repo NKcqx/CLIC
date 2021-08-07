@@ -9,7 +9,7 @@ from pytorch.operators.Loss.SigmoidBinaryCrossEntropyLoss import SigmoidBinaryCr
 """
 
 
-class LossFunctionFactory:
+class LossFunctionFactory(object):
     def __init__(self):
         self.lossFunctionMap = {
             "MSELoss": torch.nn.MSELoss,
