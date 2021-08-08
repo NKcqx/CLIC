@@ -19,7 +19,7 @@ def train(train_iter, net, loss, optimizer, tol_threshold, num_epochs):
     net = net.to(device)
     # trainLogger.info("training on ", device)
     batch_count = 0
-    last_loss = 999
+    last_loss = 0
     for epoch in range(num_epochs):
         train_l_sum, train_acc_sum, n, start = 0.0, 0.0, 0, time.time()
         for X, y in train_iter:
