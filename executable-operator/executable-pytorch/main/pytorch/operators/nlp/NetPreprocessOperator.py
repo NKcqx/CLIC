@@ -39,7 +39,7 @@ class NetProcessOperator(OperatorBase):
 def load_pretrained_embedding(words, pretrained_vocab, embedding_size):
     """从预训练好的vocab中提取出words对应的词向量"""
     embed = torch.zeros(len(words), embedding_size)  # 初始化为0
-    oov_count = 0 # out of vocabulary
+    oov_count = 0  # out of vocabulary
     for i, word in enumerate(words):
         try:
             # idx = pretrained_vocab.stoi[word]
