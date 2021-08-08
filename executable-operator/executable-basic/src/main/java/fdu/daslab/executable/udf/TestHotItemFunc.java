@@ -1,7 +1,5 @@
 package fdu.daslab.executable.udf;
 
-import org.apache.flink.streaming.api.windowing.windows.TimeWindow;
-import org.apache.flink.util.Collector;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
@@ -68,13 +66,13 @@ public class TestHotItemFunc {
         return res;
     }
 
-    // reduce的winFunc: 对每一个滑动窗口，输出不同商品ID的点击数和窗口末端
-    public void windowFunc(String key, TimeWindow window, Iterable<List<String>> input, Collector<List<String>> out){
-        long windowEnd = window.getEnd();
-        String count = input.iterator().next().get(1);
-        List<String> res = Arrays.asList(key, String.valueOf(windowEnd), count);
-        out.collect(res);
-    }
+//    // reduce的winFunc: 对每一个滑动窗口，输出不同商品ID的点击数和窗口末端
+//    public void windowFunc(String key, TimeWindow window, Iterable<List<String>> input, Collector<List<String>> out){
+//        long windowEnd = window.getEnd();
+//        String count = input.iterator().next().get(1);
+//        List<String> res = Arrays.asList(key, String.valueOf(windowEnd), count);
+//        out.collect(res);
+//    }
 
     // TopN区别每个商品的ID
     public String topNID(List<String> record) {

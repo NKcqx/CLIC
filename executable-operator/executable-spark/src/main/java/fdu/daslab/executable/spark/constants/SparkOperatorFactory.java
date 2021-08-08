@@ -28,6 +28,7 @@ public class SparkOperatorFactory extends OperatorFactory {
             put("DistinctOperator", DistinctOperator.class);
             put("LoopOperator", LoopOperator.class);
             put("NextIteration", NextIteration.class);
+            put("W2VOperator", W2VOperator.class);
             put("CollectionSink", CollectionSink.class);
             put("CollectionSource", CollectionSource.class);
             put("TableSourceOperator", TableSource.class);

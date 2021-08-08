@@ -26,7 +26,7 @@ public class CollectionSinkTest {
 
     @Before
     public void before() {
-        SparkInitUtil.setSparkContext(new SparkConf().setMaster("local[*]").setAppName("CountByValueOperatorTest"));
+        SparkInitUtil.setSparkContext(new SparkConf().setMaster("local[*]").setAppName("CollectionSinkTest"));
         javaSparkContext = SparkInitUtil.getDefaultSparkContext();
     }
 
