@@ -21,10 +21,6 @@ class SourceOperator(OperatorBase):
         self.module = getModuleByUdf(self.params["udfPath"]) if "udfPath" in self.params.keys() else None
 
     def execute(self):
-        # 默认为方式为read_path
-        if "type" not in self.params.keys():
-            self.params["type"] = "read_path"
-
         if self.params["type"] == "read_path":
             self.setOutputData("result", self.params["inputPath"])
         elif self.params["type"] == "udf":

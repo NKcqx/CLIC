@@ -5,7 +5,7 @@ FROM continuumio/miniconda3:4.9.2
 WORKDIR /CLIC_Pytorch
 COPY /executable-basic-python/* ./
 COPY /executable-pytorch/* ./
-RUN mkdir CLIC-Conda && tar -zxvf CLIC.tar.gz -C CLIC-Conda && rm -rf CLIC.tar.gz
+RUN mkdir CLIC-Conda && tar -zxvf CLIC.tar.gz -C CLIC-Conda
 RUN echo 'export PYTHONPATH=$PYTHONPATH:/CLIC_Pytorch' >> /root/.bashrc \
  && echo 'source /CLIC_Pytorch/CLIC-Conda/bin/activate' >> /root/.bashrc
 WORKDIR /CLIC_Pytorch/pytorch

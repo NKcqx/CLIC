@@ -31,5 +31,5 @@ class GetVocabOperator(OperatorBase):
         #     counter = dict(filter(lambda x: x[1] >= 5, counter.items()))
         #     idx_to_token = [tk for tk, _ in counter.items()]
         #     token_to_idx = {tk: idx for idx, tk in enumerate(idx_to_token)}
-        return Vocab.Vocab(counter, min_freq=eval(self.params["min_freq"]))
+        return Vocab.Vocab(counter, min_freq=self.params["min_freq"])
 
