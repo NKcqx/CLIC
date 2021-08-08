@@ -39,11 +39,11 @@ class TrainOperator(OperatorBase):
         # try:
         module = getModuleByUdf(self.params["udfPath"])
         tempDict = {
-            "num_epochs": self.params["num_epochs"],
+            "num_epochs": eval(self.params["num_epochs"]),
             # 名称暂时必须得固定一致
             # "net": module.net if "net" in dir(module) else self.netFactory.createNet(self.params["net"]),
             "loss": module.loss() if "loss" in dir(module) else self.lossFactory.createLossFunction(self.params["loss"]),
-            "tol_threshold": self.params["tol_threshold"],
+            "tol_threshold": eval(self.params["tol_threshold"]),
             "optimizer": module.optimizer(filter(lambda p: p.requires_grad, Net.parameters()), lr=0.0001) if "optimizer" in dir(module) else self.optimizerFactory.createOptimizer(self.params["optimizer"])
         }
         self.kwargs.update(tempDict)

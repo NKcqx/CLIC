@@ -47,6 +47,7 @@ def load_pretrained_embedding(words, pretrained_vocab, embedding_size):
         except KeyError:
             oov_count += 1
     if oov_count > 0:
-        logger.info("There are %d oov words." % oov_count)
+        # logger.info("There are %d oov words." % oov_count)
+        pass
     return embed
 

@@ -27,7 +27,7 @@ class PreprocessImdbOperator(OperatorBase):
             logger.error(traceback.format_exc())
 
     def preprocess_imdb(self, data, vocab, tokenized_data):  # 本函数已保存在d2lzh_torch包中方便以后使用
-        max_l = self.params["max_l"]  # 将每条评论通过截断或者补0，使得长度变成500
+        max_l = eval(self.params["max_l"])  # 将每条评论通过截断或者补0，使得长度变成500
 
         def pad(x):
             return x[:max_l] if len(x) > max_l else x + [0] * (max_l - len(x))

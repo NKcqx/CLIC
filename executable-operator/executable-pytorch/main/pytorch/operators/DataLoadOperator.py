@@ -36,7 +36,7 @@ class DataLoadOperator(OperatorBase):
             feature, label = self.getInputData("data")[0], self.getInputData("data")[1]
             # Dataset接收tensor类型，TODO：tensor中有一些可选参数
             train_set = Data.TensorDataset(tensor(feature), tensor(label))
-            train_iter = Data.DataLoader(train_set, self.params["batch_size"], shuffle=bool(self.params["shuffle"]))
+            train_iter = Data.DataLoader(train_set, eval(self.params["batch_size"]), shuffle=bool(self.params["shuffle"]))
             self.setOutputData("result", train_iter)
 
         except Exception as e:
