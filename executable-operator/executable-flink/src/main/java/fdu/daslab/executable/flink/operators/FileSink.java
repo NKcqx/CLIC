@@ -3,7 +3,7 @@ package fdu.daslab.executable.flink.operators;
 import fdu.daslab.executable.basic.model.OperatorBase;
 import fdu.daslab.executable.basic.model.ParamsModel;
 import fdu.daslab.executable.basic.model.ResultModel;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.api.java.DataSet;
 import org.apache.flink.api.java.ExecutionEnvironment;
@@ -86,12 +86,12 @@ public class FileSink  extends OperatorBase<DataSet<List<String>>, DataSet<List<
 //                    .map(line -> StringUtils.join(line, this.params.get("separator")))
 //                    .saveAsTextFile(this.params.get("outputPath"));
 //        }
-//        try {
-//            // 数据准备好
-//            this.getMasterClient().postDataPrepared();
-//        } catch (TException e) {
-//            e.printStackTrace();
-//        }
+        try {
+            // 数据准备好
+            this.getMasterClient().postDataPrepared();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
     }
 
 }

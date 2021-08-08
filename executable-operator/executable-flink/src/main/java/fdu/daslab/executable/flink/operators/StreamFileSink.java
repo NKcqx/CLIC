@@ -40,6 +40,8 @@ public class StreamFileSink extends OperatorBase<DataStream<String>, DataStream<
         String outputPath = this.params.get("outputPath");
 
         final DataStream<String> dataStream = this.getInputData("data");
+//                .map(line -> StringUtils.join(line, separator));
+//                .writeAsText(outputPath);
 
         dataStream.print();
         final StreamExecutionEnvironment fsEnv = dataStream.getExecutionEnvironment();
@@ -50,11 +52,37 @@ public class StreamFileSink extends OperatorBase<DataStream<String>, DataStream<
             e.printStackTrace();
         }
 
-//        try {
-//            // 数据准备好
-//            this.getMasterClient().postDataPrepared();
-//        } catch (TException e) {
-//            e.printStackTrace();
+//        boolean isCombined = this.params.get("isCombined").equals("true"); // todo 之后会根据数据类型在外面自动转换
+//        if (isCombined) {
+//            // 为了方便其他的节点交互，提供将所有Partition写入一个文件的可能性
+//            this.getInputData("data")
+//                    .foreachPartition(partitionIter -> {
+//                        // 所有数据均追加到一个文件上
+//                        FileWriter fileWritter = new FileWriter(this.params.get("outputPath"), true);
+//                        PrintWriter out = new PrintWriter(fileWritter);
+//                        partitionIter.forEachRemaining(record -> {
+//                            StringBuilder writeLine = new StringBuilder();
+//                            record.forEach(field -> {
+//                                writeLine.append(field);
+//                                writeLine.append(this.params.get("separator"));
+//                            });
+//                            writeLine.deleteCharAt(writeLine.length() - 1);
+//                            out.println(writeLine);
+//                            out.flush();
+//                        });
+//                        out.close();
+//                        fileWritter.close();
+//                    });
+//        } else {
+//        this.getInputData("data")
+//                .map(line -> StringUtils.join(line, this.params.get("separator")))
+//                .writeAsText(this.params.get("outputPath"));
 //        }
+        try {
+            // 数据准备好
+            this.getMasterClient().postDataPrepared();
+        } catch (TException e) {
+            e.printStackTrace();
+        }
     }
 }
