@@ -78,11 +78,11 @@ public class StreamFileSink extends OperatorBase<DataStream<String>, DataStream<
 //                .map(line -> StringUtils.join(line, this.params.get("separator")))
 //                .writeAsText(this.params.get("outputPath"));
 //        }
-        try {
-            // 数据准备好
-            this.getMasterClient().postDataPrepared();
-        } catch (TException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            // 数据准备好
+//            this.getMasterClient().postDataPrepared();
+//        } catch (TException e) {
+//            e.printStackTrace();
+//        }
     }
 }

@@ -98,7 +98,7 @@ public class W2VOperatorTest {
             Assert.assertFalse(result.isEmpty());
             String vec = result.get(0).get(0);
             String[] realRes = vec.substring(1, vec.length()-1).split(",");
-            Assert.assertEquals(realRes.length, 10);
+            Assert.assertEquals(realRes.length, 16);
         } catch (Exception ignored) {
         }
     }

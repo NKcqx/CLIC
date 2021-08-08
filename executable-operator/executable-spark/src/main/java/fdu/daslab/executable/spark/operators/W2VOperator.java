@@ -25,32 +25,6 @@ public class W2VOperator extends OperatorBase<JavaRDD<List<String>>, JavaRDD<Lis
         super("SparkW2VOperator", id, inputKeys, outputKeys, params);
     }
 
-    public static void main(String[] args) {
-//        SparkSession spark = SparkSession.builder().master("local").getOrCreate();
-        final JavaSparkContext javaSparkContext = new JavaSparkContext(new SparkConf().setMaster("local").setAppName("default"));
-        // FileSource sourceArgs = (FileSource) inputArgs.getOperatorParam();
-        // 读取文件，并按照分割符分隔开来
-        final JavaRDD<List<String>> data = javaSparkContext
-                .textFile("/Users/jason/Desktop/Spark-w2v-senti/ptb/ptb.train.txt", javaSparkContext.defaultParallelism())
-                .map(line -> Arrays.asList(line.split(" ")));
-        data.persist(StorageLevel.MEMORY_AND_DISK());
-        Word2Vec word2Vec = new Word2Vec().setMinCount(0);
-        Word2VecModel model = word2Vec.fit(data);
-//        model.save(SparkContext.getOrCreate(), "/Users/jason/Desktop/output");
-        final JavaRDD<List<String>> nextStream = data.map(d -> d.stream()
-                .map(word -> {
-                            Vector v = model.transform(word);
-                            double[] res = v.toArray();
-                            return Arrays.toString(res);
-                        })
-                .collect(Collectors.toList()));
-        System.out.println("================= After ==================");
-        final List<List<String>> nextStream2 = nextStream.sample(false, 0.001).collect();
-        for (List<String> line : nextStream2){
-            System.out.println(line.toString());
-        }
-    }
-
     @Override
     public void execute(ParamsModel inputArgs, ResultModel<JavaRDD<List<String>>> result) {
         JavaRDD<List<String>> training_data = this.getInputData("trainingData");
