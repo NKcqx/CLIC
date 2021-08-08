@@ -1,0 +1,137 @@
+operators:
+- inputKeys: []
+  name: SourceOperator
+  id: SourceOperator61390596
+  outputKeys:
+  - result
+  params:
+    udfPath: /Users/zjchen/Codes/JavaProjects/CLIC/executable-operator/executable-pytorch/test/TestUdf.py
+    inputPath: /Users/zjchen/Downloads/amazon_reviews/test.ft.csv
+    type: udf
+- inputKeys:
+  - data
+  name: TokenizedOperator
+  id: TokenizedOperator12341234
+  outputKeys:
+  - result
+  params: {}
+- inputKeys:
+  - data
+  name: GetVocabOperator
+  id: GetVocabOperator13124123
+  outputKeys:
+  - result
+  params:
+    min_freq: 5
+- inputKeys:
+  - data
+  - vocab
+  - tokenized_data
+  name: PreprocessImdbOperator
+  id: PreprocessImdbOperator124123124
+  outputKeys:
+  - result
+  params:
+    max_l: 500
+- inputKeys:
+  - data
+  name: DataLoadOperator
+  id: DataLoadOperator912938123
+  outputKeys:
+  - result
+  params:
+    batch_size: 512
+    shuffle: True
+- inputKeys: []
+  name: SourceOperator
+  id: SourceOperator43324396
+  outputKeys:
+  - result
+  params:
+    inputPath: /Users/zjchen/Desktop/CLIC/PytorchCodes/sentiment_classification/data/word2vec_dict_spark.csv
+    type: read_path
+- inputKeys:
+  - data
+  name: GetWordDictOperator
+  id: GetWordDictOperator1931231
+  outputKeys:
+  - result
+  params: {}
+- inputKeys:
+  - vocab
+  - w2v_dict
+  name: NetProcessOperator
+  id: NetProcessOperator19923812
+  outputKeys:
+  - result
+  params:
+    udfPath: /Users/zjchen/Codes/JavaProjects/CLIC/executable-operator/executable-pytorch/test/TestUdf.py
+- inputKeys:
+  - data
+  - net
+  name: TrainOperator
+  id: TrainOperator199412801293
+  outputKeys:
+  - result
+  params:
+    udfPath: /Users/zjchen/Codes/JavaProjects/CLIC/executable-operator/executable-pytorch/test/TestUdf.py
+    num_epochs: 10
+    tol_threshold: 0.1
+dag:
+- id: TokenizedOperator12341234
+  dependencies:
+  - sourceKey: result
+    id: SourceOperator61390596
+    targetKey: data
+- id: GetVocabOperator13124123
+  dependencies:
+  - sourceKey: result
+    id: TokenizedOperator12341234
+    targetKey: data
+- id: PreprocessImdbOperator124123124
+  dependencies:
+  - sourceKey: result
+    id: TokenizedOperator12341234
+    targetKey: tokenized_data
+- id: PreprocessImdbOperator124123124
+  dependencies:
+  - sourceKey: result
+    id: SourceOperator61390596
+    targetKey: data
+- id: PreprocessImdbOperator124123124
+  dependencies:
+  - sourceKey: result
+    id: GetVocabOperator13124123
+    targetKey: vocab
+- id: DataLoadOperator912938123
+  dependencies:
+  - sourceKey: result
+    id: PreprocessImdbOperator124123124
+    targetKey: data
+- id: GetWordDictOperator1931231
+  dependencies:
+  - sourceKey: result
+    id: SourceOperator43324396
+    targetKey: data
+- id: NetProcessOperator19923812
+  dependencies:
+  - sourceKey: result
+    id: GetWordDictOperator1931231
+    targetKey: w2v_dict
+- id: NetProcessOperator19923812
+  dependencies:
+  - sourceKey: result
+    id: GetVocabOperator13124123
+    targetKey: vocab
+- id: TrainOperator199412801293
+  dependencies:
+  - sourceKey: result
+    id: DataLoadOperator912938123
+    targetKey: data
+- id: TrainOperator199412801293
+  dependencies:
+  - sourceKey: result
+    id: NetProcessOperator19923812
+    targetKey: net
+- id: SourceOperator61390596
+- id: SourceOperator43324396

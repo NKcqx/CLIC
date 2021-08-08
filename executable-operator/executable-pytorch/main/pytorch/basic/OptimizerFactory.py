@@ -12,7 +12,6 @@ class OptimizerFactory(object):
         self.optimizerMap = {
             "Adadelta": optim.Adadelta,
             "Adam": optim.Adam,
-
         }
 
     def createOptimizer(self, name):

@@ -39,3 +39,30 @@ operators:
   - name: SourceOperator
     params: [inputPath, separator]
     operatorStructure: SOURCE
+#  下面主要是pytorch的operator
+  - name: TrainOperator
+    params: [udfPath, num_epochs, tol_threshold]
+    operatorStructure: JOIN
+    inputKeys: [data, net]
+  - name: DataLoadOperator
+    params: [batch_size, shuffle]
+    operatorStructure: MAP
+  - name: TokenizedOperator
+    params: []
+    operatorStructure: MAP
+  - name: GetVocabOperator
+    params: [min_freq]
+    operatorStructure: MAP
+  - name: NetProcessOperator
+    params: [udfPath]
+    operatorStructure: JOIN
+    inputKeys: [vocab, w2v_dict]
+  - name: PreprocessImdbOperator
+    params: [max_l]
+    operatorStructure: JOIN
+    inputKeys: [data, tokenized_data, vocab]
+  - name: GetWordDictOperator
+    params: []
+    operatorStructure: MAP
+
+

@@ -69,7 +69,7 @@ class TorchNet(OperatorBase):
 
             module = importlib.import_module(self.params["network"])
             # if isinstance(self.getInputData("train-data"), datasets):
-            
+
             model = module.Net().to(self.params["device"])
 
             transform = transforms.Compose([

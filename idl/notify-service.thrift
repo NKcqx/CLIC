@@ -1,6 +1,7 @@
 namespace java fdu.daslab.thrift.notifyservice
 namespace py thrift.notifyservice
 
+
 /*
     定义一个接口，用于下游向上层同步调度状态
     现在采用rpc的方式通知，为了可能采用更简单的方式

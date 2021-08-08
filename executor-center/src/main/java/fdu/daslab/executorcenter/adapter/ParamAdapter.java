@@ -139,6 +139,7 @@ public class ParamAdapter {
                     put("id", String.valueOf(inputId));
                     // 恶心的东西，暂时使用上下游的key表示
                     List<String> inputOutputKeys = operators.get(inputId).operatorInfo.outputKeys;
+                    // TODO：这里暂时只能获取outputKeys中的第一个？
                     put("sourceKey", CollectionUtils.isEmpty(inputOutputKeys) ? "" :
                             inputOutputKeys.get(0));
                     List<String> targetKeys = nodeInfo.operatorInfo.inputKeys;
