@@ -49,12 +49,12 @@ if __name__ == "__main__":
     parser.add_argument("--jobName", type=str, default=None)
     parser.add_argument("--notifyHost", type=str, default=None)
     parser.add_argument("--notifyPort", type=int, default=0)
-    args = parser.parse_known_args(["--dagPath=/Users/zjchen/Codes/JavaProjects/CLIC/executable-operator/executable-pytorch/resources/sentiJob.yaml",
-                                    "--stageId=17",
-                                    "--jobName=testPytorch",
+    # args = parser.parse_known_args(["--dagPath=/Users/zjchen/Codes/JavaProjects/CLIC/executable-operator/executable-pytorch/resources/sentiJob.yaml",
+    #                                 "--stageId=17",
+    #                                 "--jobName=testPytorch",
                                     # "--notifyHost=127.0.0.1",
                                     # "--notifyPort=8888"
-                                    ])
-    # args = parser.parse_known_args()
+                                    # ])
+    args = parser.parse_known_args()
     executor = DagExecutor(args, PytorchOperatorFactory())
     executor.execute()
