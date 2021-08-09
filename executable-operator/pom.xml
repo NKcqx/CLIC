@@ -18,7 +18,6 @@
         <module>executable-java</module>
         <module>executable-spark</module>
         <module>executable-graphchi</module>
-        <module>executable-flink</module>
     </modules>
 
     <dependencyManagement>
