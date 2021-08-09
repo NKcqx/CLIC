@@ -41,6 +41,7 @@ public class W2VOperatorTest {
                     params);
             HashMap<String, String> params2 = new HashMap<>();
             params2.put("vectorSize", "16");
+            params2.put("fit", "true");
             this.w2v = (W2VOperator) sparkOperatorFactory.createOperator(
               "W2VOperator",
               "2",
@@ -50,8 +51,8 @@ public class W2VOperatorTest {
             );
 
             HashMap<String, String> params3 = new HashMap<>();
-            params3.put("outputPath", "/Users/jason/Desktop/Spark-w2v-senti/output/w2v_output");
-            params3.put("separator", "$");
+            params3.put("outputPath", "/Users/jason/Desktop/Spark-w2v-senti/output/w2v_output.csv");
+            params3.put("separator", ",");
             this.sink  = (FileSink) sparkOperatorFactory.createOperator(
               "SinkOperator",
               "3",
@@ -72,7 +73,7 @@ public class W2VOperatorTest {
     }
 
     @Test
-    public void w2v() throws InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
+    public void w2v() {
         try {
             // 不能使用之前的BFSTraversal
             Queue<OperatorBase<JavaRDD<List<String>>, JavaRDD<List<String>>>> bfsQueue = new LinkedList<>();
@@ -96,7 +97,10 @@ public class W2VOperatorTest {
             }
             List<List<String>> result = this.w2v.getOutputData("result").collect() ;
             Assert.assertFalse(result.isEmpty());
-            String vec = result.get(0).get(0);
+
+            Assert.assertEquals(result.get(0), Arrays.asList("word", "vector"));
+            Assert.assertEquals(result.get(1).size(), 2);
+            String vec = result.get(1).get(1);
             String[] realRes = vec.substring(1, vec.length()-1).split(",");
             Assert.assertEquals(realRes.length, 16);
         } catch (Exception ignored) {
