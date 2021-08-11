@@ -30,7 +30,7 @@ public class W2VOperatorTest {
     @Before
     public void before() {
         HashMap<String, String> params = new HashMap<>();
-        params.put("inputPath", "/Users/jason/Desktop/Spark-w2v-senti/ptb-sample.txt");
+        params.put("inputPath", "/Users/jason/Desktop/Spark-w2v-senti/ptb/ptb.train.txt");
         params.put("separator", " ");
         try{
             this.source = (FileSource) sparkOperatorFactory.createOperator(
@@ -97,8 +97,6 @@ public class W2VOperatorTest {
             }
             List<List<String>> result = this.w2v.getOutputData("result").collect() ;
             Assert.assertFalse(result.isEmpty());
-
-            Assert.assertEquals(result.get(0), Arrays.asList("word", "vector"));
             Assert.assertEquals(result.get(1).size(), 2);
             String vec = result.get(1).get(1);
             String[] realRes = vec.substring(1, vec.length()-1).split(",");
