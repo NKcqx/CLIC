@@ -24,10 +24,10 @@ class GetWordDictOperator(OperatorBase):
 
     def execute(self):
         try:
-            w2v_dataframe = pd.read_csv(self.getInputData("data"), converters={"word": str, "vector": eval})
+            w2v_dataframe = pd.read_csv(self.getInputData("data"), converters={0: str, 1: eval}, header=None, error_bad_lines=False)
             w2v_dict = {}
             for index, row in w2v_dataframe.iterrows():
-                w2v_dict[row["word"]] = row["vector"]
+                w2v_dict[row[0]] = row[1]
             self.setOutputData("result", w2v_dict)
 
         except Exception as e:

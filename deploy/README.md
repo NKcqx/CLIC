@@ -90,7 +90,7 @@
 ## 版本更新
 
 更新对应deployment的镜像即可
-kubectl set image deployment/clic-job-center job-template=edwardtang/job-center:micro-service-rebuild --record
+kubectl set image deployment/clic-operator-center operator-template=edwardtang/operator-center:micro-service-rebuild --record
 
 ## kubernetes的服务发现（dns）经常出现问题
 
