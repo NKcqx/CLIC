@@ -1,13 +1,11 @@
 import torch
 import time
-from executable.basic.utils.Logger import Logger
+from loguru import logger
 """
 Time       : 2021/7/19 2:15 下午
 Author     : zjchen
 Description:
 """
-
-trainLogger = Logger('TrainLogger').logger
 
 
 def train(train_iter, net, loss, optimizer, tol_threshold, num_epochs):
@@ -41,7 +39,7 @@ def train(train_iter, net, loss, optimizer, tol_threshold, num_epochs):
             #     batch_count += 1
         cur_loss = train_l_sum / batch_count
         tol = abs(cur_loss - last_loss)
-        trainLogger.info('epoch %d, loss %.4f, tol = %.4f,train acc %.3f, time %.1f sec'
+        logger.info('epoch %d, loss %.4f, tol = %.4f,train acc %.3f, time %.1f sec'
                          % (epoch + 1, train_l_sum / batch_count, tol, train_acc_sum / n, time.time() - start))
         if tol < tol_threshold:
             break

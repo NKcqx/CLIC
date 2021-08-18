@@ -1,8 +1,5 @@
 import traceback
-import sys
-import importlib
 from executable.basic.model.OperatorBase import OperatorBase
-from executable.basic.utils.Logger import Logger
 from pytorch.basic.TrainUtils import evaluate_accuracy
 
 
@@ -12,8 +9,6 @@ Author     : zjchen
 Description:
 """
 
-logger = Logger('OperatorLogger').logger
-
 
 class EvaluateOperator(OperatorBase):
     def __init__(self, ID, inputKeys, outputKeys, Params):
@@ -21,8 +16,6 @@ class EvaluateOperator(OperatorBase):
         self.module = None
 
     def execute(self):
-        try:
-            self.setOutputData("result", evaluate_accuracy(self.getInputData("data_iter"), self.getInputData("net"),
-                                                           self.params["device"]))
-        except Exception as e:
-            logger.error(traceback.format_exc())
+
+        self.setOutputData("result", evaluate_accuracy(self.getInputData("data_iter"), self.getInputData("net"),
+                                                       self.params["device"]))

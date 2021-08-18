@@ -1,4 +1,3 @@
-import traceback
 import collections
 import math
 import random
@@ -7,7 +6,6 @@ import torch
 from torch import nn
 import torch.utils.data as Data
 from executable.basic.model.OperatorBase import OperatorBase
-from executable.basic.utils.Logger import Logger
 from pytorch.basic.LossFunctionFactory import LossFunctionFactory
 from pytorch.basic.OptimizerFactory import OptimizerFactory
 """
@@ -16,8 +14,6 @@ from pytorch.basic.OptimizerFactory import OptimizerFactory
 @Author     : zjchen
 @Description: 使用pytorch实现对word2vec算法
 """
-
-logger = Logger('OperatorLogger').logger
 
 
 class MyDataset(torch.utils.data.Dataset):
@@ -106,7 +102,7 @@ class Word2Vec(OperatorBase):
     def train(self, net, num_epochs, data_iter, loss, optimizer):
         loss = loss()
         device = self.params["device"]
-        logger.info("train on", device)
+        # logger.info("train on", device)
         net = net.to(device)
         for epoch in range(num_epochs):
             start, l_sum, n = time.time(), 0.0, 0
@@ -123,61 +119,58 @@ class Word2Vec(OperatorBase):
                 optimizer.step()
                 l_sum += l.cpu().item()
                 n += 1
-            logger.info('epoch %d, loss %.2f, time %.2fs'
-                  % (epoch + 1, l_sum / n, time.time() - start))
+            # logger.info('epoch %d, loss %.2f, time %.2fs'
+            #       % (epoch + 1, l_sum / n, time.time() - start))
         self.setOutputData("result", net)
 
     def execute(self):
-        try:
-            lossFunctionFactory = LossFunctionFactory()
-            optimizerFactory = OptimizerFactory()
-            loss_function = lossFunctionFactory.createLossFunction(self.params["loss"])
-            optimizer = optimizerFactory.createOptimizer(self.params["optimizer"])
-            batch_size = self.params["batch_size"]
-            num_workers = self.params["num_workers"]
-            min_count = self.params["min_count"]
-            max_window_size = self.params["max_window_size"]
-            lr = self.params["lr"]
+        lossFunctionFactory = LossFunctionFactory()
+        optimizerFactory = OptimizerFactory()
+        loss_function = lossFunctionFactory.createLossFunction(self.params["loss"])
+        optimizer = optimizerFactory.createOptimizer(self.params["optimizer"])
+        batch_size = self.params["batch_size"]
+        num_workers = self.params["num_workers"]
+        min_count = self.params["min_count"]
+        max_window_size = self.params["max_window_size"]
+        lr = self.params["lr"]
 
-            raw_dataset = [i.split() for i in self.getInputData("data")]
-            # 筛选出现次数大于5次的词
-            counter = collections.Counter([tk for st in raw_dataset for tk in st])
-            counter = dict(filter(lambda x: x[1] >= min_count, counter.items()))
+        raw_dataset = [i.split() for i in self.getInputData("data")]
+        # 筛选出现次数大于5次的词
+        counter = collections.Counter([tk for st in raw_dataset for tk in st])
+        counter = dict(filter(lambda x: x[1] >= min_count, counter.items()))
 
-            # 建立词语索引
-            idx_to_token = [tk for tk, _ in counter.items()]
-            token_to_idx = {tk: idx for idx, tk in enumerate(idx_to_token)}
-            dataset = [[token_to_idx[tk] for tk in st if tk in token_to_idx] for st in raw_dataset]
-            num_tokens = sum([len(st) for st in dataset])
+        # 建立词语索引
+        idx_to_token = [tk for tk, _ in counter.items()]
+        token_to_idx = {tk: idx for idx, tk in enumerate(idx_to_token)}
+        dataset = [[token_to_idx[tk] for tk in st if tk in token_to_idx] for st in raw_dataset]
+        num_tokens = sum([len(st) for st in dataset])
 
-            # 二次采样，丢弃高频词
-            subsampled_dataset = [[tk for tk in st if not discard(tk, counter, idx_to_token, num_tokens)] for st in dataset]
+        # 二次采样，丢弃高频词
+        subsampled_dataset = [[tk for tk in st if not discard(tk, counter, idx_to_token, num_tokens)] for st in dataset]
 
-            # 提取中心词和背景词
-            all_centers, all_contexts = get_centers_and_contexts(subsampled_dataset, max_window_size)
+        # 提取中心词和背景词
+        all_centers, all_contexts = get_centers_and_contexts(subsampled_dataset, max_window_size)
 
-            # 负采样
-            sampling_weights = [counter[w] ** 0.75 for w in idx_to_token]
-            all_negatives = get_negatives(all_contexts, sampling_weights, 5)
+        # 负采样
+        sampling_weights = [counter[w] ** 0.75 for w in idx_to_token]
+        all_negatives = get_negatives(all_contexts, sampling_weights, 5)
 
-            # batchify函数指定DataLoader实例中⼩批量的读取⽅式。
-            dataset = MyDataset(all_centers,
-                                all_contexts,
-                                all_negatives)
+        # batchify函数指定DataLoader实例中⼩批量的读取⽅式。
+        dataset = MyDataset(all_centers,
+                            all_contexts,
+                            all_negatives)
 
-            data_iter = Data.DataLoader(dataset, batch_size, shuffle=True,
-                                        collate_fn=batchify,
-                                        num_workers=num_workers)
+        data_iter = Data.DataLoader(dataset, batch_size, shuffle=True,
+                                    collate_fn=batchify,
+                                    num_workers=num_workers)
 
-            # 初始化模型参数
-            embed_size = self.params["embed_size"]
-            net = nn.Sequential(
-                nn.Embedding(num_embeddings=len(idx_to_token), embedding_dim=embed_size),
-                nn.Embedding(num_embeddings=len(idx_to_token), embedding_dim=embed_size)
-            )
-            optimizer = optimizer(net.parameters(), lr=lr)
-            logger.info("开始训练")
-            self.train(net, num_epochs=self.params["num_epochs"], data_iter=data_iter, loss=loss_function, optimizer=optimizer)
+        # 初始化模型参数
+        embed_size = self.params["embed_size"]
+        net = nn.Sequential(
+            nn.Embedding(num_embeddings=len(idx_to_token), embedding_dim=embed_size),
+            nn.Embedding(num_embeddings=len(idx_to_token), embedding_dim=embed_size)
+        )
+        optimizer = optimizer(net.parameters(), lr=lr)
+        # logger.info("开始训练")
+        self.train(net, num_epochs=self.params["num_epochs"], data_iter=data_iter, loss=loss_function, optimizer=optimizer)
 
-        except Exception as e:
-            logger.error(traceback.format_exc())

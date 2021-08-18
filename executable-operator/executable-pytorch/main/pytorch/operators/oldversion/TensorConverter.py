@@ -1,7 +1,5 @@
 import torch
-import traceback
 from executable.basic.model.OperatorBase import OperatorBase
-from executable.basic.utils.Logger import Logger
 
 """
 @ProjectName: CLIC
@@ -9,8 +7,6 @@ from executable.basic.utils.Logger import Logger
 @Author     : zjchen
 @Description: 将输入dataFrame转换成tensor
 """
-
-logger = Logger('OperatorLogger').logger
 
 
 def mapping_type(str_type):
@@ -29,10 +25,7 @@ class TensorConverter(OperatorBase):
         super().__init__("TensorConverter", ID, inputKeys, outputKeys, Params)
 
     def execute(self):
-        try:
-            self.setOutputData("result", torch.tensor(self.getInputData("data").values,
-                                                      dtype=mapping_type(self.params["dtype"])
-                                                      ))
-        except Exception as e:
-            logger.error(traceback.format_exc())
+        self.setOutputData("result", torch.tensor(self.getInputData("data").values,
+                                                  dtype=mapping_type(self.params["dtype"])
+                                                  ))
 

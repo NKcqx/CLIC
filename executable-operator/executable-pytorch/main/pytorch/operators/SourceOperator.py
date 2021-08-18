@@ -4,15 +4,12 @@ import sys
 import importlib
 from executable.basic.model.OperatorBase import OperatorBase
 from pytorch.basic.utils import getModuleByUdf
-from executable.basic.utils.Logger import Logger
 """
 @ProjectName: CLIC
 @Time       : 2020/11/23 下午6:35
 @Author     : zjchen
 @Description: 读csv文件，文件路径参数为inputPath, 输出结果result
 """
-
-logger = Logger('SourceOperatorLogger').logger
 
 
 class SourceOperator(OperatorBase):

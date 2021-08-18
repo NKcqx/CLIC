@@ -1,7 +1,5 @@
 import torch
-import traceback
 from executable.basic.model.OperatorBase import OperatorBase
-from executable.basic.utils.Logger import Logger
 
 """
 @ProjectName: CLIC
@@ -10,21 +8,16 @@ from executable.basic.utils.Logger import Logger
 @Description: 对tensor进行PCA处理
 """
 
-logger = Logger('OperatorLogger').logger
-
 
 class TorchPCA(OperatorBase):
     def __init__(self, ID, inputKeys, outputKeys, Params):
         super().__init__("TorchPCA", ID, inputKeys, outputKeys, Params)
 
     def execute(self):
-        try:
-            self.setOutputData("result", torch.pca_lowrank(self.getInputData("data"),
-                                                           int(self.params["k"]),
-                                                           (self.params["center"].lower() == 'true')
-                                                           )[2].t())
-        except Exception as e:
-            logger.error(traceback.format_exc())
+        self.setOutputData("result", torch.pca_lowrank(self.getInputData("data"),
+                                                       int(self.params["k"]),
+                                                       (self.params["center"].lower() == 'true')
+                                                       )[2].t())
 
 
     # def PCA_svd(self, X, k, center=True):

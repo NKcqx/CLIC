@@ -1,6 +1,5 @@
 from thriftGen.notifyservice.NotifyService import Client
-import logging
-from executable.basic.utils.Logger import Logger
+from loguru import logger
 from thrift.transport.TSocket import TSocket
 from thrift.protocol.TBinaryProtocol import TBinaryProtocol
 
@@ -20,12 +19,12 @@ class NotifyServiceClient(object):
             self.transport = TSocket(host=host, port=port)
             self.client = Client(TBinaryProtocol(self.transport))
             self.stageId = stageId
-            self.logger = Logger('NotifyClientLogger', logging.DEBUG).logger
+            self.logger = logger
             self.jobName = jobName
 
     def notify(self, snapshot):
         if self.isDebug:
-            self.logger.info("debug info: {}".format(snapshot.message))
+            self.logger.info("debug info: {}", snapshot.message)
             return
         try:
             self.transport.open()

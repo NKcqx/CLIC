@@ -1,11 +1,9 @@
 from executable.basic.model.OperatorBase import OperatorBase
-from executable.basic.utils.Logger import Logger
 from pytorch.basic.LossFunctionFactory import LossFunctionFactory
 from pytorch.basic.OptimizerFactory import OptimizerFactory
 from torch.optim.lr_scheduler import StepLR
 from torchvision import transforms
 import importlib
-import traceback
 import torch
 
 """
@@ -14,8 +12,6 @@ import torch
 @Author     : zjchen, NKCqx
 @Description: 一个pytorch通用网络结构
 """
-
-logger = Logger('OperatorLogger').logger
 
 
 class TorchNet(OperatorBase):
@@ -52,44 +48,39 @@ class TorchNet(OperatorBase):
 
         test_loss /= len(test_loader.dataset)
 
-        logger.info('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
-            test_loss, correct, len(test_loader.dataset),
-            100. * correct / len(test_loader.dataset)))
+        # logger.info('\nTest set: Average loss: {:.4f}, Accuracy: {}/{} ({:.0f}%)\n'.format(
+        #     test_loss, correct, len(test_loader.dataset),
+        #     100. * correct / len(test_loader.dataset)))
 
     def execute(self):
-        try:
-            lossFunctionFactory = LossFunctionFactory()
-            optimizerFactory = OptimizerFactory()
-            kwargs = {'batch_size': self.params["batch-size"]}
-            if self.params["device"] == "cuda":
-                cuda_kwargs = {'num_workers': 1,
-                               'pin_memory': True,
-                               'shuffle': True}
-                kwargs.update(cuda_kwargs)
+        lossFunctionFactory = LossFunctionFactory()
+        optimizerFactory = OptimizerFactory()
+        kwargs = {'batch_size': self.params["batch-size"]}
+        if self.params["device"] == "cuda":
+            cuda_kwargs = {'num_workers': 1,
+                           'pin_memory': True,
+                           'shuffle': True}
+            kwargs.update(cuda_kwargs)
 
-            module = importlib.import_module(self.params["network"])
-            # if isinstance(self.getInputData("train-data"), datasets):
+        module = importlib.import_module(self.params["network"])
+        # if isinstance(self.getInputData("train-data"), datasets):
 
-            model = module.Net().to(self.params["device"])
+        model = module.Net().to(self.params["device"])
 
-            transform = transforms.Compose([
-                transforms.ToTensor(),
-                transforms.Normalize((0.1307,), (0.3081,))
-                ])
-            data = module.Dataset(root=self.params["data-path"], train=self.params["train"], transform=transform)
-            data_loader = torch.utils.data.DataLoader(data, **kwargs)
-            loss_function = lossFunctionFactory.createLossFunction(self.params["loss_function"])
-            optimizer = optimizerFactory.createOptimizer(self.params["optimizer"])
-            if self.params["train"]:
-                optimizer = optimizer(model.parameters(), lr=self.params["lr"])  # TODO: 可指定不同的optimizer 下同
-                scheduler = StepLR(optimizer, step_size=1, gamma=self.params["gamma"])
-                for epoch in range(1, self.params["epochs"] + 1):
-                    self.train(model, loss_function, data_loader, optimizer, epoch)
-                    scheduler.step()
-            else:
-                self.test(model, loss_function, data_loader)
-
-        except Exception as e:
-            logger.error(traceback.format_exc())
-
+        transform = transforms.Compose([
+            transforms.ToTensor(),
+            transforms.Normalize((0.1307,), (0.3081,))
+            ])
+        data = module.Dataset(root=self.params["data-path"], train=self.params["train"], transform=transform)
+        data_loader = torch.utils.data.DataLoader(data, **kwargs)
+        loss_function = lossFunctionFactory.createLossFunction(self.params["loss_function"])
+        optimizer = optimizerFactory.createOptimizer(self.params["optimizer"])
+        if self.params["train"]:
+            optimizer = optimizer(model.parameters(), lr=self.params["lr"])  # TODO: 可指定不同的optimizer 下同
+            scheduler = StepLR(optimizer, step_size=1, gamma=self.params["gamma"])
+            for epoch in range(1, self.params["epochs"] + 1):
+                self.train(model, loss_function, data_loader, optimizer, epoch)
+                scheduler.step()
+        else:
+            self.test(model, loss_function, data_loader)
 

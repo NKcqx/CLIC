@@ -22,7 +22,7 @@ operators:
   outputKeys:
   - result
   params:
-    min_freq: 5
+    min_freq: "5"
 - inputKeys:
   - data
   - vocab
@@ -32,7 +32,7 @@ operators:
   outputKeys:
   - result
   params:
-    max_l: 500
+    max_l: "500"
 - inputKeys:
   - data
   name: DataLoadOperator
@@ -40,7 +40,7 @@ operators:
   outputKeys:
   - result
   params:
-    batch_size: 512
+    batch_size: "64"
     shuffle: True
 - inputKeys: []
   name: SourceOperator
@@ -75,8 +75,8 @@ operators:
   - result
   params:
     udfPath: /Users/zjchen/Codes/JavaProjects/CLIC/executable-operator/executable-pytorch/test/TestUdf.py
-    num_epochs: 10
-    tol_threshold: 0.1
+    num_epochs: "1"
+    tol_threshold: "0.1"
 dag:
 - id: TokenizedOperator12341234
   dependencies:

@@ -3,7 +3,7 @@ import sys
 import time
 from executable.DagHook import DagHook
 from executable.DagArgs import DagArgs
-from executable.basic.utils.Logger import Logger
+from loguru import logger
 from executable.basic.utils.ArgUtil import parse_args
 from executable.basic.utils.TopoTraversal import TopoTraversal
 from service.client.NotifyServiceClient import NotifyServiceClient
@@ -24,7 +24,6 @@ class DagExecutor(object):
             2. operatorFactory: 一个Factory对象
             3. dagHook: execute前后执行函数
         """
-        self.logger = Logger('ExecutorLogger', logging.DEBUG).logger
         self.initArgs(args)
         self.initNotifyClient()
         self.initOperator(operatorFactory)
@@ -45,7 +44,7 @@ class DagExecutor(object):
         try:
             self.headOperators = parse_args(self.basicArgs.dagPath, factory)
         except Exception as e:
-            self.logger.error(e)
+            logger.exception("Operator Init Error!")
             self.notifyServiceClient.notify(StageSnapshot(StageStatus.FAILURE, e, dict()))
             sys.exit(-1)
 
@@ -55,6 +54,7 @@ class DagExecutor(object):
                                                        self.basicArgs.jobName,
                                                        self.basicArgs.notifyHost,
                                                        self.basicArgs.notifyPort)
+
     def execute(self):
         """
         Description:
@@ -64,24 +64,24 @@ class DagExecutor(object):
         """
         try:
             self.dagHook.pre_handler(self.platformArgs)
-            self.logger.info("Stage(" + str(self.basicArgs.stageId) + ")" + " started!")
+            logger.info("Stage(" + str(self.basicArgs.stageId) + ")" + " started!")
             self.notifyServiceClient.notify(StageSnapshot(StageStatus.RUNNING, "", dict()))
             self.executeDag()
             self.notifyServiceClient.notify(StageSnapshot(StageStatus.COMPLETED, "", dict()))
-            self.logger.info("Stage(" + str(self.basicArgs.stageId) + ")" + " completed!")
+            logger.info("Stage(" + str(self.basicArgs.stageId) + ")" + " completed!")
             self.dagHook.post_handler(self.platformArgs)
         except Exception as e:
             self.notifyServiceClient.notify(StageSnapshot(StageStatus.FAILURE, e, dict()))
-            self.logger.error(e)
+            logger.exception("DagExecutor executor error")
 
     def executeDag(self):
         start = time.process_time()
         topoTraversal = TopoTraversal(self.headOperators)
         while topoTraversal.hasNextOpt():
             curOpt = topoTraversal.nextOpt()
-            self.logger.info("Stage({}) ———— Current Operator is ".format(self.basicArgs.stageId) + curOpt.name)
+            logger.info("Stage({}) ———— Current Operator is {}", self.basicArgs.stageId, curOpt.name)
             curOpt.execute()
-            self.logger.info("Stage({}) ———— Current Result:\n {}".format(self.basicArgs.stageId, curOpt.getOutputData("result")))
+            logger.info("Stage({}) ———— {} Result:\n {}", self.basicArgs.stageId, curOpt.name, curOpt.getOutputData("result"))
             connections = curOpt.getOutputConnections()
             for connection in connections:
                 targetOpt = connection.getTargetOpt()
@@ -92,5 +92,5 @@ class DagExecutor(object):
                         sourceResult = curOpt.getOutputData(keyPair[0])
                         targetOpt.setInputData(keyPair[1], sourceResult)
         end = time.process_time()
-        self.logger.info("Stage({}) ———— Running hold time: ".format(self.basicArgs.stageId) + str(end - start) + "s")
-        self.logger.info("Stage({}) ———— End The Current Stage".format(self.basicArgs.stageId))
+        logger.info("Stage({}) ———— Running hold time: {}", self.basicArgs.stageId, str(end - start) + "s")
+        logger.info("Stage({}) ———— End The Current Stage", self.basicArgs.stageId)

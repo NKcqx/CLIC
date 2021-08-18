@@ -1,16 +1,9 @@
-import importlib
-import os
-import sys
-import torch
-import traceback
 from pytorch.basic.TrainUtils import train
 from pytorch.basic.utils import getModuleByUdf
 from executable.basic.model.OperatorBase import OperatorBase
-from executable.basic.utils.Logger import Logger
 from pytorch.basic.LossFunctionFactory import LossFunctionFactory
 from pytorch.basic.OptimizerFactory import OptimizerFactory
 from pytorch.basic.NetFactory import NetFactory
-from pytorch.basic.utils import splitUdfPath
 
 
 """
@@ -20,8 +13,6 @@ Description: 用于训练神经网络的operator，使用了一个通用的训�
              这里的问题在于，要求用户提前提供pytorch版本的net, loss, optimizer，
              但是从逻辑上来说，用户是不能提前知道这个算子将在什么地方运行
 """
-
-logger = Logger('OperatorLogger').logger
 
 
 class TrainOperator(OperatorBase):
@@ -47,16 +38,12 @@ class TrainOperator(OperatorBase):
             "optimizer": module.optimizer(filter(lambda p: p.requires_grad, Net.parameters()), lr=0.0001) if "optimizer" in dir(module) else self.optimizerFactory.createOptimizer(self.params["optimizer"])
         }
         self.kwargs.update(tempDict)
-        # except Exception as e:
-        #     logger.error("Net参数错误\n" + traceback.format_exc())
 
     def execute(self):
-        try:
-            self.kwargs["net"] = self.getInputData("net")
-            self.fillKwargs(self.kwargs["net"])
+        self.kwargs["net"] = self.getInputData("net")
+        self.fillKwargs(self.kwargs["net"])
 
-            # kwargs需要train_iter, net, loss, optimizer, device, num_epochs这些参数
-            self.setOutputData("result", train(self.getInputData("data"), **self.kwargs))
-        except Exception as e:
-            logger.error(traceback.format_exc())
+        # kwargs需要train_iter, net, loss, optimizer, device, num_epochs这些参数
+        self.setOutputData("result", train(self.getInputData("data"), **self.kwargs))
+
 
