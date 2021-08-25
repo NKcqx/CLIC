@@ -21,17 +21,17 @@ public class TestGatewayCenter {
 
     @Test
     public void testParseJson() throws IOException {
-        File file = new File("/home/zjchenn/Projects/IDEA/CLIC/gateway-center/src/main/resources/templatePlan.json");
-        String content= FileUtils.readFileToString(file,"UTF-8");
-        PlanBuilder planBuilder = new PlanBuilder();
-        Plan plan = planBuilder.parseJson(content);
-        System.out.println(plan);
+//        File file = new File("gateway-center/src/main/resources/pytorchJobPlan.json");
+//        String content= FileUtils.readFileToString(file,"UTF-8");
+//        PlanBuilder planBuilder = new PlanBuilder();
+//        Plan plan = planBuilder.parseJson(content);
+//        System.out.println(plan);
     }
 
     @Test
     public void testJobServiceSubmit() throws IOException, TException {
-        File file = new File("/Users/zjchen/Codes/JavaProjects/CLIC/gateway-center/src/main/resources/templatePlan.json");
-        String planJsonString= FileUtils.readFileToString(file,"UTF-8");
+//        File file = new File("/Users/zjchen/Codes/JavaProjects/CLIC/gateway-center/src/main/resources/templatePlan.json");
+//        String planJsonString= FileUtils.readFileToString(file,"UTF-8");
 //        JobWebService jobWebService = new JobWebService();
 //        jobWebService.submit("testJobName", planJsonString);
     }

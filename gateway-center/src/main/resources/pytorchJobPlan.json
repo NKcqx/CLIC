@@ -1,0 +1,120 @@
+{
+  "planParams": [
+    {
+      "name": "dev-imagePolicy",
+      "value": "Always"
+    }
+  ],
+  "operators": [
+    {
+      "Id": 1,
+      "Platform": "pytorch",
+      "Name": "SourceOperator",
+      "Params": [
+        {"name": "udfPath", "value": "/data/user/sentiment/TestUdf.py"},
+        {"name": "inputPath", "value": "/data/user/sentiment/amazon_reviews/test.ft.csv"},
+        {"name": "type", "value": "udf"}
+      ],
+      "inputKeys": [],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 2,
+      "Platform": "pytorch",
+      "Name": "TokenizedOperator",
+      "Params": [],
+      "inputKeys":[
+        {"name": "data", "from": 1, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 3,
+      "Platform": "pytorch",
+      "Name": "GetVocabOperator",
+      "Params": [
+        {"name": "min_freq", "value": "5"}
+      ],
+      "inputKeys": [
+        {"name": "data", "from": 2, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 4,
+      "Platform": "pytorch",
+      "Name": "PreprocessImdbOperator",
+      "Params": [
+        {"name": "max_l", "value": "500"}
+      ],
+      "inputKeys": [
+        {"name": "data", "from": 1, "key": "result"},
+        {"name": "vocab", "from": 3, "key": "result"},
+        {"name": "tokenized_data", "from": 2, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 5,
+      "Platform": "pytorch",
+      "Name": "DataLoadOperator",
+      "Params": [
+        {"name": "batch_size", "value": "512"},
+        {"name": "shuffle", "value": "True"}
+      ],
+      "inputKeys": [
+        {"name": "data", "from": 4, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 6,
+      "Platform": "pytorch",
+      "Name": "SourceOperator",
+      "Params": [
+        {"name": "inputPath", "value": "/data/user/sentiment/word2vec_dict_spark.csv"},
+        {"name": "type", "value": "read_path"}
+      ],
+      "inputKeys": [],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 7,
+      "Platform": "pytorch",
+      "Name": "GetWordDictOperator",
+      "Params": [],
+      "inputKeys": [
+        {"name": "data", "from": 6, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 8,
+      "Platform": "pytorch",
+      "Name": "NetProcessOperator",
+      "Params": [
+        {"name": "udfPath", "value": "/data/user/sentiment/TestUdf.py"}
+      ],
+      "inputKeys": [
+        {"name": "vocab", "from": 3, "key": "result"},
+        {"name": "w2v_dict", "from": 7, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 9,
+      "Platform": "pytorch",
+      "Name": "TrainOperator",
+      "Params": [
+        {"name": "udfPath", "value": "/data/user/sentiment/TestUdf.py"},
+        {"name": "num_epochs", "value": "10"},
+        {"name": "tol_threshold", "value": "0.1"}
+      ],
+      "inputKeys": [
+        {"name": "net", "from": 8, "key": "result"},
+        {"name": "data", "from": 5, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    }
+  ]
+}
