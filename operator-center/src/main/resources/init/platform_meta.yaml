@@ -19,3 +19,11 @@ platforms:
     defaultImage: zjchenn/executable-pytorch:v1.2
     useOperator: false
     execCommand: source /root/.bashrc && python ExecutePytorchOperator.py
+  - name: MPI
+    language: Cpp
+    useOperator: true
+    defaultImage: mpi_env:2.2.6
+    params:
+      nodeNum: "2"
+      mainPath: /home/CLIC/ExecuteMPIOperator
+      nfsServer: 10.176.24.160

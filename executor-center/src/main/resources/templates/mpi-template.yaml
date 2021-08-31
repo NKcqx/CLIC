@@ -1,0 +1,62 @@
+apiVersion: kubeflow.org/v1
+kind: MPIJob
+metadata:
+  name: $name$ # 填入stage的名称
+spec:
+  slotsPerWorker: 1
+  cleanPodPolicy: Running
+  mpiReplicaSpecs:
+    Launcher:
+      replicas: 1
+      template:
+        spec:
+          containers:
+          - image: $image$  # 填入image的地址
+            name: mpi-launcher
+            imagePullPolicy: $imagePolicy$
+            command: 
+            - mpirun
+            args:
+            - --allow-run-as-root
+            - -np
+            - $nodeNum$     # 节点数量
+            - -bind-to
+            - none
+            - -map-by
+            - slot
+            - -x
+            - LD_LIBRARY_PATH
+            - -x
+            - PATH
+            - -mca
+            - pml
+            - ob1
+            - -mca
+            - btl
+            - ^openib
+            - $mainPath$    # main函数所在可执行文件路径
+            resources:
+              limits:
+                cpu: 1
+                memory: 2Gi
+    Worker:
+      replicas: 2
+      template:
+        spec:
+          containers:
+          - image: $image$ # 填入image的地址
+            imagePullPolicy: $imagePolicy$ # 平台每次需要更新成本较高，测试阶段使用Always
+            name: mpi-worker
+            resources:
+              limits:
+                cpu: 2
+                memory: 4Gi
+            volumeMounts:
+            - mountPath: /data
+              name: nfs-volume
+          volumes:
+            - name: nfs-volume
+              nfs:
+                server: $nfsServer$ # NFS服务器地址
+                path: /nfs/data
+                readOnly: true

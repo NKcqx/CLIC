@@ -64,5 +64,11 @@ operators:
   - name: GetWordDictOperator
     params: []
     operatorStructure: MAP
-
+#  以下为MPI平台测试所用的operator
+  - name: FileSource
+    params: [inputPath, mode]
+    operatorStructure: SOURCE
+  - name: MPISVD
+    params: [m, n, k]
+    operatorStructure: MAP
 
