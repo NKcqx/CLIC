@@ -19,6 +19,7 @@ public class StrategyFactory {
 
     // 根据对应的平台，选择不同的创建方式
     public KubernetesResourceStrategy getStrategyForPlatform(String platform) {
+        // 这里要求平台在component中的命名是唯一且固定的
         KubernetesResourceStrategy strategy = strategyMap.get(platform.toLowerCase() + "Operator");
         if (strategy == null) {
             // 默认的情况，走创建job

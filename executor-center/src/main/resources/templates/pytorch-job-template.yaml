@@ -1,0 +1,34 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: $name$ # 填入stage的名称
+spec:
+  template:
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: hasGPU
+                operator: In
+                values:
+                  - true
+      containers:
+      - name: $platform$ # 填入平台名称
+        image: $image$ # 填入image的地址
+        command:
+          - /bin/bash
+          - -c
+        args: ["$commands$"] # 填入运行命令
+        imagePullPolicy: $imagePolicy$
+        volumeMounts:
+        - name: nfs-volume
+          mountPath: /data
+      restartPolicy: Never
+      volumes:
+      - name: nfs-volume
+        persistentVolumeClaim:
+          claimName: pvc-nfs
+
