@@ -23,4 +23,6 @@ data:
         create: "/apis/batch/v1/namespaces/default/jobs"
       spark:
         create: "/apis/sparkoperator.k8s.io/v1beta2/namespaces/default/sparkapplications"
+      mpi:
+        create: "/apis/kubeflow.org/v1/namespaces/mpi-operator/MPIJob"
 #    志伟学长直接把整个配置文件当做一个config了，在本地运行的时候这部分配置在在application.yaml中

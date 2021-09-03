@@ -4,7 +4,7 @@ kind: PersistentVolume
 metadata:
   name: pv-nfs
 spec:
-  storageClassName: csi-neonsan
+  storageClassName: csi-high-capacity
   capacity:
     storage: 10Gi
   accessModes:

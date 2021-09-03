@@ -3,6 +3,7 @@
 ## 前置部署
 
 - 1.系统依赖nfs（或者其他分布式存储）进行部署，因此需要先部署nfs，再部署k8s访问的pv和pvc
+   
    - nfs的部署脚本在nfs路径下（nfs-client中需要修改server）
    - nfs的pv和pvc可以根据情况更改（比如挂载路径）
    - 需要在挂载路径下创建我们需要的文件夹：
@@ -10,10 +11,11 @@
         - dag：/data/system/dags
         - 中间结果： /data/system/inter_files
         - 日志文件： /data/logs
-     - 用户的udf和输入文件，建议存放到 /data/user
-
+    - 用户的udf和输入文件，建议存放到 /data/user
+  
   补充：
      - 这里有个坑需要对logs和system（system内的dags和inter_files也要）进行权限修改，方法为`chmod 777 file`，否则spark-context初始化对时候会报permission denied的错误
+     - 创建完pvc后查看绑定情况，如果是pending状态，那说明pv和pvc没绑定成功，最大的可能性是storage class没有对应，这个时候先查看pvc的storage class，再去修改pv中的storage class重新apply
 - 2.系统需要依赖k8s的高权限的service account的token去创建job、operator。下面直接获取了kube-system的admin的权限，
   实际并不太好，只是为了方便，最好自己根据需求创建对应的sa，然后获取token
 
