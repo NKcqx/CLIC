@@ -14,7 +14,7 @@ spec:
               - key: hasGPU
                 operator: In
                 values:
-                - true
+                - "true"
       containers:
       - name: $platform$ # 填入平台名称
         image: $image$ # 填入image的地址

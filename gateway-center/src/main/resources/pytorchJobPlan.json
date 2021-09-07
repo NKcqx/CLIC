@@ -59,7 +59,7 @@
       "Platform": "pytorch",
       "Name": "DataLoadOperator",
       "Params": [
-        {"name": "batch_size", "value": "512"},
+        {"name": "batch_size", "value": "64"},
         {"name": "shuffle", "value": "True"}
       ],
       "inputKeys": [
@@ -68,14 +68,27 @@
       "outputKeys": ["result"]
     },
     {
-      "Id": 6,
-      "Platform": "pytorch",
+      "Id": 10,
+      "Platform": "spark",
       "Name": "SourceOperator",
       "Params": [
-        {"name": "inputPath", "value": "/data/user/sentiment/word2vec_dict_spark.csv"},
-        {"name": "type", "value": "read_path"}
+        {"name": "inputPath", "value": "/data/user/spark_w2v/ptb.train.txt"},
+        {"name": "separator", "value": ","}
       ],
       "inputKeys": [],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 6,
+      "Platform": "spark",
+      "Name": "W2VOperator",
+      "Params": [
+        {"name": "fit", "value": "true"},
+        {"name": "vectorSize", "value": "100"}
+      ],
+      "inputKeys": [
+        {"name": "data", "from": 10, "key": "result"}
+      ],
       "outputKeys": ["result"]
     },
     {
@@ -107,8 +120,8 @@
       "Name": "TrainOperator",
       "Params": [
         {"name": "udfPath", "value": "/data/user/sentiment/TestUdf.py"},
-        {"name": "num_epochs", "value": "10"},
-        {"name": "tol_threshold", "value": "0.1"}
+        {"name": "num_epochs", "value": "3"},
+        {"name": "tol_threshold", "value": "1e-6"}
       ],
       "inputKeys": [
         {"name": "net", "from": 8, "key": "result"},
