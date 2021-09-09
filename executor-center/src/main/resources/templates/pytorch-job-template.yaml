@@ -5,6 +5,16 @@ metadata:
 spec:
   template:
     spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: node-role.kubernetes.io/worker
+                operator: In
+                values:
+                - "node_gpu"
       containers:
       - name: $platform$ # 填入平台名称
         image: $image$ # 填入image的地址
@@ -21,5 +31,4 @@ spec:
       - name: nfs-volume
         persistentVolumeClaim:
           claimName: pvc-nfs
-      nodeSelector:
-        node-role.kubernetes.io/worker: node_gpu
+
