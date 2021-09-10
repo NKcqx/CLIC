@@ -16,7 +16,7 @@ platforms:
       sparkVersion: 4.0.0
   - name: Pytorch
     language: Python
-    defaultImage: zjchenn/executable-pytorch:v1.2
+    defaultImage: zjchenn/executable-pytorch:v1.4
     useOperator: false
     execCommand: source /root/.bashrc && python ExecutePytorchOperator.py
   - name: MPI

@@ -14,15 +14,15 @@ import java.util.Arrays;
  */
 
 public class jschTest {
-    private static final String REMOTE_HOST = "10.162.109.145";
-    private static final String USERNAME = "zjchenn";
-    private static final String PASSWORD = "akdkdyu";
-    private static final int REMOTE_PORT = 22;
+    private static final String REMOTE_HOST = "10.106.10.71";
+    private static final String USERNAME = "usr-dDyDTogd";
+    private static final String PASSWORD = "Sdsc@0199";
+    private static final int REMOTE_PORT = 20023;
     private static final int SESSION_TIMEOUT = 10000;
     private static final int CHANNEL_TIMEOUT = 5000;
 
-//    @Test
-//    public void sshTest(){
+    @Test
+    public void sshTest(){
 //        Session jschSession = null;
 //        try {
 //            JSch jsch = new JSch();
@@ -41,7 +41,7 @@ public class jschTest {
 //            ChannelExec channelExec = (ChannelExec) jschSession.openChannel("exec");
 //
 //            // run a shell script
-//            channelExec.setCommand("cd /ssssss");
+//            channelExec.setCommand("mkdir test_ssh");
 //
 //            // display errors to System.err
 //            channelExec.setErrStream(System.err);
