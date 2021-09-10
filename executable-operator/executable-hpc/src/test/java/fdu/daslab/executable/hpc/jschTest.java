@@ -21,8 +21,8 @@ public class jschTest {
     private static final int SESSION_TIMEOUT = 10000;
     private static final int CHANNEL_TIMEOUT = 5000;
 
-    @Test
-    public void sshTest(){
+//    @Test
+//    public void sshTest(){
 //        Session jschSession = null;
 //        try {
 //            JSch jsch = new JSch();
