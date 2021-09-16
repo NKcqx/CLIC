@@ -41,8 +41,8 @@ public class jschTest {
 //            ChannelExec channelExec = (ChannelExec) jschSession.openChannel("exec");
 //
 //            // run a shell script
-//            channelExec.setCommand("mkdir test_ssh");
-//
+//            channelExec.setCommand("echo $PWD; source /es01/shanhe/hpc_mnt/home/usr-dDyDTogd/.bashrc; /opt/skyformai/bin/csub -n 56 -cwd /es01/shanhe/hpc_mnt/src/COAWST_v1467/Projects/JOE_TC/Coupled ./joe_tc.aip.slurm");
+//            //            channelExec.setCommand("source /es01/shanhe/hpc_mnt/home/usr-dDyDTogd/.bashrc; cjobs");
 //            // display errors to System.err
 //            channelExec.setErrStream(System.err);
 //

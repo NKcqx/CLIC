@@ -31,6 +31,7 @@ public class ExecutorHandler implements ExecutorService.Iface {
     @Override
     public void executeStage(Stage stage) throws TException {
         // 执行stage
+
         if ("local".equals(executionMode)) {
             localExecutor.execute(stage);
         } else {

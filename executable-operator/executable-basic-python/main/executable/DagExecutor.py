@@ -71,7 +71,7 @@ class DagExecutor(object):
             logger.info("Stage(" + str(self.basicArgs.stageId) + ")" + " completed!")
             self.dagHook.post_handler(self.platformArgs)
         except Exception as e:
-            self.notifyServiceClient.notify(StageSnapshot(StageStatus.FAILURE, e, dict()))
+            self.notifyServiceClient.notify(StageSnapshot(StageStatus.FAILURE, repr(e), dict()))
             logger.exception("DagExecutor executor error")
 
     def executeDag(self):
