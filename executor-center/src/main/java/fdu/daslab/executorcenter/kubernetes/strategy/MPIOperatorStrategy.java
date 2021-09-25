@@ -37,7 +37,7 @@ public class MPIOperatorStrategy implements KubernetesResourceStrategy {
         }
         String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         String mpiYaml = templateYaml.replace("$name$", kubernetesRestClient.generateKubernetesName(stage))
-                .replace("$image$", stage.others.getOrDefault("mpi_env", platformInfo.defaultImage))
+                .replace("$image$", stage.others.getOrDefault("mpiImage", platformInfo.defaultImage))
                 .replace("$imagePolicy$", stage.others.getOrDefault("dev-imagePolicy", "IfNotPresent"))
                 .replace("$nodeNum$", platformInfo.params.get("nodeNum"))
                 .replace("$mainPath$", platformInfo.params.get("mainPath") + " " + StringUtils.joinWith(" ", params.toArray()))
