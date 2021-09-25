@@ -31,12 +31,16 @@ public class MPIOperatorStrategy implements KubernetesResourceStrategy {
     @Override
     public void create(Stage stage, Platform platformInfo, List<String> params) throws Exception {
         final InputStream inputStream = new ClassPathResource("templates/mpi-template.yaml").getInputStream();
+        // 重新处理参数格式,将第一个等号替换成空格
+        for(int i = 0; i < params.size(); i++) {
+            params.set(i, params.get(i).replaceFirst("=", " "));
+        }
         String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         String mpiYaml = templateYaml.replace("$name$", kubernetesRestClient.generateKubernetesName(stage))
-                .replace("$image$", platformInfo.defaultImage)
+                .replace("$image$", stage.others.getOrDefault("mpi_env", platformInfo.defaultImage))
                 .replace("$imagePolicy$", stage.others.getOrDefault("dev-imagePolicy", "IfNotPresent"))
                 .replace("$nodeNum$", platformInfo.params.get("nodeNum"))
-                .replace("$mainPath$", platformInfo.params.get("mainPath"))
+                .replace("$mainPath$", platformInfo.params.get("mainPath") + " " + StringUtils.joinWith(" ", params.toArray()))
                 .replace("$nfsServer$", platformInfo.params.get("nfsServer"));
         HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
         httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createMPIUrl, yaml.load(mpiYaml)));

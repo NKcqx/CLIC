@@ -19,7 +19,7 @@ spec:
             args:
             - --allow-run-as-root
             - -np
-            - $nodeNum$     # 节点数量
+            - $nodeNum$     # 运行节点数量
             - -bind-to
             - none
             - -map-by
@@ -34,7 +34,7 @@ spec:
             - -mca
             - btl
             - ^openib
-            - $mainPath$    # main函数所在可执行文件路径
+            - $mainPath$    # main函数所在可执行文件路径，以及传入的dag参数
             resources:
               limits:
                 cpu: 1

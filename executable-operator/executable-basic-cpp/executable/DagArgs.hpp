@@ -1,3 +1,10 @@
+/*****************************************************************************
+*  dag的参数，通过命令行传入
+*
+*  @author   xxm
+*  @version  1.0
+*
+*****************************************************************************/
 #ifndef DAG_ARGS_HPP
 #define DAG_ARGS_HPP
 
@@ -23,14 +30,12 @@ namespace clic {
                 7. udfPath      : UDF路径（可选，通过hasUdf表示是否使用该参数）
         **/
         private:
-            // 部分情况下参数解析后string类型的参数首尾有多余空格，会影响后续的操作，因此需要去除
+            // 去除string类型参数的首尾空格
             string& removeHeadTailSpace(string &str) {
-                if (str.empty()) {
-                    return str;
+                if (!str.empty()) {
+                    str.erase(0,str.find_first_not_of(" "));
+                    str.erase(str.find_last_not_of(" ") + 1);
                 }
-
-                str.erase(0,str.find_first_not_of(" "));
-                str.erase(str.find_last_not_of(" ") + 1);
                 return str;
             }
 
@@ -55,10 +60,12 @@ namespace clic {
                     );
                 
                 if (clipp::parse(argc, const_cast<char **>(argv), cli)) {
+                    // 从yaml读入的参数有时会包含多余的空格，会影响后面的操作，因此对于string类型的参数都先去除首尾空格
                     removeHeadTailSpace(this -> jobName);
                     removeHeadTailSpace(this -> udfPath);
                     removeHeadTailSpace(this -> dagPath);
                     removeHeadTailSpace(this -> notifyHost);
+                    removeHeadTailSpace(this -> platformArgs);
                     std::cout << "stageId: " << stageId << ",\n"
                             << "jobName: " << jobName  << ",\n"
                             << "flag: " << hasUdf << ",\n"
@@ -66,8 +73,9 @@ namespace clic {
                             << "dagPath: " << dagPath << ",\n"
                             << "notifyHost: " << notifyHost << ",\n"
                             << "notifyPort: " << notifyPort << ",\n"
-                            << "platformArgs: " << udfPath << std::endl;
+                            << "platformArgs: " << platformArgs << std::endl;
                 } else {
+                    // 打印参数用法
                     std::cerr << clipp::make_man_page(cli, argv[0]) << std::endl;
                     exit(-1);
                 }
