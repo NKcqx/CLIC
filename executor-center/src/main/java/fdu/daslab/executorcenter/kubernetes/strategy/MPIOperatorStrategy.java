@@ -17,7 +17,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-@Component("MPIOperator")
+@Component("mpiOperator")
 public class MPIOperatorStrategy implements KubernetesResourceStrategy {
 
     @Autowired
