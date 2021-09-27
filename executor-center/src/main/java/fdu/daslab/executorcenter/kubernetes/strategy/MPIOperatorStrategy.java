@@ -40,7 +40,7 @@ public class MPIOperatorStrategy implements KubernetesResourceStrategy {
                 .replace("$image$", stage.others.getOrDefault("mpiImage", platformInfo.defaultImage))
                 .replace("$imagePolicy$", stage.others.getOrDefault("dev-imagePolicy", "IfNotPresent"))
                 .replace("$nodeNum$", stage.others.getOrDefault("nodeNum", "2"))
-                .replace("$mainPath$", platformInfo.params.get("mainPath") + " " + StringUtils.joinWith(" ", params.toArray()))
+                .replace("$mainPath$", platformInfo.params.get("mainPath") + ", " + StringUtils.joinWith(", ", params.toArray()))
                 .replace("$nfsServer$", platformInfo.params.get("nfsServer"));
         HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
         httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createMPIUrl, yaml.load(mpiYaml)));
