@@ -6,6 +6,8 @@ import fdu.daslab.thrift.base.Platform;
 import fdu.daslab.thrift.base.Stage;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;
@@ -19,6 +21,8 @@ import java.util.List;
 
 @Component("mpiOperator")
 public class MPIOperatorStrategy implements KubernetesResourceStrategy {
+
+    private Logger logger = LoggerFactory.getLogger(MPIOperatorStrategy.class);
 
     @Autowired
     private KubernetesRestClient kubernetesRestClient;
@@ -42,6 +46,11 @@ public class MPIOperatorStrategy implements KubernetesResourceStrategy {
                 .replace("$nodeNum$", stage.others.getOrDefault("nodeNum", "2"))
                 .replace("$mainPath$", platformInfo.params.get("mainPath") + ", " + StringUtils.joinWith(", ", params.toArray()))
                 .replace("$nfsServer$", platformInfo.params.get("nfsServer"));
+
+        // 打印信息用于debug
+        logger.info("------ MPI job ------");
+        logger.info("Create MPI Url: " + createMPIUrl);
+        logger.info("Yaml:\n" + mpiYaml);
         HttpClient httpClient = kubernetesRestClient.getIgnoreHttpClient();
         httpClient.execute(kubernetesRestClient.getDefaultHttpPost(createMPIUrl, yaml.load(mpiYaml)));
     }
