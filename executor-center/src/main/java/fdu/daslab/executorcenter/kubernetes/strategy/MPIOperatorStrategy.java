@@ -35,10 +35,15 @@ public class MPIOperatorStrategy implements KubernetesResourceStrategy {
     @Override
     public void create(Stage stage, Platform platformInfo, List<String> params) throws Exception {
         final InputStream inputStream = new ClassPathResource("templates/mpi-template.yaml").getInputStream();
-        // 重新处理参数格式,将第一个等号替换成空格
+        // 重新处理参数格式,将第一个等号替换成空格,以适配cpp的输入参数格式
         for(int i = 0; i < params.size(); i++) {
             params.set(i, params.get(i).replaceFirst("=", " "));
         }
+        // TODO: 目前从yaml文件读取的url存在异常，因此如果不是kubeflow的url，会被替换成默认url
+        if(!createMPIUrl.split("/")[2].equals("kubeflow.org")) {
+            createMPIUrl = "/apis/kubeflow.org/v1/namespaces/mpi-operator/mpijobs";
+        }
+
         String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
         String mpiYaml = templateYaml.replace("$name$", kubernetesRestClient.generateKubernetesName(stage))
                 .replace("$image$", stage.others.getOrDefault("mpiImage", platformInfo.defaultImage))
