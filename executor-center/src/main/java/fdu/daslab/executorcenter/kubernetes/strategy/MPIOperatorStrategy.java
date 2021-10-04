@@ -41,7 +41,7 @@ public class MPIOperatorStrategy implements KubernetesResourceStrategy {
         }
         // TODO: 目前从yaml文件读取的url存在异常，因此如果不是kubeflow的url，会被替换成默认url
         if(!createMPIUrl.split("/")[2].equals("kubeflow.org")) {
-            createMPIUrl = "/apis/kubeflow.org/v1/namespaces/mpi-operator/mpijobs";
+            createMPIUrl = "/apis/kubeflow.org/v1/namespaces/default/mpijobs";
         }
 
         String templateYaml = StreamUtils.copyToString(inputStream, StandardCharsets.UTF_8);
