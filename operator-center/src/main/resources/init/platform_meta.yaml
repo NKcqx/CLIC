@@ -5,7 +5,7 @@ platforms:
     language: Java
     defaultImage: edwardtang/executable-java:micro-service-rebuild
     useOperator: false
-    execCommand: java -jar executable-java.jar
+    execCommand: java -jar -Xmx50g executable-java.jar
   - name: Spark
     language: Java
     defaultImage: edwardtang/executable-spark:micro-service-rebuild

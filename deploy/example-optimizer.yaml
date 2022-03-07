@@ -20,7 +20,7 @@ spec:
             - /bin/sh
             - -c
           args:
-            - java -jar example-optimizer.jar --spring.profiles.active=pod
+            - java -jar /data/example-optimizer.jar --spring.profiles.active=pod
           volumeMounts:
             - name: nfs-volume
               mountPath: /data

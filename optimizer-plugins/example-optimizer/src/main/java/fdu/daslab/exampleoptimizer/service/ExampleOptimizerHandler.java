@@ -39,15 +39,17 @@ public class ExampleOptimizerHandler implements OptimizerPlugin.Iface {
                             "dataSize", "1"));
                     if (dataSize <= 1) {
                         node.setPlatformName("Java");
+                        node.getOperatorInfo().params.put("dop", "10");
                     } else {
                         node.setPlatformName("Spark");
+                        node.getOperatorInfo().params.put("dop", "30");
                     }
                 }
                 // 打印处所有的过程
-                logger.info("Load model at model-300-final.pkl.");
+                logger.info("Load Model at model-300-final.pkl.");
                 logger.info("Inferring Encoder-Predictor-Decoder.");
                 // 1.规则选择
-                logger.info("Rule based optimization:" );
+                logger.info("Rule Based Optimization:" );
                 // 2.若干轮的迭代
                 for (int i = 1; i <= nodes.size(); i++) {
                     logger.info("Generate new architectures with step size: {}", i);
