@@ -24,6 +24,5 @@ platforms:
     useOperator: true
     defaultImage: mpi_env:2.2.6
     params:
-      nodeNum: "2"
       mainPath: /home/CLIC/ExecuteMPIOperator
-      nfsServer: 10.176.24.160
+      nfsServer: 192.168.1.6

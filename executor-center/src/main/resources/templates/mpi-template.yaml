@@ -16,31 +16,13 @@ spec:
             imagePullPolicy: $imagePolicy$
             command: 
             - mpirun
-            args:
-            - --allow-run-as-root
-            - -np
-            - $nodeNum$     # 节点数量
-            - -bind-to
-            - none
-            - -map-by
-            - slot
-            - -x
-            - LD_LIBRARY_PATH
-            - -x
-            - PATH
-            - -mca
-            - pml
-            - ob1
-            - -mca
-            - btl
-            - ^openib
-            - $mainPath$    # main函数所在可执行文件路径
+            args: [--allow-run-as-root, -np, "$nodeNum$", -bind-to, none, -map-by, slot, -x, LD_LIBRARY_PATH, -x, PATH, -mca, pml, ob1, -mca, btl, ^openib, $mainPath$]
             resources:
               limits:
                 cpu: 1
                 memory: 2Gi
     Worker:
-      replicas: 2
+      replicas: $nodeNum$
       template:
         spec:
           containers:

@@ -1,3 +1,10 @@
+/*****************************************************************************
+*  cpp语言的Dag核心执行类，使用拓扑排序执行解析的Dag图（在ArgUtil中实现），提供operator远程调用功能
+*
+*  @author   xxm
+*  @version  1.0
+*
+*****************************************************************************/
 #ifndef DAG_EXECUTOR_HPP
 #define DAG_EXECUTOR_HPP
 
@@ -10,6 +17,7 @@
 #include "../service/client/NotifyServiceClient.hpp"
 #include "basic/model/OperatorBase.hpp"
 #include "basic/utils/TopoTraversal.hpp"
+#include "basic/utils/ArgsUtil.hpp"
 
 namespace clic {
     using std::string;
@@ -34,21 +42,23 @@ namespace clic {
             // 用于通知的client
             Client* notifyServiceClient;
 
+            // 解析命令行参数，保存在一个DagArgs对象中
             void initArgs(int argc, char* argv[]) {
                 basicArgs = new DagArgs(argc, argv);
             }
 
+            // 创建一个thrift client，用于和master进行交互
             void initNotifyClient() {
-                // 创建一个thrift client，用于和master进行交互
                 this -> notifyServiceClient = new Client(this -> basicArgs -> stageId,
                                                         this -> basicArgs -> jobName,
                                                         this -> basicArgs -> notifyHost,
                                                         this -> basicArgs -> notifyPort);
             }
 
-            void initOperators(ArgUtil &parser) {
+            // 初始化运算符
+            void initOperators(OperatorFactory &factory) {
                 try {
-                    parser.parse(this -> basicArgs -> dagPath, this -> headOperators);
+                    ArgsUtil::parse(this -> basicArgs -> dagPath, this -> headOperators, factory);
                 } catch (const char* msg) {
                     std::cerr << msg << std::endl;
                     string _message = msg;
@@ -60,6 +70,7 @@ namespace clic {
                 }
             }
 
+            // 执行Dag图
             void executeDag() {
                 TopoTraversal topoTraversal = TopoTraversal(this -> headOperators);
                 while(topoTraversal.hasNextOpt()) {
@@ -86,7 +97,7 @@ namespace clic {
             }
         
         public:
-            DagExecutor(int argc, char* argv[], ArgUtil &parser) {
+            DagExecutor(int argc, char* argv[], OperatorFactory &factory) {
                 // 解析参数，分别获取basicArgs和platformArgs
                 this -> initArgs(argc, argv);
 
@@ -94,12 +105,12 @@ namespace clic {
                 this -> initNotifyClient();
 
                 // 读取dag文件，解析生成所有的operator列表
-                this -> initOperators(parser);
+                this -> initOperators(factory);
 
                 this -> hook = new DagHook();
             }
 
-            DagExecutor(int argc, char* argv[], ArgUtil &parser, DagHook* _hook) {
+            DagExecutor(int argc, char* argv[], OperatorFactory &factory, DagHook* _hook) {
                 // 解析参数，分别获取basicArgs和platformArgs
                 initArgs(argc, argv);
 
@@ -107,7 +118,7 @@ namespace clic {
                 initNotifyClient();
 
                 // 读取dag文件，解析生成所有的operator列表
-                initOperators(parser);
+                initOperators(factory);
                 this -> hook = _hook;
             }
 
@@ -121,6 +132,8 @@ namespace clic {
                 delete this -> notifyServiceClient;
             }
 
+            // 平台执行
+            // 顺序：preHandler -> postStarted -> execute -> postCompleted -> postHandler
             void execute() {
                 try {
                     // 前处理方法

@@ -1,3 +1,10 @@
+/*****************************************************************************
+*  所有CPP平台的OperatorFactory抽象基类，子类须实现createOperator方法
+*
+*  @author   xxm
+*  @version  1.0
+*
+*****************************************************************************/
 #ifndef OPERATOR_FACTORY_HPP
 #define OPERATOR_FACTORY_HPP
 
@@ -6,7 +13,6 @@
 #include <map>
 #include <set>
 #include "OperatorBase.hpp"
-// #include "../utils/IocContainer.hpp"
 
 namespace clic {
     using std::string;
@@ -17,9 +23,7 @@ namespace clic {
     
     class OperatorFactory {
         protected:
-            // map<string, datatype> operatorMap;
             set<string> operatorSet;
-            // IocContainer ioc;
 
             /**
              * 判断集合中是否包含指定算子
@@ -29,13 +33,6 @@ namespace clic {
             }
 
         public:
-            // template <class T>
-            // void addToIocContainer(string name) {
-            //     ioc.RegisterType<OperatorBase, T, string, vector<string>&, vector<string>&, map<string, string>&>(name);
-            // }
-            // OperatorBase* createOperator(string name, string ID, vector<string> &inputKeys, vector<string> &outputKeys, map<string, string> &params) {
-            //     return this -> ioc.ResolveShared<OperatorBase>(name, ID, inputKeys, outputKeys, params).get();
-            // }
             virtual OperatorBase* createOperator(string name, string ID, vector<string> &inputKeys, vector<string> &outputKeys, map<string, string> params) = 0;
             virtual ~OperatorFactory(){};  
     };

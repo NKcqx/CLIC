@@ -59,6 +59,7 @@ namespace clic {
                 delete this -> client;
             }
 
+            // 向上游上传信息
             void notify(StageSnapshot snapshot) {
                 if(this -> isDebug) {
                     // log info

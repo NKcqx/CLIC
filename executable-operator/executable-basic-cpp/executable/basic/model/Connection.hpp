@@ -1,3 +1,10 @@
+/*****************************************************************************
+*  连接两个operator，实现operator之间的key的映射
+*
+*  @author   xxm
+*  @version  1.0
+*
+*****************************************************************************/
 #ifndef CONNECTION_HPP
 #define CONNECTION_HPP
 
@@ -36,8 +43,9 @@ namespace clic {
 
             vector<pair<string, string>> getKeys() {
                 vector<pair<string, string>> res;
+                res.resize(sourceKeys.size());
                 for(int i = 0; i < sourceKeys.size(); i++) {
-                    res.push_back(pair<string, string>(sourceKeys[i], targetKeys[i]));
+                    res[i] = pair<string, string>(sourceKeys[i], targetKeys[i]);
                 }
                 return res;
             }
