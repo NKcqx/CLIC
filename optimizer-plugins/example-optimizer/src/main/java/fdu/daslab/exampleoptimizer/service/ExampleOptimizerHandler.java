@@ -35,7 +35,7 @@ public class ExampleOptimizerHandler implements OptimizerPlugin.Iface {
                 // 优化逻辑，直接按照输入的数据量
                 logger.info("Begin Optimize: " + nodes.values());
                 for (PlanNode node: nodes.values()) {
-                    int dataSize = Integer.parseInt(node.getOperatorInfo().params.getOrDefault(
+                    double dataSize = Double.parseDouble(node.getOperatorInfo().params.getOrDefault(
                             "dataSize", "1"));
                     if (dataSize <= 1) {
                         node.setPlatformName("Java");

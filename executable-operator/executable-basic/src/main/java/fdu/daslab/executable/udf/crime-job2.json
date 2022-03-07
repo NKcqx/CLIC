@@ -24,11 +24,11 @@
       "Platform": "All",
       "Name": "MapOperator",
       "Params": [
-        {"name":  "udfName", "value":  "mapCateFunc"}
+        {"name":  "udfName", "value":  "mapCateFunc"},
+        {"name": "dataSize", "value": "1.8"}
       ],
       "inputKeys":[
-        {"name": "data", "from": 1, "key": "result"},
-        {"name": "dataSize", "value": "1.8"}
+        {"name": "data", "from": 1, "key": "result"}
       ],
       "outputKeys": ["result"]
     },
