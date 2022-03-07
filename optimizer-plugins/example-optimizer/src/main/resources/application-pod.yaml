@@ -1,0 +1,10 @@
+thrift:
+  host: clic-example-optimizer-svc
+  port: 6666
+  optimizer:
+    host: clic-optimizer-svc
+    port: 6666
+
+register:
+  name: example-optimizer
+  priority: 9

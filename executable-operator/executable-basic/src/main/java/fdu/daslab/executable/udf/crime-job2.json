@@ -1,0 +1,103 @@
+{
+  "planParams": [
+    {
+      "name": "dev-imagePolicy",
+      "value": "IfNotPresent"
+    },
+    {"name": "udfPath-Java", "value": "/data/CrimeDataFunc.class"}
+  ],
+  "operators": [
+    {
+      "Id": 1,
+      "Platform": "All",
+      "Name": "SourceOperator",
+      "Params": [
+        {"name": "inputPath", "value": "/data/london_crime_1.8g.csv"},
+        {"name": "separator", "value": ","},
+        {"name": "dataSize", "value": "1.8"}
+      ],
+      "inputKeys": [],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 2,
+      "Platform": "All",
+      "Name": "MapOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "mapCateFunc"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 1, "key": "result"},
+        {"name": "dataSize", "value": "1.8"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 3,
+      "Platform": "All",
+      "Name": "FilterOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "filterFunc"},
+        {"name": "dataSize", "value": "1.8"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 2, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 4,
+      "Platform": "All",
+      "Name": "MapOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "mapMonthFunc"},
+        {"name": "dataSize", "value": "0.09"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 3, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 5,
+      "Platform": "All",
+      "Name": "ReduceByKeyOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "reduceFunc"},
+        {"name":  "keyName", "value":  "reduceKey"},
+        {"name": "dataSize", "value": "0.09"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 4, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 6,
+      "Platform": "All",
+      "Name": "SortOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "sortFunc"},
+        {"name": "dataSize", "value": "0.09"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 5, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 7,
+      "Platform": "All",
+      "Name": "SinkOperator",
+      "Params": [
+        {"name": "separator", "value": ","},
+        {"name": "outputPath", "value": "/data/london_result.csv"},
+        {"name": "dataSize", "value": "0.09"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 6, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    }
+  ]
+}

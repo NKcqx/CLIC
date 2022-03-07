@@ -39,12 +39,5 @@
         <name>dfs.namenode.servicerpc-bind-host</name>
         <value>0.0.0.0</value>
     </property>
-    <!-- /Bind to all interfaces -->
-    {{- range $key, $value := index .Values.conf "hdfsSite" }}
-    <property>
-        <name>{{ $key }}</name>
-        <value>{{ $value }}</value>
-    </property>
-    {{- end }}
 
 </configuration>

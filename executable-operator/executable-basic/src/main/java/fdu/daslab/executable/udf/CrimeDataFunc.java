@@ -3,14 +3,19 @@ package fdu.daslab.executable.udf;
 import java.util.*;
 
 
+
+
 /**
+ *
+ * map -> filter(0 and 1) -> sort -> map -> reduceByKey
+ *
  * @author Du Qinghua
  * @version 1.0
  * @since 2020/11/17 15:08
  */
-public class TestCrimeDataFunc {
+public class CrimeDataFunc {
 
-    // map1:将犯罪类型映射成int值
+    // 1.map1:将犯罪类型映射成int值
     public List<String> mapCateFunc(List<String> record) {
         Map<String, String> categoryDic = new HashMap<>();
         categoryDic.put("Theft and Handling", "1");
@@ -35,21 +40,22 @@ public class TestCrimeDataFunc {
         return record;
     }
 
-    // filter删除犯罪值为0的行
+    // 2.filter删除犯罪值为0 and 1的行
     public boolean filterFunc(List<String> record) {
         boolean flag = true;
         try {
-            if (record.get(4).equals("0")) {
+            if (record.get(4).equals("0") || record.get(4).equals("1") || record.size() != 7) {
                 flag = false;
             }
         } catch (Exception e) {
+            flag = false;
             //e.printStackTrace();
         }
 
         return flag;
     }
 
-    // map2: month映射并添加相应的季度
+    // 4, map2: month映射并添加相应的季度
     public List<String> mapMonthFunc(List<String> record) {
         Map<String, String> seasonyDic = new HashMap<>();
         seasonyDic.put("1", "1");
@@ -67,15 +73,27 @@ public class TestCrimeDataFunc {
         List<String> res = new ArrayList<>(record);
         res.add("0");
 
-        //如果满足categoryDic，添加映射值
-        if (!seasonyDic.get(record.get(6)).isEmpty()) {
-            res.set(7, seasonyDic.get(record.get(6)));
+        try {
+            //如果满足categoryDic，添加映射值
+            if (!seasonyDic.get(record.get(6)).isEmpty()) {
+                res.set(7, seasonyDic.get(record.get(6)));
+            }
+        } catch (Exception e) {
+            res = new ArrayList<String>();
+            res.add("E01001116");
+            res.add("Croydon");
+            res.add("Burglary");
+            res.add("Burglary in Other Buildings");
+            res.add("0");
+            res.add("2016");
+            res.add("11");
+            res.add("4");
         }
 
         return res;
     }
 
-    // reduce的Key 季度
+    // 5, reduce的Key 季度
     public String reduceKey(List<String> record) {
         return record.get(7);
     }
@@ -97,12 +115,11 @@ public class TestCrimeDataFunc {
 
     }
 
-    // sort：按照犯罪数量的季度总和值进行排序
+    // 6, sort：按照犯罪数量的季度总和值进行排序
     public int sortFunc(List<String> record1, List<String> record2) {
 
         return new Integer(record2.get(4)) - new Integer(record1.get(4));
 
     }
-
 
 }

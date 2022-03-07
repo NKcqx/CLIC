@@ -1,0 +1,96 @@
+{
+  "planParams": [
+    {
+      "name": "dev-imagePolicy",
+      "value": "IfNotPresent"
+    },
+    {"name": "udfPath-Java", "value": "/data/CrimeDataFunc.class"}
+  ],
+  "operators": [
+    {
+      "Id": 1,
+      "Platform": "Spark",
+      "Name": "SourceOperator",
+      "Params": [
+        {"name": "inputPath", "value": "/data/london_crime_0.9g.csv"},
+        {"name": "separator", "value": ","}
+      ],
+      "inputKeys": [],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 2,
+      "Platform": "Spark",
+      "Name": "MapOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "mapCateFunc"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 1, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 3,
+      "Platform": "Spark",
+      "Name": "FilterOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "filterFunc"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 2, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 4,
+      "Platform": "Java",
+      "Name": "MapOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "mapMonthFunc"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 3, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 5,
+      "Platform": "Java",
+      "Name": "ReduceByKeyOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "reduceFunc"},
+        {"name":  "keyName", "value":  "reduceKey"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 4, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 6,
+      "Platform": "Java",
+      "Name": "SortOperator",
+      "Params": [
+        {"name":  "udfName", "value":  "sortFunc"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 5, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    },
+    {
+      "Id": 7,
+      "Platform": "Java",
+      "Name": "SinkOperator",
+      "Params": [
+        {"name": "separator", "value": ","},
+        {"name": "outputPath", "value": "/data/london_result.csv"}
+      ],
+      "inputKeys":[
+        {"name": "data", "from": 6, "key": "result"}
+      ],
+      "outputKeys": ["result"]
+    }
+  ]
+}

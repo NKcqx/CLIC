@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: clic-example-optimizer
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      clic: example-optimizer
+  template:
+    metadata:
+      labels:
+        clic: example-optimizer
+    spec:
+      containers:
+        - name: example-optimizer-template
+          image: edwardtang/example-optimizer:micro-service-rebuild
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+            - -c
+          args:
+            - java -jar example-optimizer.jar --spring.profiles.active=pod
+          volumeMounts:
+            - name: nfs-volume
+              mountPath: /data
+          ports:
+            - containerPort: 6666
+      volumes:
+        - name: nfs-volume
+          persistentVolumeClaim:
+            claimName: pvc-nfs

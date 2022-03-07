@@ -3,7 +3,7 @@
 <configuration>
     <property>
         <name>fs.defaultFS</name>
-        <value>hdfs://{{ include "hdfs.fullname" . }}-namenode:{{ .Values.nameNode.port }}/</value>
+        <value>hdfs://hdfs-namenode:8020/</value>
     </property>
     <property>
         <name>hadoop.proxyuser.root.hosts</name>
@@ -17,16 +17,8 @@
         <name>hadoop.proxyuser.hdfs.hosts</name>
         <value>*</value>
     </property>
-
     <property>
         <name>hadoop.proxyuser.hdfs.groups</name>
         <value>*</value>
     </property>
-    {{- range $key, $value := index .Values.conf "coreSite" }}
-
-    <property>
-        <name>{{ $key }}</name>
-        <value>{{ $value }}</value>
-    </property>
-    {{- end }}
 </configuration>
