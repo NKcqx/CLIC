@@ -47,7 +47,7 @@
         <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
-            <version>0.13.0</version>
+            <version>0.14.0</version>
         </dependency>
         <!-- 荆老师组尚未将他们项目封装成我们可用的包 -->
         <!-- 因此只能先用Spark SQL代替 -->
